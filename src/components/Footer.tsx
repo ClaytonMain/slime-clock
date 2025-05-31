@@ -1,91 +1,135 @@
-import { TriangleUpIcon } from "@radix-ui/react-icons";
-import { Dialog, Flex, IconButton, Section } from "@radix-ui/themes";
+import {
+  ColorWheelIcon,
+  MixerHorizontalIcon,
+  TextIcon,
+  TriangleUpIcon,
+} from "@radix-ui/react-icons";
+import { Button, Flex, IconButton, Section } from "@radix-ui/themes";
 import { AnimatePresence, LayoutGroup, motion } from "motion/react";
-import { Dialog as DialogPrimitive } from "radix-ui";
-import { useState } from "react";
+import { Dialog, Tabs, ToggleGroup } from "radix-ui";
+import { useCallback, useEffect, useState } from "react";
 
 export default function Footer() {
   const [isOpen, setIsOpen] = useState(false);
+  const [selectedTab, setSelectedTab] = useState<string | undefined>(undefined);
+
+  const escFunction = useCallback((event: KeyboardEvent) => {
+    if (event.key === "Escape") {
+      setIsOpen(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isOpen) {
+      document.addEventListener("keydown", escFunction, false);
+    } else {
+      document.removeEventListener("keydown", escFunction, false);
+    }
+    return () => {
+      document.removeEventListener("keydown", escFunction, false);
+    };
+  }, [isOpen, escFunction]);
+
   return (
-    <Section
-      position="fixed"
-      left="0"
-      bottom="0"
-      width="100%"
-      p="4"
+    <motion.div
+      style={{
+        position: "fixed",
+        left: 0,
+        top: 0,
+        width: "100%",
+        height: "100%",
+      }}
+      animate={{
+        backgroundColor: isOpen ? "rgba(0, 0, 0, 0.5)" : "rgba(0, 0, 0, 0)",
+      }}
+      onClick={() => setIsOpen(false)}
     >
-      <LayoutGroup>
-        <Dialog.Root
-          open={isOpen}
-          onOpenChange={setIsOpen}
-        >
-          <Flex
-            direction="column"
-            align="center"
-            justify="center"
-            asChild
+      <Section
+        position="fixed"
+        left="0"
+        bottom="0"
+        width="100%"
+        p="4"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <LayoutGroup>
+          <Tabs.Root
+            value={selectedTab}
+            onValueChange={setSelectedTab}
+            activationMode="manual"
           >
-            <motion.div
-              key="footer-content-flex-container"
-              layout
-            >
-              <Flex
-                direction="column"
-                align="center"
-                asChild
-              >
-                <motion.div
-                  key="footer-button-flex-container"
-                  layout
-                >
-                  <Dialog.Trigger>
+            <Tabs.List asChild>
+              <Flex align="center" justify="center" asChild gap="4">
+                <motion.div layout>
+                  <Tabs.Trigger
+                    onClick={() => setIsOpen(true)}
+                    value="Tab 1"
+                    asChild
+                  >
                     <IconButton
-                      variant="ghost"
-                      size="1"
+                      variant={
+                        isOpen && selectedTab === "Tab 1" ? "solid" : "ghost"
+                      }
+                      size="2"
                       radius="full"
                     >
-                      <TriangleUpIcon
-                        width="3rem"
-                        height="3rem"
-                      />
+                      <TextIcon />
                     </IconButton>
-                  </Dialog.Trigger>
+                  </Tabs.Trigger>
+                  <Tabs.Trigger
+                    onClick={() => setIsOpen(true)}
+                    value="Tab 2"
+                    asChild
+                  >
+                    <IconButton
+                      variant={
+                        isOpen && selectedTab === "Tab 2" ? "solid" : "ghost"
+                      }
+                      size="2"
+                      radius="full"
+                    >
+                      <MixerHorizontalIcon />
+                    </IconButton>
+                  </Tabs.Trigger>
+                  <Tabs.Trigger
+                    onClick={() => setIsOpen(true)}
+                    value="Tab 3"
+                    asChild
+                  >
+                    <IconButton
+                      variant={
+                        isOpen && selectedTab === "Tab 3" ? "solid" : "ghost"
+                      }
+                      size="2"
+                      radius="full"
+                    >
+                      <ColorWheelIcon />
+                    </IconButton>
+                  </Tabs.Trigger>
                 </motion.div>
               </Flex>
-              <AnimatePresence mode="wait">
-                {isOpen && (
-                  <DialogPrimitive.Content
-                    asChild
-                    forceMount
-                    onOpenAutoFocus={undefined}
-                    onCloseAutoFocus={undefined}
-                  >
-                    <motion.div
-                      key="footer-dialog-content"
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{
-                        opacity: 1,
-                        height: "auto",
-                      }}
-                      exit={{ opacity: 0, height: 0 }}
-                      layout
-                    >
-                      <Flex
-                        direction="column"
-                        align="center"
-                        width="100%"
-                        p="4"
-                      >
-                        ASDF ASDF ASDF ASDF LOREM IPSUM SMUT DOLLAR ETC
-                      </Flex>
-                    </motion.div>
-                  </DialogPrimitive.Content>
-                )}
-              </AnimatePresence>
-            </motion.div>
-          </Flex>
-        </Dialog.Root>
-      </LayoutGroup>
-    </Section>
+            </Tabs.List>
+            <AnimatePresence mode="wait">
+              {isOpen && (
+                <motion.div
+                  key="footer-dialog-content"
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{
+                    opacity: 1,
+                    height: "auto",
+                  }}
+                  exit={{ opacity: 0, height: 0 }}
+                  layout
+                >
+                  <Tabs.Content value="Tab 1">This is tab 1.</Tabs.Content>
+                  <Tabs.Content value="Tab 2">This is tab 2.</Tabs.Content>
+                  <Tabs.Content value="Tab 3">This is tab 3.</Tabs.Content>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </Tabs.Root>
+        </LayoutGroup>
+      </Section>
+    </motion.div>
   );
 }
