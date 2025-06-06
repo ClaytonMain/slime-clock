@@ -1,7 +1,7 @@
 import { ThemeProvider } from "next-themes";
 import "./App.css";
 import SlimeClockScene from "./SlimeClock/SlimeClockScene";
-import Footer from "./components/Footer";
+import Footer from "./components/footer/Footer";
 
 function App() {
   return (
