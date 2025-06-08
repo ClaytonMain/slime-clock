@@ -1,14 +1,27 @@
 import { Canvas } from "@react-three/fiber";
-import { Suspense, useEffect } from "react";
-import { useLocalStorage } from "usehooks-ts";
+import { Suspense, useEffect, useRef } from "react";
+import useSlimeStore from "../stores/useSlimeStore";
 import SlimeClock from "./SlimeClock";
 
 export default function SlimeClockScene() {
-  const [backgroundColor] = useLocalStorage("background-color", "#060808");
+  const backgroundColorRef = useRef(
+    useSlimeStore.getState().colorSettings.backgroundColor,
+  );
 
   useEffect(() => {
-    document.body.style.background = backgroundColor;
-  }, [backgroundColor]);
+    const unsub = useSlimeStore.subscribe(
+      (state) => state.colorSettings.backgroundColor,
+      (newColor) => {
+        console.log("Background color changed to:", newColor);
+        backgroundColorRef.current = newColor;
+      },
+    );
+    return () => unsub();
+  });
+
+  // useEffect(() => {
+  //   document.body.style.background = backgroundColor;
+  // }, [backgroundColor]);
 
   return (
     <>
@@ -18,7 +31,7 @@ export default function SlimeClockScene() {
         }}
         style={{
           touchAction: "none",
-          backgroundColor: backgroundColor,
+          backgroundColor: backgroundColorRef.current,
           height: "100vh",
         }}
         dpr={1.0}

@@ -39,10 +39,7 @@ function getSvgPaths(name: keyof typeof svgPathAttributes) {
   return (
     <>
       {pathAttributes.map((attributes, index) => (
-        <path
-          key={`${name}-path-${index}`}
-          {...attributes}
-        />
+        <path key={`${name}-path-${index}`} {...attributes} />
       ))}
     </>
   );
@@ -50,44 +47,62 @@ function getSvgPaths(name: keyof typeof svgPathAttributes) {
 
 export default function FooterTabButton({
   tabName,
+  displayName,
 }: {
   tabName: FooterTabName;
+  displayName: string;
 }) {
   const [hovered, setHovered] = useState(false);
   const selectedTab = useSlimeStore((state) => state.footerState.selectedTab);
   const footerIsOpen = useSlimeStore((state) => state.footerState.footerIsOpen);
   const openFooterOntoTab = useSlimeStore(
-    (state) => state.footerStateOpenFooterOntoTab
+    (state) => state.footerStateOpenFooterOntoTab,
   );
+  const tooltipId = `tooltip-${tabName}`;
 
   return (
-    <motion.div
-      onClick={(e) => {
-        e.stopPropagation();
-        openFooterOntoTab(tabName);
-      }}
-      onHoverStart={() => setHovered(true)}
-      onHoverEnd={() => setHovered(false)}
-      className="flex flex-col items-center cursor-pointer"
-    >
-      <motion.svg
-        className="w-12 h-12 text-gray-800 dark:text-white mx-1 px-2 py-2 rounded-full"
-        animate={{
-          backgroundColor: hovered
-            ? "var(--color-red-300)"
-            : selectedTab === tabName && footerIsOpen
-            ? "var(--color-red-500)"
-            : "var(--color-red-400)",
+    <>
+      <motion.div
+        onClick={(e) => {
+          e.stopPropagation();
+          openFooterOntoTab(tabName);
         }}
-        aria-hidden="true"
-        xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="24"
-        fill="none"
-        viewBox="0 0 24 24"
+        onHoverStart={() => setHovered(true)}
+        onHoverEnd={() => setHovered(false)}
+        className="flex cursor-pointer flex-col items-center"
+        data-tooltip-target={tooltipId}
       >
-        {getSvgPaths(tabName)}
-      </motion.svg>
-    </motion.div>
+        <motion.svg
+          className="mx-1 h-12 w-12 rounded-full px-2 py-2 text-gray-800 dark:text-white"
+          animate={{
+            backgroundColor: hovered
+              ? "var(--color-red-300)"
+              : selectedTab === tabName && footerIsOpen
+                ? "var(--color-red-500)"
+                : "var(--color-red-400)",
+          }}
+          aria-hidden="true"
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          {getSvgPaths(tabName)}
+        </motion.svg>
+        <motion.div
+          animate={{
+            opacity: hovered ? 0.9 : 0,
+          }}
+          id={tooltipId}
+          role="tooltip"
+          layout
+          className="tooltip absolute bottom-[calc(var(--spacing)_*_15)] z-10 inline-block rounded-lg bg-gray-900 px-3 py-2 text-sm font-medium text-white shadow-xs dark:bg-gray-700"
+        >
+          {displayName}
+          {/* <motion.div className="tooltip-arrow" data-popper-arrow></motion.div> */}
+        </motion.div>
+      </motion.div>
+    </>
   );
 }

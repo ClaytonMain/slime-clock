@@ -32,7 +32,7 @@ const variants = {
 
 function getDirection(
   currentTab: FooterTabName,
-  previousTab: FooterTabName
+  previousTab: FooterTabName,
 ): number {
   const currentIndex = tabOrder.indexOf(currentTab);
   const previousIndex = tabOrder.indexOf(previousTab);
@@ -56,11 +56,11 @@ export default function FooterTabContent({
       (state) => state.footerState.selectedTab,
       (selectedTab, previousSelectedTab) => {
         console.log(
-          `Selected tab changed from ${previousSelectedTab} to ${selectedTab}`
+          `Selected tab changed from ${previousSelectedTab} to ${selectedTab}`,
         );
         references.direction = getDirection(selectedTab, previousSelectedTab);
       },
-      { fireImmediately: true }
+      { fireImmediately: true },
     );
     return () => {
       unsubSelectedTab();
@@ -69,7 +69,7 @@ export default function FooterTabContent({
 
   return (
     <motion.div
-      className="w-full h-auto flex justify-center overflow-y-auto"
+      className="flex h-auto w-full justify-center overflow-x-clip overflow-y-auto"
       style={{
         scrollbarGutter: "stable",
         scrollbarWidth: "thin",

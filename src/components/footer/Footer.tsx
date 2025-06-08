@@ -2,10 +2,10 @@ import { AnimatePresence, LayoutGroup, motion } from "motion/react";
 import { useCallback, useEffect } from "react";
 import useSlimeStore from "../../stores/useSlimeStore";
 import ClockSettings from "./ClockSettings";
+import ColorSettings from "./ColorSettings";
 import FooterTabButton from "./FooterTabButton";
 import FooterTabContent from "./FooterTabContent";
-
-const loremIpsum = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.`;
+import SimulationSettings from "./SimulationSettings";
 
 export default function Footer() {
   const isOpen = useSlimeStore((state) => state.footerState.footerIsOpen);
@@ -18,7 +18,7 @@ export default function Footer() {
         setIsOpen(false);
       }
     },
-    [setIsOpen]
+    [setIsOpen],
   );
 
   useEffect(() => {
@@ -34,13 +34,7 @@ export default function Footer() {
 
   return (
     <motion.div
-      style={{
-        position: "fixed",
-        left: 0,
-        top: 0,
-        width: "100%",
-        height: "100%",
-      }}
+      className="fixed bottom-0 left-0 h-full w-full"
       animate={{
         backgroundColor: isOpen ? "rgba(0, 0, 0, 0.1)" : "rgba(0, 0, 0, 0)",
       }}
@@ -49,13 +43,13 @@ export default function Footer() {
       <LayoutGroup>
         <motion.div
           layout
-          className="fixed left-0 bottom-0 flex flex-col justify-center w-full"
+          className="fixed bottom-0 left-0 flex w-full flex-col justify-center"
           key="footer-container"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Then a container for the tab buttons */}
           <motion.div
-            className="flex w-full justify-center items-end p-2 backdrop-blur-sm"
+            className="flex w-full items-end justify-center border-b-1 border-amber-950 p-2 backdrop-blur-sm"
             animate={{
               backgroundColor: isOpen ? "#f87171ff" : "#f8717100",
             }}
@@ -65,9 +59,18 @@ export default function Footer() {
               className="grow flex bg-blue-300 rounded-br-3xl w-full"
               key="footer-tab-left-padding"
             /> */}
-            <FooterTabButton tabName="clock-settings" />
-            <FooterTabButton tabName="simulation-settings" />
-            <FooterTabButton tabName="color-settings" />
+            <FooterTabButton
+              tabName="clock-settings"
+              displayName="Clock Settings"
+            />
+            <FooterTabButton
+              tabName="simulation-settings"
+              displayName="Simulation Settings"
+            />
+            <FooterTabButton
+              tabName="color-settings"
+              displayName="Color Settings"
+            />
             {/* <motion.div
               className="grow flex bg-blue-300 rounded-bl-3xl w-full"
               key="footer-tab-right-padding"
@@ -75,7 +78,7 @@ export default function Footer() {
           </motion.div>
           {/* Then a container for the tab content */}
           <motion.div
-            className="flex justify-center w-full bg-red-400 overflow-y-auto overflow-x-hidden backdrop-blur-sm"
+            className="flex w-full justify-center overflow-x-hidden overflow-y-auto bg-red-400 backdrop-blur-sm"
             key="footer-tab-content-container"
             animate={{
               height: `calc(var(--spacing) * ${isOpen ? "64" : "0"})`,
@@ -98,8 +101,7 @@ export default function Footer() {
                       tabName="simulation-settings"
                       key="simulation-settings"
                     >
-                      {"Simulation Settings ".repeat(10)}
-                      {`${loremIpsum} `.repeat(3)}
+                      <SimulationSettings />
                     </FooterTabContent>
                   )}
                   {selectedTab === "color-settings" && (
@@ -107,8 +109,7 @@ export default function Footer() {
                       tabName="color-settings"
                       key="color-settings"
                     >
-                      {"Color Settings ".repeat(10)}
-                      {`${loremIpsum} `.repeat(3)}
+                      <ColorSettings />
                     </FooterTabContent>
                   )}
                 </>
