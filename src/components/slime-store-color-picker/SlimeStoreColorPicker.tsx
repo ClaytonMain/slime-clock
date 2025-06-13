@@ -13,19 +13,17 @@ export default function SlimeStoreColorPicker({
   onChange?: (newColor: string) => void;
 }) {
   const inputId = `${label.toLowerCase().replace(" ", "-")}-color-picker-input`;
-  const ramdaSet = useSlimeStore((state) => state.ramdaSet);
   const [color, setColor] = useState(
     R.view(R.lensPath(storePath), useSlimeStore.getState()) as string,
   );
 
   function handleOnChange(newColor: string) {
-    console.log("New color:", newColor);
+    setColor(newColor);
     if (onChange) {
       onChange(newColor);
     } else {
-      ramdaSet(storePath, () => newColor);
+      useSlimeStore.setState(R.over(R.lensPath(storePath), () => newColor));
     }
-    setColor(newColor);
   }
 
   return (

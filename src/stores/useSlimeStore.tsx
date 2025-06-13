@@ -1,5 +1,4 @@
 import { produce } from "immer";
-import * as R from "ramda";
 import { create } from "zustand";
 import {
   createJSONStorage,
@@ -21,10 +20,11 @@ import type {
 interface FooterState {
   selectedTab: FooterTabName;
   footerIsOpen: boolean;
+  isDimmedForEdit: boolean;
+  tabButtonVisibility: "show" | "hide" | "dimmed";
 }
 
 interface SlimeStore {
-  ramdaSet: (storePath: string[], fn: (value: unknown) => unknown) => void;
   clockSettings: ClockSettings;
   setClockSettings: (settings: Partial<ClockSettings>) => void;
   simulationSettings: SimulationSettings;
@@ -38,13 +38,12 @@ interface SlimeStore {
   footerStateOpenFooterOntoTab: (tabName: FooterTabName) => void;
 }
 
-const persistOmit: (keyof SlimeStore)[] = ["footerState"];
+const persistOmit: (keyof SlimeStore)[] = ["footerState", "colorSettings"];
 
 const useSlimeStore = create<SlimeStore>()(
   subscribeWithSelector(
     persist(
       (set) => ({
-        ramdaSet: (storePath, fn) => set(R.over(R.lensPath(storePath), fn)),
         clockSettings: DEFAULT_CLOCK_SETTINGS,
         setClockSettings: (newSettings) => {
           set((state) => ({
@@ -84,8 +83,10 @@ const useSlimeStore = create<SlimeStore>()(
         },
 
         footerState: {
-          selectedTab: "clock-settings",
-          footerIsOpen: false,
+          selectedTab: "color-settings",
+          footerIsOpen: true,
+          isDimmedForEdit: false, // Dims the entire footer when editing certain settings
+          tabButtonVisibility: "show",
         },
         footerStateSetSelectedTab: (tabName) =>
           set(

@@ -3,6 +3,7 @@ import useSlimeStore from "../../stores/useSlimeStore";
 import type { ClockFormatValue, ClockStyleValue } from "../../types/types";
 import SlimeStoreSelect from "../slime-store-select/SlimeStoreSelect";
 import SlimeStoreSlider from "../slime-store-slider/SlimeStoreSlider";
+import ControlContainer from "./ControlContainer";
 import FooterTabContent from "./FooterTabContent";
 
 /**
@@ -49,14 +50,16 @@ export default function ClockSettings() {
           storePath={["clockSettings", "format"]}
           label="Clock Format"
         />
-        <SlimeStoreSlider
-          label="Clock Size"
-          storePath={["clockSettings", "size"]}
-          min={CLOCK_CONTROLS_BOUNDS.size!.min}
-          max={CLOCK_CONTROLS_BOUNDS.size!.max}
-          step={1}
-          // labels={["Small", "Medium", "Large"]}
-        />
+        <ControlContainer>
+          <SlimeStoreSlider
+            label="Clock Size"
+            storePath={["clockSettings", "size"]}
+            min={CLOCK_CONTROLS_BOUNDS.size!.min}
+            max={CLOCK_CONTROLS_BOUNDS.size!.max}
+            step={1}
+            // labels={["Small", "Medium", "Large"]}
+          />
+        </ControlContainer>
       </div>
     </FooterTabContent>
   );

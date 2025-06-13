@@ -8,7 +8,7 @@ export default defineConfig({
   plugins: [
     react(),
     restart({
-      restart: ["src/shaders/**/*"],
+      restart: ["src/**/*.{frag,vert,glsl}"],
     }),
     glsl({
       watch: true,

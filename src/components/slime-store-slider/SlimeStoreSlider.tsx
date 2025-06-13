@@ -1,5 +1,5 @@
 import * as R from "ramda";
-import { useRef, type ChangeEvent } from "react";
+import { useState, type ChangeEvent } from "react";
 import useSlimeStore from "../../stores/useSlimeStore";
 
 export default function SlimeStoreSlider({
@@ -10,6 +10,7 @@ export default function SlimeStoreSlider({
   step = 1,
   labels = [],
   onChange,
+  displayLabel = true,
 }: {
   label: string;
   storePath: string[];
@@ -17,52 +18,63 @@ export default function SlimeStoreSlider({
   max: number;
   step?: number;
   labels?: string[];
-  onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
+  onChange?: (value: number) => void;
+  displayLabel?: boolean | "left";
 }) {
   const textInputId = `${label.toLowerCase().replace(" ", "-")}-text-input`;
   const rangeInputId = `${label.toLowerCase().replace(" ", "-")}-range-input`;
-  const valueRef = useRef(
-    R.view(R.lensPath(storePath), useSlimeStore.getState()),
+  const [value, setValue] = useState(
+    R.view(R.lensPath(storePath), useSlimeStore.getState()) as number,
   );
 
   function handleOnChange(event: ChangeEvent<HTMLInputElement>) {
     const newValue = Number(event.target.value);
     if (Number.isNaN(newValue)) return;
-    valueRef.current = newValue;
+    setValue(newValue);
     if (onChange) {
-      onChange(event);
+      onChange(newValue);
     } else {
-      useSlimeStore.setState(R.over(R.lensPath(storePath), () => newValue));
+      useSlimeStore.setState(R.over(R.lensPath(storePath!), () => newValue));
     }
   }
 
   return (
-    <div className="mb-1 flex flex-col rounded-lg bg-red-300 p-2">
-      <label
-        htmlFor={textInputId}
-        className="mb-1 text-sm font-medium text-gray-900 dark:text-white"
-      >
-        {label}
-      </label>
-      <div className="flex w-full content-center">
+    <>
+      {displayLabel === true && (
+        <label
+          htmlFor={textInputId}
+          className="mb-1 text-sm font-medium text-gray-900 dark:text-white"
+        >
+          {label}
+        </label>
+      )}
+      <div className="flex w-full content-center rounded-lg p-0.5">
+        {displayLabel === "left" && (
+          <label
+            htmlFor={textInputId}
+            className="me-1 h-full w-16 flex-none place-content-center rounded-lg p-0.5 text-right text-xs font-medium text-gray-900 dark:text-white"
+          >
+            {label}
+          </label>
+        )}
         <input
           id={textInputId}
           type="number"
-          value={valueRef.current}
+          value={value}
           onChange={handleOnChange}
           min={min}
           max={max}
           step={step}
-          className="shrink rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-xs text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+          className="w-20 flex-initial rounded-lg border border-gray-300 bg-gray-50 px-2.5 py-1.5 text-xs text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
         />
         <label htmlFor={rangeInputId} className="sr-only">
           {`${label} Slider`}
         </label>
-        <div className="ml-2 flex grow flex-col place-content-center">
+        <div className="ml-2 h-full w-44 flex-auto flex-col place-content-center">
           <input
             id={rangeInputId}
             type="range"
-            value={valueRef.current}
+            value={value}
             onChange={handleOnChange}
             min={min}
             max={max}
@@ -85,6 +97,6 @@ export default function SlimeStoreSlider({
           )}
         </div>
       </div>
-    </div>
+    </>
   );
 }

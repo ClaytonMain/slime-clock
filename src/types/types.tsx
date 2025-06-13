@@ -41,8 +41,26 @@ export interface SimulationSettings {
   trailNegativeSpaceDiffuseRate: number;
 }
 
+interface ProceduralColorPaletteChannel {
+  yOffset: number;
+  amplitude: number;
+  frequency: number;
+  phase: number;
+}
+
+export interface ProceduralColorPalette {
+  r: ProceduralColorPaletteChannel;
+  g: ProceduralColorPaletteChannel;
+  b: ProceduralColorPaletteChannel;
+}
+
+export type SlimeColorMode = "Procedural" | "Single";
+
 export interface ColorSettings {
   backgroundColor: string;
+  slimeColorMode: SlimeColorMode;
+  slimeColorChangedAt: number;
+  proceduralColorPalette: ProceduralColorPalette;
 }
 
 /**

@@ -73,7 +73,7 @@ export default function FooterTabContent({
       style={{
         scrollbarGutter: "stable",
         scrollbarWidth: "thin",
-        scrollbarColor: "var(--color-red-200) var(--color-red-400)",
+        scrollbarColor: "var(--color-red-200) #f8717111",
       }}
       layout
       key={tabName}

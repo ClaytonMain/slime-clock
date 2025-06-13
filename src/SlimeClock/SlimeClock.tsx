@@ -1,5 +1,5 @@
-import { Box } from "@react-three/drei";
+import ProceduralColorPaletteDisplay from "../components/procedural-color-palette-display/ProceduralColorPaletteDisplay";
 
 export default function SlimeClock() {
-  return <Box />;
+  return <ProceduralColorPaletteDisplay />;
 }

@@ -11,6 +11,9 @@ export default function Footer() {
   const isOpen = useSlimeStore((state) => state.footerState.footerIsOpen);
   const setIsOpen = useSlimeStore((state) => state.footerStateSetFooterIsOpen);
   const selectedTab = useSlimeStore((state) => state.footerState.selectedTab);
+  const isDimmedForEdit = useSlimeStore(
+    (state) => state.footerState.isDimmedForEdit,
+  );
 
   const escFunction = useCallback(
     (event: KeyboardEvent) => {
@@ -32,6 +35,23 @@ export default function Footer() {
     };
   }, [isOpen, escFunction]);
 
+  // useEffect(() => {
+  //   const unsubSlimeColorChangedAt = useSlimeStore.subscribe(
+  //     (state) => state.colorSettings.slimeColorChangedAt,
+  //     () => {
+  //       updateUniforms();
+  //       slimeColorChangedAtRef.current = Date.now();
+  //       if (!visible) {
+  //         setVisible(true);
+  //       }
+  //     },
+  //   );
+  //   return () => {
+  //     unsubSlimeColorChangedAt();
+  //   };
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
+
   return (
     <motion.div
       className="fixed bottom-0 left-0 h-full w-full"
@@ -51,7 +71,11 @@ export default function Footer() {
           <motion.div
             className="flex w-full items-end justify-center border-b-1 border-amber-950 p-2 backdrop-blur-sm"
             animate={{
-              backgroundColor: isOpen ? "#f87171ff" : "#f8717100",
+              backgroundColor: isDimmedForEdit
+                ? "#f8717111"
+                : isOpen
+                  ? "#f8717188"
+                  : "#f8717100",
             }}
             key="footer-tab-buttons-container"
           >
@@ -78,10 +102,15 @@ export default function Footer() {
           </motion.div>
           {/* Then a container for the tab content */}
           <motion.div
-            className="flex w-full justify-center overflow-x-hidden overflow-y-auto bg-red-400 backdrop-blur-sm"
+            className="flex w-full justify-center overflow-x-hidden overflow-y-auto backdrop-blur-sm"
             key="footer-tab-content-container"
             animate={{
               height: `calc(var(--spacing) * ${isOpen ? "64" : "0"})`,
+              backgroundColor: isDimmedForEdit
+                ? "#f8717111"
+                : isOpen
+                  ? "#f8717188"
+                  : "#f8717100",
             }}
             layout
           >

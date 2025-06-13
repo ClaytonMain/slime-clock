@@ -2,6 +2,7 @@ import type {
   ClockSettings,
   ColorSettings,
   SimulationSettings,
+  SlimeColorMode,
 } from "../types/types";
 
 type ControlsBounds<T> = {
@@ -67,6 +68,30 @@ export const SIMULATION_CONTROLS_BOUNDS: ControlsBounds<SimulationSettings> = {
   trailNegativeSpaceDiffuseRate: { min: 0.0, max: 30.0 },
 };
 
+export const SLIME_COLOR_MODES: SlimeColorMode[] = ["Procedural", "Single"];
+
 export const DEFAULT_COLOR_SETTINGS: ColorSettings = {
   backgroundColor: "#060808",
+  slimeColorMode: "Procedural",
+  slimeColorChangedAt: Date.now(),
+  proceduralColorPalette: {
+    r: {
+      yOffset: 0.5,
+      amplitude: 0.5,
+      frequency: 1.0,
+      phase: 0.0,
+    },
+    g: {
+      yOffset: 0.5,
+      amplitude: 0.5,
+      frequency: 1.0,
+      phase: 0.33,
+    },
+    b: {
+      yOffset: 0.5,
+      amplitude: 0.5,
+      frequency: 1.0,
+      phase: 0.66,
+    },
+  },
 };
