@@ -1,4 +1,5 @@
 import { produce } from "immer";
+import { useEffect } from "react";
 import useSlimeStore from "../../stores/useSlimeStore";
 import SlimeStoreColorPicker from "../slime-store-color-picker/SlimeStoreColorPicker";
 import SlimeStoreSlider from "../slime-store-slider/SlimeStoreSlider";
@@ -7,6 +8,9 @@ import FooterTabContent from "./FooterTabContent";
 
 export default function ColorSettings() {
   // const colorSettings = useSlimeStore((state) => state.colorSettings);
+  const slimeColorChangedAt = useSlimeStore(
+    (state) => state.colorSettings.slimeColorChangedAt,
+  );
 
   function handleProceduralColorPaletteChange(
     channel: "r" | "g" | "b",
@@ -20,6 +24,9 @@ export default function ColorSettings() {
         state.footerState.isDimmedForEdit = true;
       }),
     );
+  }
+
+  useEffect(() => {
     const timeoutId = setTimeout(() => {
       useSlimeStore.setState(
         produce((state) => {
@@ -28,7 +35,7 @@ export default function ColorSettings() {
       );
     }, 1000);
     return () => clearTimeout(timeoutId);
-  }
+  }, [slimeColorChangedAt]);
 
   return (
     <FooterTabContent tabName="simulation-settings" key="simulation-settings">

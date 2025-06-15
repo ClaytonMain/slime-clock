@@ -83,6 +83,7 @@ const useSlimeStore = create<SlimeStore>()(
         },
 
         footerState: {
+          height: 64,
           selectedTab: "color-settings",
           footerIsOpen: true,
           isDimmedForEdit: false, // Dims the entire footer when editing certain settings
