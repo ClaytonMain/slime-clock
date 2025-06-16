@@ -48,16 +48,15 @@ function getSvgPaths(name: keyof typeof svgPathAttributes) {
 export default function FooterTabButton({
   tabName,
   displayName,
+  onClick,
 }: {
   tabName: FooterTabName;
   displayName: string;
+  onClick: (footerTabName: FooterTabName) => void;
 }) {
   const [hovered, setHovered] = useState(false);
   const selectedTab = useSlimeStore((state) => state.footerState.selectedTab);
   const footerIsOpen = useSlimeStore((state) => state.footerState.footerIsOpen);
-  const openFooterOntoTab = useSlimeStore(
-    (state) => state.footerStateOpenFooterOntoTab,
-  );
   const tooltipId = `tooltip-${tabName}`;
 
   return (
@@ -65,7 +64,7 @@ export default function FooterTabButton({
       <motion.div
         onClick={(e) => {
           e.stopPropagation();
-          openFooterOntoTab(tabName);
+          onClick(tabName);
         }}
         onHoverStart={() => setHovered(true)}
         onHoverEnd={() => setHovered(false)}

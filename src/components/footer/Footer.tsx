@@ -1,45 +1,92 @@
+import { produce } from "immer";
 import {
+  animate,
   AnimatePresence,
   LayoutGroup,
   motion,
   useDragControls,
   useMotionValue,
+  useMotionValueEvent,
   useTransform,
-  useVelocity,
 } from "motion/react";
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useState } from "react";
 import useSlimeStore from "../../stores/useSlimeStore";
-import ClockSettings from "./ClockSettings";
-import ColorSettings from "./ColorSettings";
+import type { FooterTabName } from "../../types/types";
 import FooterTabButton from "./FooterTabButton";
 import FooterTabContent from "./FooterTabContent";
-import SimulationSettings from "./SimulationSettings";
 
-const MIN_FOOTER_HEIGHT = window.innerHeight * 0.1;
-const MAX_FOOTER_HEIGHT = window.innerHeight * 0.9;
+/**
+ * Referenced https://examples.motion.dev/react/use-presence-data
+ * for the footer tab content animation.
+ */
+const HEADER_HEIGHT = 64;
+
+const TAB_ORDER: FooterTabName[] = [
+  "clock-settings",
+  "simulation-settings",
+  "color-settings",
+];
+
+function getDirection(
+  currentTab: FooterTabName,
+  previousTab: FooterTabName,
+): number {
+  const currentIndex = TAB_ORDER.indexOf(currentTab);
+  const previousIndex = TAB_ORDER.indexOf(previousTab);
+  if (currentIndex === -1 || previousIndex === -1) return 0;
+  return currentIndex - previousIndex;
+}
+
+function getFooterBounds(): {
+  minHeight: number;
+  maxHeight: number;
+  openHeight: number;
+} {
+  const minHeight = 0;
+  const maxHeight = window.innerHeight - HEADER_HEIGHT;
+  const openHeight = 2.0 * minHeight;
+  return { minHeight, maxHeight, openHeight };
+}
 
 function getValueInFooterBounds(value: number): number {
-  return Math.max(MIN_FOOTER_HEIGHT, Math.min(MAX_FOOTER_HEIGHT, value));
+  const { minHeight, maxHeight } = getFooterBounds();
+  return Math.max(minHeight, Math.min(maxHeight, value));
 }
 
 export default function Footer() {
+  /**
+   * Footer open/close/edit state stuff.
+   */
   const isOpen = useSlimeStore((state) => state.footerState.footerIsOpen);
+  const storeFooterHeight = useSlimeStore((state) => state.footerState.height);
   const setIsOpen = useSlimeStore((state) => state.footerStateSetFooterIsOpen);
-  const selectedTab = useSlimeStore((state) => state.footerState.selectedTab);
   const isDimmedForEdit = useSlimeStore(
     (state) => state.footerState.isDimmedForEdit,
   );
-  const lastDragRef = useRef<number>(Date.now());
-  const draggedMaxHeightRef = useRef<number>(256);
-  const dragDistanceRef = useRef<number>(0);
+  const [dragging, setDragging] = useState(false);
+
+  function handleFooterChange(open: boolean) {
+    const { minHeight, openHeight } = getFooterBounds();
+    // if (open) {
+    //   setIsOpen(true);
+    //   const newHeight = getValueInFooterBounds(
+    //     Math.max(draggedHeightRef.current, openHeight),
+    //   );
+    //   animate(draggedHeight, newHeight);
+    // } else {
+    //   setIsOpen(false);
+    //   animate(draggedHeight, minHeight);
+    // }
+  }
 
   const escFunction = useCallback(
     (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        setIsOpen(false);
+        handleFooterChange(false);
       }
     },
-    [setIsOpen],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
   );
 
   useEffect(() => {
@@ -53,52 +100,98 @@ export default function Footer() {
     };
   }, [isOpen, escFunction]);
 
+  /**
+   * Footer tab selection stuff.
+   */
+  const [selectedTab, setSelectedTab] = useState<FooterTabName>(
+    useSlimeStore.getState().footerState.selectedTab,
+  );
+  const [direction, setDirection] = useState<number>(0);
+  function handleTabButtonClick(clickedOn: FooterTabName) {
+    const direction = getDirection(clickedOn, selectedTab);
+    setSelectedTab(clickedOn);
+    setDirection(direction);
+    useSlimeStore.setState(
+      produce((state) => {
+        state.footerState.selectedTab = clickedOn;
+        state.footerState.footerIsOpen = true;
+      }),
+    );
+  }
+
+  /**
+   * Footer drag stuff.
+   */
   const controls = useDragControls();
   const dragOffset = useMotionValue(0);
-  const dragVelocity = useVelocity(dragOffset);
-  const draggedMaxHeight = useTransform(() => {
-    const current = dragOffset.get();
-    const previous = dragOffset.getPrevious();
-    const delta = current - (previous || 0);
-    console.log("dragDistanceRef.current", dragDistanceRef.current);
-    dragDistanceRef.current -= delta;
-    let newHeight = draggedMaxHeightRef.current;
-    if (isOpen) {
-      newHeight = getValueInFooterBounds(draggedMaxHeightRef.current - delta);
-      draggedMaxHeightRef.current = newHeight;
-    }
-    return newHeight;
+  const dragDelta = useMotionValue(0);
+  const draggedHeight = useMotionValue(storeFooterHeight);
+
+  // const lastDragRef = useRef<number>(Date.now());
+  // const draggedHeightRef = useRef<number>(footerHeight);
+  // const dragDistanceRef = useRef<number>(0);
+  // const controls = useDragControls();
+  // const dragOffset = useMotionValue(0);
+  // const draggedHeight = useTransform(() => {
+  //   const current = dragOffset.get();
+  //   const previous = dragOffset.getPrevious();
+  //   const delta = current - (previous || current);
+  //   dragDistanceRef.current -= delta;
+  //   let newHeight = draggedHeightRef.current;
+  //   newHeight = getValueInFooterBounds(draggedHeightRef.current - delta);
+  //   draggedHeightRef.current = newHeight;
+  //   return newHeight;
+  // });
+  const heightBasedOpacityControl = useTransform(() => {
+    const { openHeight, minHeight } = getFooterBounds();
+    const currentHeight = draggedHeight.get();
+    const returnValue = Math.min(
+      1,
+      Math.max(0, (currentHeight - minHeight) / openHeight),
+    );
+    return returnValue;
   });
+  const bgClickThingColor = useTransform(
+    heightBasedOpacityControl,
+    [0, 1],
+    ["rgba(0, 0, 0, 0.0)", "rgba(1, 0, 0, 0.9)"],
+  );
+  const footerBgColor = useTransform(
+    heightBasedOpacityControl,
+    [0, 1],
+    ["#00000000", "#f87171dd"],
+  );
+
+  // useMotionValueEvent(dragDelta, "change", (value) => {
+  //   draggedHeight.set(getValueInFooterBounds(draggedHeight.get() - value));
+  // });
 
   return (
     <motion.div
       className="fixed bottom-0 left-0 h-full w-full"
-      animate={{
-        backgroundColor: isOpen ? "rgba(0, 0, 0, 0.1)" : "rgba(0, 0, 0, 0)",
+      style={{
+        backgroundColor: bgClickThingColor,
       }}
       onClick={() => {
-        if (isOpen && Date.now() - lastDragRef.current > 100) {
-          setIsOpen(false);
+        if (!dragging) {
+          handleFooterChange(false);
         }
       }}
     >
       <motion.div
-        className="pointer-events-none absolute bottom-1/2 left-1/2 -z-[999999] h-8 w-8 rounded-2xl bg-red-400"
+        className="pointer-events-none absolute bottom-1/2 -left-1/2 -z-[999999] h-8 w-8"
+        id="there-has-got-to-be-a-better-way-to-do-this"
         drag="y"
         dragControls={controls}
         dragListener={false}
-        onDrag={() => (lastDragRef.current = Date.now())}
-        // dragMomentum={false}
+        onDragStart={() => setDragging(true)}
+        onDrag={(_, info) => {
+          draggedHeight.set(
+            getValueInFooterBounds(draggedHeight.get() - info.delta.y),
+          );
+        }}
         onDragEnd={() => {
-          if (
-            (dragVelocity.get() < -500 || dragDistanceRef.current > -100) &&
-            !isOpen
-          ) {
-            setIsOpen(true);
-          } else if (dragVelocity.get() > 500 && isOpen) {
-            setIsOpen(false);
-          }
-          dragDistanceRef.current = 0;
+          setDragging(false);
         }}
         style={{
           y: dragOffset,
@@ -111,7 +204,7 @@ export default function Footer() {
           key="footer-container"
           onClick={(e) => e.stopPropagation()}
           style={{
-            maxHeight: draggedMaxHeight,
+            height: draggedHeight,
           }}
         >
           {/* Then a container for the tab buttons */}
@@ -122,24 +215,30 @@ export default function Footer() {
             }
             onPointerDown={(e) => controls.start(e)}
             animate={{
-              backgroundColor: isOpen ? "#f87171dd" : "#00000000",
               opacity: isDimmedForEdit ? 0.1 : 1,
+            }}
+            style={{
+              backgroundColor: footerBgColor,
             }}
             key="footer-tab-buttons-container"
           >
             <FooterTabButton
               tabName="clock-settings"
               displayName="Clock Settings"
+              onClick={handleTabButtonClick}
             />
             <FooterTabButton
               tabName="simulation-settings"
               displayName="Simulation Settings"
+              onClick={handleTabButtonClick}
             />
             <FooterTabButton
               tabName="color-settings"
               displayName="Color Settings"
+              onClick={handleTabButtonClick}
             />
           </motion.div>
+
           {/* Then a container for the tab content */}
           <motion.div
             className={
@@ -148,40 +247,20 @@ export default function Footer() {
             }
             key="footer-tab-content-container"
             animate={{
-              backgroundColor: isOpen ? "#f87171dd" : "#00000000",
               opacity: isDimmedForEdit ? 0.1 : 1,
             }}
-            layout
+            style={{
+              backgroundColor: footerBgColor,
+              opacity: heightBasedOpacityControl,
+            }}
+            // layout
           >
-            <AnimatePresence initial={false}>
-              {isOpen && (
-                <>
-                  {selectedTab === "clock-settings" && (
-                    <FooterTabContent
-                      tabName="clock-settings"
-                      key="clock-settings"
-                    >
-                      <ClockSettings />
-                    </FooterTabContent>
-                  )}
-                  {selectedTab === "simulation-settings" && (
-                    <FooterTabContent
-                      tabName="simulation-settings"
-                      key="simulation-settings"
-                    >
-                      <SimulationSettings />
-                    </FooterTabContent>
-                  )}
-                  {selectedTab === "color-settings" && (
-                    <FooterTabContent
-                      tabName="color-settings"
-                      key="color-settings"
-                    >
-                      <ColorSettings />
-                    </FooterTabContent>
-                  )}
-                </>
-              )}
+            <AnimatePresence
+              custom={direction}
+              initial={false}
+              mode="popLayout"
+            >
+              <FooterTabContent key={selectedTab} selectedTab={selectedTab} />
             </AnimatePresence>
           </motion.div>
         </motion.div>

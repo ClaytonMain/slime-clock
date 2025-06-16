@@ -8,6 +8,7 @@ import {
 import {
   DEFAULT_CLOCK_SETTINGS,
   DEFAULT_COLOR_SETTINGS,
+  DEFAULT_FOOTER_HEIGHT,
   DEFAULT_SIMULATION_SETTINGS,
 } from "../constants/constants";
 import type {
@@ -18,6 +19,7 @@ import type {
 } from "../types/types";
 
 interface FooterState {
+  height: number;
   selectedTab: FooterTabName;
   footerIsOpen: boolean;
   isDimmedForEdit: boolean;
@@ -83,7 +85,7 @@ const useSlimeStore = create<SlimeStore>()(
         },
 
         footerState: {
-          height: 64,
+          height: DEFAULT_FOOTER_HEIGHT,
           selectedTab: "color-settings",
           footerIsOpen: true,
           isDimmedForEdit: false, // Dims the entire footer when editing certain settings

@@ -95,3 +95,5 @@ export const DEFAULT_COLOR_SETTINGS: ColorSettings = {
     },
   },
 };
+
+export const DEFAULT_FOOTER_HEIGHT = 300;
