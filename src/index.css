@@ -3,6 +3,11 @@
 @plugin "flowbite/plugin";
 @source "../node_modules/flowbite";
 
+@theme {
+  --footer-left-label-width: 5rem;
+  --color-footer: #fca5a5;
+}
+
 html,
 body,
 #root {

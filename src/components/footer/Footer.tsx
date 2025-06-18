@@ -6,7 +6,6 @@ import {
   motion,
   useDragControls,
   useMotionValue,
-  useMotionValueEvent,
   useTransform,
 } from "motion/react";
 import { useCallback, useEffect, useState } from "react";
@@ -42,9 +41,9 @@ function getFooterBounds(): {
   maxHeight: number;
   openHeight: number;
 } {
-  const minHeight = 0;
+  const minHeight = 64;
   const maxHeight = window.innerHeight - HEADER_HEIGHT;
-  const openHeight = 2.0 * minHeight;
+  const openHeight = 3.0 * minHeight;
   return { minHeight, maxHeight, openHeight };
 }
 
@@ -58,7 +57,9 @@ export default function Footer() {
    * Footer open/close/edit state stuff.
    */
   const isOpen = useSlimeStore((state) => state.footerState.footerIsOpen);
-  const storeFooterHeight = useSlimeStore((state) => state.footerState.height);
+  const storeFooterOpenHeight = useSlimeStore(
+    (state) => state.footerState.openHeight,
+  );
   const setIsOpen = useSlimeStore((state) => state.footerStateSetFooterIsOpen);
   const isDimmedForEdit = useSlimeStore(
     (state) => state.footerState.isDimmedForEdit,
@@ -67,27 +68,40 @@ export default function Footer() {
 
   function handleFooterChange(open: boolean) {
     const { minHeight, openHeight } = getFooterBounds();
-    // if (open) {
-    //   setIsOpen(true);
-    //   const newHeight = getValueInFooterBounds(
-    //     Math.max(draggedHeightRef.current, openHeight),
-    //   );
-    //   animate(draggedHeight, newHeight);
-    // } else {
-    //   setIsOpen(false);
-    //   animate(draggedHeight, minHeight);
-    // }
+    if (open) {
+      const newHeight = getValueInFooterBounds(
+        Math.max(
+          useSlimeStore.getState().footerState.openHeight,
+          openHeight,
+          draggedHeight.get(),
+        ),
+      );
+      if (!isOpen) {
+        animate(draggedHeight, newHeight, {
+          type: "spring",
+          duration: 0.5,
+          bounce: 0.2,
+        });
+        setIsOpen(true);
+      }
+    } else {
+      animate(draggedHeight, minHeight, {
+        type: "spring",
+        duration: 0.5,
+        bounce: 0.2,
+      });
+      if (isOpen) {
+        setIsOpen(false);
+      }
+    }
   }
 
-  const escFunction = useCallback(
-    (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        handleFooterChange(false);
-      }
-    },
+  const escFunction = useCallback((event: KeyboardEvent) => {
+    if (event.key === "Escape") {
+      handleFooterChange(false);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
-  );
+  }, []);
 
   useEffect(() => {
     if (isOpen) {
@@ -108,13 +122,13 @@ export default function Footer() {
   );
   const [direction, setDirection] = useState<number>(0);
   function handleTabButtonClick(clickedOn: FooterTabName) {
-    const direction = getDirection(clickedOn, selectedTab);
+    const direction = isOpen ? getDirection(clickedOn, selectedTab) : 0;
     setSelectedTab(clickedOn);
     setDirection(direction);
+    handleFooterChange(true);
     useSlimeStore.setState(
       produce((state) => {
         state.footerState.selectedTab = clickedOn;
-        state.footerState.footerIsOpen = true;
       }),
     );
   }
@@ -124,37 +138,21 @@ export default function Footer() {
    */
   const controls = useDragControls();
   const dragOffset = useMotionValue(0);
-  const dragDelta = useMotionValue(0);
-  const draggedHeight = useMotionValue(storeFooterHeight);
+  const draggedHeight = useMotionValue(storeFooterOpenHeight);
 
-  // const lastDragRef = useRef<number>(Date.now());
-  // const draggedHeightRef = useRef<number>(footerHeight);
-  // const dragDistanceRef = useRef<number>(0);
-  // const controls = useDragControls();
-  // const dragOffset = useMotionValue(0);
-  // const draggedHeight = useTransform(() => {
-  //   const current = dragOffset.get();
-  //   const previous = dragOffset.getPrevious();
-  //   const delta = current - (previous || current);
-  //   dragDistanceRef.current -= delta;
-  //   let newHeight = draggedHeightRef.current;
-  //   newHeight = getValueInFooterBounds(draggedHeightRef.current - delta);
-  //   draggedHeightRef.current = newHeight;
-  //   return newHeight;
-  // });
   const heightBasedOpacityControl = useTransform(() => {
     const { openHeight, minHeight } = getFooterBounds();
     const currentHeight = draggedHeight.get();
     const returnValue = Math.min(
       1,
-      Math.max(0, (currentHeight - minHeight) / openHeight),
+      Math.max(0, (currentHeight - minHeight) / (openHeight - minHeight)),
     );
     return returnValue;
   });
-  const bgClickThingColor = useTransform(
+  const backdropBgColor = useTransform(
     heightBasedOpacityControl,
     [0, 1],
-    ["rgba(0, 0, 0, 0.0)", "rgba(1, 0, 0, 0.9)"],
+    ["rgba(0, 0, 0, 0.0)", "rgba(0, 0, 0, 0.1)"],
   );
   const footerBgColor = useTransform(
     heightBasedOpacityControl,
@@ -170,7 +168,7 @@ export default function Footer() {
     <motion.div
       className="fixed bottom-0 left-0 h-full w-full"
       style={{
-        backgroundColor: bgClickThingColor,
+        backgroundColor: backdropBgColor,
       }}
       onClick={() => {
         if (!dragging) {
@@ -186,11 +184,27 @@ export default function Footer() {
         dragListener={false}
         onDragStart={() => setDragging(true)}
         onDrag={(_, info) => {
-          draggedHeight.set(
-            getValueInFooterBounds(draggedHeight.get() - info.delta.y),
+          const newDraggedHeight = getValueInFooterBounds(
+            draggedHeight.get() - info.delta.y,
           );
+          draggedHeight.set(newDraggedHeight);
         }}
         onDragEnd={() => {
+          const { openHeight } = getFooterBounds();
+          const currentHeight = draggedHeight.get();
+          if (currentHeight < openHeight) {
+            handleFooterChange(false);
+          } else {
+            handleFooterChange(true);
+          }
+          useSlimeStore.setState(
+            produce((state) => {
+              state.footerState.openHeight = Math.max(
+                currentHeight,
+                openHeight,
+              );
+            }),
+          );
           setDragging(false);
         }}
         style={{
@@ -242,7 +256,7 @@ export default function Footer() {
           {/* Then a container for the tab content */}
           <motion.div
             className={
-              "flex w-full grow justify-center overflow-x-hidden overflow-y-auto" +
+              "flex w-full grow justify-center overflow-hidden" +
               (isDimmedForEdit ? "" : " backdrop-blur-sm")
             }
             key="footer-tab-content-container"

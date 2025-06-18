@@ -94,29 +94,32 @@ export default function SimulationSettings() {
 
   return (
     <div className="mx-auto flex h-auto w-full max-w-sm flex-col bg-amber-200 p-1">
-      <SlimeStoreSelect
-        label="Simulation Quality"
-        selectedOptionValue={simulationSettings.quality}
-        options={simulationQualityOptions}
-        storePath={["simulationSettings", "quality"]}
-      />
+      <ControlContainer label="Quick Settings" collapsed={false}>
+        <SlimeStoreSelect
+          label="Simulation Quality"
+          displayLabel
+          selectedOptionValue={simulationSettings.quality}
+          options={simulationQualityOptions}
+          storePath={["simulationSettings", "quality"]}
+        />
+      </ControlContainer>
 
-      <ControlContainer>
+      <ControlContainer label="Simulation Controls">
         <SlimeStoreSlider
-          label="Simulation Speed"
+          label="Sim. Speed"
+          displayLabel="left"
           storePath={["simulationSettings", "speed"]}
           min={SIMULATION_CONTROLS_BOUNDS.speed!.min}
           max={SIMULATION_CONTROLS_BOUNDS.speed!.max}
           step={0.1}
         />
-      </ControlContainer>
-      <SlimeStoreToggle
-        label="Randomization Enabled"
-        storePath={["simulationSettings", "randomizationEnabled"]}
-      />
-      <ControlContainer>
+        <SlimeStoreToggle
+          label="Rand. Enabled"
+          storePath={["simulationSettings", "randomizationEnabled"]}
+        />
         <SlimeStoreSlider
-          label="Randomization Interval (s)"
+          label="Rand. Interval"
+          displayLabel="left"
           storePath={["simulationSettings", "randomizationInterval"]}
           min={SIMULATION_CONTROLS_BOUNDS.randomizationInterval!.min}
           max={SIMULATION_CONTROLS_BOUNDS.randomizationInterval!.max}

@@ -52,7 +52,7 @@ export default function SlimeStoreSlider({
         {displayLabel === "left" && (
           <label
             htmlFor={textInputId}
-            className="me-1 h-full w-16 flex-none place-content-center rounded-lg p-0.5 text-right text-xs font-medium text-gray-900 dark:text-white"
+            className="me-1 h-full w-(--footer-left-label-width) flex-none place-content-center rounded-lg p-0.5 text-right text-xs font-medium text-gray-900 dark:text-white"
           >
             {label}
           </label>

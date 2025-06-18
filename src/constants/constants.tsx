@@ -49,8 +49,8 @@ export const DEFAULT_SIMULATION_SETTINGS: SimulationSettings = {
 };
 export const SIMULATION_CONTROLS_BOUNDS: ControlsBounds<SimulationSettings> = {
   speed: { min: 0.1, max: 10 },
-
   randomizationInterval: { min: 1, max: 1200 },
+
   agentDepositRate: { min: 0.0, max: 30.0 },
   agentSensorDegrees: { min: 0.0, max: 180.0 },
   agentRotationRate: { min: 0.0, max: 10.0 },

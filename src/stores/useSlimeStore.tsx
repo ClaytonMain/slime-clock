@@ -19,7 +19,7 @@ import type {
 } from "../types/types";
 
 interface FooterState {
-  height: number;
+  openHeight: number;
   selectedTab: FooterTabName;
   footerIsOpen: boolean;
   isDimmedForEdit: boolean;
@@ -85,7 +85,7 @@ const useSlimeStore = create<SlimeStore>()(
         },
 
         footerState: {
-          height: DEFAULT_FOOTER_HEIGHT,
+          openHeight: DEFAULT_FOOTER_HEIGHT,
           selectedTab: "color-settings",
           footerIsOpen: true,
           isDimmedForEdit: false, // Dims the entire footer when editing certain settings

@@ -13,16 +13,18 @@ function getSelectedOption<T extends SelectOption<unknown>>(
 const getLabel = ({ label }: SelectOption<unknown>) => label;
 
 export default function SlimeStoreSelect<T>({
+  label,
+  displayLabel = false,
   selectedOptionValue,
   options,
   storePath,
-  label,
   onChange,
 }: {
+  label: string;
+  displayLabel?: boolean;
   selectedOptionValue: T;
   options: SelectOption<T>[];
   storePath: string[];
-  label: string;
   onChange?: (option: SelectOption<T>) => void;
 }) {
   const [selectedOption, setSelectedOption] = useState(
@@ -42,6 +44,7 @@ export default function SlimeStoreSelect<T>({
     <SingleSelectInput
       id={`${label.toLowerCase().replace(" ", "-")}-select`}
       label={label}
+      displayLabel={displayLabel}
       selectedOption={selectedOption}
       options={options}
       getLabel={getLabel}

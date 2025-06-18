@@ -1,25 +1,27 @@
 import { motion } from "motion/react";
 import * as R from "ramda";
-import { useRef } from "react";
+import { useState } from "react";
 import useSlimeStore from "../../stores/useSlimeStore";
 
 export default function SlimeStoreToggle({
   label,
+  displayLabel = "left",
   storePath,
   onClick,
 }: {
   label: string;
+  displayLabel?: boolean | "left";
   storePath: string[];
   onClick?: () => void;
 }) {
   const inputId = `${label.toLowerCase().replace(" ", "-")}-toggle-input`;
-  const valueRef = useRef(
+  const [value, setValue] = useState<boolean>(
     R.view(R.lensPath(storePath), useSlimeStore.getState()),
   );
 
   function handleOnClick() {
-    const newValue = !valueRef.current;
-    valueRef.current = newValue;
+    const newValue = !value;
+    setValue(newValue);
     if (onClick) {
       onClick();
     } else {
@@ -28,31 +30,42 @@ export default function SlimeStoreToggle({
   }
 
   return (
-    <div className="mb-1 flex flex-col rounded-lg bg-red-300 p-2">
-      <label
-        htmlFor={inputId}
-        className="mb-1 text-sm font-medium text-gray-900 dark:text-white"
-      >
-        {label}
-      </label>
-      <motion.button
-        id={inputId}
-        onClick={handleOnClick}
-        className="flex w-16 cursor-pointer rounded-full p-1"
-        animate={{
-          backgroundColor: valueRef.current ? "#3b82f6" : "#374151",
-          justifyContent: valueRef.current ? "flex-end" : "flex-start",
-        }}
-      >
-        <motion.div
-          className="h-6 w-6 rounded-full bg-white"
-          layout
-          animate={{
-            justifySelf: valueRef.current ? "flex-end" : "flex-start",
+    <>
+      {displayLabel === true && (
+        <label
+          htmlFor={inputId}
+          className="mb-1 text-sm font-medium text-gray-900 dark:text-white"
+        >
+          {label}
+        </label>
+      )}
+      <div className="flex w-full content-center rounded-lg p-0.5">
+        {displayLabel === "left" && (
+          <label
+            htmlFor={inputId}
+            className="me-1 h-full w-(--footer-left-label-width) flex-none place-content-center rounded-lg p-0.5 text-right text-xs font-medium text-gray-900 dark:text-white"
+          >
+            {label}
+          </label>
+        )}
+        <motion.button
+          id={inputId}
+          onClick={handleOnClick}
+          className="flex w-16 cursor-pointer items-center rounded-full p-1"
+          // layout
+          style={{
+            backgroundColor: value ? "#3b82f6" : "#374151",
+            justifyContent: value ? "flex-end" : "flex-start",
           }}
           transition={{ type: "spring" }}
-        />
-      </motion.button>
-    </div>
+        >
+          <motion.div
+            className="h-6 w-6 rounded-full bg-white"
+            layout
+            transition={{ type: "spring", visualDuration: 0.2, bounce: 0.2 }}
+          />
+        </motion.button>
+      </div>
+    </>
   );
 }

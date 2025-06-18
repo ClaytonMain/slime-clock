@@ -16,6 +16,7 @@ type SelectProps = Pick<SelectHTMLAttributes<HTMLSelectElement>, "name">;
 export default function SingleSelectInput<Option>({
   id,
   label,
+  displayLabel = false,
   selectedOption,
   options,
   onChange,
@@ -24,6 +25,7 @@ export default function SingleSelectInput<Option>({
 }: {
   id: string;
   label: string;
+  displayLabel?: boolean;
 } & UseSelectParams<Option> &
   UseSelectOptionsParams<Option> &
   SelectProps) {
@@ -31,13 +33,20 @@ export default function SingleSelectInput<Option>({
   const selectOptions = useSelectOptions({ options, getLabel });
 
   return (
-    <div className="mb-1 flex flex-col rounded-lg bg-red-300 p-2">
-      <label
-        htmlFor={id}
-        className="mb-1 text-sm font-medium text-gray-900 dark:text-white"
-      >
-        {label}
-      </label>
+    <>
+      {displayLabel && (
+        <label
+          htmlFor={id}
+          className="mb-1 text-sm font-medium text-gray-900 dark:text-white"
+        >
+          {label}
+        </label>
+      )}
+      {!displayLabel && (
+        <label htmlFor={id} className="sr-only">
+          {label}
+        </label>
+      )}
       <select
         id={id}
         {...props}
@@ -46,6 +55,6 @@ export default function SingleSelectInput<Option>({
       >
         {selectOptions}
       </select>
-    </div>
+    </>
   );
 }
