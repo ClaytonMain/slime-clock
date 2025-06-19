@@ -1,6 +1,7 @@
 import type {
   ClockSettings,
   ColorSettings,
+  ProceduralColorPalettePresets,
   SimulationSettings,
   SlimeColorMode,
 } from "../types/types";
@@ -70,30 +71,40 @@ export const SIMULATION_CONTROLS_BOUNDS: ControlsBounds<SimulationSettings> = {
 
 export const SLIME_COLOR_MODES: SlimeColorMode[] = ["Procedural", "Single"];
 
+export const DEFAULT_FOOTER_HEIGHT = 300;
+
+export const PROCEDURAL_COLOR_PALETTE_PRESETS: ProceduralColorPalettePresets = {
+  Rainbow: {
+    r: { yOffset: 0.5, amplitude: 0.5, frequency: 1.0, phase: 0.0 },
+    g: { yOffset: 0.5, amplitude: 0.5, frequency: 1.0, phase: 0.33 },
+    b: { yOffset: 0.5, amplitude: 0.5, frequency: 1.0, phase: 0.66 },
+  },
+  B: {
+    r: { yOffset: 0.5, amplitude: 0.5, frequency: 1.0, phase: 0.0 },
+    g: { yOffset: 0.5, amplitude: 0.5, frequency: 1.0, phase: 0.1 },
+    b: { yOffset: 0.5, amplitude: 0.5, frequency: 1.0, phase: 0.2 },
+  },
+  C: {
+    r: { yOffset: 0.5, amplitude: 0.5, frequency: 1.0, phase: 0.0 },
+    g: { yOffset: 0.2, amplitude: 0.85, frequency: 0.5, phase: 0.5 },
+    b: { yOffset: 0.5, amplitude: 0.5, frequency: 1.0, phase: 0.4 },
+  },
+  D: {
+    r: { yOffset: 0.5, amplitude: 0.5, frequency: 3.0, phase: 0.0 },
+    g: { yOffset: 0.5, amplitude: 0.5, frequency: 6.0, phase: 0.0 },
+    b: { yOffset: 0.5, amplitude: 0.5, frequency: 9.0, phase: 0.0 },
+  },
+  E: {
+    r: { yOffset: 0.5, amplitude: 0.5, frequency: 1.0, phase: 0.0 },
+    g: { yOffset: 0.8, amplitude: 0.1, frequency: 2.0, phase: 0.0 },
+    b: { yOffset: 0.2, amplitude: 0.1, frequency: 3.0, phase: 0.8 },
+  },
+};
+
 export const DEFAULT_COLOR_SETTINGS: ColorSettings = {
   backgroundColor: "#060808",
   slimeColorMode: "Procedural",
   slimeColorChangedAt: Date.now(),
-  proceduralColorPalette: {
-    r: {
-      yOffset: 0.5,
-      amplitude: 0.5,
-      frequency: 1.0,
-      phase: 0.0,
-    },
-    g: {
-      yOffset: 0.5,
-      amplitude: 0.5,
-      frequency: 1.0,
-      phase: 0.33,
-    },
-    b: {
-      yOffset: 0.5,
-      amplitude: 0.5,
-      frequency: 1.0,
-      phase: 0.66,
-    },
-  },
+  currentProceduralColorPalettePreset: "Rainbow",
+  proceduralColorPalette: PROCEDURAL_COLOR_PALETTE_PRESETS.Rainbow,
 };
-
-export const DEFAULT_FOOTER_HEIGHT = 300;

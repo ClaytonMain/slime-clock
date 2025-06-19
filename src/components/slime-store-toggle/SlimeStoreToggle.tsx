@@ -48,6 +48,11 @@ export default function SlimeStoreToggle({
             {label}
           </label>
         )}
+        {!displayLabel && (
+          <label htmlFor={inputId} className="sr-only">
+            {label}
+          </label>
+        )}
         <motion.button
           id={inputId}
           onClick={handleOnClick}

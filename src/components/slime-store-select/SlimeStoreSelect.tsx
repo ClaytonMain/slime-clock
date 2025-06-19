@@ -1,5 +1,5 @@
 import * as R from "ramda";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useSlimeStore from "../../stores/useSlimeStore";
 import type { SelectOption } from "../../types/types";
 import SingleSelectInput from "../single-select-input/SingleSelectInput";
@@ -14,17 +14,17 @@ const getLabel = ({ label }: SelectOption<unknown>) => label;
 
 export default function SlimeStoreSelect<T>({
   label,
-  displayLabel = false,
+  displayLabel = "left",
   selectedOptionValue,
   options,
   storePath,
   onChange,
 }: {
   label: string;
-  displayLabel?: boolean;
+  displayLabel?: boolean | "left";
   selectedOptionValue: T;
   options: SelectOption<T>[];
-  storePath: string[];
+  storePath?: string[];
   onChange?: (option: SelectOption<T>) => void;
 }) {
   const [selectedOption, setSelectedOption] = useState(
@@ -35,10 +35,14 @@ export default function SlimeStoreSelect<T>({
     setSelectedOption(option);
     if (onChange) {
       onChange(option);
-    } else {
+    } else if (storePath) {
       useSlimeStore.setState(R.over(R.lensPath(storePath), () => option.value));
     }
   }
+
+  useEffect(() => {
+    setSelectedOption(getSelectedOption(options, selectedOptionValue));
+  }, [selectedOptionValue, options]);
 
   return (
     <SingleSelectInput

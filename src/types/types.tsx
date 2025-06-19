@@ -60,6 +60,7 @@ export interface ColorSettings {
   backgroundColor: string;
   slimeColorMode: SlimeColorMode;
   slimeColorChangedAt: number;
+  currentProceduralColorPalettePreset: ProceduralColorPaletteName | "Custom";
   proceduralColorPalette: ProceduralColorPalette;
 }
 
@@ -111,3 +112,10 @@ export type TrailDisplayTextureResolution =
   | "1920 x 1080"
   | "2560 x 1440"
   | "3840 x 2160";
+
+export type ProceduralColorPaletteName = "Rainbow" | "B" | "C" | "D" | "E";
+
+export type ProceduralColorPalettePresets = Record<
+  ProceduralColorPaletteName,
+  ProceduralColorPalette
+>;

@@ -96,7 +96,7 @@ export default function FooterTabButton({
           id={tooltipId}
           role="tooltip"
           layout
-          className="tooltip absolute bottom-[calc(var(--spacing)_*_15)] z-10 inline-block rounded-lg bg-gray-900 px-3 py-2 text-sm font-medium text-white shadow-xs dark:bg-gray-700"
+          className="tooltip pointer-events-none absolute bottom-[calc(var(--spacing)_*_15)] z-10 inline-block rounded-lg bg-gray-900 px-3 py-2 text-sm font-medium text-white shadow-xs dark:bg-gray-700"
         >
           {displayName}
           {/* <motion.div className="tooltip-arrow" data-popper-arrow></motion.div> */}

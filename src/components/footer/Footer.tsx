@@ -217,20 +217,31 @@ export default function Footer() {
           className="fixed bottom-0 left-0 flex w-full flex-col justify-center"
           key="footer-container"
           onClick={(e) => e.stopPropagation()}
+          animate={{
+            opacity: isDimmedForEdit ? 0.1 : 1,
+            transition: isDimmedForEdit ? { duration: 0.5 } : { duration: 3.5 },
+          }}
           style={{
             height: draggedHeight,
           }}
         >
+          {/* Drag handle */}
+          <motion.div
+            className="absolute -top-[6px] z-[999999] h-[12px] w-full"
+            key="footer-drag-handle"
+            whileHover={{
+              cursor: "ns-resize",
+              backgroundColor: "#fff2",
+            }}
+            style={{ backgroundColor: "#fff0" }}
+            onPointerDown={(e) => controls.start(e)}
+          />
           {/* Then a container for the tab buttons */}
           <motion.div
             className={
               "flex w-full touch-none items-end justify-center p-2" +
               (isDimmedForEdit ? "" : " backdrop-blur-sm")
             }
-            onPointerDown={(e) => controls.start(e)}
-            animate={{
-              opacity: isDimmedForEdit ? 0.1 : 1,
-            }}
             style={{
               backgroundColor: footerBgColor,
             }}
@@ -260,14 +271,10 @@ export default function Footer() {
               (isDimmedForEdit ? "" : " backdrop-blur-sm")
             }
             key="footer-tab-content-container"
-            animate={{
-              opacity: isDimmedForEdit ? 0.1 : 1,
-            }}
             style={{
               backgroundColor: footerBgColor,
               opacity: heightBasedOpacityControl,
             }}
-            // layout
           >
             <AnimatePresence
               custom={direction}

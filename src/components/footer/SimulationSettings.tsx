@@ -97,7 +97,6 @@ export default function SimulationSettings() {
       <ControlContainer label="Quick Settings" collapsed={false}>
         <SlimeStoreSelect
           label="Simulation Quality"
-          displayLabel
           selectedOptionValue={simulationSettings.quality}
           options={simulationQualityOptions}
           storePath={["simulationSettings", "quality"]}
@@ -127,84 +126,70 @@ export default function SimulationSettings() {
         />
       </ControlContainer>
 
-      <SlimeStoreSelect
-        label="Agent Count"
-        selectedOptionValue={simulationSettings.agentCount}
-        options={agentCountOptions}
-        storePath={["simulationSettings", "agentCount"]}
-      />
-      <SlimeStoreSelect
-        label="Agent Start Type"
-        selectedOptionValue={simulationSettings.agentStartType}
-        options={agentStartTypeOptions}
-        storePath={["simulationSettings", "agentStartType"]}
-      />
-      <ControlContainer>
+      <ControlContainer label="Agent Controls">
+        <SlimeStoreSelect
+          label="Count"
+          selectedOptionValue={simulationSettings.agentCount}
+          options={agentCountOptions}
+          storePath={["simulationSettings", "agentCount"]}
+        />
+        <SlimeStoreSelect
+          label="Start Type"
+          selectedOptionValue={simulationSettings.agentStartType}
+          options={agentStartTypeOptions}
+          storePath={["simulationSettings", "agentStartType"]}
+        />
         <SlimeStoreSlider
-          label="Agent Deposit Rate"
+          label="Deposit Rate"
           storePath={["simulationSettings", "agentDepositRate"]}
           min={SIMULATION_CONTROLS_BOUNDS.agentDepositRate!.min}
           max={SIMULATION_CONTROLS_BOUNDS.agentDepositRate!.max}
           step={0.1}
         />
-      </ControlContainer>
-      <ControlContainer>
         <SlimeStoreSlider
-          label="Agent Sensor Degrees"
+          label="Sensor Degrees"
           storePath={["simulationSettings", "agentSensorDegrees"]}
           min={SIMULATION_CONTROLS_BOUNDS.agentSensorDegrees!.min}
           max={SIMULATION_CONTROLS_BOUNDS.agentSensorDegrees!.max}
           step={1}
         />
-      </ControlContainer>
-      <ControlContainer>
         <SlimeStoreSlider
-          label="Agent Rotation Rate"
+          label="Rotation Rate"
           storePath={["simulationSettings", "agentRotationRate"]}
           min={SIMULATION_CONTROLS_BOUNDS.agentRotationRate!.min}
           max={SIMULATION_CONTROLS_BOUNDS.agentRotationRate!.max}
           step={0.1}
         />
-      </ControlContainer>
-      <ControlContainer>
         <SlimeStoreSlider
-          label="Agent Sensor Offset"
+          label="Sensor Offset"
           storePath={["simulationSettings", "agentSensorOffset"]}
           min={SIMULATION_CONTROLS_BOUNDS.agentSensorOffset!.min}
           max={SIMULATION_CONTROLS_BOUNDS.agentSensorOffset!.max}
           step={0.1}
         />
-      </ControlContainer>
-      <ControlContainer>
         <SlimeStoreSlider
-          label="Agent Sensor Width"
+          label="Sensor Width"
           storePath={["simulationSettings", "agentSensorWidth"]}
           min={SIMULATION_CONTROLS_BOUNDS.agentSensorWidth!.min}
           max={SIMULATION_CONTROLS_BOUNDS.agentSensorWidth!.max}
           step={0.1}
         />
-      </ControlContainer>
-      <ControlContainer>
         <SlimeStoreSlider
-          label="Agent Step Size"
+          label="Step Size"
           storePath={["simulationSettings", "agentStepSize"]}
           min={SIMULATION_CONTROLS_BOUNDS.agentStepSize!.min}
           max={SIMULATION_CONTROLS_BOUNDS.agentStepSize!.max}
           step={0.1}
         />
-      </ControlContainer>
-      <ControlContainer>
         <SlimeStoreSlider
-          label="Agent Crowd Avoidance"
+          label="Crowd Avoidance"
           storePath={["simulationSettings", "agentCrowdAvoidance"]}
           min={SIMULATION_CONTROLS_BOUNDS.agentCrowdAvoidance!.min}
           max={SIMULATION_CONTROLS_BOUNDS.agentCrowdAvoidance!.max}
           step={0.01}
         />
-      </ControlContainer>
-      <ControlContainer>
         <SlimeStoreSlider
-          label="Agent Wander Strength"
+          label="Wander Strength"
           storePath={["simulationSettings", "agentWanderStrength"]}
           min={SIMULATION_CONTROLS_BOUNDS.agentWanderStrength!.min}
           max={SIMULATION_CONTROLS_BOUNDS.agentWanderStrength!.max}
@@ -212,60 +197,50 @@ export default function SimulationSettings() {
         />
       </ControlContainer>
 
-      <SlimeStoreSelect
-        label="Trail Display Texture Resolution"
-        selectedOptionValue={simulationSettings.trailDisplayTextureResolution}
-        options={trailDisplayTextureResolutionOptions}
-        storePath={["simulationSettings", "trailDisplayTextureResolution"]}
-      />
-      <ControlContainer>
+      <ControlContainer label="Trail Controls">
+        <SlimeStoreSelect
+          label="Display Texture Resolution"
+          selectedOptionValue={simulationSettings.trailDisplayTextureResolution}
+          options={trailDisplayTextureResolutionOptions}
+          storePath={["simulationSettings", "trailDisplayTextureResolution"]}
+        />
         <SlimeStoreSlider
-          label="Trail Decay Rate"
+          label="Decay Rate"
           storePath={["simulationSettings", "trailDecayRate"]}
           min={SIMULATION_CONTROLS_BOUNDS.trailDecayRate!.min}
           max={SIMULATION_CONTROLS_BOUNDS.trailDecayRate!.max}
           step={0.01}
         />
-      </ControlContainer>
-      <ControlContainer>
         <SlimeStoreSlider
-          label="Trail Diffuse Rate"
+          label="Diffuse Rate"
           storePath={["simulationSettings", "trailDiffuseRate"]}
           min={SIMULATION_CONTROLS_BOUNDS.trailDiffuseRate!.min}
           max={SIMULATION_CONTROLS_BOUNDS.trailDiffuseRate!.max}
           step={0.1}
         />
-      </ControlContainer>
-      <ControlContainer>
         <SlimeStoreSlider
-          label="Trail Text Decay Rate"
+          label="Text Decay Rate"
           storePath={["simulationSettings", "trailTextDecayRate"]}
           min={SIMULATION_CONTROLS_BOUNDS.trailTextDecayRate!.min}
           max={SIMULATION_CONTROLS_BOUNDS.trailTextDecayRate!.max}
           step={0.01}
         />
-      </ControlContainer>
-      <ControlContainer>
         <SlimeStoreSlider
-          label="Trail Text Diffuse Rate"
+          label="Text Diffuse Rate"
           storePath={["simulationSettings", "trailTextDiffuseRate"]}
           min={SIMULATION_CONTROLS_BOUNDS.trailTextDiffuseRate!.min}
           max={SIMULATION_CONTROLS_BOUNDS.trailTextDiffuseRate!.max}
           step={0.1}
         />
-      </ControlContainer>
-      <ControlContainer>
         <SlimeStoreSlider
-          label="Trail Negative Space Decay Rate"
+          label="Negative Space Decay Rate"
           storePath={["simulationSettings", "trailNegativeSpaceDecayRate"]}
           min={SIMULATION_CONTROLS_BOUNDS.trailNegativeSpaceDecayRate!.min}
           max={SIMULATION_CONTROLS_BOUNDS.trailNegativeSpaceDecayRate!.max}
           step={0.01}
         />
-      </ControlContainer>
-      <ControlContainer>
         <SlimeStoreSlider
-          label="Trail Negative Space Diffuse Rate"
+          label="Negative Space Diffuse Rate"
           storePath={["simulationSettings", "trailNegativeSpaceDiffuseRate"]}
           min={SIMULATION_CONTROLS_BOUNDS.trailNegativeSpaceDiffuseRate!.min}
           max={SIMULATION_CONTROLS_BOUNDS.trailNegativeSpaceDiffuseRate!.max}

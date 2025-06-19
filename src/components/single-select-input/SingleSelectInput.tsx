@@ -16,7 +16,7 @@ type SelectProps = Pick<SelectHTMLAttributes<HTMLSelectElement>, "name">;
 export default function SingleSelectInput<Option>({
   id,
   label,
-  displayLabel = false,
+  displayLabel = "left",
   selectedOption,
   options,
   onChange,
@@ -25,7 +25,7 @@ export default function SingleSelectInput<Option>({
 }: {
   id: string;
   label: string;
-  displayLabel?: boolean;
+  displayLabel?: boolean | "left";
 } & UseSelectParams<Option> &
   UseSelectOptionsParams<Option> &
   SelectProps) {
@@ -34,7 +34,7 @@ export default function SingleSelectInput<Option>({
 
   return (
     <>
-      {displayLabel && (
+      {displayLabel == true && (
         <label
           htmlFor={id}
           className="mb-1 text-sm font-medium text-gray-900 dark:text-white"
@@ -42,19 +42,29 @@ export default function SingleSelectInput<Option>({
           {label}
         </label>
       )}
-      {!displayLabel && (
-        <label htmlFor={id} className="sr-only">
-          {label}
-        </label>
-      )}
-      <select
-        id={id}
-        {...props}
-        {...selectProps}
-        className="w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-      >
-        {selectOptions}
-      </select>
+      <div className="flex w-full items-center rounded-lg p-0.5">
+        {displayLabel === "left" && (
+          <label
+            htmlFor={id}
+            className="me-1 h-full w-(--footer-left-label-width) flex-none rounded-lg p-0.5 text-right text-xs font-medium text-gray-900 dark:text-white"
+          >
+            {label}
+          </label>
+        )}
+        {!displayLabel && (
+          <label htmlFor={id} className="sr-only">
+            {label}
+          </label>
+        )}
+        <select
+          id={id}
+          {...props}
+          {...selectProps}
+          className="w-full rounded-lg border border-gray-300 bg-gray-50 px-2.5 py-1.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+        >
+          {selectOptions}
+        </select>
+      </div>
     </>
   );
 }

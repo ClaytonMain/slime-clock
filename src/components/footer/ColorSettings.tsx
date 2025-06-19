@@ -4,6 +4,7 @@ import useSlimeStore from "../../stores/useSlimeStore";
 import SlimeStoreColorPicker from "../slime-store-color-picker/SlimeStoreColorPicker";
 import SlimeStoreSlider from "../slime-store-slider/SlimeStoreSlider";
 import ControlContainer from "./ControlContainer";
+import ProceduralColorPalettePresetSelect from "./ProceduralColorPalettePresetSelect";
 
 export default function ColorSettings() {
   // const colorSettings = useSlimeStore((state) => state.colorSettings);
@@ -43,11 +44,13 @@ export default function ColorSettings() {
           storePath={["colorSettings", "backgroundColor"]}
         />
       </ControlContainer>
-      <ControlContainer label="Procedural Color Palette" collapsible>
-        <ControlContainer label="Presets" collapsible>
-          asdf
-        </ControlContainer>
-        <ControlContainer label="Red" collapsible>
+      <ControlContainer
+        label="Procedural Color Palette"
+        collapsible
+        collapsed={false}
+      >
+        <ProceduralColorPalettePresetSelect />
+        <ControlContainer label="Red" collapsible collapsed={false}>
           <SlimeStoreSlider
             label="Y-Offset"
             storePath={[
@@ -62,7 +65,6 @@ export default function ColorSettings() {
             min={-4}
             max={5}
             step={0.01}
-            displayLabel={"left"}
           />
           <SlimeStoreSlider
             label="Amplitude"
@@ -78,7 +80,6 @@ export default function ColorSettings() {
             min={0}
             max={1}
             step={0.01}
-            displayLabel={"left"}
           />
           <SlimeStoreSlider
             label="Frequency"
@@ -94,7 +95,6 @@ export default function ColorSettings() {
             min={0}
             max={10}
             step={0.01}
-            displayLabel={"left"}
           />
           <SlimeStoreSlider
             label="Phase"
@@ -110,10 +110,9 @@ export default function ColorSettings() {
             min={Math.round(-Math.PI * 100) / 100}
             max={Math.round(Math.PI * 100) / 100}
             step={0.01}
-            displayLabel={"left"}
           />
         </ControlContainer>
-        <ControlContainer label="Green" collapsible>
+        <ControlContainer label="Green" collapsible collapsed={false}>
           <SlimeStoreSlider
             label="Y-Offset"
             storePath={[
@@ -128,7 +127,6 @@ export default function ColorSettings() {
             min={-4}
             max={5}
             step={0.01}
-            displayLabel={"left"}
           />
           <SlimeStoreSlider
             label="Amplitude"
@@ -144,7 +142,6 @@ export default function ColorSettings() {
             min={0}
             max={1}
             step={0.01}
-            displayLabel={"left"}
           />
           <SlimeStoreSlider
             label="Frequency"
@@ -160,7 +157,6 @@ export default function ColorSettings() {
             min={0}
             max={10}
             step={0.01}
-            displayLabel={"left"}
           />
           <SlimeStoreSlider
             label="Phase"
@@ -176,10 +172,9 @@ export default function ColorSettings() {
             min={Math.round(-Math.PI * 100) / 100}
             max={Math.round(Math.PI * 100) / 100}
             step={0.01}
-            displayLabel={"left"}
           />
         </ControlContainer>
-        <ControlContainer label="Blue" collapsible>
+        <ControlContainer label="Blue" collapsible collapsed={false}>
           <SlimeStoreSlider
             label="Y-Offset"
             storePath={[
@@ -194,7 +189,6 @@ export default function ColorSettings() {
             min={-4}
             max={5}
             step={0.01}
-            displayLabel={"left"}
           />
           <SlimeStoreSlider
             label="Amplitude"
@@ -210,7 +204,6 @@ export default function ColorSettings() {
             min={0}
             max={1}
             step={0.01}
-            displayLabel={"left"}
           />
           <SlimeStoreSlider
             label="Frequency"
@@ -226,7 +219,6 @@ export default function ColorSettings() {
             min={0}
             max={10}
             step={0.01}
-            displayLabel={"left"}
           />
           <SlimeStoreSlider
             label="Phase"
@@ -242,7 +234,6 @@ export default function ColorSettings() {
             min={Math.round(-Math.PI * 100) / 100}
             max={Math.round(Math.PI * 100) / 100}
             step={0.01}
-            displayLabel={"left"}
           />
         </ControlContainer>
       </ControlContainer>

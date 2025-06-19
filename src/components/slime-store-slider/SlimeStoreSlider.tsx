@@ -1,5 +1,5 @@
 import * as R from "ramda";
-import { useState, type ChangeEvent } from "react";
+import { useEffect, useState, type ChangeEvent } from "react";
 import useSlimeStore from "../../stores/useSlimeStore";
 
 export default function SlimeStoreSlider({
@@ -10,7 +10,8 @@ export default function SlimeStoreSlider({
   step = 1,
   labels = [],
   onChange,
-  displayLabel = true,
+  displayLabel = "left",
+  listen = true,
 }: {
   label: string;
   storePath: string[];
@@ -20,6 +21,7 @@ export default function SlimeStoreSlider({
   labels?: string[];
   onChange?: (value: number) => void;
   displayLabel?: boolean | "left";
+  listen?: boolean;
 }) {
   const textInputId = `${label.toLowerCase().replace(" ", "-")}-text-input`;
   const rangeInputId = `${label.toLowerCase().replace(" ", "-")}-range-input`;
@@ -38,6 +40,22 @@ export default function SlimeStoreSlider({
     }
   }
 
+  useEffect(() => {
+    if (!listen) return;
+    const unsub = useSlimeStore.subscribe(
+      (state) => R.view(R.lensPath(storePath), state),
+      (newValue) => {
+        if (newValue !== value) {
+          setValue(newValue);
+        }
+      },
+    );
+    return () => {
+      unsub();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <>
       {displayLabel === true && (
@@ -48,11 +66,11 @@ export default function SlimeStoreSlider({
           {label}
         </label>
       )}
-      <div className="flex w-full content-center rounded-lg p-0.5">
+      <div className="flex w-full items-center rounded-lg p-0.5">
         {displayLabel === "left" && (
           <label
             htmlFor={textInputId}
-            className="me-1 h-full w-(--footer-left-label-width) flex-none place-content-center rounded-lg p-0.5 text-right text-xs font-medium text-gray-900 dark:text-white"
+            className="me-1 h-full w-(--footer-left-label-width) flex-none rounded-lg p-0.5 text-right text-xs font-medium text-gray-900 dark:text-white"
           >
             {label}
           </label>
@@ -65,12 +83,12 @@ export default function SlimeStoreSlider({
           min={min}
           max={max}
           step={step}
-          className="w-20 flex-initial rounded-lg border border-gray-300 bg-gray-50 px-2.5 py-1.5 text-xs text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+          className="w-20 flex-initial rounded-lg border border-gray-300 bg-gray-50 px-2.5 py-1.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
         />
         <label htmlFor={rangeInputId} className="sr-only">
           {`${label} Slider`}
         </label>
-        <div className="ml-2 h-full w-44 flex-auto flex-col place-content-center">
+        <div className="ml-2 h-full w-44 flex-auto flex-col">
           <input
             id={rangeInputId}
             type="range"

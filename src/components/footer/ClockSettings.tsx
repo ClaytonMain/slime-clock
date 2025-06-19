@@ -36,26 +36,25 @@ export default function ClockSettings() {
 
   return (
     <div className="mx-auto flex h-auto w-full max-w-sm flex-col bg-amber-200 p-1">
-      <SlimeStoreSelect
-        selectedOptionValue={clockSettings.style}
-        options={clockStyleOptions}
-        storePath={["clockSettings", "style"]}
-        label="Clock Style"
-      />
-      <SlimeStoreSelect
-        selectedOptionValue={clockSettings.format}
-        options={clockFormatOptions}
-        storePath={["clockSettings", "format"]}
-        label="Clock Format"
-      />
-      <ControlContainer>
+      <ControlContainer label="Clock Settings" collapsed={false}>
+        <SlimeStoreSelect
+          selectedOptionValue={clockSettings.style}
+          options={clockStyleOptions}
+          storePath={["clockSettings", "style"]}
+          label="Clock Style"
+        />
+        <SlimeStoreSelect
+          selectedOptionValue={clockSettings.format}
+          options={clockFormatOptions}
+          storePath={["clockSettings", "format"]}
+          label="Clock Format"
+        />
         <SlimeStoreSlider
           label="Clock Size"
           storePath={["clockSettings", "size"]}
           min={CLOCK_CONTROLS_BOUNDS.size!.min}
           max={CLOCK_CONTROLS_BOUNDS.size!.max}
           step={1}
-          // labels={["Small", "Medium", "Large"]}
         />
       </ControlContainer>
     </div>
