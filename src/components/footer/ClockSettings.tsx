@@ -1,3 +1,4 @@
+import { motion } from "motion/react";
 import { CLOCK_CONTROLS_BOUNDS } from "../../constants/constants";
 import useSlimeStore from "../../stores/useSlimeStore";
 import type { ClockFormatValue, ClockStyleValue } from "../../types/types";
@@ -35,7 +36,7 @@ export default function ClockSettings() {
   const clockSettings = useSlimeStore((state) => state.clockSettings);
 
   return (
-    <div className="mx-auto flex h-auto w-full max-w-sm flex-col bg-amber-200 p-1">
+    <motion.div className="mx-auto flex h-auto w-full max-w-sm flex-col bg-amber-200 p-1">
       <ControlContainer label="Clock Settings" collapsed={false}>
         <SlimeStoreSelect
           selectedOptionValue={clockSettings.style}
@@ -57,6 +58,6 @@ export default function ClockSettings() {
           step={1}
         />
       </ControlContainer>
-    </div>
+    </motion.div>
   );
 }

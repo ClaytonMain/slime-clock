@@ -11,6 +11,7 @@ import {
 import { useCallback, useEffect, useState } from "react";
 import useSlimeStore from "../../stores/useSlimeStore";
 import type { FooterTabName } from "../../types/types";
+import Tooltip from "../tooltip/Tooltip";
 import FooterTabButton from "./FooterTabButton";
 import FooterTabContent from "./FooterTabContent";
 
@@ -122,7 +123,7 @@ export default function Footer() {
   );
   const [direction, setDirection] = useState<number>(0);
   function handleTabButtonClick(clickedOn: FooterTabName) {
-    const direction = isOpen ? getDirection(clickedOn, selectedTab) : 0;
+    const direction = getDirection(clickedOn, selectedTab);
     setSelectedTab(clickedOn);
     setDirection(direction);
     handleFooterChange(true);
@@ -176,6 +177,7 @@ export default function Footer() {
         }
       }}
     >
+      <Tooltip />
       <motion.div
         className="pointer-events-none absolute bottom-1/2 -left-1/2 -z-[999999] h-8 w-8"
         id="there-has-got-to-be-a-better-way-to-do-this"
@@ -219,7 +221,7 @@ export default function Footer() {
           onClick={(e) => e.stopPropagation()}
           animate={{
             opacity: isDimmedForEdit ? 0.1 : 1,
-            transition: isDimmedForEdit ? { duration: 0.5 } : { duration: 3.5 },
+            transition: isDimmedForEdit ? { duration: 0.5 } : { duration: 1.5 },
           }}
           style={{
             height: draggedHeight,
@@ -274,6 +276,9 @@ export default function Footer() {
             style={{
               backgroundColor: footerBgColor,
               opacity: heightBasedOpacityControl,
+            }}
+            transition={{
+              when: "beforeChildren",
             }}
           >
             <AnimatePresence

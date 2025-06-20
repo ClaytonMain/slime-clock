@@ -1,4 +1,5 @@
 import { produce } from "immer";
+import { motion } from "motion/react";
 import { useEffect } from "react";
 import useSlimeStore from "../../stores/useSlimeStore";
 import SlimeStoreColorPicker from "../slime-store-color-picker/SlimeStoreColorPicker";
@@ -33,12 +34,12 @@ export default function ColorSettings() {
           state.footerState.isDimmedForEdit = false;
         }),
       );
-    }, 1000);
+    }, 2000);
     return () => clearTimeout(timeoutId);
   }, [slimeColorChangedAt]);
 
   return (
-    <div className="mx-auto flex h-auto w-full max-w-sm flex-col bg-amber-200 p-1">
+    <motion.div className="mx-auto flex h-auto w-full max-w-sm flex-col bg-amber-200 p-1">
       <ControlContainer label="Background Color" collapsible>
         <SlimeStoreColorPicker
           storePath={["colorSettings", "backgroundColor"]}
@@ -237,6 +238,6 @@ export default function ColorSettings() {
           />
         </ControlContainer>
       </ControlContainer>
-    </div>
+    </motion.div>
   );
 }

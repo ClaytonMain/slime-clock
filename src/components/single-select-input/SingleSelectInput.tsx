@@ -3,6 +3,7 @@
 // https://codesandbox.io/p/sandbox/generic-native-select-xw7pjg
 
 import type { SelectHTMLAttributes } from "react";
+import ControlLabel from "../control-label/ControlLabel";
 import { useSelect, type UseSelectParams } from "./useSelect";
 import {
   useSelectOptions,
@@ -21,11 +22,13 @@ export default function SingleSelectInput<Option>({
   options,
   onChange,
   getLabel,
+  tooltipText,
   ...props
 }: {
   id: string;
   label: string;
   displayLabel?: boolean | "left";
+  tooltipText?: string;
 } & UseSelectParams<Option> &
   UseSelectOptionsParams<Option> &
   SelectProps) {
@@ -44,12 +47,12 @@ export default function SingleSelectInput<Option>({
       )}
       <div className="flex w-full items-center rounded-lg p-0.5">
         {displayLabel === "left" && (
-          <label
+          <ControlLabel
+            labelText={label}
             htmlFor={id}
-            className="me-1 h-full w-(--footer-left-label-width) flex-none rounded-lg p-0.5 text-right text-xs font-medium text-gray-900 dark:text-white"
-          >
-            {label}
-          </label>
+            displayVariant="left"
+            tooltipText={tooltipText}
+          />
         )}
         {!displayLabel && (
           <label htmlFor={id} className="sr-only">

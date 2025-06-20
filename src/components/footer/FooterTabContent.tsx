@@ -32,6 +32,7 @@ const FooterTabContent = forwardRef(function FooterTabContent(
       exit={{
         opacity: 0,
         x: direction * -100,
+        transition: { duration: 0.1 },
       }}
       style={{
         scrollbarGutter: "stable",
@@ -40,13 +41,13 @@ const FooterTabContent = forwardRef(function FooterTabContent(
       }}
       transition={{
         x: { type: "spring", stiffness: 200, damping: 15 },
-        opacity: { duration: 0.2 },
+        opacity: { duration: 0.5 },
       }}
     >
       <>
         {selectedTab === "clock-settings" && <ClockSettings />}
-        {selectedTab === "color-settings" && <ColorSettings />}
         {selectedTab === "simulation-settings" && <SimulationSettings />}
+        {selectedTab === "color-settings" && <ColorSettings />}
       </>
     </motion.div>
   );

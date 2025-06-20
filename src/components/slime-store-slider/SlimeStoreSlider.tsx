@@ -1,6 +1,7 @@
 import * as R from "ramda";
 import { useEffect, useState, type ChangeEvent } from "react";
 import useSlimeStore from "../../stores/useSlimeStore";
+import ControlLabel from "../control-label/ControlLabel";
 
 export default function SlimeStoreSlider({
   label,
@@ -12,6 +13,7 @@ export default function SlimeStoreSlider({
   onChange,
   displayLabel = "left",
   listen = true,
+  tooltipText,
 }: {
   label: string;
   storePath: string[];
@@ -22,6 +24,7 @@ export default function SlimeStoreSlider({
   onChange?: (value: number) => void;
   displayLabel?: boolean | "left";
   listen?: boolean;
+  tooltipText?: string;
 }) {
   const textInputId = `${label.toLowerCase().replace(" ", "-")}-text-input`;
   const rangeInputId = `${label.toLowerCase().replace(" ", "-")}-range-input`;
@@ -68,12 +71,12 @@ export default function SlimeStoreSlider({
       )}
       <div className="flex w-full items-center rounded-lg p-0.5">
         {displayLabel === "left" && (
-          <label
+          <ControlLabel
+            labelText={label}
             htmlFor={textInputId}
-            className="me-1 h-full w-(--footer-left-label-width) flex-none rounded-lg p-0.5 text-right text-xs font-medium text-gray-900 dark:text-white"
-          >
-            {label}
-          </label>
+            displayVariant="left"
+            tooltipText={tooltipText}
+          />
         )}
         <input
           id={textInputId}

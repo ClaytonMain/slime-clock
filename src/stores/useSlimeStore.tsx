@@ -38,6 +38,7 @@ interface SlimeStore {
   footerStateSetSelectedTab: (tabName: FooterTabName) => void;
   footerStateSetFooterIsOpen: (isOpen: boolean) => void;
   footerStateOpenFooterOntoTab: (tabName: FooterTabName) => void;
+  tooltipText: string | null;
 }
 
 const persistOmit: (keyof SlimeStore)[] = ["footerState", "colorSettings"];
@@ -110,6 +111,8 @@ const useSlimeStore = create<SlimeStore>()(
               state.footerState.footerIsOpen = true;
             }),
           ),
+
+        tooltipText: null,
       }),
       {
         name: "slime-storage",

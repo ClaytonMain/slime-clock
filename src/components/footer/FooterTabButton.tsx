@@ -1,5 +1,6 @@
+import { produce } from "immer";
 import { motion } from "motion/react";
-import { useState, type SVGProps } from "react";
+import { useEffect, useState, type SVGProps } from "react";
 import useSlimeStore from "../../stores/useSlimeStore";
 import type { FooterTabName } from "../../types/types";
 
@@ -59,6 +60,25 @@ export default function FooterTabButton({
   const footerIsOpen = useSlimeStore((state) => state.footerState.footerIsOpen);
   const tooltipId = `tooltip-${tabName}`;
 
+  useEffect(() => {
+    if (hovered) {
+      useSlimeStore.setState(
+        produce((state) => {
+          state.tooltipText = displayName;
+        }),
+      );
+    } else {
+      const tooltipText = useSlimeStore.getState().tooltipText;
+      if (tooltipText === displayName) {
+        useSlimeStore.setState(
+          produce((state) => {
+            state.tooltipText = null;
+          }),
+        );
+      }
+    }
+  }, [hovered, displayName]);
+
   return (
     <>
       <motion.div
@@ -89,7 +109,7 @@ export default function FooterTabButton({
         >
           {getSvgPaths(tabName)}
         </motion.svg>
-        <motion.div
+        {/* <motion.div
           animate={{
             opacity: hovered ? 0.9 : 0,
           }}
@@ -99,8 +119,7 @@ export default function FooterTabButton({
           className="tooltip pointer-events-none absolute bottom-[calc(var(--spacing)_*_15)] z-10 inline-block rounded-lg bg-gray-900 px-3 py-2 text-sm font-medium text-white shadow-xs dark:bg-gray-700"
         >
           {displayName}
-          {/* <motion.div className="tooltip-arrow" data-popper-arrow></motion.div> */}
-        </motion.div>
+        </motion.div> */}
       </motion.div>
     </>
   );

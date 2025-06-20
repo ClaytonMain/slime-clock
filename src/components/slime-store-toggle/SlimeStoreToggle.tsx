@@ -2,17 +2,20 @@ import { motion } from "motion/react";
 import * as R from "ramda";
 import { useState } from "react";
 import useSlimeStore from "../../stores/useSlimeStore";
+import ControlLabel from "../control-label/ControlLabel";
 
 export default function SlimeStoreToggle({
   label,
   displayLabel = "left",
   storePath,
   onClick,
+  tooltipText,
 }: {
   label: string;
   displayLabel?: boolean | "left";
   storePath: string[];
   onClick?: () => void;
+  tooltipText?: string;
 }) {
   const inputId = `${label.toLowerCase().replace(" ", "-")}-toggle-input`;
   const [value, setValue] = useState<boolean>(
@@ -41,12 +44,12 @@ export default function SlimeStoreToggle({
       )}
       <div className="flex w-full content-center rounded-lg p-0.5">
         {displayLabel === "left" && (
-          <label
+          <ControlLabel
+            labelText={label}
             htmlFor={inputId}
-            className="me-1 h-full w-(--footer-left-label-width) flex-none place-content-center rounded-lg p-0.5 text-right text-xs font-medium text-gray-900 dark:text-white"
-          >
-            {label}
-          </label>
+            displayVariant="left"
+            tooltipText={tooltipText}
+          />
         )}
         {!displayLabel && (
           <label htmlFor={inputId} className="sr-only">
@@ -56,7 +59,7 @@ export default function SlimeStoreToggle({
         <motion.button
           id={inputId}
           onClick={handleOnClick}
-          className="flex w-16 cursor-pointer items-center rounded-full p-1"
+          className="my-auto flex h-8 w-16 cursor-pointer items-center rounded-full p-1"
           // layout
           style={{
             backgroundColor: value ? "#3b82f6" : "#374151",

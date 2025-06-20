@@ -63,8 +63,6 @@ export default function ProceduralColorPalettePresetSelect() {
         }
       }
       if (currentMatchesPreset) {
-        console.log(`Current palette matches preset: ${key}`);
-        console.log("Setting presetText to the matching preset key");
         useSlimeStore.setState(
           produce((state) => {
             state.colorSettings.currentProceduralColorPalettePreset =

@@ -19,6 +19,7 @@ export default function SlimeStoreSelect<T>({
   options,
   storePath,
   onChange,
+  tooltipText,
 }: {
   label: string;
   displayLabel?: boolean | "left";
@@ -26,6 +27,7 @@ export default function SlimeStoreSelect<T>({
   options: SelectOption<T>[];
   storePath?: string[];
   onChange?: (option: SelectOption<T>) => void;
+  tooltipText?: string;
 }) {
   const [selectedOption, setSelectedOption] = useState(
     getSelectedOption(options, selectedOptionValue),
@@ -53,6 +55,7 @@ export default function SlimeStoreSelect<T>({
       options={options}
       getLabel={getLabel}
       onChange={handleOnChange}
+      tooltipText={tooltipText}
     />
   );
 }

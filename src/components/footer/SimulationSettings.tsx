@@ -1,3 +1,4 @@
+import { motion } from "motion/react";
 import { SIMULATION_CONTROLS_BOUNDS } from "../../constants/constants";
 import useSlimeStore from "../../stores/useSlimeStore";
 import type {
@@ -93,7 +94,7 @@ export default function SimulationSettings() {
   const simulationSettings = useSlimeStore((state) => state.simulationSettings);
 
   return (
-    <div className="mx-auto flex h-auto w-full max-w-sm flex-col bg-amber-200 p-1">
+    <motion.div className="mx-auto flex h-auto w-full max-w-sm flex-col bg-amber-200 p-1">
       <ControlContainer label="Quick Settings" collapsed={false}>
         <SlimeStoreSelect
           label="Simulation Quality"
@@ -115,6 +116,8 @@ export default function SimulationSettings() {
         <SlimeStoreToggle
           label="Rand. Enabled"
           storePath={["simulationSettings", "randomizationEnabled"]}
+          displayLabel="left"
+          tooltipText="Enable or disable randomization of agent properties."
         />
         <SlimeStoreSlider
           label="Rand. Interval"
@@ -247,6 +250,6 @@ export default function SimulationSettings() {
           step={0.1}
         />
       </ControlContainer>
-    </div>
+    </motion.div>
   );
 }
