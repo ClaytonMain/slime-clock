@@ -39,7 +39,7 @@ export default function ColorSettings() {
   }, [slimeColorChangedAt]);
 
   return (
-    <motion.div className="mx-auto flex h-auto w-full max-w-sm flex-col bg-amber-200 p-1">
+    <motion.div className="bg-control-container-background-a/50 mx-auto flex h-auto w-full max-w-sm flex-col p-1">
       <ControlContainer label="Background Color" collapsible>
         <SlimeStoreColorPicker
           storePath={["colorSettings", "backgroundColor"]}
@@ -66,6 +66,7 @@ export default function ColorSettings() {
             min={-4}
             max={5}
             step={0.01}
+            baseId="procedural-color-palette-r-y-offset"
           />
           <SlimeStoreSlider
             label="Amplitude"
@@ -81,6 +82,7 @@ export default function ColorSettings() {
             min={0}
             max={1}
             step={0.01}
+            baseId="procedural-color-palette-r-amplitude"
           />
           <SlimeStoreSlider
             label="Frequency"
@@ -96,6 +98,7 @@ export default function ColorSettings() {
             min={0}
             max={10}
             step={0.01}
+            baseId="procedural-color-palette-r-frequency"
           />
           <SlimeStoreSlider
             label="Phase"
@@ -111,6 +114,7 @@ export default function ColorSettings() {
             min={Math.round(-Math.PI * 100) / 100}
             max={Math.round(Math.PI * 100) / 100}
             step={0.01}
+            baseId="procedural-color-palette-r-phase"
           />
         </ControlContainer>
         <ControlContainer label="Green" collapsible collapsed={false}>
@@ -128,6 +132,7 @@ export default function ColorSettings() {
             min={-4}
             max={5}
             step={0.01}
+            baseId="procedural-color-palette-g-y-offset"
           />
           <SlimeStoreSlider
             label="Amplitude"
@@ -143,6 +148,7 @@ export default function ColorSettings() {
             min={0}
             max={1}
             step={0.01}
+            baseId="procedural-color-palette-g-amplitude"
           />
           <SlimeStoreSlider
             label="Frequency"
@@ -158,6 +164,7 @@ export default function ColorSettings() {
             min={0}
             max={10}
             step={0.01}
+            baseId="procedural-color-palette-g-frequency"
           />
           <SlimeStoreSlider
             label="Phase"
@@ -173,6 +180,7 @@ export default function ColorSettings() {
             min={Math.round(-Math.PI * 100) / 100}
             max={Math.round(Math.PI * 100) / 100}
             step={0.01}
+            baseId="procedural-color-palette-g-phase"
           />
         </ControlContainer>
         <ControlContainer label="Blue" collapsible collapsed={false}>
@@ -190,6 +198,7 @@ export default function ColorSettings() {
             min={-4}
             max={5}
             step={0.01}
+            baseId="procedural-color-palette-b-y-offset"
           />
           <SlimeStoreSlider
             label="Amplitude"
@@ -205,6 +214,7 @@ export default function ColorSettings() {
             min={0}
             max={1}
             step={0.01}
+            baseId="procedural-color-palette-b-amplitude"
           />
           <SlimeStoreSlider
             label="Frequency"
@@ -220,6 +230,7 @@ export default function ColorSettings() {
             min={0}
             max={10}
             step={0.01}
+            baseId="procedural-color-palette-b-frequency"
           />
           <SlimeStoreSlider
             label="Phase"
@@ -235,6 +246,7 @@ export default function ColorSettings() {
             min={Math.round(-Math.PI * 100) / 100}
             max={Math.round(Math.PI * 100) / 100}
             step={0.01}
+            baseId="procedural-color-palette-b-phase"
           />
         </ControlContainer>
       </ControlContainer>

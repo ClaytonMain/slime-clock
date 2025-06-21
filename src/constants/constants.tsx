@@ -108,3 +108,38 @@ export const DEFAULT_COLOR_SETTINGS: ColorSettings = {
   currentProceduralColorPalettePreset: "Rainbow",
   proceduralColorPalette: PROCEDURAL_COLOR_PALETTE_PRESETS.Rainbow,
 };
+
+const flickerPoints = Array.from({ length: 11 }, (_, i) => i / 10);
+const flickerInOpacity = flickerPoints.map((point) =>
+  Math.min(
+    1,
+    Math.max(
+      0,
+      Math.sin(6 * Math.PI * point) * Math.sin(Math.PI * point) * 0.2 + point,
+    ),
+  ),
+);
+
+export const ANIMATION_CONFIGS = {
+  flickerIn: {
+    opacity: flickerInOpacity,
+    transition: {
+      duration: 0.3,
+      times: flickerPoints,
+    },
+  },
+  flickerOut: {
+    opacity: flickerInOpacity.slice().reverse(),
+    transition: {
+      duration: 0.3,
+      times: flickerPoints,
+    },
+  },
+};
+
+export const ANIMATABLE_COLORS = {
+  footer: {
+    backgroundOpen: "#060709aa",
+    backgroundClosed: "#06070900",
+  },
+};

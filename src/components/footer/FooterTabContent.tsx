@@ -37,11 +37,11 @@ const FooterTabContent = forwardRef(function FooterTabContent(
       style={{
         scrollbarGutter: "stable",
         scrollbarWidth: "thin",
-        scrollbarColor: "var(--color-red-200) #f8717111",
+        scrollbarColor: "#f1f3f344 #1b1e1eaa",
       }}
       transition={{
         x: { type: "spring", stiffness: 200, damping: 15 },
-        opacity: { duration: 0.5 },
+        opacity: { duration: 0.3 },
       }}
     >
       <>

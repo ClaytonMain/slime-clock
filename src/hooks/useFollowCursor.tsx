@@ -1,7 +1,7 @@
 import { frame, useMotionValue, useSpring } from "motion/react";
 import { useEffect, type RefObject } from "react";
 
-const springConfig = { damping: 10, stiffness: 150, restDelta: 0.001 };
+const springConfig = { damping: 15, stiffness: 200, restDelta: 0.001 };
 
 export function useFollowCursor(ref: RefObject<HTMLElement>) {
   const xPoint = useMotionValue(0);

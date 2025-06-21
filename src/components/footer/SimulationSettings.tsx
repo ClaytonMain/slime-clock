@@ -94,7 +94,7 @@ export default function SimulationSettings() {
   const simulationSettings = useSlimeStore((state) => state.simulationSettings);
 
   return (
-    <motion.div className="mx-auto flex h-auto w-full max-w-sm flex-col bg-amber-200 p-1">
+    <motion.div className="bg-control-container-background-a/50 mx-auto flex h-auto w-full max-w-sm flex-col p-1">
       <ControlContainer label="Quick Settings" collapsed={false}>
         <SlimeStoreSelect
           label="Simulation Quality"

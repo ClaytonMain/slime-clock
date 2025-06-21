@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import useSlimeStore from "../../stores/useSlimeStore";
 
 const DISPLAY_VARIANT_CLASS_NAMES = {
-  left: "me-1 h-full w-(--footer-left-label-width) flex-none place-content-center rounded-lg p-0.5 text-right text-xs font-medium text-gray-900 dark:text-white",
+  left: "me-1 h-full w-(--footer-left-label-width) flex-none place-content-center rounded-xs p-0.5 text-right text-xs font-medium text-label-text-a",
 };
 
 export default function ControlLabel({
@@ -27,6 +27,7 @@ export default function ControlLabel({
     if ((hoverState !== undefined && hoverState) || hovered) {
       useSlimeStore.setState(
         produce((state) => {
+          state.tooltipActive = true;
           state.tooltipText = tooltipText;
         }),
       );
@@ -35,7 +36,7 @@ export default function ControlLabel({
       if (currentTooltipText === tooltipText) {
         useSlimeStore.setState(
           produce((state) => {
-            state.tooltipText = null;
+            state.tooltipActive = false;
           }),
         );
       }
@@ -44,7 +45,7 @@ export default function ControlLabel({
 
   return (
     <motion.div
-      className="me-1 flex flex-col items-center rounded-md p-0.5"
+      className="me-1 flex flex-col items-center rounded-xs p-0.5"
       onMouseEnter={() => (hoverState === undefined ? setHovered(true) : null)}
       onMouseLeave={() => (hoverState === undefined ? setHovered(false) : null)}
       whileHover={{

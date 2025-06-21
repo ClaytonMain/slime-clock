@@ -15,7 +15,7 @@ export default function ControlContainer({
   const [isOpen, setIsOpen] = useState(!collapsed);
 
   return (
-    <div className="bg-footer/80 mb-1 flex flex-col rounded-lg p-2">
+    <div className="bg-control-container-background-b/80 text-control-container-text mb-1 flex flex-col rounded-sm p-2">
       {(collapsible || label) && (
         <motion.div
           className="flex items-center p-1"
@@ -46,7 +46,7 @@ export default function ControlContainer({
           )}
           {label && (
             <motion.label
-              className="text-sm font-medium text-gray-900 dark:text-white"
+              className="text-light-text text-sm font-medium"
               whileHover={{
                 cursor: collapsible ? "pointer" : "default",
               }}

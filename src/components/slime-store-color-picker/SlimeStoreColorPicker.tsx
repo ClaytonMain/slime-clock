@@ -24,17 +24,18 @@ export default function SlimeStoreColorPicker({
   }
 
   return (
-    <div className="flex h-44 w-full flex-col items-center">
+    <div className="flex h-32 w-full flex-col items-center">
       <HexColorPicker
         color={color}
         onChange={handleOnChange}
         className="max-w-44"
+        style={{ borderRadius: "var(--radius-sm)" }}
       />
       <HexColorInput
         color={color}
         onChange={handleOnChange}
         prefixed
-        className="mt-1 w-44 rounded-lg border border-gray-300 bg-gray-50 p-1.5 text-center text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+        className="text-input-text-c border-input-border-b bg-input-background-a mt-1 w-44 rounded-sm border p-1.5 text-center text-sm focus:border-blue-500 focus:ring-blue-500"
       />
     </div>
   );

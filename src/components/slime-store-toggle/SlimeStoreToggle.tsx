@@ -37,12 +37,12 @@ export default function SlimeStoreToggle({
       {displayLabel === true && (
         <label
           htmlFor={inputId}
-          className="mb-1 text-sm font-medium text-gray-900 dark:text-white"
+          className="text-label-text-a mb-1 text-sm font-medium"
         >
           {label}
         </label>
       )}
-      <div className="flex w-full content-center rounded-lg p-0.5">
+      <div className="flex w-full content-center rounded-sm p-0.5">
         {displayLabel === "left" && (
           <ControlLabel
             labelText={label}
@@ -62,7 +62,9 @@ export default function SlimeStoreToggle({
           className="my-auto flex h-8 w-16 cursor-pointer items-center rounded-full p-1"
           // layout
           style={{
-            backgroundColor: value ? "#3b82f6" : "#374151",
+            backgroundColor: value
+              ? "var(--color-input-accent-b)"
+              : "var(--color-input-background-a)",
             justifyContent: value ? "flex-end" : "flex-start",
           }}
           transition={{ type: "spring" }}

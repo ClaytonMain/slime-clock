@@ -14,6 +14,7 @@ export default function SlimeStoreSlider({
   displayLabel = "left",
   listen = true,
   tooltipText,
+  baseId,
 }: {
   label: string;
   storePath: string[];
@@ -25,9 +26,10 @@ export default function SlimeStoreSlider({
   displayLabel?: boolean | "left";
   listen?: boolean;
   tooltipText?: string;
+  baseId?: string; // Optional base ID for the input elements
 }) {
-  const textInputId = `${label.toLowerCase().replace(" ", "-")}-text-input`;
-  const rangeInputId = `${label.toLowerCase().replace(" ", "-")}-range-input`;
+  const textInputId = `${baseId ?? label.toLowerCase().replace(" ", "-")}-text-input`;
+  const rangeInputId = `${baseId ?? label.toLowerCase().replace(" ", "-")}-range-input`;
   const [value, setValue] = useState(
     R.view(R.lensPath(storePath), useSlimeStore.getState()) as number,
   );
@@ -48,9 +50,7 @@ export default function SlimeStoreSlider({
     const unsub = useSlimeStore.subscribe(
       (state) => R.view(R.lensPath(storePath), state),
       (newValue) => {
-        if (newValue !== value) {
-          setValue(newValue);
-        }
+        setValue(newValue);
       },
     );
     return () => {
@@ -64,12 +64,12 @@ export default function SlimeStoreSlider({
       {displayLabel === true && (
         <label
           htmlFor={textInputId}
-          className="mb-1 text-sm font-medium text-gray-900 dark:text-white"
+          className="text-label-text-a mb-1 text-sm font-medium"
         >
           {label}
         </label>
       )}
-      <div className="flex w-full items-center rounded-lg p-0.5">
+      <div className="flex w-full items-center rounded-sm p-0.5">
         {displayLabel === "left" && (
           <ControlLabel
             labelText={label}
@@ -86,7 +86,7 @@ export default function SlimeStoreSlider({
           min={min}
           max={max}
           step={step}
-          className="w-20 flex-initial rounded-lg border border-gray-300 bg-gray-50 px-2.5 py-1.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+          className="text-input-text-c border-input-border-b bg-input-background-a w-20 flex-initial rounded-sm border px-2.5 py-1.5 text-sm focus:border-blue-500 focus:ring-blue-500"
         />
         <label htmlFor={rangeInputId} className="sr-only">
           {`${label} Slider`}
@@ -100,16 +100,13 @@ export default function SlimeStoreSlider({
             min={min}
             max={max}
             step={step}
-            className="h-1.5 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 dark:bg-gray-700"
+            className="bg-input-background-a h-1 w-full cursor-pointer appearance-none rounded-sm"
           />
           {labels.length > 0 && (
             <div className="flex w-full justify-between">
               {labels.map((label, index) => {
                 return (
-                  <span
-                    key={index}
-                    className={`text-sm text-gray-500 dark:text-gray-400`}
-                  >
+                  <span key={index} className={`text-label-text-a text-sm`}>
                     {label}
                   </span>
                 );

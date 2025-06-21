@@ -40,7 +40,7 @@ export default function SingleSelectInput<Option>({
       {displayLabel == true && (
         <label
           htmlFor={id}
-          className="mb-1 text-sm font-medium text-gray-900 dark:text-white"
+          className="text-label-text-a mb-1 text-sm font-medium"
         >
           {label}
         </label>
@@ -63,7 +63,7 @@ export default function SingleSelectInput<Option>({
           id={id}
           {...props}
           {...selectProps}
-          className="w-full rounded-lg border border-gray-300 bg-gray-50 px-2.5 py-1.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+          className="text-input-text-c border-input-border-b bg-input-background-a w-full rounded-sm border px-2.5 py-1.5 text-sm focus:border-blue-500 focus:ring-blue-500"
         >
           {selectOptions}
         </select>

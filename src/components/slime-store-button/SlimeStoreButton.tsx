@@ -24,7 +24,7 @@ export default function SlimeStoreButton({
       {label && (
         <label
           htmlFor={buttonId}
-          className="mb-1 text-sm font-medium text-gray-900 dark:text-white"
+          className="mb-1 text-sm font-medium text-gray-900"
         >
           {label}
         </label>
@@ -34,7 +34,7 @@ export default function SlimeStoreButton({
           onClick={onClick}
           id={buttonId}
           type="button"
-          className="me-2 mb-2 rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 focus:outline-none dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+          className="me-2 mb-2 rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 focus:outline-none"
         >
           {buttonContents}
         </button>

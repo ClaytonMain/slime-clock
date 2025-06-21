@@ -9,6 +9,7 @@ import {
   useTransform,
 } from "motion/react";
 import { useCallback, useEffect, useState } from "react";
+import { ANIMATABLE_COLORS } from "../../constants/constants";
 import useSlimeStore from "../../stores/useSlimeStore";
 import type { FooterTabName } from "../../types/types";
 import Tooltip from "../tooltip/Tooltip";
@@ -42,9 +43,13 @@ function getFooterBounds(): {
   maxHeight: number;
   openHeight: number;
 } {
-  const minHeight = 64;
-  const maxHeight = window.innerHeight - HEADER_HEIGHT;
-  const openHeight = 3.0 * minHeight;
+  const minHeight = HEADER_HEIGHT;
+  const maxHeight = window.innerHeight;
+  const openHeight = Math.min(
+    window.innerHeight / 2,
+    5.0 * minHeight,
+    maxHeight,
+  );
   return { minHeight, maxHeight, openHeight };
 }
 
@@ -158,7 +163,10 @@ export default function Footer() {
   const footerBgColor = useTransform(
     heightBasedOpacityControl,
     [0, 1],
-    ["#00000000", "#f87171dd"],
+    [
+      ANIMATABLE_COLORS.footer.backgroundClosed,
+      ANIMATABLE_COLORS.footer.backgroundOpen,
+    ],
   );
 
   // useMotionValueEvent(dragDelta, "change", (value) => {
@@ -216,15 +224,16 @@ export default function Footer() {
       <LayoutGroup>
         <motion.div
           layout
-          className="fixed bottom-0 left-0 flex w-full flex-col justify-center"
+          className="fixed bottom-0 left-0 flex w-full flex-col justify-center bg-sky-950"
           key="footer-container"
           onClick={(e) => e.stopPropagation()}
           animate={{
-            opacity: isDimmedForEdit ? 0.1 : 1,
-            transition: isDimmedForEdit ? { duration: 0.5 } : { duration: 1.5 },
+            opacity: isDimmedForEdit ? 0.01 : 1,
+            transition: isDimmedForEdit ? { duration: 0.5 } : { duration: 1.0 },
           }}
           style={{
             height: draggedHeight,
+            backgroundColor: footerBgColor,
           }}
         >
           {/* Drag handle */}
@@ -245,8 +254,11 @@ export default function Footer() {
               (isDimmedForEdit ? "" : " backdrop-blur-sm")
             }
             style={{
-              backgroundColor: footerBgColor,
+              opacity: 1,
             }}
+            // style={{
+            //   backgroundColor: footerBgColor,
+            // }}
             key="footer-tab-buttons-container"
           >
             <FooterTabButton
@@ -273,10 +285,10 @@ export default function Footer() {
               (isDimmedForEdit ? "" : " backdrop-blur-sm")
             }
             key="footer-tab-content-container"
-            style={{
-              backgroundColor: footerBgColor,
-              opacity: heightBasedOpacityControl,
-            }}
+            // style={{
+            //   backgroundColor: footerBgColor,
+            //   opacity: heightBasedOpacityControl,
+            // }}
             transition={{
               when: "beforeChildren",
             }}

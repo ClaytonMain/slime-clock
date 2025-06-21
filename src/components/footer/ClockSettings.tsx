@@ -36,7 +36,7 @@ export default function ClockSettings() {
   const clockSettings = useSlimeStore((state) => state.clockSettings);
 
   return (
-    <motion.div className="mx-auto flex h-auto w-full max-w-sm flex-col bg-amber-200 p-1">
+    <motion.div className="bg-control-container-background-a/50 mx-auto flex h-auto w-full max-w-sm flex-col p-1">
       <ControlContainer label="Clock Settings" collapsed={false}>
         <SlimeStoreSelect
           selectedOptionValue={clockSettings.style}

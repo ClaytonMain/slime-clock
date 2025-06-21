@@ -64,6 +64,7 @@ export default function FooterTabButton({
     if (hovered) {
       useSlimeStore.setState(
         produce((state) => {
+          state.tooltipActive = true;
           state.tooltipText = displayName;
         }),
       );
@@ -72,7 +73,7 @@ export default function FooterTabButton({
       if (tooltipText === displayName) {
         useSlimeStore.setState(
           produce((state) => {
-            state.tooltipText = null;
+            state.tooltipActive = false;
           }),
         );
       }
@@ -92,13 +93,14 @@ export default function FooterTabButton({
         data-tooltip-target={tooltipId}
       >
         <motion.svg
-          className="mx-1 h-12 w-12 rounded-full px-2 py-2 text-gray-800 dark:text-white"
+          className="text-tooltip-text mx-1 h-12 w-12 rounded-full px-2 py-2"
           animate={{
-            backgroundColor: hovered
-              ? "var(--color-red-300)"
-              : selectedTab === tabName && footerIsOpen
-                ? "var(--color-red-500)"
-                : "var(--color-red-400)",
+            backgroundColor:
+              selectedTab === tabName && footerIsOpen
+                ? "var(--color-tab-button-hover-background)"
+                : hovered
+                  ? "var(--color-tab-button-hover-background)"
+                  : "var(--color-tab-button-background)",
           }}
           aria-hidden="true"
           xmlns="http://www.w3.org/2000/svg"
@@ -109,17 +111,6 @@ export default function FooterTabButton({
         >
           {getSvgPaths(tabName)}
         </motion.svg>
-        {/* <motion.div
-          animate={{
-            opacity: hovered ? 0.9 : 0,
-          }}
-          id={tooltipId}
-          role="tooltip"
-          layout
-          className="tooltip pointer-events-none absolute bottom-[calc(var(--spacing)_*_15)] z-10 inline-block rounded-lg bg-gray-900 px-3 py-2 text-sm font-medium text-white shadow-xs dark:bg-gray-700"
-        >
-          {displayName}
-        </motion.div> */}
       </motion.div>
     </>
   );

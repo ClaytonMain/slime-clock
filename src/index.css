@@ -5,7 +5,36 @@
 
 @theme {
   --footer-left-label-width: 5rem;
-  --color-footer: #fca5a5;
+  --color-footer: #0f101755;
+
+  --color-footer-background: #060709;
+
+  --color-tab-button-background: #181a1b;
+  --color-tab-button-text: #b7e2fd;
+  --color-tab-button-hover-background: #023b5a;
+
+  --color-control-container-background-a: #181a1b;
+  --color-control-container-background-b: #125d88;
+  --color-control-container-text: #ebf7fe;
+
+  --color-label-text-a: #ebf7fe;
+
+  --color-tooltip-background: #131516;
+  --color-tooltip-border: #0b3447;
+  --color-tooltip-text: #b7e2fd;
+
+  --color-input-background-a: #1b1d1e;
+  --color-input-background-b: #0e4a6d;
+  --color-input-text-a: #d6d3cd;
+  --color-input-text-b: #b7e2fd;
+  --color-input-text-c: #ebf7fe;
+  --color-input-border-a: #0b3447;
+  --color-input-border-b: #0e4a6d;
+  --color-input-accent-a: #135b7c;
+  --color-input-accent-b: #1c81b0;
+  --color-input-accent-c: #2ba5de;
+  --color-input-accent-d: #72c3e9;
+  --color-input-accent-e: #1c8;
 }
 
 html,
