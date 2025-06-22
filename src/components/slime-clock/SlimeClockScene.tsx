@@ -1,6 +1,6 @@
 import { Canvas } from "@react-three/fiber";
 import { Suspense, useEffect, useRef } from "react";
-import useSlimeStore from "../stores/useSlimeStore";
+import useSlimeStore from "../../stores/useSlimeStore";
 import SlimeClock from "./SlimeClock";
 
 export default function SlimeClockScene() {

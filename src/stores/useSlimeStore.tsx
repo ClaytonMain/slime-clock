@@ -28,11 +28,8 @@ interface FooterState {
 
 interface SlimeStore {
   clockSettings: ClockSettings;
-  setClockSettings: (settings: Partial<ClockSettings>) => void;
   simulationSettings: SimulationSettings;
-  setSimulationSettings: (settings: Partial<SimulationSettings>) => void;
   colorSettings: ColorSettings;
-  setColorSettings: (settings: Partial<ColorSettings>) => void;
   resetSettings: () => void;
   footerState: FooterState;
   footerStateSetSelectedTab: (tabName: FooterTabName) => void;
@@ -49,34 +46,10 @@ const useSlimeStore = create<SlimeStore>()(
     persist(
       (set) => ({
         clockSettings: DEFAULT_CLOCK_SETTINGS,
-        setClockSettings: (newSettings) => {
-          set((state) => ({
-            clockSettings: {
-              ...state.clockSettings,
-              ...newSettings,
-            },
-          }));
-        },
 
         simulationSettings: DEFAULT_SIMULATION_SETTINGS,
-        setSimulationSettings: (newSettings) => {
-          set((state) => ({
-            simulationSettings: {
-              ...state.simulationSettings,
-              ...newSettings,
-            },
-          }));
-        },
 
         colorSettings: DEFAULT_COLOR_SETTINGS,
-        setColorSettings: (newSettings) => {
-          set((state) => ({
-            colorSettings: {
-              ...state.colorSettings,
-              ...newSettings,
-            },
-          }));
-        },
 
         resetSettings: () => {
           set({
@@ -87,9 +60,10 @@ const useSlimeStore = create<SlimeStore>()(
         },
 
         footerState: {
-          openHeight: DEFAULT_FOOTER_HEIGHT,
+          // TODO: Make this dynamic based on window size
+          openHeight: DEFAULT_FOOTER_HEIGHT * 2,
           selectedTab: "color-settings",
-          footerIsOpen: true,
+          footerIsOpen: false,
           isDimmedForEdit: false, // Dims the entire footer when editing certain settings
           tabButtonVisibility: "show",
         },

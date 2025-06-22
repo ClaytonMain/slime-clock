@@ -21,7 +21,11 @@ export interface SimulationSettings {
   randomizationEnabled: boolean;
   randomizationInterval: number;
 
+  boundaryBehavior: 0 | 1; // 0: Wrap, 1: Bounce
+
   agentCount: AgentCount;
+  gpuTextureWidth: number;
+  gpuTextureHeight: number;
   agentStartType: AgentStartType;
   agentDepositRate: number;
   agentSensorDegrees: number;
@@ -33,6 +37,8 @@ export interface SimulationSettings {
   agentWanderStrength: number;
 
   trailDisplayTextureResolution: TrailDisplayTextureResolution;
+  displayTextureWidth: number;
+  displayTextureHeight: number;
   trailDecayRate: number;
   trailDiffuseRate: number;
   trailTextDecayRate: number;

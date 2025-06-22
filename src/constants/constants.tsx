@@ -29,7 +29,11 @@ export const DEFAULT_SIMULATION_SETTINGS: SimulationSettings = {
   randomizationEnabled: false,
   randomizationInterval: 120,
 
+  boundaryBehavior: 0, // 0: Wrap, 1: Bounce
+
   agentCount: "147456",
+  gpuTextureWidth: Math.floor(Math.sqrt(147456)),
+  gpuTextureHeight: Math.floor(Math.sqrt(147456)),
   agentStartType: "Random",
   agentDepositRate: 6.1,
   agentSensorDegrees: 24,
@@ -41,6 +45,8 @@ export const DEFAULT_SIMULATION_SETTINGS: SimulationSettings = {
   agentWanderStrength: 4.1,
 
   trailDisplayTextureResolution: "1280 x 720",
+  displayTextureWidth: 1280,
+  displayTextureHeight: 720,
   trailDecayRate: 0.39,
   trailDiffuseRate: 11.7,
   trailTextDecayRate: 0.39,

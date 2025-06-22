@@ -1,9 +1,11 @@
+import { produce } from "immer";
 import { motion } from "motion/react";
 import { SIMULATION_CONTROLS_BOUNDS } from "../../constants/constants";
 import useSlimeStore from "../../stores/useSlimeStore";
 import type {
   AgentCount,
   AgentStartType,
+  SelectOption,
   SimulationQuality,
   TrailDisplayTextureResolution,
 } from "../../types/types";
@@ -93,6 +95,30 @@ const trailDisplayTextureResolutionOptions: TrailDisplayTextureResolutionOption[
 export default function SimulationSettings() {
   const simulationSettings = useSlimeStore((state) => state.simulationSettings);
 
+  function handleAgentCountChange(option: SelectOption<AgentCount>) {
+    useSlimeStore.setState(
+      produce((state) => {
+        const gpuTextureSize = Math.floor(Math.sqrt(Number(option.value)));
+        state.simulationSettings.agentCount = option.value;
+        state.simulationSettings.gpuTextureWidth = gpuTextureSize;
+        state.simulationSettings.gpuTextureHeight = gpuTextureSize;
+      }),
+    );
+  }
+
+  function handleDisplayTextureResolutionChange(
+    option: SelectOption<TrailDisplayTextureResolution>,
+  ) {
+    useSlimeStore.setState(
+      produce((state) => {
+        const [width, height] = option.value.split(" x ").map(Number);
+        state.simulationSettings.trailDisplayTextureResolution = option.value;
+        state.simulationSettings.displayTextureWidth = width;
+        state.simulationSettings.displayTextureHeight = height;
+      }),
+    );
+  }
+
   return (
     <motion.div className="bg-control-container-background-a/50 mx-auto flex h-auto w-full max-w-sm flex-col p-1">
       <ControlContainer label="Quick Settings" collapsed={false}>
@@ -135,6 +161,7 @@ export default function SimulationSettings() {
           selectedOptionValue={simulationSettings.agentCount}
           options={agentCountOptions}
           storePath={["simulationSettings", "agentCount"]}
+          onChange={handleAgentCountChange}
         />
         <SlimeStoreSelect
           label="Start Type"
@@ -206,6 +233,7 @@ export default function SimulationSettings() {
           selectedOptionValue={simulationSettings.trailDisplayTextureResolution}
           options={trailDisplayTextureResolutionOptions}
           storePath={["simulationSettings", "trailDisplayTextureResolution"]}
+          onChange={handleDisplayTextureResolutionChange}
         />
         <SlimeStoreSlider
           label="Decay Rate"

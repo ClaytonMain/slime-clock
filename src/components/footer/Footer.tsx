@@ -63,9 +63,6 @@ export default function Footer() {
    * Footer open/close/edit state stuff.
    */
   const isOpen = useSlimeStore((state) => state.footerState.footerIsOpen);
-  const storeFooterOpenHeight = useSlimeStore(
-    (state) => state.footerState.openHeight,
-  );
   const setIsOpen = useSlimeStore((state) => state.footerStateSetFooterIsOpen);
   const isDimmedForEdit = useSlimeStore(
     (state) => state.footerState.isDimmedForEdit,
@@ -144,7 +141,7 @@ export default function Footer() {
    */
   const controls = useDragControls();
   const dragOffset = useMotionValue(0);
-  const draggedHeight = useMotionValue(storeFooterOpenHeight);
+  const draggedHeight = useMotionValue(getFooterBounds().minHeight);
 
   const heightBasedOpacityControl = useTransform(() => {
     const { openHeight, minHeight } = getFooterBounds();
