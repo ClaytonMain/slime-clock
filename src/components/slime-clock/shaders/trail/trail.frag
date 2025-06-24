@@ -81,7 +81,7 @@ void main() {
     // // edgeDistance = 1.0 - edgeDistance * uBorderStrength;
     // float edgeDecayRate = edgeDistance * uBorderStrength;
 
-    float negativeSpaceDecayRate = uTrailNegativeSpaceDecayRate * step(clockData.r, 0.5);
+    float negativeSpaceDecayRate = uTrailNegativeSpaceDecayRate * (1.0 - clamp(clockData.r, 0.0, 1.0));
 
     // intensity *= edgeDistance;
     intensity = max(intensity - negativeSpaceDecayRate * uDelta, 0.0);

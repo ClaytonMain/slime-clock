@@ -70,6 +70,7 @@ export function getAgentDataTexture(
   displayTextureHeight: number,
   startType: number = -1,
 ) {
+  console.log("getAgentDataTexture called with startType:", startType);
   const data = getAgentData(
     gpuTextureWidth,
     gpuTextureHeight,
@@ -148,4 +149,26 @@ export function getTrailTexture(
   );
   trailTexture.needsUpdate = true;
   return trailTexture;
+}
+
+export function getDisplayTextureResolutionVector(
+  displayTextureWidth: number,
+  displayTextureHeight: number,
+): THREE.Vector2 {
+  return new THREE.Vector2(displayTextureWidth, displayTextureHeight);
+}
+
+export function getDisplayScaleVector(
+  displayTextureWidth: number,
+  displayTextureHeight: number,
+): THREE.Vector2 {
+  const targetAspect = displayTextureWidth / displayTextureHeight;
+  const windowAspect = window.innerWidth / window.innerHeight;
+
+  // If windowAspect > targetAspect scale x, otherwise scale y
+  if (windowAspect > targetAspect) {
+    return new THREE.Vector2((targetAspect * 2) / windowAspect, 2);
+  } else {
+    return new THREE.Vector2(2, (windowAspect * 2) / targetAspect);
+  }
 }

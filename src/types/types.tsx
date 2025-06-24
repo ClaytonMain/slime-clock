@@ -26,7 +26,7 @@ export interface SimulationSettings {
   agentCount: AgentCount;
   gpuTextureWidth: number;
   gpuTextureHeight: number;
-  agentStartType: AgentStartType;
+  agentStartType: number;
   agentDepositRate: number;
   agentSensorDegrees: number;
   agentRotationRate: number;
@@ -125,3 +125,8 @@ export type ProceduralColorPalettePresets = Record<
   ProceduralColorPaletteName,
   ProceduralColorPalette
 >;
+
+export type AgentStartTypeDropdownOption = {
+  value: number;
+  label: AgentStartType;
+};

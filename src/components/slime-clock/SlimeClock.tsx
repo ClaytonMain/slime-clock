@@ -1,5 +1,6 @@
 import { Plane, useFBO } from "@react-three/drei";
 import { createPortal, extend, useFrame, useThree } from "@react-three/fiber";
+import { produce } from "immer";
 import * as R from "ramda";
 import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
@@ -7,28 +8,23 @@ import useSlimeStore from "../../stores/useSlimeStore";
 import ProceduralColorPaletteDisplay from "../procedural-color-palette-display/ProceduralColorPaletteDisplay";
 import AgentDataMaterial from "./AgentDataMaterial";
 import AgentPositionsMaterial from "./AgentPositionsMaterial";
-// @ts-expect-error leave me alone :(
 import ClockDisplay from "./ClockDisplay";
 import TrailMaterial from "./TrailMaterial";
 import displayFragmentShader from "./shaders/display/display.frag";
 import displayVertexShader from "./shaders/display/display.vert";
+import * as UTILS from "./utils/utils";
 
 extend({ AgentDataMaterial, AgentPositionsMaterial, TrailMaterial });
 
 const texturePlaneUniforms = {
-  uResolution: new THREE.Uniform(new THREE.Vector2(800, 800)),
-  uShowTexture: new THREE.Uniform(1),
+  uResolution: new THREE.Uniform(new THREE.Vector2()),
+  uShowTexture: new THREE.Uniform(0),
 };
 const slimeMoldDisplayPlaneUniforms = {
   uTrailTexture: new THREE.Uniform(new THREE.Texture()),
   uAgentPositionsTexture: new THREE.Uniform(new THREE.Texture()),
-  uDisplayTextureResolution: new THREE.Uniform(
-    new THREE.Vector2(
-      useSlimeStore.getState().simulationSettings.displayTextureWidth,
-      useSlimeStore.getState().simulationSettings.displayTextureHeight,
-    ),
-  ),
-  uDisplayScale: new THREE.Uniform(new THREE.Vector2(1, 1)),
+  uDisplayTextureResolution: new THREE.Uniform(new THREE.Vector2()),
+  uDisplayScale: new THREE.Uniform(new THREE.Vector2()),
   uTime: new THREE.Uniform(0.0),
   uDelta: new THREE.Uniform(0.0),
   uPaletteA: new THREE.Uniform(
@@ -65,10 +61,7 @@ const agentDataUniforms = {
   uAgentPositionsTexture: { value: new THREE.Texture() },
   uTrailTexture: { value: new THREE.Texture() },
   uDisplayTextureResolution: {
-    value: new THREE.Vector2(
-      useSlimeStore.getState().simulationSettings.displayTextureWidth,
-      useSlimeStore.getState().simulationSettings.displayTextureHeight,
-    ),
+    value: new THREE.Vector2(),
   },
   uSensorAngle: {
     value:
@@ -102,10 +95,7 @@ const agentDataUniforms = {
 const agentPositionsUniforms = {
   uAgentDataTexture: { value: new THREE.Texture() },
   uDisplayTextureResolution: {
-    value: new THREE.Vector2(
-      useSlimeStore.getState().simulationSettings.displayTextureWidth,
-      useSlimeStore.getState().simulationSettings.displayTextureHeight,
-    ),
+    value: new THREE.Vector2(),
   },
 };
 const trailUniforms = {
@@ -113,10 +103,7 @@ const trailUniforms = {
   uClockTexture: { value: new THREE.Texture() },
   uTrailTexture: { value: new THREE.Texture() },
   uDisplayTextureResolution: {
-    value: new THREE.Vector2(
-      useSlimeStore.getState().simulationSettings.displayTextureWidth,
-      useSlimeStore.getState().simulationSettings.displayTextureHeight,
-    ),
+    value: new THREE.Vector2(),
   },
   uDepositRate: {
     value: useSlimeStore.getState().simulationSettings.agentDepositRate,
@@ -246,8 +233,11 @@ function UniformSetter() {
 function SlimeClock() {
   const viewport = useThree((state) => state.viewport);
   const simulationSettings = useSlimeStore((state) => state.simulationSettings);
+  const initialized = useSlimeStore((state) => state.initialized);
 
   const timeSinceRandomizeRef = useRef(0);
+
+  const showGpuTextures = true;
 
   const agentDataMaterialRefA = useRef<AgentDataMaterial>(null!);
   const agentDataMaterialRefB = useRef<AgentDataMaterial>(null!);
@@ -381,35 +371,20 @@ function SlimeClock() {
   ]);
 
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      if (viewport.width && viewport.height) {
-        texturePlaneUniforms.uResolution.value.set(
-          viewport.width,
-          viewport.height,
-        );
-      }
-    }, 1000);
-    return () => clearTimeout(timeoutId);
+    if (viewport.width && viewport.height) {
+      texturePlaneUniforms.uResolution.value.set(
+        viewport.width,
+        viewport.height,
+      );
+    }
   }, [viewport]);
 
   useEffect(() => {
-    const targetAspect =
-      simulationSettings.displayTextureWidth /
-      simulationSettings.displayTextureHeight;
-    const windowAspect = window.innerWidth / window.innerHeight;
-
-    // If windowAspect > targetAspect scale x, otherwise scale y
-    if (windowAspect > targetAspect) {
-      slimeMoldDisplayPlaneUniforms.uDisplayScale.value = new THREE.Vector2(
-        (targetAspect * 2) / windowAspect,
-        2,
+    slimeMoldDisplayPlaneUniforms.uDisplayScale.value =
+      UTILS.getDisplayScaleVector(
+        simulationSettings.displayTextureWidth,
+        simulationSettings.displayTextureHeight,
       );
-    } else {
-      slimeMoldDisplayPlaneUniforms.uDisplayScale.value = new THREE.Vector2(
-        2,
-        (windowAspect * 2) / targetAspect,
-      );
-    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     window.innerWidth,
@@ -418,12 +393,126 @@ function SlimeClock() {
     simulationSettings.displayTextureHeight,
   ]);
 
+  // const agentDataTexture = useMemo(() => {
+  //   console.log("agentDataTexture useMemo called");
+  //   const agentDataTexture = getAgentDataTexture(
+  //     simulationSettings.gpuTextureWidth,
+  //     simulationSettings.gpuTextureHeight,
+  //     simulationSettings.displayTextureWidth,
+  //     simulationSettings.displayTextureHeight,
+  //     simulationSettings.agentStartType,
+  //   );
+  //   agentDataTexture.needsUpdate = true;
+  //   if (agentDataMaterialRefA.current) {
+  //     agentDataMaterialRefA.current.uniforms.uAgentDataTexture.value =
+  //       agentDataTexture;
+  //   }
+  //   if (agentDataMaterialRefB.current) {
+  //     agentDataMaterialRefB.current.uniforms.uAgentDataTexture.value =
+  //       agentDataTexture;
+  //   }
+  //   if (agentPositionsMaterialRef.current) {
+  //     agentPositionsMaterialRef.current.uniforms.uAgentDataTexture.value =
+  //       agentDataTexture;
+  //   }
+  // }, [simulationSettings]);
+
+  function initializeUniforms() {
+    const simulationSettings = useSlimeStore.getState().simulationSettings;
+
+    // Get data textures.
+    const agentDataTexture = UTILS.getAgentDataTexture(
+      simulationSettings.gpuTextureWidth,
+      simulationSettings.gpuTextureHeight,
+      simulationSettings.displayTextureWidth,
+      simulationSettings.displayTextureHeight,
+      simulationSettings.agentStartType,
+    );
+    const agentPositionsTexture = UTILS.getAgentPositionsTexture(
+      simulationSettings.displayTextureWidth,
+      simulationSettings.displayTextureHeight,
+    );
+    const trailTexture = UTILS.getTrailTexture(
+      simulationSettings.displayTextureWidth,
+      simulationSettings.displayTextureHeight,
+    );
+
+    // Get shared uniforms.
+    const displayTextureResolutionVector =
+      UTILS.getDisplayTextureResolutionVector(
+        simulationSettings.displayTextureWidth,
+        simulationSettings.displayTextureHeight,
+      );
+    const displayScaleVector = UTILS.getDisplayScaleVector(
+      simulationSettings.displayTextureWidth,
+      simulationSettings.displayTextureHeight,
+    );
+
+    // TODO: See if we need to initialize more uniforms here.
+
+    // Get uniforms updates.
+    const texturePlaneUniformsUpdates = {
+      uResolution: new THREE.Uniform(displayTextureResolutionVector),
+    };
+    const slimeMoldDisplayPlaneUniformsUpdates = {
+      uTrailTexture: new THREE.Uniform(trailTexture),
+      uAgentPositionsTexture: new THREE.Uniform(agentPositionsTexture),
+      uDisplayTextureResolution: new THREE.Uniform(
+        displayTextureResolutionVector,
+      ),
+      uDisplayScale: new THREE.Uniform(displayScaleVector),
+    };
+    const agentDataUniformsUpdates = {
+      uAgentDataTexture: new THREE.Uniform(agentDataTexture),
+      uAgentPositionsTexture: new THREE.Uniform(agentPositionsTexture),
+      uTrailTexture: new THREE.Uniform(trailTexture),
+      uDisplayTextureResolution: new THREE.Uniform(
+        displayTextureResolutionVector,
+      ),
+    };
+    const agentPositionsUniformsUpdates = {
+      uAgentDataTexture: new THREE.Uniform(agentDataTexture),
+      uDisplayTextureResolution: new THREE.Uniform(
+        displayTextureResolutionVector,
+      ),
+    };
+    const trailUniformsUpdates = {
+      uAgentPositionsTexture: new THREE.Uniform(agentPositionsTexture),
+      uTrailTexture: new THREE.Uniform(trailTexture),
+      uDisplayTextureResolution: new THREE.Uniform(
+        displayTextureResolutionVector,
+      ),
+    };
+
+    // Apply updates to uniforms.
+    Object.assign(texturePlaneUniforms, texturePlaneUniformsUpdates);
+    Object.assign(
+      slimeMoldDisplayPlaneUniforms,
+      slimeMoldDisplayPlaneUniformsUpdates,
+    );
+    Object.assign(agentDataUniforms, agentDataUniformsUpdates);
+    Object.assign(agentPositionsUniforms, agentPositionsUniformsUpdates);
+    Object.assign(trailUniforms, trailUniformsUpdates);
+  }
+
+  // Initialize everything.
+  useEffect(() => {
+    initializeUniforms();
+    useSlimeStore.setState(
+      produce((state) => {
+        state.initialized = true;
+      }),
+    );
+  }, []);
+
   const pingPongRef = useRef(true);
   const uDeltaRef = useRef(0.0);
   const uTimeRef = useRef(0.0);
 
   useFrame(({ gl }, delta) => {
     // Hoo boy, this is a doozy.
+    if (!initialized) return;
+
     timeSinceRandomizeRef.current += delta;
     if (
       simulationSettings.randomizationEnabled &&
@@ -480,8 +569,6 @@ function SlimeClock() {
     gl.setRenderTarget(clockRenderTarget);
     gl.clear();
     gl.render(clockScene, cameraB);
-
-    // console.log(clockRenderTarget.texture);
 
     if (pingPongRef.current) {
       // Update relevant trail A uniforms.
@@ -559,14 +646,7 @@ function SlimeClock() {
         <mesh>
           <agentDataMaterial
             ref={agentDataMaterialRefA}
-            args={[
-              simulationSettings.gpuTextureWidth,
-              simulationSettings.gpuTextureHeight,
-              agentDataUniforms,
-              simulationSettings.displayTextureWidth,
-              simulationSettings.displayTextureHeight,
-              simulationSettings.agentStartType,
-            ]}
+            args={[agentDataUniforms]}
           />
           <bufferGeometry>
             <bufferAttribute
@@ -591,14 +671,7 @@ function SlimeClock() {
         <mesh>
           <agentDataMaterial
             ref={agentDataMaterialRefB}
-            args={[
-              simulationSettings.gpuTextureWidth,
-              simulationSettings.gpuTextureHeight,
-              agentDataUniforms,
-              simulationSettings.displayTextureWidth,
-              simulationSettings.displayTextureHeight,
-              simulationSettings.agentStartType,
-            ]}
+            args={[agentDataUniforms]}
           />
           <bufferGeometry>
             <bufferAttribute
@@ -623,11 +696,7 @@ function SlimeClock() {
         <points>
           <agentPositionsMaterial
             ref={agentPositionsMaterialRef}
-            args={[
-              simulationSettings.displayTextureWidth,
-              simulationSettings.displayTextureHeight,
-              agentPositionsUniforms,
-            ]}
+            args={[agentPositionsUniforms]}
           />
           <bufferGeometry>
             <bufferAttribute
@@ -644,14 +713,7 @@ function SlimeClock() {
       {createPortal(<ClockDisplay />, clockScene)}
       {createPortal(
         <mesh>
-          <trailMaterial
-            ref={trailMaterialRefA}
-            args={[
-              simulationSettings.displayTextureWidth,
-              simulationSettings.displayTextureHeight,
-              trailUniforms,
-            ]}
-          />
+          <trailMaterial ref={trailMaterialRefA} args={[trailUniforms]} />
           <bufferGeometry>
             <bufferAttribute
               args={[renderPlanePositions, 3]}
@@ -673,14 +735,7 @@ function SlimeClock() {
       )}
       {createPortal(
         <mesh>
-          <trailMaterial
-            ref={trailMaterialRefB}
-            args={[
-              simulationSettings.displayTextureWidth,
-              simulationSettings.displayTextureHeight,
-              trailUniforms,
-            ]}
-          />
+          <trailMaterial ref={trailMaterialRefB} args={[trailUniforms]} />
           <bufferGeometry>
             <bufferAttribute
               args={[renderPlanePositions, 3]}
@@ -708,7 +763,7 @@ function SlimeClock() {
           fragmentShader={displayFragmentShader}
         />
       </Plane>
-      <Plane ref={agentDataDisplayPlaneRef} visible={true}>
+      <Plane ref={agentDataDisplayPlaneRef} visible={showGpuTextures}>
         <meshBasicMaterial
           attach="material"
           map={agentDataRenderTargetA.texture}
@@ -736,7 +791,7 @@ function SlimeClock() {
           }}
         />
       </Plane>
-      <Plane ref={agentPositionsDisplayPlaneRef} visible={true}>
+      <Plane ref={agentPositionsDisplayPlaneRef} visible={showGpuTextures}>
         <meshBasicMaterial
           attach="material"
           map={agentPositionsRenderTarget.texture}
@@ -764,7 +819,7 @@ function SlimeClock() {
           }}
         />
       </Plane>
-      <Plane ref={trailDisplayPlaneRef} visible={true}>
+      <Plane ref={trailDisplayPlaneRef} visible={showGpuTextures}>
         <meshBasicMaterial
           attach="material"
           map={trailRenderTargetA.texture}
@@ -792,7 +847,7 @@ function SlimeClock() {
           }}
         />
       </Plane>
-      <Plane ref={clockDisplayPlaneRef} visible={true}>
+      <Plane ref={clockDisplayPlaneRef} visible={showGpuTextures}>
         <meshBasicMaterial
           attach="material"
           map={clockRenderTarget.texture}

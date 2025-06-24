@@ -1,4 +1,5 @@
 import type {
+  AgentStartTypeDropdownOption,
   ClockSettings,
   ColorSettings,
   ProceduralColorPalettePresets,
@@ -34,7 +35,7 @@ export const DEFAULT_SIMULATION_SETTINGS: SimulationSettings = {
   agentCount: "147456",
   gpuTextureWidth: Math.floor(Math.sqrt(147456)),
   gpuTextureHeight: Math.floor(Math.sqrt(147456)),
-  agentStartType: "Random",
+  agentStartType: -1,
   agentDepositRate: 6.1,
   agentSensorDegrees: 24,
   agentRotationRate: 1.7,
@@ -149,3 +150,14 @@ export const ANIMATABLE_COLORS = {
     backgroundClosed: "#06070900",
   },
 };
+
+export const AGENT_START_TYPE_DROPDOWN_OPTIONS: AgentStartTypeDropdownOption[] =
+  [
+    { value: -1, label: "Random" },
+    { value: 0, label: "Center" },
+    { value: 1, label: "Ring" },
+    { value: 2, label: "9 Rings" },
+    { value: 3, label: "Circle" },
+    { value: 4, label: "Spiral" },
+    { value: 5, label: "Fill" },
+  ] as const;

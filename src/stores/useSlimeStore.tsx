@@ -27,6 +27,7 @@ interface FooterState {
 }
 
 interface SlimeStore {
+  initialized: boolean;
   clockSettings: ClockSettings;
   simulationSettings: SimulationSettings;
   colorSettings: ColorSettings;
@@ -39,12 +40,20 @@ interface SlimeStore {
   tooltipActive: boolean;
 }
 
-const persistOmit: (keyof SlimeStore)[] = ["footerState", "colorSettings"];
+const persistOmit: (keyof SlimeStore)[] = [
+  "footerState",
+  "colorSettings",
+  "tooltipText",
+  "tooltipActive",
+  "initialized",
+];
 
 const useSlimeStore = create<SlimeStore>()(
   subscribeWithSelector(
     persist(
       (set) => ({
+        initialized: false,
+
         clockSettings: DEFAULT_CLOCK_SETTINGS,
 
         simulationSettings: DEFAULT_SIMULATION_SETTINGS,

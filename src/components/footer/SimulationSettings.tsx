@@ -1,10 +1,12 @@
 import { produce } from "immer";
 import { motion } from "motion/react";
-import { SIMULATION_CONTROLS_BOUNDS } from "../../constants/constants";
+import {
+  AGENT_START_TYPE_DROPDOWN_OPTIONS,
+  SIMULATION_CONTROLS_BOUNDS,
+} from "../../constants/constants";
 import useSlimeStore from "../../stores/useSlimeStore";
 import type {
   AgentCount,
-  AgentStartType,
   SelectOption,
   SimulationQuality,
   TrailDisplayTextureResolution,
@@ -56,23 +58,6 @@ const agentCountOptions: AgentCountOption[] = [
   { value: "3211264", label: "3,211,264" },
   { value: "3686400", label: "3,686,400" },
   { value: "4194304", label: "4,194,304" },
-] as const;
-
-/**
- * Agent Start Type
- */
-type AgentStartTypeOption = {
-  value: AgentStartType;
-  label: string;
-};
-const agentStartTypeOptions: AgentStartTypeOption[] = [
-  { value: "Random", label: "Random" },
-  { value: "Center", label: "Center" },
-  { value: "Ring", label: "Ring" },
-  { value: "9 Rings", label: "9 Rings" },
-  { value: "Circle", label: "Circle" },
-  { value: "Spiral", label: "Spiral" },
-  { value: "Fill", label: "Fill" },
 ] as const;
 
 /**
@@ -166,7 +151,7 @@ export default function SimulationSettings() {
         <SlimeStoreSelect
           label="Start Type"
           selectedOptionValue={simulationSettings.agentStartType}
-          options={agentStartTypeOptions}
+          options={AGENT_START_TYPE_DROPDOWN_OPTIONS}
           storePath={["simulationSettings", "agentStartType"]}
         />
         <SlimeStoreSlider
