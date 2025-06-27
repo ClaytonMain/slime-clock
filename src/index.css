@@ -1,13 +1,12 @@
 @import "tailwindcss";
-@import "flowbite/src/themes/default";
-@plugin "flowbite/plugin";
-@source "../node_modules/flowbite";
+/* @import "flowbite/src/themes/default"; */
+/* @plugin "flowbite/plugin"; */
+/* @source "../node_modules/flowbite"; */
 
 @theme {
   --footer-left-label-width: 5rem;
-  --color-footer: #0f101755;
 
-  --color-footer-background: #060709;
+  --color-controls-background: #060709;
 
   --color-tab-button-background: #181a1b;
   --color-tab-button-text: #b7e2fd;

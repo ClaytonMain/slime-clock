@@ -172,3 +172,7 @@ export function getDisplayScaleVector(
     return new THREE.Vector2(2, (windowAspect * 2) / targetAspect);
   }
 }
+
+export function getWindowResolutionVector(): THREE.Vector2 {
+  return new THREE.Vector2(window.innerWidth, window.innerHeight);
+}

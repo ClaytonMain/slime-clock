@@ -5,7 +5,7 @@ import * as THREE from "three";
 import useSlimeStore from "../../stores/useSlimeStore";
 
 export default function ClockDisplay() {
-  const [displayText1, setDisplayText1] = useState<string>("00:00");
+  const [displayText1, setDisplayText1] = useState<string>("ME:OW");
   const [displayText2, setDisplayText2] = useState<string>(displayText1);
   const [fontUrl] = useState("fonts/DSEG14Modern-Regular.woff");
   // const [fontUrl] = useState("fonts/Doto.ttf");
@@ -14,6 +14,8 @@ export default function ClockDisplay() {
   const material1Ref = useRef<THREE.ShaderMaterial>(null!);
   const material2Ref = useRef<THREE.ShaderMaterial>(null!);
   const opacityRef = useRef(0.0);
+
+  // PLASMODIMETER
 
   useFrame((_, delta) => {
     const currentTime = new Date();

@@ -14,6 +14,7 @@ import {
 import type {
   ClockSettings,
   ColorSettings,
+  ControlsTabName,
   FooterTabName,
   SimulationSettings,
 } from "../types/types";
@@ -26,6 +27,10 @@ interface FooterState {
   tabButtonVisibility: "show" | "hide" | "dimmed";
 }
 
+interface ControlsState {
+  selectedTab: ControlsTabName;
+}
+
 interface SlimeStore {
   initialized: boolean;
   clockSettings: ClockSettings;
@@ -36,6 +41,7 @@ interface SlimeStore {
   footerStateSetSelectedTab: (tabName: FooterTabName) => void;
   footerStateSetFooterIsOpen: (isOpen: boolean) => void;
   footerStateOpenFooterOntoTab: (tabName: FooterTabName) => void;
+  controlsState: ControlsState;
   tooltipText: string | null;
   tooltipActive: boolean;
 }
@@ -46,6 +52,7 @@ const persistOmit: (keyof SlimeStore)[] = [
   "tooltipText",
   "tooltipActive",
   "initialized",
+  "controlsState",
 ];
 
 const useSlimeStore = create<SlimeStore>()(
@@ -95,6 +102,10 @@ const useSlimeStore = create<SlimeStore>()(
               state.footerState.footerIsOpen = true;
             }),
           ),
+
+        controlsState: {
+          selectedTab: "clock-controls",
+        },
 
         tooltipText: null,
         tooltipActive: false,

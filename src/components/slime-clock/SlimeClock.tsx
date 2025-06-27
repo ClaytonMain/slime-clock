@@ -1,5 +1,5 @@
 import { Plane, useFBO } from "@react-three/drei";
-import { createPortal, extend, useFrame, useThree } from "@react-three/fiber";
+import { createPortal, extend, useFrame } from "@react-three/fiber";
 import { produce } from "immer";
 import * as R from "ramda";
 import { useEffect, useMemo, useRef } from "react";
@@ -17,7 +17,7 @@ import * as UTILS from "./utils/utils";
 extend({ AgentDataMaterial, AgentPositionsMaterial, TrailMaterial });
 
 const texturePlaneUniforms = {
-  uResolution: new THREE.Uniform(new THREE.Vector2()),
+  uWindowResolution: new THREE.Uniform(new THREE.Vector2()),
   uShowTexture: new THREE.Uniform(0),
 };
 const slimeMoldDisplayPlaneUniforms = {
@@ -221,9 +221,37 @@ function UniformSetter() {
         trailUniforms.uDisplayTextureResolution.value = newResolution;
       },
     );
+    const unsubSlimeColorChangedAt = useSlimeStore.subscribe(
+      (state) => state.colorSettings.slimeColorChangedAt,
+      () => {
+        const palette =
+          useSlimeStore.getState().colorSettings.proceduralColorPalette;
+        slimeMoldDisplayPlaneUniforms.uPaletteA.value.set(
+          palette.r.yOffset,
+          palette.g.yOffset,
+          palette.b.yOffset,
+        );
+        slimeMoldDisplayPlaneUniforms.uPaletteB.value.set(
+          palette.r.amplitude,
+          palette.g.amplitude,
+          palette.b.amplitude,
+        );
+        slimeMoldDisplayPlaneUniforms.uPaletteC.value.set(
+          palette.r.frequency,
+          palette.g.frequency,
+          palette.b.frequency,
+        );
+        slimeMoldDisplayPlaneUniforms.uPaletteD.value.set(
+          palette.r.phase,
+          palette.g.phase,
+          palette.b.phase,
+        );
+      },
+    );
     return () => {
       unsubDisplayTextureWidth();
       unsubDisplayTextureHeight();
+      unsubSlimeColorChangedAt();
     };
   }, []);
 
@@ -231,7 +259,6 @@ function UniformSetter() {
 }
 
 function SlimeClock() {
-  const viewport = useThree((state) => state.viewport);
   const simulationSettings = useSlimeStore((state) => state.simulationSettings);
   const initialized = useSlimeStore((state) => state.initialized);
 
@@ -291,35 +318,9 @@ function SlimeClock() {
     [],
   );
 
-  const gpuTextureWidth = useSlimeStore(
-    (state) => state.simulationSettings.gpuTextureWidth,
-  );
-  const gpuTextureHeight = useSlimeStore(
-    (state) => state.simulationSettings.gpuTextureHeight,
-  );
-  const agentDataRenderTargetA = useFBO(gpuTextureWidth, gpuTextureHeight, {
-    minFilter: THREE.NearestFilter,
-    magFilter: THREE.NearestFilter,
-    format: THREE.RGBAFormat,
-    stencilBuffer: false,
-    type: THREE.FloatType,
-  });
-  const agentDataRenderTargetB = useFBO(gpuTextureWidth, gpuTextureHeight, {
-    minFilter: THREE.NearestFilter,
-    magFilter: THREE.NearestFilter,
-    format: THREE.RGBAFormat,
-    stencilBuffer: false,
-    type: THREE.FloatType,
-  });
-  const displayTextureWidth = useSlimeStore(
-    (state) => state.simulationSettings.displayTextureWidth,
-  );
-  const displayTextureHeight = useSlimeStore(
-    (state) => state.simulationSettings.displayTextureHeight,
-  );
-  const agentPositionsRenderTarget = useFBO(
-    displayTextureWidth,
-    displayTextureHeight,
+  const agentDataRenderTargetA = useFBO(
+    simulationSettings.gpuTextureWidth,
+    simulationSettings.gpuTextureHeight,
     {
       minFilter: THREE.NearestFilter,
       magFilter: THREE.NearestFilter,
@@ -328,27 +329,62 @@ function SlimeClock() {
       type: THREE.FloatType,
     },
   );
-  const clockRenderTarget = useFBO(displayTextureWidth, displayTextureHeight, {
-    minFilter: THREE.NearestFilter,
-    magFilter: THREE.NearestFilter,
-    format: THREE.RGBAFormat,
-    stencilBuffer: false,
-    type: THREE.FloatType,
-  });
-  const trailRenderTargetA = useFBO(displayTextureWidth, displayTextureHeight, {
-    minFilter: THREE.NearestFilter,
-    magFilter: THREE.NearestFilter,
-    format: THREE.RGBAFormat,
-    stencilBuffer: false,
-    type: THREE.FloatType,
-  });
-  const trailRenderTargetB = useFBO(displayTextureWidth, displayTextureHeight, {
-    minFilter: THREE.NearestFilter,
-    magFilter: THREE.NearestFilter,
-    format: THREE.RGBAFormat,
-    stencilBuffer: false,
-    type: THREE.FloatType,
-  });
+  const agentDataRenderTargetB = useFBO(
+    simulationSettings.gpuTextureWidth,
+    simulationSettings.gpuTextureHeight,
+    {
+      minFilter: THREE.NearestFilter,
+      magFilter: THREE.NearestFilter,
+      format: THREE.RGBAFormat,
+      stencilBuffer: false,
+      type: THREE.FloatType,
+    },
+  );
+
+  const agentPositionsRenderTarget = useFBO(
+    simulationSettings.displayTextureWidth,
+    simulationSettings.displayTextureHeight,
+    {
+      minFilter: THREE.NearestFilter,
+      magFilter: THREE.NearestFilter,
+      format: THREE.RGBAFormat,
+      stencilBuffer: false,
+      type: THREE.FloatType,
+    },
+  );
+  const clockRenderTarget = useFBO(
+    simulationSettings.displayTextureWidth,
+    simulationSettings.displayTextureHeight,
+    {
+      minFilter: THREE.NearestFilter,
+      magFilter: THREE.NearestFilter,
+      format: THREE.RGBAFormat,
+      stencilBuffer: false,
+      type: THREE.FloatType,
+    },
+  );
+  const trailRenderTargetA = useFBO(
+    simulationSettings.displayTextureWidth,
+    simulationSettings.displayTextureHeight,
+    {
+      minFilter: THREE.NearestFilter,
+      magFilter: THREE.NearestFilter,
+      format: THREE.RGBAFormat,
+      stencilBuffer: false,
+      type: THREE.FloatType,
+    },
+  );
+  const trailRenderTargetB = useFBO(
+    simulationSettings.displayTextureWidth,
+    simulationSettings.displayTextureHeight,
+    {
+      minFilter: THREE.NearestFilter,
+      magFilter: THREE.NearestFilter,
+      format: THREE.RGBAFormat,
+      stencilBuffer: false,
+      type: THREE.FloatType,
+    },
+  );
 
   const agentPositionsAttribute = useMemo(() => {
     const length = parseInt(simulationSettings.agentCount, 10);
@@ -370,52 +406,28 @@ function SlimeClock() {
     simulationSettings.agentCount,
   ]);
 
+  // Anything that should trigger a re-initialization of the simulation.
   useEffect(() => {
-    if (viewport.width && viewport.height) {
-      texturePlaneUniforms.uResolution.value.set(
-        viewport.width,
-        viewport.height,
-      );
-    }
-  }, [viewport]);
+    if (!initialized) return;
+    useSlimeStore.setState(
+      produce((state) => {
+        state.initialized = false;
+      }),
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [simulationSettings.agentCount]);
 
+  // Any window resize dependencies.
   useEffect(() => {
+    texturePlaneUniforms.uWindowResolution.value =
+      UTILS.getWindowResolutionVector();
     slimeMoldDisplayPlaneUniforms.uDisplayScale.value =
       UTILS.getDisplayScaleVector(
         simulationSettings.displayTextureWidth,
         simulationSettings.displayTextureHeight,
       );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    window.innerWidth,
-    window.innerHeight,
-    simulationSettings.displayTextureWidth,
-    simulationSettings.displayTextureHeight,
-  ]);
-
-  // const agentDataTexture = useMemo(() => {
-  //   console.log("agentDataTexture useMemo called");
-  //   const agentDataTexture = getAgentDataTexture(
-  //     simulationSettings.gpuTextureWidth,
-  //     simulationSettings.gpuTextureHeight,
-  //     simulationSettings.displayTextureWidth,
-  //     simulationSettings.displayTextureHeight,
-  //     simulationSettings.agentStartType,
-  //   );
-  //   agentDataTexture.needsUpdate = true;
-  //   if (agentDataMaterialRefA.current) {
-  //     agentDataMaterialRefA.current.uniforms.uAgentDataTexture.value =
-  //       agentDataTexture;
-  //   }
-  //   if (agentDataMaterialRefB.current) {
-  //     agentDataMaterialRefB.current.uniforms.uAgentDataTexture.value =
-  //       agentDataTexture;
-  //   }
-  //   if (agentPositionsMaterialRef.current) {
-  //     agentPositionsMaterialRef.current.uniforms.uAgentDataTexture.value =
-  //       agentDataTexture;
-  //   }
-  // }, [simulationSettings]);
+  }, [window.innerWidth, window.innerHeight]);
 
   function initializeUniforms() {
     const simulationSettings = useSlimeStore.getState().simulationSettings;
@@ -447,12 +459,13 @@ function SlimeClock() {
       simulationSettings.displayTextureWidth,
       simulationSettings.displayTextureHeight,
     );
+    const windowResolutionVector = UTILS.getWindowResolutionVector();
 
     // TODO: See if we need to initialize more uniforms here.
 
     // Get uniforms updates.
     const texturePlaneUniformsUpdates = {
-      uResolution: new THREE.Uniform(displayTextureResolutionVector),
+      uWindowResolution: new THREE.Uniform(windowResolutionVector),
     };
     const slimeMoldDisplayPlaneUniformsUpdates = {
       uTrailTexture: new THREE.Uniform(trailTexture),
@@ -497,13 +510,14 @@ function SlimeClock() {
 
   // Initialize everything.
   useEffect(() => {
+    if (initialized) return;
     initializeUniforms();
     useSlimeStore.setState(
       produce((state) => {
         state.initialized = true;
       }),
     );
-  }, []);
+  }, [initialized]);
 
   const pingPongRef = useRef(true);
   const uDeltaRef = useRef(0.0);
@@ -770,13 +784,14 @@ function SlimeClock() {
           depthTest={false}
           depthWrite={false}
           onBeforeCompile={(shader) => {
-            shader.uniforms.uResolution = texturePlaneUniforms.uResolution;
+            shader.uniforms.uWindowResolution =
+              texturePlaneUniforms.uWindowResolution;
             shader.uniforms.uShowTexture = texturePlaneUniforms.uShowTexture;
             shader.vertexShader = shader.vertexShader.replace(
               "#include <common>",
               /* glsl */ `
               #include <common>
-              uniform vec2 uResolution;
+              uniform vec2 uWindowResolution;
               uniform float uShowTexture;
               `,
             );
@@ -784,7 +799,7 @@ function SlimeClock() {
               "#include <project_vertex>",
               /* glsl */ `
               #include <project_vertex>
-              gl_Position = vec4(position, 1.0) * vec4(0.4 * (uResolution.y / uResolution.x), 0.4, 1.0, 1.0) + vec4(1.0 - (0.4 * (uResolution.y / uResolution.x)) * 0.5, 0.8, 0.0, 0.0);
+              gl_Position = vec4(position, 1.0) * vec4(0.4 * (uWindowResolution.y / uWindowResolution.x), 0.4, 1.0, 1.0) + vec4(1.0 - (0.4 * (uWindowResolution.y / uWindowResolution.x)) * 0.5, 0.8, 0.0, 0.0);
               gl_Position += vec4(vec3((1.0 - uShowTexture) * 9999.0), 0.0);
               `,
             );
@@ -798,13 +813,14 @@ function SlimeClock() {
           depthTest={false}
           depthWrite={false}
           onBeforeCompile={(shader) => {
-            shader.uniforms.uResolution = texturePlaneUniforms.uResolution;
+            shader.uniforms.uWindowResolution =
+              texturePlaneUniforms.uWindowResolution;
             shader.uniforms.uShowTexture = texturePlaneUniforms.uShowTexture;
             shader.vertexShader = shader.vertexShader.replace(
               "#include <common>",
               /* glsl */ `
               #include <common>
-              uniform vec2 uResolution;
+              uniform vec2 uWindowResolution;
               uniform float uShowTexture;
               `,
             );
@@ -812,7 +828,7 @@ function SlimeClock() {
               "#include <project_vertex>",
               /* glsl */ `
               #include <project_vertex>
-              gl_Position = vec4(position, 1.0) * vec4(0.4 * (uResolution.y / uResolution.x), 0.4, 1.0, 1.0) + vec4(1.0 - (0.4 * (uResolution.y / uResolution.x)) * 0.5, 0.4, 0.0, 0.0);
+              gl_Position = vec4(position, 1.0) * vec4(0.4 * (uWindowResolution.y / uWindowResolution.x), 0.4, 1.0, 1.0) + vec4(1.0 - (0.4 * (uWindowResolution.y / uWindowResolution.x)) * 0.5, 0.4, 0.0, 0.0);
               gl_Position += vec4(vec3((1.0 - uShowTexture) * 9999.0), 0.0);
               `,
             );
@@ -826,13 +842,14 @@ function SlimeClock() {
           depthTest={false}
           depthWrite={false}
           onBeforeCompile={(shader) => {
-            shader.uniforms.uResolution = texturePlaneUniforms.uResolution;
+            shader.uniforms.uWindowResolution =
+              texturePlaneUniforms.uWindowResolution;
             shader.uniforms.uShowTexture = texturePlaneUniforms.uShowTexture;
             shader.vertexShader = shader.vertexShader.replace(
               "#include <common>",
               /* glsl */ `
               #include <common>
-              uniform vec2 uResolution;
+              uniform vec2 uWindowResolution;
               uniform float uShowTexture;
               `,
             );
@@ -840,7 +857,7 @@ function SlimeClock() {
               "#include <project_vertex>",
               /* glsl */ `
               #include <project_vertex>
-              gl_Position = vec4(position, 1.0) * vec4(0.4 * (uResolution.y / uResolution.x), 0.4, 1.0, 1.0) + vec4(1.0 - (0.4 * (uResolution.y / uResolution.x)) * 0.5, 0.0, 0.0, 0.0);
+              gl_Position = vec4(position, 1.0) * vec4(0.4 * (uWindowResolution.y / uWindowResolution.x), 0.4, 1.0, 1.0) + vec4(1.0 - (0.4 * (uWindowResolution.y / uWindowResolution.x)) * 0.5, 0.0, 0.0, 0.0);
               gl_Position += vec4(vec3((1.0 - uShowTexture) * 9999.0), 0.0);
               `,
             );
@@ -854,13 +871,14 @@ function SlimeClock() {
           depthTest={false}
           depthWrite={false}
           onBeforeCompile={(shader) => {
-            shader.uniforms.uResolution = texturePlaneUniforms.uResolution;
+            shader.uniforms.uWindowResolution =
+              texturePlaneUniforms.uWindowResolution;
             shader.uniforms.uShowTexture = texturePlaneUniforms.uShowTexture;
             shader.vertexShader = shader.vertexShader.replace(
               "#include <common>",
               /* glsl */ `
               #include <common>
-              uniform vec2 uResolution;
+              uniform vec2 uWindowResolution;
               uniform float uShowTexture;
               `,
             );
@@ -868,7 +886,7 @@ function SlimeClock() {
               "#include <project_vertex>",
               /* glsl */ `
               #include <project_vertex>
-              gl_Position = vec4(position, 1.0) * vec4(0.4 * (uResolution.y / uResolution.x), 0.4, 1.0, 1.0) + vec4(1.0 - (0.4 * (uResolution.y / uResolution.x)) * 0.5, -0.4, 0.0, 0.0);
+              gl_Position = vec4(position, 1.0) * vec4(0.4 * (uWindowResolution.y / uWindowResolution.x), 0.4, 1.0, 1.0) + vec4(1.0 - (0.4 * (uWindowResolution.y / uWindowResolution.x)) * 0.5, -0.4, 0.0, 0.0);
               gl_Position += vec4(vec3((1.0 - uShowTexture) * 9999.0), 0.0);
               `,
             );

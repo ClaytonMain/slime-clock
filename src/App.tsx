@@ -1,14 +1,20 @@
-import { ThemeProvider } from "next-themes";
-import "./App.css";
-import Footer from "./components/footer/Footer";
+// import { Theme } from "@radix-ui/themes";
+import "@radix-ui/themes/styles.css";
+// import "./App.css";
+// import Footer from "./components/footer/Footer";
+import Controls from "./components/controls/Controls";
 import SlimeClockScene from "./components/slime-clock/SlimeClockScene";
 
 function App() {
   return (
-    <ThemeProvider attribute="class">
+    <>
+      {/* <Theme> */}
       <SlimeClockScene />
-      <Footer />
-    </ThemeProvider>
+      {/* <Footer /> */}
+      <Controls />
+      {/* <ThemePanel /> */}
+      {/* </Theme> */}
+    </>
   );
 }
 

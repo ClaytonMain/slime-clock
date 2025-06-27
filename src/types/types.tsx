@@ -3,6 +3,11 @@ export type FooterTabName =
   | "simulation-settings"
   | "color-settings";
 
+export type ControlsTabName =
+  | "clock-controls"
+  | "simulation-controls"
+  | "color-controls";
+
 export type SelectOption<T> = {
   value: T;
   label: string;
