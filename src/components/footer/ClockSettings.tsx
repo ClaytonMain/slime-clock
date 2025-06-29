@@ -2,8 +2,8 @@ import { motion } from "motion/react";
 import { CLOCK_CONTROLS_BOUNDS } from "../../constants/constants";
 import useSlimeStore from "../../stores/useSlimeStore";
 import type { ClockFormatValue, ClockStyleValue } from "../../types/types";
-import SlimeStoreSelect from "../slime-store-select/SlimeStoreSelect";
-import SlimeStoreSlider from "../slime-store-slider/SlimeStoreSlider";
+import SlimeStoreSelect from "../slime-store-select/old_SlimeStoreSelect";
+import SlimeStoreSlider from "../slime-store-slider/old_SlimeStoreSlider";
 import ControlContainer from "./ControlContainer";
 
 /**

@@ -2,7 +2,7 @@ import { motion } from "motion/react";
 import * as R from "ramda";
 import { useState } from "react";
 import useSlimeStore from "../../stores/useSlimeStore";
-import ControlLabel from "../control-label/ControlLabel";
+import ControlLabel from "../control-label/old_ControlLabel";
 
 export default function SlimeStoreToggle({
   label,

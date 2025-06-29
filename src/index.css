@@ -14,7 +14,11 @@
 
   --color-control-container-background-a: #181a1b;
   --color-control-container-background-b: #125d88;
+  --color-control-container-background-c: #d6eeff;
   --color-control-container-text: #ebf7fe;
+
+  --color-scrollbar-background: #0b3447;
+  --color-scrollbar-thumb: #135b7c;
 
   --color-label-text-a: #ebf7fe;
 

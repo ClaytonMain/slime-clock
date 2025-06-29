@@ -4,7 +4,7 @@ import { PROCEDURAL_COLOR_PALETTE_PRESETS } from "../../constants/constants";
 import useSlimeStore from "../../stores/useSlimeStore";
 import type { ProceduralColorPaletteName } from "../../types/types";
 import { roundToFixed } from "../../utils/utils";
-import SlimeStoreSelect from "../slime-store-select/SlimeStoreSelect";
+import SlimeStoreSelect from "../slime-store-select/old_SlimeStoreSelect";
 
 export default function ProceduralColorPalettePresetSelect() {
   const slimeColorChangedAt = useSlimeStore(

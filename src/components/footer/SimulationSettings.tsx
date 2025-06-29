@@ -11,9 +11,9 @@ import type {
   SimulationQuality,
   TrailDisplayTextureResolution,
 } from "../../types/types";
-import SlimeStoreSelect from "../slime-store-select/SlimeStoreSelect";
-import SlimeStoreSlider from "../slime-store-slider/SlimeStoreSlider";
-import SlimeStoreToggle from "../slime-store-toggle/SlimeStoreToggle";
+import SlimeStoreSelect from "../slime-store-select/old_SlimeStoreSelect";
+import SlimeStoreSlider from "../slime-store-slider/old_SlimeStoreSlider";
+import SlimeStoreToggle from "../slime-store-toggle/old_SlimeStoreToggle";
 import ControlContainer from "./ControlContainer";
 
 /**

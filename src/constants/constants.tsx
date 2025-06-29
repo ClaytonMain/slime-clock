@@ -153,11 +153,11 @@ export const ANIMATABLE_COLORS = {
 
 export const AGENT_START_TYPE_DROPDOWN_OPTIONS: AgentStartTypeDropdownOption[] =
   [
-    { value: -1, label: "Random" },
-    { value: 0, label: "Center" },
-    { value: 1, label: "Ring" },
-    { value: 2, label: "9 Rings" },
-    { value: 3, label: "Circle" },
-    { value: 4, label: "Spiral" },
-    { value: 5, label: "Fill" },
+    { value: "-1", label: "Random" },
+    { value: "0", label: "Center" },
+    { value: "1", label: "Ring" },
+    { value: "2", label: "9 Rings" },
+    { value: "3", label: "Circle" },
+    { value: "4", label: "Spiral" },
+    { value: "5", label: "Fill" },
   ] as const;

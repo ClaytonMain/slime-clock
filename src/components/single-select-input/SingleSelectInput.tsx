@@ -3,7 +3,7 @@
 // https://codesandbox.io/p/sandbox/generic-native-select-xw7pjg
 
 import type { SelectHTMLAttributes } from "react";
-import ControlLabel from "../control-label/ControlLabel";
+import ControlLabel from "../control-label/old_ControlLabel";
 import { useSelect, type UseSelectParams } from "./useSelect";
 import {
   useSelectOptions,

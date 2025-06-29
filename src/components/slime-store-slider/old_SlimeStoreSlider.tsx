@@ -1,7 +1,7 @@
 import * as R from "ramda";
 import { useEffect, useState, type ChangeEvent } from "react";
 import useSlimeStore from "../../stores/useSlimeStore";
-import ControlLabel from "../control-label/ControlLabel";
+import ControlLabel from "../control-label/old_ControlLabel";
 
 export default function SlimeStoreSlider({
   label,

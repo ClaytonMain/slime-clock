@@ -132,6 +132,6 @@ export type ProceduralColorPalettePresets = Record<
 >;
 
 export type AgentStartTypeDropdownOption = {
-  value: number;
+  value: string;
   label: AgentStartType;
 };

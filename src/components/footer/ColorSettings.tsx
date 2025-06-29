@@ -2,8 +2,8 @@ import { produce } from "immer";
 import { motion } from "motion/react";
 import { useEffect } from "react";
 import useSlimeStore from "../../stores/useSlimeStore";
-import SlimeStoreColorPicker from "../slime-store-color-picker/SlimeStoreColorPicker";
-import SlimeStoreSlider from "../slime-store-slider/SlimeStoreSlider";
+import SlimeStoreColorPicker from "../slime-store-color-picker/old_SlimeStoreColorPicker";
+import SlimeStoreSlider from "../slime-store-slider/old_SlimeStoreSlider";
 import ControlContainer from "./ControlContainer";
 import ProceduralColorPalettePresetSelect from "./ProceduralColorPalettePresetSelect";
 
