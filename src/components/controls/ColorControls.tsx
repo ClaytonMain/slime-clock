@@ -13,7 +13,7 @@ export default function ColorControls() {
           type="single"
           collapsible
           defaultValue="color-controls"
-          className="w-full border border-dashed border-amber-300"
+          className="w-full"
         >
           <Accordion.Item
             value="color-controls"

@@ -5,9 +5,5 @@ export default function TabContentDisplayArea({
 }: {
   children?: ReactNode;
 }) {
-  return (
-    <div className="h-full w-44 flex-none border border-dashed border-emerald-400 p-2">
-      {children}
-    </div>
-  );
+  return <div className="h-full w-44 flex-none p-2">{children}</div>;
 }

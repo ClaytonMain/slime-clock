@@ -34,7 +34,7 @@ export default function TabButton({ tabName }: { tabName: ControlsTabName }) {
               : "var(--color-tab-button-background)",
         }}
       >
-        <div className="self-end rounded-full border border-dashed border-amber-400 p-1">
+        <div className="self-end rounded-full p-1">
           {tabName === "clock-controls" && <ClockIcon className="h-6 w-6" />}
           {tabName === "simulation-controls" && (
             <MixerHorizontalIcon className="h-6 w-6" />

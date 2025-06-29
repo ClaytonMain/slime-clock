@@ -34,13 +34,13 @@ export default function Controls() {
             </Dialog.Close>
             {/* <Separator.Root className="border-control-container-text my-4 h-px w-full border-b" /> */}
 
-            <div className="grow border border-dashed border-emerald-400 p-2">
+            <div className="grow p-2">
               <ClockControls />
               <SimulationControls />
               <ColorControls />
             </div>
 
-            <Tabs.List className="flex w-full justify-center gap-3 border border-dashed border-rose-500">
+            <Tabs.List className="flex w-full justify-center gap-3">
               <TabButton tabName="clock-controls" />
               <TabButton tabName="simulation-controls" />
               <TabButton tabName="color-controls" />
