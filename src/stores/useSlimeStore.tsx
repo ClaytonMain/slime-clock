@@ -1,4 +1,5 @@
 import { produce } from "immer";
+import type { ReactNode } from "react";
 import { create } from "zustand";
 import {
   createJSONStorage,
@@ -29,6 +30,12 @@ interface FooterState {
 
 interface ControlsState {
   selectedTab: ControlsTabName;
+  isOpen: boolean;
+  controlsTriggerDisplayState: "show" | "hide" | "dimmed";
+  displayAreaContentName: string | null;
+  displayAreaHtmlContent: string | [string, string] | ReactNode | null;
+  displayAreaContentType: "html" | "three";
+  displayAreaBoundingClientRect: DOMRect | null;
 }
 
 interface SlimeStore {
@@ -42,15 +49,11 @@ interface SlimeStore {
   footerStateSetFooterIsOpen: (isOpen: boolean) => void;
   footerStateOpenFooterOntoTab: (tabName: FooterTabName) => void;
   controlsState: ControlsState;
-  tooltipText: string | null;
-  tooltipActive: boolean;
 }
 
 const persistOmit: (keyof SlimeStore)[] = [
   "footerState",
   "colorSettings",
-  "tooltipText",
-  "tooltipActive",
   "initialized",
   "controlsState",
 ];
@@ -79,7 +82,7 @@ const useSlimeStore = create<SlimeStore>()(
           // TODO: Make this dynamic based on window size
           openHeight: DEFAULT_FOOTER_HEIGHT * 2,
           selectedTab: "color-settings",
-          footerIsOpen: false,
+          footerIsOpen: true,
           isDimmedForEdit: false, // Dims the entire footer when editing certain settings
           tabButtonVisibility: "show",
         },
@@ -104,11 +107,14 @@ const useSlimeStore = create<SlimeStore>()(
           ),
 
         controlsState: {
-          selectedTab: "clock-controls",
+          selectedTab: "color-controls",
+          isOpen: false,
+          controlsTriggerDisplayState: "show", // "show" | "hide" | "dimmed"
+          displayAreaContentName: null,
+          displayAreaHtmlContent: null,
+          displayAreaContentType: "html",
+          displayAreaBoundingClientRect: null,
         },
-
-        tooltipText: null,
-        tooltipActive: false,
       }),
       {
         name: "slime-storage",

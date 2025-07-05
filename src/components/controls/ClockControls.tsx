@@ -3,9 +3,7 @@ import type { ClockFormatValue, ClockStyleValue } from "../../types/types";
 import SlimeStoreSelect from "./SlimeStoreSelect";
 import SlimeStoreSlider from "./SlimeStoreSlider";
 import TabContentContainer from "./TabContentContainer";
-import TabContentDisplayArea from "./TabContentDisplayArea";
 import TabContentScrollArea from "./TabContentScrollArea";
-import TabContentVerticalSeparator from "./TabContentVerticalSeparator";
 
 /**
  * Clock Style
@@ -60,8 +58,6 @@ export default function ClockControls() {
           storePath={["clockSettings", "size"]}
         />
       </TabContentScrollArea>
-      <TabContentVerticalSeparator />
-      <TabContentDisplayArea />
     </TabContentContainer>
   );
 }

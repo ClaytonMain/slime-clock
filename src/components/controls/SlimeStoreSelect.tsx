@@ -3,9 +3,10 @@ import {
   ChevronDownIcon,
   ChevronUpIcon,
 } from "@radix-ui/react-icons";
+import { produce } from "immer";
 import { Label, Select } from "radix-ui";
 import * as R from "ramda";
-import { forwardRef, useEffect, useState } from "react";
+import { forwardRef, useEffect, useState, type ReactNode } from "react";
 import useSlimeStore from "../../stores/useSlimeStore";
 import type { SelectOption } from "../../types/types";
 
@@ -26,6 +27,7 @@ const SelectItem = forwardRef<HTMLDivElement, Select.SelectItemProps>(
 
 export default function SlimeStoreSelect({
   label,
+  labelHoverTabContentDisplay,
   baseInputId,
   placeholder,
   storePath,
@@ -35,6 +37,7 @@ export default function SlimeStoreSelect({
   valueType = "string",
 }: {
   label?: string;
+  labelHoverTabContentDisplay?: string | [string, string] | ReactNode;
   baseInputId?: string;
   placeholder?: string;
   storePath: string[];
@@ -82,11 +85,25 @@ export default function SlimeStoreSelect({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  function handlePointerOver() {
+    if (labelHoverTabContentDisplay) {
+      useSlimeStore.setState(
+        produce((state) => {
+          state.controlsState.displayAreaContentName = null;
+          state.controlsState.displayAreaHtmlContent =
+            labelHoverTabContentDisplay;
+          state.controlsState.displayAreaContentType = "html";
+        }),
+      );
+    }
+  }
+
   return (
     <div className="flex w-full items-center gap-1 rounded-xs p-0.5">
       <div className="flex flex-col items-center rounded-xs p-0.5">
         {label && (
           <Label.Root
+            onPointerOver={handlePointerOver}
             className="text-label-text-a h-full w-(--footer-left-label-width) flex-none place-content-center rounded-xs p-0.5 text-right text-sm leading-none font-medium"
             htmlFor={baseInputId}
           >

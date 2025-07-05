@@ -1,3 +1,4 @@
+import { Stats } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Suspense, useEffect, useRef } from "react";
 import useSlimeStore from "../../stores/useSlimeStore";
@@ -19,6 +20,8 @@ export default function SlimeClockScene() {
   return (
     <>
       <Canvas
+        linear
+        flat
         ref={canvasRef}
         gl={{
           preserveDrawingBuffer: true,
@@ -32,6 +35,7 @@ export default function SlimeClockScene() {
         dpr={1.0}
       >
         <Suspense fallback={null}>
+          <Stats />
           <SlimeClock />
         </Suspense>
       </Canvas>

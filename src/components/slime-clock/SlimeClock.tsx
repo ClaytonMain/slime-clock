@@ -5,7 +5,7 @@ import * as R from "ramda";
 import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import useSlimeStore from "../../stores/useSlimeStore";
-import ProceduralColorPaletteDisplay from "../procedural-color-palette-display/ProceduralColorPaletteDisplay";
+import ThreeControlDisplay from "../three-control-display/ThreeControlDisplay";
 import AgentDataMaterial from "./AgentDataMaterial";
 import AgentPositionsMaterial from "./AgentPositionsMaterial";
 import ClockDisplay from "./ClockDisplay";
@@ -18,7 +18,7 @@ extend({ AgentDataMaterial, AgentPositionsMaterial, TrailMaterial });
 
 const texturePlaneUniforms = {
   uWindowResolution: new THREE.Uniform(new THREE.Vector2()),
-  uShowTexture: new THREE.Uniform(0),
+  uShowTexture: new THREE.Uniform(1),
 };
 const slimeMoldDisplayPlaneUniforms = {
   uTrailTexture: new THREE.Uniform(new THREE.Texture()),
@@ -656,6 +656,7 @@ function SlimeClock() {
   return (
     <>
       <UniformSetter />
+      <ThreeControlDisplay />
       {createPortal(
         <mesh>
           <agentDataMaterial
@@ -893,7 +894,6 @@ function SlimeClock() {
           }}
         />
       </Plane>
-      <ProceduralColorPaletteDisplay />
     </>
   );
 }

@@ -1,4 +1,3 @@
-uniform vec2 uTargetAspect;
 uniform float uYMax;
 uniform float uYMin;
 uniform float uYAmp;

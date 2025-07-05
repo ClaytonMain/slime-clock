@@ -1,6 +1,5 @@
 import { Plane, type ShapeProps } from "@react-three/drei";
-import { useFrame } from "@react-three/fiber";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import useSlimeStore from "../../stores/useSlimeStore";
 import fragmentShader from "./shaders/paletteDisplay.frag";
@@ -12,8 +11,6 @@ const yAmp = yMax - yMin;
 const yMid = (yMax + yMin) / 2;
 
 const uniforms = {
-  uDisplayScale: new THREE.Uniform(new THREE.Vector2(1, 1)),
-  uTargetAspect: new THREE.Uniform(new THREE.Vector2(16, 9)),
   uYMax: new THREE.Uniform(yMax),
   uYMin: new THREE.Uniform(yMin),
   uYAmp: new THREE.Uniform(yAmp),
@@ -25,25 +22,7 @@ const uniforms = {
   uAlpha: new THREE.Uniform(1.0),
 };
 
-function updateUDisplayScale() {
-  const targetAspect = 16 / 9;
-  const windowAspect = window.innerWidth / window.innerHeight;
-
-  if (windowAspect > targetAspect) {
-    uniforms.uDisplayScale.value = new THREE.Vector2(
-      targetAspect / windowAspect,
-      1,
-    );
-  } else {
-    uniforms.uDisplayScale.value = new THREE.Vector2(
-      1,
-      windowAspect / targetAspect,
-    );
-  }
-}
-
 function updateUniforms() {
-  updateUDisplayScale();
   const colorSettings = useSlimeStore.getState().colorSettings;
   if (colorSettings.slimeColorMode === "Procedural") {
     const palette = colorSettings.proceduralColorPalette;
@@ -77,17 +56,9 @@ export default function ProceduralColorPaletteDisplay({
   props?: ShapeProps<typeof THREE.PlaneGeometry>;
 }) {
   const slimeColorChangedAtRef = useRef<number>(Date.now());
-  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     updateUniforms();
-  }, []);
-
-  useEffect(() => {
-    window.addEventListener("resize", updateUDisplayScale);
-    return () => {
-      window.removeEventListener("resize", updateUDisplayScale);
-    };
   }, []);
 
   useEffect(() => {
@@ -96,39 +67,22 @@ export default function ProceduralColorPaletteDisplay({
       () => {
         updateUniforms();
         slimeColorChangedAtRef.current = Date.now();
-        if (!visible) {
-          setVisible(true);
-        }
       },
     );
     return () => {
       unsubSlimeColorChangedAt();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useFrame((_, delta) => {
-    const currentTime = Date.now();
-    if (currentTime - slimeColorChangedAtRef.current < 3000) {
-      uniforms.uAlpha.value = Math.min(uniforms.uAlpha.value + delta * 4, 1.0);
-    } else if (currentTime - slimeColorChangedAtRef.current < 6000) {
-      uniforms.uAlpha.value = Math.max(uniforms.uAlpha.value - delta * 1, 0.0);
-    } else if (uniforms.uAlpha.value !== 0.0) {
-      uniforms.uAlpha.value = 0.0;
-      if (visible) {
-        setVisible(false);
-      }
-    }
-  });
-
   return (
-    <Plane {...props} visible={visible}>
+    <Plane {...props}>
       <shaderMaterial
         uniforms={uniforms}
         vertexShader={vertexShader}
         fragmentShader={fragmentShader}
-        transparent={true}
-        // depthWrite={false}
+        transparent={false}
+        depthWrite={false}
+        toneMapped={false}
       />
     </Plane>
   );

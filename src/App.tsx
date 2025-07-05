@@ -7,14 +7,14 @@ import SlimeClockScene from "./components/slime-clock/SlimeClockScene";
 
 function App() {
   return (
-    <>
+    <div className="top-0 left-0 m-0 h-full w-full overflow-hidden p-0">
       {/* <Theme> */}
       <SlimeClockScene />
       {/* <Footer /> */}
       <Controls />
       {/* <ThemePanel /> */}
       {/* </Theme> */}
-    </>
+    </div>
   );
 }
 

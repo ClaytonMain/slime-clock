@@ -14,9 +14,7 @@ import AccordionControlsWrapper from "./AccordionControlsWrapper";
 import SlimeStoreSelect from "./SlimeStoreSelect";
 import SlimeStoreSlider from "./SlimeStoreSlider";
 import TabContentContainer from "./TabContentContainer";
-import TabContentDisplayArea from "./TabContentDisplayArea";
 import TabContentScrollArea from "./TabContentScrollArea";
-import TabContentVerticalSeparator from "./TabContentVerticalSeparator";
 
 /**
  * Quality
@@ -110,6 +108,10 @@ export default function SimulationControls() {
           <AccordionControlsItem value="quick-settings" label="Quick Settings">
             <SlimeStoreSelect
               label="Simulation Quality"
+              labelHoverTabContentDisplay={[
+                "Simulation Quality",
+                "Sets multiple settings at once. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+              ]}
               baseInputId="simulation-quality-select"
               placeholder="Simulation Quality"
               storePath={["simulationSettings", "quality"]}
@@ -293,8 +295,6 @@ export default function SimulationControls() {
           </AccordionControlsItem>
         </AccordionControlsWrapper>
       </TabContentScrollArea>
-      <TabContentVerticalSeparator />
-      <TabContentDisplayArea />
     </TabContentContainer>
   );
 }
