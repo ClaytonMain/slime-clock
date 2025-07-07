@@ -1,5 +1,7 @@
 import { CLOCK_CONTROLS_BOUNDS } from "../../constants/constants";
 import type { ClockFormatValue, ClockStyleValue } from "../../types/types";
+import AccordionControlsItem from "./AccordionControlsItem";
+import AccordionControlsWrapper from "./AccordionControlsWrapper";
 import SlimeStoreSelect from "./SlimeStoreSelect";
 import SlimeStoreSlider from "./SlimeStoreSlider";
 import TabContentContainer from "./TabContentContainer";
@@ -35,28 +37,35 @@ export default function ClockControls() {
   return (
     <TabContentContainer tabsValue="clock-controls">
       <TabContentScrollArea title="Clock">
-        <SlimeStoreSelect
-          label="Style"
-          baseInputId="clock-style-select"
-          placeholder="Clock Style"
-          storePath={["clockSettings", "style"]}
-          options={clockStyleOptions}
-        />
-        <SlimeStoreSelect
-          label="Format"
-          baseInputId="clock-format-select"
-          placeholder="Clock Format"
-          storePath={["clockSettings", "format"]}
-          options={clockFormatOptions}
-        />
-        <SlimeStoreSlider
-          label="Size"
-          baseInputId="clock-size-slider"
-          min={CLOCK_CONTROLS_BOUNDS.size!.min}
-          max={CLOCK_CONTROLS_BOUNDS.size!.max}
-          step={1}
-          storePath={["clockSettings", "size"]}
-        />
+        <AccordionControlsWrapper
+          type="multiple"
+          defaultValue={["clock-settings"]}
+        >
+          <AccordionControlsItem value="clock-settings" label="Clock Settings">
+            <SlimeStoreSelect
+              label="Style"
+              baseInputId="clock-style-select"
+              placeholder="Clock Style"
+              storePath={["clockSettings", "style"]}
+              options={clockStyleOptions}
+            />
+            <SlimeStoreSelect
+              label="Format"
+              baseInputId="clock-format-select"
+              placeholder="Clock Format"
+              storePath={["clockSettings", "format"]}
+              options={clockFormatOptions}
+            />
+            <SlimeStoreSlider
+              label="Size"
+              baseInputId="clock-size-slider"
+              min={CLOCK_CONTROLS_BOUNDS.size!.min}
+              max={CLOCK_CONTROLS_BOUNDS.size!.max}
+              step={1}
+              storePath={["clockSettings", "size"]}
+            />
+          </AccordionControlsItem>
+        </AccordionControlsWrapper>
       </TabContentScrollArea>
     </TabContentContainer>
   );

@@ -122,7 +122,7 @@ const flickerInOpacity = flickerPoints.map((point) =>
     1,
     Math.max(
       0,
-      Math.sin(6 * Math.PI * point) * Math.sin(Math.PI * point) * 0.2 + point,
+      Math.sin(6 * Math.PI * point) * Math.sin(Math.PI * point) * 0.4 + point,
     ),
   ),
 );
@@ -133,6 +133,7 @@ export const ANIMATION_CONFIGS = {
     transition: {
       duration: 0.3,
       times: flickerPoints,
+      when: "beforeChildren",
     },
   },
   flickerOut: {
@@ -140,6 +141,7 @@ export const ANIMATION_CONFIGS = {
     transition: {
       duration: 0.3,
       times: flickerPoints,
+      when: "afterChildren",
     },
   },
 };

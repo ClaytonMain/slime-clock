@@ -1,6 +1,8 @@
-import { Cross2Icon } from "@radix-ui/react-icons";
+import { Cross2Icon, GearIcon, PlusIcon } from "@radix-ui/react-icons";
 import { produce } from "immer";
+import { AnimatePresence, motion } from "motion/react";
 import { Dialog, Separator, Tabs, VisuallyHidden } from "radix-ui";
+import { ANIMATION_CONFIGS } from "../../constants/constants";
 import useSlimeStore from "../../stores/useSlimeStore";
 import ClockControls from "./ClockControls";
 import ColorControls from "./ColorControls";
@@ -8,10 +10,11 @@ import SimulationControls from "./SimulationControls";
 import TabButton from "./TabButton";
 import TabContentDisplayArea from "./TabContentDisplayArea";
 import TabContentVerticalSeparator from "./TabContentVerticalSeparator";
+import TooltipWrapper from "./TooltipWrapper";
 
 export default function Controls() {
-  const selectedTab = useSlimeStore((state) => state.controlsState.selectedTab);
   const isOpen = useSlimeStore((state) => state.controlsState.isOpen);
+  const selectedTab = useSlimeStore((state) => state.controlsState.selectedTab);
 
   function handleOpenChange(open: boolean) {
     useSlimeStore.setState(
@@ -21,55 +24,203 @@ export default function Controls() {
     );
   }
 
+  function handleTabChange(value: string) {
+    useSlimeStore.setState(
+      produce((state) => {
+        state.controlsState.selectedTab = value;
+      }),
+    );
+  }
+
   return (
-    <div className="absolute bottom-0 left-0 h-full w-full">
-      <Dialog.Root open={isOpen} onOpenChange={handleOpenChange}>
-        <div className="absolute bottom-0 left-0 flex w-full justify-center gap-3 bg-sky-950 p-4">
-          <Dialog.Trigger>Controls</Dialog.Trigger>
-        </div>
-
-        <Dialog.Portal>
-          <Dialog.Overlay className="fixed inset-0" />
-          <Dialog.Content className="text-control-container-text border-control-container-text fixed top-1/2 left-1/2 flex h-96 max-h-11/12 w-9/12 max-w-2xl -translate-1/2 flex-col rounded-xs border border-dashed">
-            <VisuallyHidden.Root>
-              <Dialog.Title>Controls</Dialog.Title>
-              <Dialog.Description>
-                This dialog contains various controls for the application.
-              </Dialog.Description>
-            </VisuallyHidden.Root>
-
-            <Tabs.Root
-              value={selectedTab}
-              className="flex h-full flex-col items-center"
+    <Dialog.Root open={isOpen} onOpenChange={handleOpenChange}>
+      <div className="text-control-container-text absolute bottom-0 left-0 flex w-full justify-center gap-3 p-4">
+        <TooltipWrapper tooltipText="Open Controls">
+          <Dialog.Trigger asChild>
+            <motion.div
+              className="bg-tab-button-background inline-flex cursor-pointer appearance-none rounded-full p-1"
+              whileHover={{
+                backgroundColor: "var(--color-tab-button-hover-background)",
+              }}
             >
-              <Dialog.Close
-                aria-label="Close"
-                className="bg-tab-button-background absolute top-3 right-3 z-[1] inline-flex cursor-pointer appearance-none rounded-full p-1"
-              >
-                <Cross2Icon className="h-6 w-6" />
-              </Dialog.Close>
+              <GearIcon className="h-6 w-6" />
+            </motion.div>
+          </Dialog.Trigger>
+        </TooltipWrapper>
+      </div>
 
-              <div className="flex w-full grow items-center">
-                <div className="flex h-full grow items-center px-2 py-3 backdrop-blur-sm">
-                  <ClockControls />
-                  <SimulationControls />
-                  <ColorControls />
-                </div>
-                <TabContentVerticalSeparator />
-                <TabContentDisplayArea />
-              </div>
+      <AnimatePresence>
+        {isOpen && (
+          <Dialog.Portal key="controls-dialog-portal" forceMount>
+            <Dialog.Overlay asChild forceMount>
+              <motion.div className="fixed inset-0" />
+            </Dialog.Overlay>
 
-              <Separator.Root className="border-control-container-text h-px w-11/12 border-b" />
+            <motion.div
+              key="controls-dialog-content-outer-container"
+              className="text-control-container-text fixed top-1/2 left-1/2 flex h-96 max-h-11/12 w-9/12 max-w-2xl -translate-1/2 flex-col rounded-xs"
+              initial={{ opacity: 0.95 }}
+              animate={{
+                opacity: 1,
+                transition: { duration: 0.3, when: "beforeChildren" },
+              }}
+              exit={{
+                transition: { duration: 0.3, when: "afterChildren" },
+              }}
+              onAnimationEnd={(definition) => {
+                console.log("Animation ended:", definition);
+              }}
+            >
+              {Array.from({ length: 4 }).map((_, index) => {
+                const topBottom = index % 2 === 0 ? "top-0" : "bottom-0";
+                const leftRight = index < 2 ? "left-0" : "right-0";
+                const translateX =
+                  index < 2 ? "-translate-x-1/2" : "translate-x-1/2";
+                const translateY =
+                  index % 2 === 0 ? "-translate-y-1/2" : "translate-y-1/2";
+                return (
+                  <motion.div
+                    key={`controls-dialog-content-outer-container-plus-icon-${index}`}
+                    className={`absolute ${topBottom} ${leftRight} z-[2] ${translateX} ${translateY}`}
+                    initial={{ opacity: 0 }}
+                    animate={{
+                      opacity: ANIMATION_CONFIGS.flickerIn.opacity,
+                      transition: {
+                        opacity: {
+                          delay: 0.01 * Math.random() + index * 0.025,
+                          duration: 0.4,
+                          times: ANIMATION_CONFIGS.flickerIn.transition.times,
+                        },
+                      },
+                    }}
+                    exit={{
+                      opacity: ANIMATION_CONFIGS.flickerOut.opacity,
+                      transition: {
+                        opacity: {
+                          duration: 0.4,
+                          delay: 0.3 + index * 0.1,
+                          times: ANIMATION_CONFIGS.flickerOut.transition.times,
+                        },
+                      },
+                    }}
+                  >
+                    <PlusIcon className="scale-150" />
+                  </motion.div>
+                );
+              })}
+              {Array.from({ length: 4 }).map((_, index) => {
+                const topBottom = ["top-0", "top-0", "bottom-0", "bottom-0"][
+                  index
+                ];
+                const leftRight = ["left-0", "left-0", "right-0", "right-0"][
+                  index
+                ];
+                const border = [
+                  "border-t-2 w-[calc(100%_-_var(--spacing)_*_12)] mx-6 h-[4px]",
+                  "border-l-2 w-[4px] h-[calc(100%_-_var(--spacing)_*_12)] my-6",
+                  "border-b-2 w-[calc(100%_-_var(--spacing)_*_12)] mx-6 h-[4px]",
+                  "border-r-2 w-[4px] h-[calc(100%_-_var(--spacing)_*_12)] my-6",
+                ][index];
+                return (
+                  <motion.div
+                    key={`controls-dialog-content-outer-container-plus-icon-${index}`}
+                    className={`absolute ${topBottom} ${leftRight} z-[2] ${border}`}
+                    initial={{ opacity: 0 }}
+                    animate={{
+                      opacity: ANIMATION_CONFIGS.flickerIn.opacity,
+                      transition: {
+                        opacity: {
+                          delay: 0.01 * Math.random() + index * 0.025,
+                          duration: 0.4,
+                          times: ANIMATION_CONFIGS.flickerIn.transition.times,
+                        },
+                      },
+                    }}
+                    exit={{
+                      opacity: ANIMATION_CONFIGS.flickerOut.opacity,
+                      transition: {
+                        opacity: {
+                          duration: 0.4,
+                          delay: 0.3 + index * 0.1,
+                          times: ANIMATION_CONFIGS.flickerOut.transition.times,
+                        },
+                      },
+                    }}
+                  />
+                );
+              })}
+              <Dialog.Content forceMount asChild>
+                <motion.div
+                  key={"controls-dialog-content-inner-container"}
+                  className="fixed top-0 left-0 flex h-full w-full flex-col"
+                  initial={{ opacity: 0 }}
+                  animate={{
+                    ...ANIMATION_CONFIGS.flickerIn,
+                    transition: {
+                      ...ANIMATION_CONFIGS.flickerIn.transition,
+                      delay: 0.1,
+                    },
+                  }}
+                  exit={ANIMATION_CONFIGS.flickerOut}
+                >
+                  <VisuallyHidden.Root>
+                    <Dialog.Title>Controls</Dialog.Title>
+                    <Dialog.Description>
+                      This dialog contains various controls for the application.
+                    </Dialog.Description>
+                  </VisuallyHidden.Root>
 
-              <Tabs.List className="flex w-full justify-center gap-3 py-2 backdrop-blur-sm">
-                <TabButton tabName="clock-controls" />
-                <TabButton tabName="simulation-controls" />
-                <TabButton tabName="color-controls" />
-              </Tabs.List>
-            </Tabs.Root>
-          </Dialog.Content>
-        </Dialog.Portal>
-      </Dialog.Root>
-    </div>
+                  <Tabs.Root
+                    value={selectedTab}
+                    onValueChange={handleTabChange}
+                    className="flex h-full flex-col items-center"
+                  >
+                    <motion.div
+                      key="controls-dialog-content"
+                      className="flex w-full grow items-center"
+                      initial={{ opacity: 0 }}
+                      animate={ANIMATION_CONFIGS.flickerIn}
+                      exit={ANIMATION_CONFIGS.flickerOut}
+                    >
+                      <div className="flex h-full grow items-center px-2 py-3 backdrop-blur-sm">
+                        <ClockControls />
+                        <SimulationControls />
+                        <ColorControls />
+                      </div>
+                      <TabContentVerticalSeparator />
+                      <TabContentDisplayArea />
+                    </motion.div>
+
+                    <Separator.Root className="border-control-container-text h-px w-11/12 border-b" />
+
+                    <Tabs.List className="flex w-full justify-center gap-3 py-2 backdrop-blur-sm">
+                      <TabButton
+                        tabName="clock-controls"
+                        tooltipText="Clock Controls"
+                      />
+                      <TabButton
+                        tabName="simulation-controls"
+                        tooltipText="Simulation Controls"
+                      />
+                      <TabButton
+                        tabName="color-controls"
+                        tooltipText="Color Controls"
+                      />
+                    </Tabs.List>
+                  </Tabs.Root>
+
+                  <Dialog.Close
+                    aria-label="Close"
+                    className="bg-tab-button-background absolute top-1.5 right-3 z-[1] inline-flex cursor-pointer appearance-none rounded-full p-1"
+                  >
+                    <Cross2Icon className="h-6 w-6" />
+                  </Dialog.Close>
+                </motion.div>
+              </Dialog.Content>
+            </motion.div>
+          </Dialog.Portal>
+        )}
+      </AnimatePresence>
+    </Dialog.Root>
   );
 }

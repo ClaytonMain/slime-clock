@@ -93,7 +93,7 @@ export default function SlimeStoreSlider({
         min={min}
         max={max}
         step={step}
-        className="relative z-0 flex h-5 grow touch-none items-center select-none"
+        className="relative z-0 mr-4 flex h-5 grow touch-none items-center select-none"
       >
         <Slider.Track className="bg-input-background-a relative h-1 grow">
           <Slider.Range className="absolute h-full rounded-full bg-white" />

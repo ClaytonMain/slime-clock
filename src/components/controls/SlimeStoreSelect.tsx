@@ -99,12 +99,12 @@ export default function SlimeStoreSelect({
   }
 
   return (
-    <div className="flex w-full items-center gap-1 rounded-xs p-0.5">
-      <div className="flex flex-col items-center rounded-xs p-0.5">
+    <div className="flex w-full items-center gap-1 p-0.5">
+      <div className="flex flex-col items-center p-0.5">
         {label && (
           <Label.Root
             onPointerOver={handlePointerOver}
-            className="text-label-text-a h-full w-(--footer-left-label-width) flex-none place-content-center rounded-xs p-0.5 text-right text-sm leading-none font-medium"
+            className="text-label-text-a h-full w-(--footer-left-label-width) flex-none place-content-center p-0.5 text-right text-xs leading-none font-medium"
             htmlFor={baseInputId}
           >
             {label}
@@ -113,7 +113,7 @@ export default function SlimeStoreSelect({
       </div>
       <Select.Root value={selectedValue} onValueChange={handleOnValueChange}>
         <Select.Trigger
-          className="bg-input-background-a border-input-border-b inline-flex h-7 items-center justify-center gap-1 rounded-xs border px-2 py-1 text-sm leading-none font-medium shadow-[0_2px_10px] shadow-black/10 outline-none"
+          className="bg-input-background-a border-input-border-b inline-flex h-7 items-center justify-center gap-1 border px-2 py-1 text-sm leading-none font-medium shadow-[0_2px_10px] shadow-black/10 outline-none"
           id={baseInputId}
         >
           <Select.Value placeholder={placeholder} />
@@ -122,7 +122,7 @@ export default function SlimeStoreSelect({
           </Select.Icon>
         </Select.Trigger>
         <Select.Portal>
-          <Select.Content className="text-label-text-a bg-input-background-a overflow-hidden rounded-xs shadow-[0px_10px_38px_-10px_rgba(22,_23,_24,_0.35),0px_10px_20px_-15px_rgba(22,_23,_24,_0.2)]">
+          <Select.Content className="text-label-text-a bg-input-background-a overflow-hidden shadow-[0px_10px_38px_-10px_rgba(22,_23,_24,_0.35),0px_10px_20px_-15px_rgba(22,_23,_24,_0.2)]">
             <Select.ScrollUpButton className="bg-input-background-a flex h-6 cursor-default items-center justify-center">
               <ChevronUpIcon />
             </Select.ScrollUpButton>

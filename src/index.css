@@ -4,6 +4,12 @@
 /* @source "../node_modules/flowbite"; */
 
 @theme {
+  --color-ui-text-a: #ebf7fe;
+  --color-ui-background-a: #0b3447;
+  --color-ui-icon-background-a: #181a1b;
+  --color-ui-icon-background-b: #0e4a6d;
+  --color-ui-icon-background-c: #135b7c;
+
   --footer-left-label-width: 5rem;
 
   --color-controls-background: #060709;

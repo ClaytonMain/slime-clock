@@ -65,7 +65,6 @@ export default function ThreeControlDisplay() {
       (state) => state.controlsState,
       (newControlsState) => {
         // Handle visibility.
-        console.log("controlsState changed:", newControlsState);
         if (
           newControlsState.isOpen &&
           newControlsState.displayAreaContentType === "three"
