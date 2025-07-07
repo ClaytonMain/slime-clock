@@ -81,7 +81,7 @@ export default function ProceduralColorPaletteDisplay({
         vertexShader={vertexShader}
         fragmentShader={fragmentShader}
         transparent={false}
-        depthWrite={false}
+        depthWrite={true}
         toneMapped={false}
       />
     </Plane>

@@ -56,22 +56,19 @@ export default function TabContentDisplayArea() {
   }, []);
 
   return (
-    <div className="flex h-full w-56 flex-none flex-col items-center">
-      <div className="w-full flex-none grow backdrop-blur-sm" />
-      <div className="flex w-full">
-        <div className="h-68 w-2 flex-none backdrop-blur-sm" />
-        <motion.div
-          ref={displayAreaRef}
-          className="border-control-container-text h-68 w-full border border-dashed"
-          onViewportEnter={handleViewportEnter}
-        >
-          {displayAreaContentType === "html" && (
-            <TabContentDisplayAreaHtmlContent />
-          )}
-        </motion.div>
-        <div className="h-68 w-2 flex-none backdrop-blur-sm" />
-      </div>
-      <div className="h-3 w-full flex-none backdrop-blur-sm" />
-    </div>
+    <motion.div
+      key="tab-content-display-area"
+      className="flex h-full w-56 flex-none flex-col items-center px-3 pt-10"
+    >
+      <motion.div
+        ref={displayAreaRef}
+        className="border-control-container-text h-68 w-full border border-dashed"
+        onViewportEnter={handleViewportEnter}
+      >
+        {displayAreaContentType === "html" && (
+          <TabContentDisplayAreaHtmlContent />
+        )}
+      </motion.div>
+    </motion.div>
   );
 }

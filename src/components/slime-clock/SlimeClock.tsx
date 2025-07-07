@@ -18,7 +18,7 @@ extend({ AgentDataMaterial, AgentPositionsMaterial, TrailMaterial });
 
 const texturePlaneUniforms = {
   uWindowResolution: new THREE.Uniform(new THREE.Vector2()),
-  uShowTexture: new THREE.Uniform(1),
+  uShowTexture: new THREE.Uniform(0),
 };
 const slimeMoldDisplayPlaneUniforms = {
   uTrailTexture: new THREE.Uniform(new THREE.Texture()),
@@ -656,7 +656,7 @@ function SlimeClock() {
   return (
     <>
       <UniformSetter />
-      <ThreeControlDisplay />
+
       {createPortal(
         <mesh>
           <agentDataMaterial
@@ -770,7 +770,7 @@ function SlimeClock() {
         </mesh>,
         trailSceneB,
       )}
-      <Plane>
+      <Plane visible={true}>
         <shaderMaterial
           ref={slimeMoldDisplayShaderRef}
           uniforms={slimeMoldDisplayPlaneUniforms}
@@ -894,6 +894,7 @@ function SlimeClock() {
           }}
         />
       </Plane>
+      <ThreeControlDisplay />
     </>
   );
 }

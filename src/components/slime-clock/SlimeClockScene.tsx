@@ -33,6 +33,16 @@ export default function SlimeClockScene() {
           height: "100vh",
         }}
         dpr={1.0}
+        orthographic
+        camera={{
+          left: -1,
+          right: 1,
+          top: 1,
+          bottom: -1,
+          position: [0, 0, 10],
+          near: 0.1,
+          far: 30,
+        }}
       >
         <Suspense fallback={null}>
           <Stats />

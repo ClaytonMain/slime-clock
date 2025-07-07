@@ -36,6 +36,8 @@ interface ControlsState {
   displayAreaHtmlContent: string | [string, string] | ReactNode | null;
   displayAreaContentType: "html" | "three";
   displayAreaBoundingClientRect: DOMRect | null;
+  controlsAreaBoundingClientRect: DOMRect | null;
+  selectedTabButtonClientRect: DOMRect | null;
 }
 
 interface SlimeStore {
@@ -114,6 +116,8 @@ const useSlimeStore = create<SlimeStore>()(
           displayAreaHtmlContent: null,
           displayAreaContentType: "html",
           displayAreaBoundingClientRect: null,
+          controlsAreaBoundingClientRect: null,
+          selectedTabButtonClientRect: null,
         },
       }),
       {

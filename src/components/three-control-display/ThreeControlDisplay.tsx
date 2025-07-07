@@ -6,7 +6,8 @@
  * to be displayed, though those will (probably) be handled in
  * the TabContentDisplayArea component. Maybe.
  */
-import { Plane, RenderTexture } from "@react-three/drei";
+import { Box, Plane, RenderTexture } from "@react-three/drei";
+import { useFrame } from "@react-three/fiber";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import useSlimeStore from "../../stores/useSlimeStore";
@@ -49,7 +50,14 @@ function updateDisplayPlaneUniforms() {
 
 export default function ThreeControlDisplay() {
   const displayPlaneRef = useRef<THREE.Mesh>(null!);
-  const [visible, setVisible] = useState<boolean>(false);
+  const controlBackgroundRef = useRef<THREE.Mesh>(null!);
+  const controlBackgroundMaterialRef = useRef<THREE.MeshPhysicalMaterial>(
+    null!,
+  );
+  const [controlBackgroundVisible, setControlBackgroundVisible] =
+    useState<boolean>(false);
+  const [displayPlaneVisible, setDisplayPlaneVisible] =
+    useState<boolean>(false);
   const [contentName, setContentName] = useState<string | null>(null);
   const [renderTextureResolution, setRenderTextureResolution] = useState({
     width: 200,
@@ -64,14 +72,33 @@ export default function ThreeControlDisplay() {
     const unsubControlsState = useSlimeStore.subscribe(
       (state) => state.controlsState,
       (newControlsState) => {
-        // Handle visibility.
+        // Handle control background visibility.
+        if (newControlsState.isOpen) {
+          setControlBackgroundVisible(true);
+        } else {
+          setControlBackgroundVisible(false);
+        }
+        if (
+          controlBackgroundRef.current &&
+          newControlsState.controlsAreaBoundingClientRect
+        ) {
+          controlBackgroundRef.current.scale.set(
+            (newControlsState.controlsAreaBoundingClientRect.width * 2) /
+              window.innerWidth || 1,
+            (newControlsState.controlsAreaBoundingClientRect.height * 2) /
+              window.innerHeight || 1,
+            1,
+          );
+        }
+
+        // Handle display plane visibility.
         if (
           newControlsState.isOpen &&
           newControlsState.displayAreaContentType === "three"
         ) {
-          if (!visible) setVisible(true);
+          setDisplayPlaneVisible(true);
         } else {
-          setVisible(false);
+          setDisplayPlaneVisible(false);
         }
         // Update the display plane uniforms.
         updateDisplayPlaneUniforms();
@@ -104,45 +131,94 @@ export default function ThreeControlDisplay() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useFrame((_, delta) => {
+    if (!controlBackgroundMaterialRef.current) return;
+    if (
+      controlBackgroundVisible &&
+      controlBackgroundMaterialRef.current.opacity < 1
+    ) {
+      controlBackgroundMaterialRef.current.opacity = Math.min(
+        controlBackgroundMaterialRef.current.opacity + delta * 0.9,
+        1,
+      );
+    } else if (
+      !controlBackgroundVisible &&
+      controlBackgroundMaterialRef.current.opacity > 0
+    ) {
+      controlBackgroundMaterialRef.current.opacity = Math.max(
+        controlBackgroundMaterialRef.current.opacity - delta * 0.9,
+        0,
+      );
+    }
+  });
+
   return (
-    <Plane ref={displayPlaneRef} visible={visible}>
-      <meshBasicMaterial
-        attach="material"
-        depthWrite={false}
-        transparent={true}
-        // toneMapped={false}
-        // blending={THREE.AdditiveBlending}
-        onBeforeCompile={(shader) => {
-          shader.uniforms.uPositionOffset =
-            displayPlaneUniforms.uPositionOffset;
-          shader.uniforms.uPositionScale = displayPlaneUniforms.uPositionScale;
-          shader.vertexShader = shader.vertexShader.replace(
-            "#include <common>",
-            /* glsl */ `
-            #include <common>
-            uniform vec2 uPositionOffset;
-            uniform vec2 uPositionScale;
-            `,
-          );
-          shader.vertexShader = shader.vertexShader.replace(
-            "#include <project_vertex>",
-            /* glsl */ `
-            #include <project_vertex>
-            gl_Position = vec4(position.xy * uPositionScale + uPositionOffset, 0.0, 1.0);
-            `,
-          );
+    <group key="three-control-display-group">
+      <ambientLight intensity={0.5} />
+      <Box
+        args={[1, 1, 0.1]}
+        position={[0, 0, 0]}
+        key="control-background"
+        ref={controlBackgroundRef}
+      >
+        <meshPhysicalMaterial
+          ref={controlBackgroundMaterialRef}
+          transmission={0.9}
+          thickness={0.1}
+          roughness={0.4}
+          opacity={0}
+          attach="material"
+          transparent={true}
+          depthTest={true}
+        />
+      </Box>
+      <Plane
+        position={[0, 0, 2.0]}
+        key="display-plane"
+        ref={displayPlaneRef}
+        visible={displayPlaneVisible}
+        renderOrder={1000}
+        onBeforeRender={(renderer) => {
+          renderer.clearDepth();
         }}
       >
-        <RenderTexture
-          attach="map"
-          width={renderTextureResolution.width}
-          height={renderTextureResolution.height}
+        <meshBasicMaterial
+          attach="material"
+          transparent={true}
+          depthTest={true}
+          onBeforeCompile={(shader) => {
+            shader.uniforms.uPositionOffset =
+              displayPlaneUniforms.uPositionOffset;
+            shader.uniforms.uPositionScale =
+              displayPlaneUniforms.uPositionScale;
+            shader.vertexShader = shader.vertexShader.replace(
+              "#include <common>",
+              /* glsl */ `
+              #include <common>
+              uniform vec2 uPositionOffset;
+              uniform vec2 uPositionScale;
+              `,
+            );
+            shader.vertexShader = shader.vertexShader.replace(
+              "#include <project_vertex>",
+              /* glsl */ `
+              #include <project_vertex>
+              gl_Position = vec4(position.xy * uPositionScale + uPositionOffset, position.z, 1.0);
+              `,
+            );
+          }}
         >
-          {contentName === "procedural-color-palette" && (
-            <ProceduralColorPaletteDisplay />
-          )}
-        </RenderTexture>
-      </meshBasicMaterial>
-    </Plane>
+          <RenderTexture
+            attach="map"
+            width={renderTextureResolution.width}
+            height={renderTextureResolution.height}
+          >
+            {contentName === "procedural-color-palette" && (
+              <ProceduralColorPaletteDisplay />
+            )}
+          </RenderTexture>
+        </meshBasicMaterial>
+      </Plane>
+    </group>
   );
 }

@@ -1,3 +1,4 @@
+import { motion } from "motion/react";
 import { ScrollArea } from "radix-ui";
 import type { ReactNode } from "react";
 
@@ -11,7 +12,13 @@ export default function TabContentScrollArea({
   childrenPadding?: string[];
 }) {
   return (
-    <div className="flex h-full grow flex-col justify-center backdrop-blur-md">
+    <motion.div
+      className="flex h-full grow flex-col justify-center"
+      initial={{ backdropFilter: "blur(0px)" }}
+      animate={{ backdropFilter: "blur(10px)" }}
+      exit={{ backdropFilter: "blur(0px)" }}
+      transition={{ duration: 0.3, ease: "easeInOut" }}
+    >
       {title && (
         <div className="bg-control-container-background-c/40 w-full flex-none text-center text-lg font-light">
           {title}
@@ -40,6 +47,6 @@ export default function TabContentScrollArea({
         </ScrollArea.Scrollbar>
         <ScrollArea.Corner className="bg-scrollbar-background" />
       </ScrollArea.Root>
-    </div>
+    </motion.div>
   );
 }
