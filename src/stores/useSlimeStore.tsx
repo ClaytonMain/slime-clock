@@ -38,6 +38,7 @@ interface ControlsState {
   displayAreaBoundingClientRect: DOMRect | null;
   controlsAreaBoundingClientRect: DOMRect | null;
   selectedTabButtonClientRect: DOMRect | null;
+  showSelectedTabCornerIcons: boolean;
 }
 
 interface SlimeStore {
@@ -118,6 +119,7 @@ const useSlimeStore = create<SlimeStore>()(
           displayAreaBoundingClientRect: null,
           controlsAreaBoundingClientRect: null,
           selectedTabButtonClientRect: null,
+          showSelectedTabCornerIcons: false,
         },
       }),
       {

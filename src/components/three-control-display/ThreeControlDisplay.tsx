@@ -154,7 +154,7 @@ export default function ThreeControlDisplay() {
 
   return (
     <group key="three-control-display-group">
-      <ambientLight intensity={0.5} />
+      <ambientLight intensity={5.5} />
       <Box
         args={[1, 1, 0.1]}
         position={[0, 0, 0]}
@@ -170,6 +170,7 @@ export default function ThreeControlDisplay() {
           attach="material"
           transparent={true}
           depthTest={true}
+          color={"#bae6fd"}
         />
       </Box>
       <Plane

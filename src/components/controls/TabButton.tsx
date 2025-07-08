@@ -6,7 +6,7 @@ import {
 import { produce } from "immer";
 import { motion } from "motion/react";
 import { Tabs } from "radix-ui";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import useSlimeStore from "../../stores/useSlimeStore";
 import type { ControlsTabName } from "../../types/types";
 import TooltipWrapper from "./TooltipWrapper";
@@ -25,6 +25,14 @@ export default function TabButton({
     useSlimeStore.setState(
       produce((state) => {
         state.controlsState.selectedTab = value;
+      }),
+    );
+  }
+
+  function handlePointerEnter() {
+    useSlimeStore.setState(
+      produce((state) => {
+        state.controlsState.showSelectedTabCornerIcons = true;
         if (tabButtonDivRef.current) {
           state.controlsState.selectedTabButtonClientRect =
             tabButtonDivRef.current.getBoundingClientRect();
@@ -32,6 +40,31 @@ export default function TabButton({
       }),
     );
   }
+
+  function handlePointerLeave() {
+    useSlimeStore.setState(
+      produce((state) => {
+        state.controlsState.showSelectedTabCornerIcons = false;
+      }),
+    );
+  }
+
+  function handleViewportResize() {
+    const boundingClientRect = tabButtonDivRef.current?.getBoundingClientRect();
+    useSlimeStore.setState(
+      produce((state) => {
+        state.controlsState.selectedTabButtonClientRect =
+          boundingClientRect || null;
+      }),
+    );
+  }
+
+  useEffect(() => {
+    window.addEventListener("resize", handleViewportResize);
+    return () => {
+      window.removeEventListener("resize", handleViewportResize);
+    };
+  }, []);
 
   return (
     <Tabs.Trigger
@@ -41,11 +74,14 @@ export default function TabButton({
       <TooltipWrapper tooltipText={tooltipText}>
         <motion.div
           ref={tabButtonDivRef}
-          whileHover={{
-            backgroundColor: "var(--color-tab-button-hover-background)",
+          animate={{
+            backgroundColor:
+              selectedTab === tabName
+                ? "var(--color-sky-500-60)"
+                : "var(--color-animatable-transparent)",
           }}
           transition={{ duration: 0.2 }}
-          className="relative top-0 left-0 m-0.5 flex h-8 w-8 cursor-pointer flex-col items-center"
+          className="relative top-0 left-0 m-0.5 flex h-8 w-10 cursor-pointer flex-col items-center"
           onViewportEnter={(enter) => {
             if (!enter || !enter.boundingClientRect) return;
             if (selectedTab === tabName) {
@@ -57,20 +93,10 @@ export default function TabButton({
               );
             }
           }}
+          onPointerEnter={handlePointerEnter}
+          onPointerLeave={handlePointerLeave}
         >
           <motion.div className="self-end p-1">
-            {/* {selectedTab === tabName ? (
-              <motion.div
-                className="text-ui-text-a absolute top-1/2 left-1/2 h-7 w-7 -translate-x-1/2 -translate-y-1/2 transform bg-transparent"
-                layoutId="tab-button-selected-indicator"
-                id="tab-button-selected-indicator"
-              >
-                <PlusIcon className="stroke-ui-text-a absolute top-0 left-0 z-[1] h-2 w-2 -translate-x-2/3 -translate-y-2/3 transform" />
-                <PlusIcon className="stroke-ui-text-a absolute top-0 right-0 z-[1] h-2 w-2 translate-x-2/3 -translate-y-2/3 transform" />
-                <PlusIcon className="stroke-ui-text-a absolute bottom-0 left-0 z-[1] h-2 w-2 -translate-x-2/3 translate-y-2/3 transform" />
-                <PlusIcon className="stroke-ui-text-a absolute right-0 bottom-0 z-[1] h-2 w-2 translate-x-2/3 translate-y-2/3 transform" />
-              </motion.div>
-            ) : null} */}
             {tabName === "clock-controls" && (
               <ClockIcon className="absolute top-1/2 left-1/2 z-[1] h-6 w-6 -translate-x-1/2 -translate-y-1/2" />
             )}

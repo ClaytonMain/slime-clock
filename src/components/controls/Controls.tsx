@@ -7,6 +7,7 @@ import { ANIMATION_CONFIGS } from "../../constants/constants";
 import useSlimeStore from "../../stores/useSlimeStore";
 import ClockControls from "./ClockControls";
 import ColorControls from "./ColorControls";
+import SelectedTabCornerIcons from "./SelectedTabCornerIcons";
 import SimulationControls from "./SimulationControls";
 import TabButton from "./TabButton";
 import TabContentDisplayArea from "./TabContentDisplayArea";
@@ -71,9 +72,12 @@ export default function Controls() {
         <TooltipWrapper tooltipText="Open Controls">
           <Dialog.Trigger asChild>
             <motion.div
-              className="bg-tab-button-background inline-flex cursor-pointer appearance-none rounded-full p-1"
+              className="inline-flex cursor-pointer appearance-none rounded-full p-1"
+              animate={{
+                backgroundColor: "var(--color-zinc-950-60)",
+              }}
               whileHover={{
-                backgroundColor: "var(--color-tab-button-hover-background)",
+                backgroundColor: "var(--color-sky-950-60)",
               }}
             >
               <GearIcon className="h-6 w-6" />
@@ -240,43 +244,52 @@ export default function Controls() {
                         key="controls-tabs-list"
                         className="flex w-full justify-center py-2"
                       >
-                        <div className="bg-ui-icon-background-a relative flex justify-center gap-1 rounded-xs p-1">
+                        <div className="bg-zinc-950-60 relative flex items-center gap-0.5 rounded-xs p-0.5">
                           <TabButton
                             key="tab-button-clock-controls"
                             tabName="clock-controls"
                             tooltipText="Clock Controls"
+                          />
+                          <Separator.Root
+                            key="tab-button-separator-01"
+                            className="border-control-container-text flex h-2/3 w-px border-l"
                           />
                           <TabButton
                             key="tab-button-simulation-controls"
                             tabName="simulation-controls"
                             tooltipText="Simulation Controls"
                           />
+                          <Separator.Root
+                            key="tab-button-separator-02"
+                            className="border-control-container-text flex h-2/3 w-px border-l"
+                          />
                           <TabButton
                             key="tab-button-color-controls"
                             tabName="color-controls"
                             tooltipText="Color Controls"
                           />
-                          <motion.div
-                            className="text-ui-text-a absolute top-1/2 left-1/2 h-7 w-7 -translate-x-1/2 -translate-y-1/2 transform bg-transparent"
-                            layoutId="tab-button-selected-indicator"
-                            id="tab-button-selected-indicator"
-                          >
-                            <PlusIcon className="stroke-ui-text-a absolute top-0 left-0 z-[1] h-2 w-2 -translate-x-2/3 -translate-y-2/3 transform" />
-                            <PlusIcon className="stroke-ui-text-a absolute top-0 right-0 z-[1] h-2 w-2 translate-x-2/3 -translate-y-2/3 transform" />
-                            <PlusIcon className="stroke-ui-text-a absolute bottom-0 left-0 z-[1] h-2 w-2 -translate-x-2/3 translate-y-2/3 transform" />
-                            <PlusIcon className="stroke-ui-text-a absolute right-0 bottom-0 z-[1] h-2 w-2 translate-x-2/3 translate-y-2/3 transform" />
-                          </motion.div>
+                          <SelectedTabCornerIcons />
                         </div>
                       </Tabs.List>
                     </AnimatePresence>
                   </Tabs.Root>
 
                   <Dialog.Close
+                    asChild
                     key="controls-dialog-close-button"
                     aria-label="Close"
-                    className="bg-tab-button-background absolute top-1.5 right-3 z-[1] inline-flex cursor-pointer appearance-none rounded-full p-1"
                   >
-                    <Cross2Icon className="h-6 w-6" />
+                    <motion.div
+                      className="absolute top-1.5 right-1.5 z-[1] inline-flex cursor-pointer appearance-none rounded-full p-1"
+                      animate={{
+                        backgroundColor: "var(--color-zinc-950-60)",
+                      }}
+                      whileHover={{
+                        backgroundColor: "var(--color-sky-950-60)",
+                      }}
+                    >
+                      <Cross2Icon className="h-6 w-6" />
+                    </motion.div>
                   </Dialog.Close>
                 </motion.div>
               </Dialog.Content>

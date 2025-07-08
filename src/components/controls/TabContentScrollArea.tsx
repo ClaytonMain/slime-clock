@@ -1,31 +1,58 @@
-import { motion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import { ScrollArea } from "radix-ui";
-import type { ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import { ANIMATION_CONFIGS } from "../../constants/constants";
 
 export default function TabContentScrollArea({
   title,
+  titleFontSize = "2xl",
   children,
   childrenPadding,
 }: {
   title?: ReactNode;
+  titleFontSize?: string;
   children?: ReactNode;
   childrenPadding?: string[];
 }) {
+  const scrollbarRef = useRef<HTMLDivElement>(null);
+  const [scrollbarIsVisible, setScrollbarIsVisible] = useState(false);
+
+  useEffect(() => {
+    const timerId = setInterval(() => {
+      if (!scrollbarRef.current) {
+        setScrollbarIsVisible(false);
+      } else {
+        if (scrollbarRef.current.dataset.state === "visible") {
+          setScrollbarIsVisible(true);
+        } else {
+          setScrollbarIsVisible(false);
+        }
+      }
+    }, 100);
+    return () => clearInterval(timerId);
+  }, []);
+
   return (
     <motion.div
       className="flex h-full grow flex-col justify-center"
-      initial={{ backdropFilter: "blur(0px)" }}
-      animate={{ backdropFilter: "blur(10px)" }}
-      exit={{ backdropFilter: "blur(0px)" }}
-      transition={{ duration: 0.3, ease: "easeInOut" }}
+      initial={{ opacity: 0 }}
+      animate={ANIMATION_CONFIGS.flickerIn}
+      exit={ANIMATION_CONFIGS.flickerOut}
+      transition={{ delay: Math.random() * 0.1 + 0.3 }}
     >
       {title && (
-        <div className="bg-control-container-background-c/40 w-full flex-none text-center text-lg font-light">
+        <div
+          className={`w-full flex-none bg-zinc-950/90 text-center font-extralight text-sky-300 select-none text-${titleFontSize}`}
+        >
           {title}
         </div>
       )}
-      <ScrollArea.Root className="bg-control-container-background-c/20 h-64 grow overflow-hidden">
+      <ScrollArea.Root
+        key="scroll-area-root"
+        className="h-0 grow overflow-hidden bg-zinc-950/90"
+      >
         <ScrollArea.Viewport
+          key="scroll-area-viewport"
           className={
             "text-control-container-text flex size-full flex-col text-sm" +
             (childrenPadding ? ` ${childrenPadding.join(" ")}` : "")
@@ -33,19 +60,33 @@ export default function TabContentScrollArea({
         >
           {children}
         </ScrollArea.Viewport>
-        <ScrollArea.Scrollbar
-          className="bg-scrollbar-background z-40 flex touch-none p-0.5 transition-colors duration-[160ms] ease-out select-none data-[orientation=horizontal]:h-2.5 data-[orientation=horizontal]:flex-col data-[orientation=vertical]:w-2.5"
-          orientation="vertical"
-        >
-          <ScrollArea.Thumb className="bg-scrollbar-thumb relative flex-1 rounded-[10px] before:absolute before:top-1/2 before:left-1/2 before:size-full before:min-h-11 before:min-w-11 before:-translate-x-1/2 before:-translate-y-1/2" />
-        </ScrollArea.Scrollbar>
-        <ScrollArea.Scrollbar
-          className="bg-scrollbar-background hover:bg-blackA5 flex touch-none p-0.5 transition-colors duration-[160ms] ease-out select-none data-[orientation=horizontal]:h-2.5 data-[orientation=horizontal]:flex-col data-[orientation=vertical]:w-2.5"
-          orientation="horizontal"
-        >
-          <ScrollArea.Thumb className="bg-scrollbar-thumb relative flex-1 rounded-[10px] before:absolute before:top-1/2 before:left-1/2 before:size-full before:min-h-[44px] before:min-w-[44px] before:-translate-x-1/2 before:-translate-y-1/2" />
-        </ScrollArea.Scrollbar>
-        <ScrollArea.Corner className="bg-scrollbar-background" />
+        <AnimatePresence>
+          <ScrollArea.Scrollbar
+            key="scroll-area-scrollbar-radix"
+            className="z-[3] flex w-2.5 touch-none bg-zinc-950 p-0.5 select-none"
+            orientation="vertical"
+            asChild
+            forceMount
+          >
+            <motion.div
+              ref={scrollbarRef}
+              onViewportEnter={() => setScrollbarIsVisible(true)}
+              key="scroll-area-scrollbar-motion"
+              initial={{ opacity: 0 }}
+              animate={
+                scrollbarIsVisible
+                  ? ANIMATION_CONFIGS.flickerIn
+                  : ANIMATION_CONFIGS.flickerOut
+              }
+              exit={ANIMATION_CONFIGS.flickerOut}
+            >
+              <ScrollArea.Thumb
+                key="scroll-area-thumb"
+                className="bg-scrollbar-thumb relative flex-1 rounded-lg before:absolute before:top-1/2 before:left-1/2 before:size-full before:min-h-11 before:min-w-11 before:-translate-x-1/2 before:-translate-y-1/2"
+              />
+            </motion.div>
+          </ScrollArea.Scrollbar>
+        </AnimatePresence>
       </ScrollArea.Root>
     </motion.div>
   );

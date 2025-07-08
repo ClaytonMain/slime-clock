@@ -3,23 +3,36 @@
 /* @plugin "flowbite/plugin"; */
 /* @source "../node_modules/flowbite"; */
 
-@theme {
-  --color-ui-text-a: #ebf7fe;
-  --color-ui-background-a: #0b3447;
-  --color-ui-icon-background-a: #181a1b;
-  --color-ui-icon-background-b: #0e4a6d;
-  --color-ui-icon-background-c: #135b7c;
+/* Use "sky" for the primary UI elements. */
 
+@font-face {
+  font-family: "ChakraPetch";
+  src:
+    local("ChakraPetch"),
+    url("./fonts/ChakraPetch-Regular.ttf") format("truetype");
+}
+
+@theme {
   --footer-left-label-width: 5rem;
 
-  --color-controls-background: #060709;
+  --color-animatable-transparent: #0000;
 
-  --color-tab-button-background: #181a1b;
-  --color-tab-button-text: #b7e2fd;
-  --color-tab-button-hover-background: #023b5a;
+  --color-zinc-950-90: #09090be6;
+  --color-zinc-950-80: #09090bcc;
+  --color-zinc-950-70: #09090bb3;
+  --color-zinc-950-60: #09090b99;
+
+  --color-sky-950-90: #082f49e6;
+  --color-sky-950-80: #082f49cc;
+  --color-sky-950-70: #082f49b3;
+  --color-sky-950-60: #082f49a9;
+
+  --color-sky-500-90: #0ea5e9e6;
+  --color-sky-500-80: #0ea5e9cc;
+  --color-sky-500-70: #0ea5e9b3;
+  --color-sky-500-60: #0ea5e9a9;
 
   --color-control-container-background-a: #181a1b;
-  --color-control-container-background-b: #125d88;
   --color-control-container-background-c: #d6eeff;
   --color-control-container-text: #ebf7fe;
 
@@ -28,22 +41,9 @@
 
   --color-label-text-a: #ebf7fe;
 
-  --color-tooltip-background: #131516;
-  --color-tooltip-border: #0b3447;
-  --color-tooltip-text: #b7e2fd;
-
   --color-input-background-a: #1b1d1e;
-  --color-input-background-b: #0e4a6d;
-  --color-input-text-a: #d6d3cd;
-  --color-input-text-b: #b7e2fd;
   --color-input-text-c: #ebf7fe;
-  --color-input-border-a: #0b3447;
   --color-input-border-b: #0e4a6d;
-  --color-input-accent-a: #135b7c;
-  --color-input-accent-b: #1c81b0;
-  --color-input-accent-c: #2ba5de;
-  --color-input-accent-d: #72c3e9;
-  --color-input-accent-e: #1c8;
 }
 
 html,
@@ -55,4 +55,5 @@ body,
   padding: 0;
   width: 100vw;
   height: 100vh;
+  font-family: "ChakraPetch", sans-serif;
 }
