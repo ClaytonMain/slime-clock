@@ -13,7 +13,7 @@ import type { SelectOption } from "../../types/types";
 const SelectItem = forwardRef<HTMLDivElement, Select.SelectItemProps>(
   ({ children, ...props }, forwardedRef) => (
     <Select.Item
-      className="text-violet11 data-[highlighted]:bg-violet9 data-[disabled]:text-mauve8 data-[highlighted]:text-violet1 relative flex h-[25px] items-center rounded-[3px] pr-[35px] pl-[25px] text-[13px] leading-none select-none data-[disabled]:pointer-events-none data-[highlighted]:outline-none"
+      className="data-[highlighted]:bg-violet9 data-[disabled]:text-mauve8 data-[highlighted]:text-violet1 relative flex h-[25px] items-center rounded-[3px] pr-[35px] pl-[25px] text-[13px] leading-none text-sky-50 select-none data-[disabled]:pointer-events-none data-[highlighted]:outline-none"
       {...props}
       ref={forwardedRef}
     >
@@ -104,7 +104,7 @@ export default function SlimeStoreSelect({
         {label && (
           <Label.Root
             onPointerOver={handlePointerOver}
-            className="text-label-text-a h-full w-(--footer-left-label-width) flex-none place-content-center p-0.5 text-right text-xs leading-none font-medium"
+            className="h-full w-(--footer-left-label-width) flex-none place-content-center p-0.5 text-right text-xs leading-none font-medium"
             htmlFor={baseInputId}
           >
             {label}
@@ -113,7 +113,7 @@ export default function SlimeStoreSelect({
       </div>
       <Select.Root value={selectedValue} onValueChange={handleOnValueChange}>
         <Select.Trigger
-          className="bg-input-background-a border-input-border-b inline-flex h-7 items-center justify-center gap-1 border px-2 py-1 text-sm leading-none font-medium shadow-[0_2px_10px] shadow-black/10 outline-none"
+          className="inline-flex h-7 items-center justify-center gap-1 border border-sky-600 bg-zinc-900 px-2 py-1 text-sm leading-none font-medium shadow-[0_2px_10px] shadow-black/10 outline-none"
           id={baseInputId}
         >
           <Select.Value placeholder={placeholder} />
@@ -122,8 +122,8 @@ export default function SlimeStoreSelect({
           </Select.Icon>
         </Select.Trigger>
         <Select.Portal>
-          <Select.Content className="text-label-text-a bg-input-background-a overflow-hidden shadow-[0px_10px_38px_-10px_rgba(22,_23,_24,_0.35),0px_10px_20px_-15px_rgba(22,_23,_24,_0.2)]">
-            <Select.ScrollUpButton className="bg-input-background-a flex h-6 cursor-default items-center justify-center">
+          <Select.Content className="overflow-hidden bg-zinc-700">
+            <Select.ScrollUpButton className="flex h-6 cursor-default items-center justify-center bg-zinc-700 text-sky-50">
               <ChevronUpIcon />
             </Select.ScrollUpButton>
             <Select.Viewport className="p-1">
@@ -135,7 +135,7 @@ export default function SlimeStoreSelect({
                 ))}
               </Select.Group>
             </Select.Viewport>
-            <Select.ScrollDownButton className="bg-input-background-a flex h-6 cursor-default items-center justify-center">
+            <Select.ScrollDownButton className="flex h-6 cursor-default items-center justify-center bg-zinc-900">
               <ChevronDownIcon />
             </Select.ScrollDownButton>
           </Select.Content>

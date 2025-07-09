@@ -62,7 +62,7 @@ export default function TabContentDisplayArea() {
     >
       <motion.div
         ref={displayAreaRef}
-        className="border-control-container-text flex h-full w-full items-center border border-dashed"
+        className="flex h-full w-full items-center border border-dashed border-sky-50"
         onViewportEnter={handleViewportEnter}
       >
         {displayAreaContentType === "html" && (

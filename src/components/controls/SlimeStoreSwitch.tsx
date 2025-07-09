@@ -65,7 +65,7 @@ export default function SlimeStoreSwitch({
         {label && (
           <Label.Root
             onPointerOver={handlePointerOver}
-            className="text-label-text-a h-full w-(--footer-left-label-width) flex-none place-content-center p-0.5 text-right text-xs leading-none font-medium"
+            className="h-full w-(--footer-left-label-width) flex-none place-content-center p-0.5 text-right text-xs leading-none font-medium"
             htmlFor={baseId}
           >
             {label}

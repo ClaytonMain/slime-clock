@@ -42,7 +42,7 @@ export default function TabContentScrollArea({
     >
       {title && (
         <div
-          className={`w-full flex-none bg-zinc-950/90 text-center font-extralight text-sky-300 select-none text-${titleFontSize}`}
+          className={`font-display w-full flex-none bg-zinc-950/90 text-center text-sky-300 select-none text-${titleFontSize}`}
         >
           {title}
         </div>
@@ -54,7 +54,7 @@ export default function TabContentScrollArea({
         <ScrollArea.Viewport
           key="scroll-area-viewport"
           className={
-            "text-control-container-text flex size-full flex-col text-sm" +
+            "flex size-full flex-col text-sm text-sky-50" +
             (childrenPadding ? ` ${childrenPadding.join(" ")}` : "")
           }
         >
@@ -82,7 +82,7 @@ export default function TabContentScrollArea({
             >
               <ScrollArea.Thumb
                 key="scroll-area-thumb"
-                className="bg-scrollbar-thumb relative flex-1 rounded-lg before:absolute before:top-1/2 before:left-1/2 before:size-full before:min-h-11 before:min-w-11 before:-translate-x-1/2 before:-translate-y-1/2"
+                className="relative flex-1 rounded-lg bg-sky-600 before:absolute before:top-1/2 before:left-1/2 before:size-full before:min-h-11 before:min-w-11 before:-translate-x-1/2 before:-translate-y-1/2"
               />
             </motion.div>
           </ScrollArea.Scrollbar>

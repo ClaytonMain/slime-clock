@@ -68,7 +68,7 @@ export default function Controls() {
 
   return (
     <Dialog.Root open={isOpen} onOpenChange={handleOpenChange}>
-      <div className="text-control-container-text absolute bottom-0 left-0 flex w-full justify-center gap-3 p-4">
+      <div className="absolute bottom-0 left-0 flex w-full justify-center gap-3 p-4 text-sky-50">
         <TooltipWrapper tooltipText="Open Controls">
           <Dialog.Trigger asChild>
             <motion.div
@@ -97,7 +97,7 @@ export default function Controls() {
               ref={controlsContentOuterContainerRef}
               onViewportEnter={handleControlsContentOuterContainerViewportEnter}
               key="controls-dialog-content-outer-container"
-              className="text-control-container-text fixed top-1/2 left-1/2 flex h-96 max-h-11/12 w-9/12 max-w-2xl -translate-1/2 flex-col rounded-xs"
+              className="fixed top-1/2 left-1/2 flex h-96 max-h-11/12 w-9/12 max-w-2xl -translate-1/2 flex-col rounded-xs text-sky-50"
               exit={{
                 transition: { duration: 0.3, when: "afterChildren" },
               }}
@@ -237,7 +237,7 @@ export default function Controls() {
 
                       <Separator.Root
                         key="tab-content-separator"
-                        className="border-control-container-text h-px w-11/12 border-b"
+                        className="h-px w-11/12 border-b border-sky-50"
                       />
 
                       <Tabs.List
@@ -252,7 +252,7 @@ export default function Controls() {
                           />
                           <Separator.Root
                             key="tab-button-separator-01"
-                            className="border-control-container-text flex h-2/3 w-px border-l"
+                            className="flex h-2/3 w-px border-l border-sky-50"
                           />
                           <TabButton
                             key="tab-button-simulation-controls"
@@ -261,7 +261,7 @@ export default function Controls() {
                           />
                           <Separator.Root
                             key="tab-button-separator-02"
-                            className="border-control-container-text flex h-2/3 w-px border-l"
+                            className="flex h-2/3 w-px border-l border-sky-50"
                           />
                           <TabButton
                             key="tab-button-color-controls"

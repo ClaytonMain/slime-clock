@@ -10,9 +10,12 @@
   src:
     local("ChakraPetch"),
     url("./fonts/ChakraPetch-Regular.ttf") format("truetype");
+  font-weight: normal;
 }
 
 @theme {
+  --font-display: "ChakraPetch", sans-serif;
+
   --footer-left-label-width: 5rem;
 
   --color-animatable-transparent: #0000;
@@ -31,19 +34,6 @@
   --color-sky-500-80: #0ea5e9cc;
   --color-sky-500-70: #0ea5e9b3;
   --color-sky-500-60: #0ea5e9a9;
-
-  --color-control-container-background-a: #181a1b;
-  --color-control-container-background-c: #d6eeff;
-  --color-control-container-text: #ebf7fe;
-
-  --color-scrollbar-background: #0b3447;
-  --color-scrollbar-thumb: #135b7c;
-
-  --color-label-text-a: #ebf7fe;
-
-  --color-input-background-a: #1b1d1e;
-  --color-input-text-c: #ebf7fe;
-  --color-input-border-b: #0e4a6d;
 }
 
 html,

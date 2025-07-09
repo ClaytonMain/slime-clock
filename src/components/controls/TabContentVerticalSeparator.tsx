@@ -4,7 +4,7 @@ export default function TabContentVerticalSeparator() {
   return (
     <Separator.Root
       orientation="horizontal"
-      className="border-control-container-text flex h-11/12 w-px border-r"
+      className="flex h-11/12 w-px border-r border-sky-50"
     />
   );
 }
