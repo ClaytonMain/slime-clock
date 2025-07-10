@@ -4,6 +4,7 @@ import {
   ChevronUpIcon,
 } from "@radix-ui/react-icons";
 import { produce } from "immer";
+import { motion } from "motion/react";
 import { Label, Select } from "radix-ui";
 import * as R from "ramda";
 import { forwardRef, useEffect, useState, type ReactNode } from "react";
@@ -12,15 +13,16 @@ import type { SelectOption } from "../../types/types";
 
 const SelectItem = forwardRef<HTMLDivElement, Select.SelectItemProps>(
   ({ children, ...props }, forwardedRef) => (
-    <Select.Item
-      className="data-[highlighted]:bg-violet9 data-[disabled]:text-mauve8 data-[highlighted]:text-violet1 relative flex h-[25px] items-center rounded-[3px] pr-[35px] pl-[25px] text-[13px] leading-none text-sky-50 select-none data-[disabled]:pointer-events-none data-[highlighted]:outline-none"
-      {...props}
-      ref={forwardedRef}
-    >
-      <Select.ItemText>{children}</Select.ItemText>
-      <Select.ItemIndicator className="absolute left-0 inline-flex w-[25px] items-center justify-center">
-        <CheckIcon />
-      </Select.ItemIndicator>
+    <Select.Item asChild {...props} ref={forwardedRef}>
+      <motion.div
+        className="relative flex h-6 items-center pr-9 pl-6 text-sm leading-none text-sky-50 select-none data-[disabled]:pointer-events-none data-[disabled]:text-zinc-500"
+        whileHover={{ backgroundColor: "var(--color-zinc-800)" }}
+      >
+        <Select.ItemText>{children}</Select.ItemText>
+        <Select.ItemIndicator className="absolute left-0 inline-flex w-[25px] items-center justify-center">
+          <CheckIcon />
+        </Select.ItemIndicator>
+      </motion.div>
     </Select.Item>
   ),
 );
@@ -99,7 +101,7 @@ export default function SlimeStoreSelect({
   }
 
   return (
-    <div className="flex w-full items-center gap-1 p-0.5">
+    <div className="flex w-full items-center gap-1 py-2">
       <div className="flex flex-col items-center p-0.5">
         {label && (
           <Label.Root

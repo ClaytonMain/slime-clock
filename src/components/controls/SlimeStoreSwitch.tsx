@@ -60,7 +60,7 @@ export default function SlimeStoreSwitch({
   }
 
   return (
-    <div className="flex w-full items-center gap-1 p-0.5">
+    <div className="flex w-full items-center gap-1 py-2">
       <div className="flex flex-col items-center p-0.5">
         {label && (
           <Label.Root

@@ -1,6 +1,6 @@
 import { ChevronDownIcon } from "@radix-ui/react-icons";
 import { produce } from "immer";
-import { motion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import { Accordion } from "radix-ui";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import useSlimeStore from "../../stores/useSlimeStore";
@@ -71,9 +71,22 @@ export default function AccordionControlsItem({
           </motion.div>
         </Accordion.Trigger>
       </Accordion.Header>
-      <Accordion.Content className="bg-mauve2 text-mauve11 data-[state=closed]:animate-slideUp data-[state=open]:animate-slideDown overflow-clip py-1 text-[15px]">
-        {children}
-      </Accordion.Content>
+      <AnimatePresence propagate>
+        <Accordion.Content key="accordion-content-radix" asChild forceMount>
+          <motion.div
+            className="flex flex-col overflow-hidden bg-zinc-700 text-sm text-sky-50"
+            key="accordion-content-motion"
+            initial={{ height: 0 }}
+            animate={{
+              height: accordionIsOpen ? "auto" : 0,
+              transition: { duration: 0.3 },
+            }}
+            exit={{ height: 0 }}
+          >
+            {children}
+          </motion.div>
+        </Accordion.Content>
+      </AnimatePresence>
     </Accordion.Item>
   );
 }
