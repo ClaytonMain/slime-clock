@@ -1,10 +1,13 @@
+import { produce } from "immer";
+import { motion } from "motion/react";
 import { Label, Slider } from "radix-ui";
 import * as R from "ramda";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import useSlimeStore from "../../stores/useSlimeStore";
 
 export default function SlimeStoreSlider({
   label,
+  labelHoverTabContentDisplay,
   baseInputId,
   min,
   max,
@@ -15,6 +18,7 @@ export default function SlimeStoreSlider({
   type = "slider",
 }: {
   label?: string;
+  labelHoverTabContentDisplay?: string | [string, string] | ReactNode;
   baseInputId?: string;
   min?: number;
   max?: number;
@@ -64,8 +68,25 @@ export default function SlimeStoreSlider({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  function handlePointerOver() {
+    if (labelHoverTabContentDisplay) {
+      useSlimeStore.setState(
+        produce((state) => {
+          state.controlsState.displayAreaContentName = null;
+          state.controlsState.displayAreaHtmlContent =
+            labelHoverTabContentDisplay;
+          state.controlsState.displayAreaContentType = "html";
+        }),
+      );
+    }
+  }
+
   return (
-    <div className="flex w-full items-center gap-1 py-2">
+    <motion.div
+      onPointerOver={handlePointerOver}
+      whileHover={{ backgroundColor: "#0004" }}
+      className="flex w-full items-center gap-1 py-2.5"
+    >
       <div className="flex flex-col items-center p-0.5">
         {label && (
           <Label.Root
@@ -100,6 +121,6 @@ export default function SlimeStoreSlider({
         </Slider.Track>
         <Slider.Thumb className="shadow-blackA4 hover:bg-violet3 focus:shadow-blackA5 block size-5 rounded-[10px] bg-white shadow-[0_2px_10px] focus:shadow-[0_0_0_5px] focus:outline-none" />
       </Slider.Root>
-    </div>
+    </motion.div>
   );
 }

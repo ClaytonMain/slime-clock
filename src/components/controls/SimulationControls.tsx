@@ -1,4 +1,5 @@
 import { produce } from "immer";
+import { useEffect } from "react";
 import {
   AGENT_START_TYPE_DROPDOWN_OPTIONS,
   SIMULATION_CONTROLS_BOUNDS,
@@ -78,7 +79,25 @@ const trailDisplayTextureResolutionOptions: TrailDisplayTextureResolutionOption[
   ] as const;
 
 export default function SimulationControls() {
-  // const simulationSettings = useSlimeStore((state) => state.simulationSettings);
+  const controlsState = useSlimeStore((state) => state.controlsState);
+
+  const simulationControlsLabelHoverTabContentDisplay = [
+    "Simulation Controls",
+    "Controls related to the simulation.",
+  ];
+
+  useEffect(() => {
+    if (controlsState.selectedTab !== "simulation-controls") return;
+    useSlimeStore.setState(
+      produce((state) => {
+        state.controlsState.displayAreaHtmlContent =
+          simulationControlsLabelHoverTabContentDisplay;
+        state.controlsState.displayAreaContentType = "html";
+        state.controlsState.displayAreaContentName = null;
+      }),
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [controlsState.selectedTab]);
 
   function handleAgentCountChange(value: string) {
     useSlimeStore.setState(

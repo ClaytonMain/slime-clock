@@ -101,11 +101,14 @@ export default function SlimeStoreSelect({
   }
 
   return (
-    <div className="flex w-full items-center gap-1 py-2">
+    <motion.div
+      onPointerOver={handlePointerOver}
+      whileHover={{ backgroundColor: "#0004" }}
+      className="flex w-full items-center gap-1 py-2.5"
+    >
       <div className="flex flex-col items-center p-0.5">
         {label && (
           <Label.Root
-            onPointerOver={handlePointerOver}
             className="h-full w-(--footer-left-label-width) flex-none place-content-center p-0.5 text-right text-xs leading-none font-medium"
             htmlFor={baseInputId}
           >
@@ -143,6 +146,6 @@ export default function SlimeStoreSelect({
           </Select.Content>
         </Select.Portal>
       </Select.Root>
-    </div>
+    </motion.div>
   );
 }

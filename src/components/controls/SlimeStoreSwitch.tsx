@@ -1,4 +1,5 @@
 import { produce } from "immer";
+import { motion } from "motion/react";
 import { Label, Switch } from "radix-ui";
 import * as R from "ramda";
 import { useEffect, useState, type ReactNode } from "react";
@@ -60,11 +61,14 @@ export default function SlimeStoreSwitch({
   }
 
   return (
-    <div className="flex w-full items-center gap-1 py-2">
+    <motion.div
+      onPointerOver={handlePointerOver}
+      whileHover={{ backgroundColor: "#0004" }}
+      className="flex w-full items-center gap-1 py-2.5"
+    >
       <div className="flex flex-col items-center p-0.5">
         {label && (
           <Label.Root
-            onPointerOver={handlePointerOver}
             className="h-full w-(--footer-left-label-width) flex-none place-content-center p-0.5 text-right text-xs leading-none font-medium"
             htmlFor={baseId}
           >
@@ -80,6 +84,6 @@ export default function SlimeStoreSwitch({
       >
         <Switch.Thumb className="shadow-blackA4 block size-[21px] translate-x-0.5 rounded-full bg-white shadow-[0_2px_2px] transition-transform duration-100 will-change-transform data-[state=checked]:translate-x-[19px]" />
       </Switch.Root>
-    </div>
+    </motion.div>
   );
 }

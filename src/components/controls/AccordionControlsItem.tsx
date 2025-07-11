@@ -10,11 +10,13 @@ export default function AccordionControlsItem({
   label,
   labelHoverTabContentDisplay,
   children,
+  padContent = true,
 }: {
   value: string;
   label: string;
   labelHoverTabContentDisplay?: string | [string, string] | ReactNode;
   children: ReactNode;
+  padContent?: boolean;
 }) {
   const accordionTriggerRef = useRef<HTMLButtonElement>(null);
   const [accordionIsOpen, setAccordionIsOpen] = useState<boolean>(false);
@@ -56,7 +58,13 @@ export default function AccordionControlsItem({
         <Accordion.Trigger ref={accordionTriggerRef} asChild>
           <motion.div
             onPointerOver={handlePointerOver}
-            className="group flex h-11 flex-1 cursor-pointer items-center justify-between bg-zinc-900 px-5 text-sm leading-none shadow-2xs shadow-zinc-950 outline-none select-none"
+            style={{
+              backgroundColor: "var(--color-zinc-900)",
+            }}
+            whileHover={{
+              backgroundColor: "var(--color-zinc-800)",
+            }}
+            className="group flex h-11 flex-1 cursor-pointer items-center justify-between px-5 text-sm leading-none shadow-2xs shadow-zinc-950 outline-none select-none"
           >
             {label}
             <motion.div
@@ -74,7 +82,10 @@ export default function AccordionControlsItem({
       <AnimatePresence propagate>
         <Accordion.Content key="accordion-content-radix" asChild forceMount>
           <motion.div
-            className="flex flex-col overflow-hidden bg-zinc-700 text-sm text-sky-50"
+            className={
+              "flex flex-col overflow-hidden border-l-8 border-zinc-900 bg-zinc-700 text-sm text-sky-50" +
+              (padContent ? " before:pt-0.5 after:pb-0.5" : "")
+            }
             key="accordion-content-motion"
             initial={{ height: 0 }}
             animate={{

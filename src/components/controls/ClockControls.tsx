@@ -1,4 +1,7 @@
+import { produce } from "immer";
+import { useEffect } from "react";
 import { CLOCK_CONTROLS_BOUNDS } from "../../constants/constants";
+import useSlimeStore from "../../stores/useSlimeStore";
 import type { ClockFormatValue, ClockStyleValue } from "../../types/types";
 import AccordionControlsItem from "./AccordionControlsItem";
 import AccordionControlsWrapper from "./AccordionControlsWrapper";
@@ -34,6 +37,26 @@ const clockFormatOptions: ClockFormatOption[] = [
 ] as const;
 
 export default function ClockControls() {
+  const controlsState = useSlimeStore((state) => state.controlsState);
+
+  const clockControlsLabelHoverTabContentDisplay = [
+    "Clock",
+    "Controls related to the clock display.",
+  ];
+
+  useEffect(() => {
+    if (controlsState.selectedTab !== "clock-controls") return;
+    useSlimeStore.setState(
+      produce((state) => {
+        state.controlsState.displayAreaHtmlContent =
+          clockControlsLabelHoverTabContentDisplay;
+        state.controlsState.displayAreaContentType = "html";
+        state.controlsState.displayAreaContentName = null;
+      }),
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [controlsState.selectedTab]);
+
   return (
     <TabContentContainer tabsValue="clock-controls">
       <TabContentScrollArea title="Clock">
@@ -41,13 +64,23 @@ export default function ClockControls() {
           type="multiple"
           defaultValue={["clock-settings"]}
         >
-          <AccordionControlsItem value="clock-settings" label="Clock Settings">
+          <AccordionControlsItem
+            value="clock-settings"
+            label="Clock Settings"
+            labelHoverTabContentDisplay={
+              clockControlsLabelHoverTabContentDisplay
+            }
+          >
             <SlimeStoreSelect
               label="Style"
               baseInputId="clock-style-select"
               placeholder="Clock Style"
               storePath={["clockSettings", "style"]}
               options={clockStyleOptions}
+              labelHoverTabContentDisplay={[
+                "Clock Style",
+                "Changes the style of the clock display.",
+              ]}
             />
             <SlimeStoreSelect
               label="Format"
@@ -55,6 +88,10 @@ export default function ClockControls() {
               placeholder="Clock Format"
               storePath={["clockSettings", "format"]}
               options={clockFormatOptions}
+              labelHoverTabContentDisplay={[
+                "Clock Format",
+                "Changes the format of the clock display.",
+              ]}
             />
             <SlimeStoreSlider
               label="Size"
@@ -63,6 +100,25 @@ export default function ClockControls() {
               max={CLOCK_CONTROLS_BOUNDS.size!.max}
               step={1}
               storePath={["clockSettings", "size"]}
+              labelHoverTabContentDisplay={[
+                "Clock Size",
+                <div className="px-2 py-1">
+                  Changes the size of the clock display. Values are a percentage
+                  of screen space (by height), where
+                  <span className="mx-1 rounded-xs bg-[#fff4] px-1 py-0.5 font-mono">
+                    1
+                  </span>
+                  would be practically invisible,
+                  <span className="mx-1 rounded-xs bg-[#fff4] px-1 py-0.5 font-mono">
+                    50
+                  </span>
+                  would fill half the screen, and
+                  <span className="mx-1 rounded-xs bg-[#fff4] px-1 py-0.5 font-mono">
+                    100
+                  </span>
+                  would fill the entire screen height.
+                </div>,
+              ]}
             />
           </AccordionControlsItem>
         </AccordionControlsWrapper>

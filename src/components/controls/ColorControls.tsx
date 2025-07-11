@@ -1,5 +1,6 @@
 import { produce } from "immer";
 import * as R from "ramda";
+import { useEffect } from "react";
 import useSlimeStore from "../../stores/useSlimeStore";
 import AccordionControlsItem from "./AccordionControlsItem";
 import AccordionControlsWrapper from "./AccordionControlsWrapper";
@@ -8,6 +9,26 @@ import TabContentContainer from "./TabContentContainer";
 import TabContentScrollArea from "./TabContentScrollArea";
 
 export default function ColorControls() {
+  const controlsState = useSlimeStore((state) => state.controlsState);
+
+  const colorControlsLabelHoverTabContentDisplay = [
+    "Color Controls",
+    "Controls related to the color settings.",
+  ];
+
+  useEffect(() => {
+    if (controlsState.selectedTab !== "color-controls") return;
+    useSlimeStore.setState(
+      produce((state) => {
+        state.controlsState.displayAreaHtmlContent =
+          colorControlsLabelHoverTabContentDisplay;
+        state.controlsState.displayAreaContentType = "html";
+        state.controlsState.displayAreaContentName = null;
+      }),
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [controlsState.selectedTab]);
+
   function handleOnValueChange(value: number[], storePath: string[]) {
     useSlimeStore.setState(
       produce((state) => {
@@ -29,6 +50,7 @@ export default function ColorControls() {
           <AccordionControlsItem
             value="procedural-color-palette"
             label="Procedural Color Palette"
+            padContent={false}
           >
             <AccordionControlsWrapper type="multiple" defaultValue={["red"]}>
               <AccordionControlsItem value="red" label="Red">
