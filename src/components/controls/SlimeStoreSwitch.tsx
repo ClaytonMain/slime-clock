@@ -64,7 +64,7 @@ export default function SlimeStoreSwitch({
     <motion.div
       onPointerOver={handlePointerOver}
       whileHover={{ backgroundColor: "#0004" }}
-      className="flex w-full items-center gap-1 py-2.5"
+      className="flex w-full items-center gap-1 py-2"
     >
       <div className="flex flex-col items-center p-0.5">
         {label && (

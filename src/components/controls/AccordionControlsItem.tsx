@@ -54,7 +54,7 @@ export default function AccordionControlsItem({
       value={value}
       className="overflow-clip focus-within:relative"
     >
-      <Accordion.Header className="sticky top-0 z-[2] flex">
+      <Accordion.Header className="sticky top-0 z-[2] flex drop-shadow-lg/25">
         <Accordion.Trigger ref={accordionTriggerRef} asChild>
           <motion.div
             onPointerOver={handlePointerOver}
@@ -64,7 +64,7 @@ export default function AccordionControlsItem({
             whileHover={{
               backgroundColor: "var(--color-zinc-800)",
             }}
-            className="group flex h-11 flex-1 cursor-pointer items-center justify-between px-5 text-sm leading-none shadow-2xs shadow-zinc-950 outline-none select-none"
+            className="group flex h-11 flex-1 cursor-pointer items-center justify-between px-5 text-sm leading-none outline-none select-none"
           >
             {label}
             <motion.div
@@ -83,7 +83,7 @@ export default function AccordionControlsItem({
         <Accordion.Content key="accordion-content-radix" asChild forceMount>
           <motion.div
             className={
-              "flex flex-col overflow-hidden border-l-8 border-zinc-900 bg-zinc-700 text-sm text-sky-50" +
+              "flex flex-col overflow-hidden border-l-8 border-zinc-900 bg-sky-200/20 text-sky-50 drop-shadow-lg/25" +
               (padContent ? " before:pt-0.5 after:pb-0.5" : "")
             }
             key="accordion-content-motion"

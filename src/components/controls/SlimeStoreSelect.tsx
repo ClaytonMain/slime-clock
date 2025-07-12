@@ -104,7 +104,7 @@ export default function SlimeStoreSelect({
     <motion.div
       onPointerOver={handlePointerOver}
       whileHover={{ backgroundColor: "#0004" }}
-      className="flex w-full items-center gap-1 py-2.5"
+      className="flex w-full items-center gap-1 py-2"
     >
       <div className="flex flex-col items-center p-0.5">
         {label && (
@@ -118,7 +118,7 @@ export default function SlimeStoreSelect({
       </div>
       <Select.Root value={selectedValue} onValueChange={handleOnValueChange}>
         <Select.Trigger
-          className="inline-flex h-7 items-center justify-center gap-1 border border-sky-600 bg-zinc-900 px-2 py-1 text-sm leading-none font-medium shadow-[0_2px_10px] shadow-black/10 outline-none"
+          className="inline-flex h-7 items-center justify-center gap-1 border border-sky-800 bg-zinc-900 px-2 py-1 text-sm leading-none font-medium shadow-[0_2px_10px] shadow-black/10 outline-none"
           id={baseInputId}
         >
           <Select.Value placeholder={placeholder} />

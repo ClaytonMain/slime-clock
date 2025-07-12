@@ -85,7 +85,7 @@ export default function SlimeStoreSlider({
     <motion.div
       onPointerOver={handlePointerOver}
       whileHover={{ backgroundColor: "#0004" }}
-      className="flex w-full items-center gap-1 py-2.5"
+      className="flex w-full items-center gap-1 py-2"
     >
       <div className="flex flex-col items-center p-0.5">
         {label && (
@@ -105,7 +105,7 @@ export default function SlimeStoreSlider({
         min={min}
         max={max}
         step={step}
-        className="h-7 w-18 flex-initial border border-sky-600 bg-zinc-900 px-2 py-1 text-sm text-sky-50"
+        className="h-7 w-18 flex-initial border border-sky-800 bg-zinc-900 px-2 py-1 text-sm text-sky-50"
       />
       <Slider.Root
         id={sliderId}
@@ -116,10 +116,16 @@ export default function SlimeStoreSlider({
         step={step}
         className="relative z-0 mr-4 flex h-5 grow touch-none items-center select-none"
       >
-        <Slider.Track className="relative h-1 grow bg-zinc-900">
-          <Slider.Range className="absolute h-full rounded-full bg-white" />
+        <Slider.Track className="relative h-1.5 grow rounded-full border border-sky-800 bg-zinc-900">
+          <Slider.Range className="absolute h-full rounded-full bg-sky-500" />
         </Slider.Track>
-        <Slider.Thumb className="shadow-blackA4 hover:bg-violet3 focus:shadow-blackA5 block size-5 rounded-[10px] bg-white shadow-[0_2px_10px] focus:shadow-[0_0_0_5px] focus:outline-none" />
+        <Slider.Thumb asChild>
+          <motion.div
+            className="block size-5 rounded-[10px] focus:shadow-[0_0_0_5px] focus:shadow-sky-600 focus:outline-none"
+            whileHover={{ backgroundColor: "var(--color-sky-100)" }}
+            style={{ backgroundColor: "var(--color-sky-50)" }}
+          />
+        </Slider.Thumb>
       </Slider.Root>
     </motion.div>
   );

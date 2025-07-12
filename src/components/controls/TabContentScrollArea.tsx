@@ -43,14 +43,14 @@ export default function TabContentScrollArea({
       {title && (
         <div
           style={{ fontSize: titleFontSize }}
-          className="font-display w-full flex-none bg-zinc-950/90 py-1 text-center text-sky-300 select-none"
+          className="font-display w-full flex-none bg-zinc-950/80 py-1 text-center text-sky-300 select-none"
         >
           {title}
         </div>
       )}
       <ScrollArea.Root
         key="scroll-area-root"
-        className="h-0 grow overflow-hidden bg-zinc-950/90"
+        className="h-0 grow overflow-hidden bg-zinc-900/80"
       >
         <ScrollArea.Viewport
           key="scroll-area-viewport"
