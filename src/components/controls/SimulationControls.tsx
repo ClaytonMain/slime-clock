@@ -10,6 +10,7 @@ import type {
   SimulationQuality,
   TrailDisplayTextureResolution,
 } from "../../types/types";
+import CodeBlock from "../code-block/CodeBlock";
 import AccordionControlsItem from "./AccordionControlsItem";
 import AccordionControlsWrapper from "./AccordionControlsWrapper";
 import SlimeStoreSelect from "./SlimeStoreSelect";
@@ -130,7 +131,11 @@ export default function SimulationControls() {
             label="Quick Settings"
             labelHoverTabContentDisplay={[
               "Quick Settings",
-              "Contains quick access to common simulation settings.",
+              <div className="px-2 py-1">
+                <ul className="list-inside list-disc">
+                  <li>Simulation Quality</li>
+                </ul>
+              </div>,
             ]}
           >
             <SlimeStoreSelect
@@ -149,6 +154,16 @@ export default function SimulationControls() {
           <AccordionControlsItem
             value="simulation-settings"
             label="Simulation Settings"
+            labelHoverTabContentDisplay={[
+              "Simulation Settings",
+              <div className="px-2 py-1">
+                <ul className="list-inside list-disc">
+                  <li>Simulation Speed</li>
+                  <li>Randomization Enabled</li>
+                  <li>Randomization Interval</li>
+                </ul>
+              </div>,
+            ]}
           >
             <SlimeStoreSlider
               label="Simulation Speed"
@@ -159,7 +174,7 @@ export default function SimulationControls() {
               storePath={["simulationSettings", "speed"]}
               labelHoverTabContentDisplay={[
                 "Simulation Speed",
-                "Controls the speed of the simulation.",
+                "Controls the speed of the entire simulation.",
               ]}
             />
             <SlimeStoreSwitch
@@ -173,6 +188,10 @@ export default function SimulationControls() {
             />
             <SlimeStoreSlider
               label="Randomization Interval"
+              labelHoverTabContentDisplay={[
+                "Randomization Interval",
+                "Controls how often the simulation randomizes its parameters. Interval is in seconds.",
+              ]}
               baseInputId="randomization-interval-slider"
               min={SIMULATION_CONTROLS_BOUNDS.randomizationInterval!.min}
               max={SIMULATION_CONTROLS_BOUNDS.randomizationInterval!.max}
@@ -181,7 +200,34 @@ export default function SimulationControls() {
             />
           </AccordionControlsItem>
 
-          <AccordionControlsItem value="agent-settings" label="Agent Settings">
+          <AccordionControlsItem
+            value="agent-settings"
+            label="Agent Settings"
+            labelHoverTabContentDisplay={[
+              "Agent Settings",
+              <div className="px-2 py-1">
+                <CodeBlock>Agents</CodeBlock> move around within the simulation,
+                depositing "pheramones" on the trail layer while sensing and
+                reacting to pheramone concentrations left by other agents.
+                <br />
+                <br />
+                This accordian contains the following settings controlling the
+                agents:
+                <ul className="list-inside list-disc">
+                  <li>Count</li>
+                  <li>Start Type</li>
+                  <li>Deposit Rate</li>
+                  <li>Sensor Degrees</li>
+                  <li>Rotation Rate</li>
+                  <li>Sensor Offset</li>
+                  <li>Sensor Width</li>
+                  <li>Step Size</li>
+                  <li>Crowd Avoidance</li>
+                  <li>Wander Strength</li>
+                </ul>
+              </div>,
+            ]}
+          >
             <SlimeStoreSelect
               label="Count"
               baseInputId="agent-count-select"

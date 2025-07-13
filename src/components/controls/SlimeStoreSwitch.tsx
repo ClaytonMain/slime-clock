@@ -83,14 +83,23 @@ export default function SlimeStoreSwitch({
         asChild
       >
         <motion.div
-          className="relative h-[25px] w-[42px] cursor-pointer rounded-full"
+          className="flex h-6 w-12 cursor-pointer items-center rounded-full p-0.5"
           animate={{
             backgroundColor: checked
               ? "var(--color-sky-500)"
               : "var(--color-zinc-900)",
           }}
+          style={{
+            justifyContent: checked ? "flex-end" : "flex-start",
+          }}
         >
-          <Switch.Thumb className="block size-[21px] translate-x-0.5 rounded-full bg-white shadow-[0_2px_2px] transition-transform duration-100 will-change-transform data-[state=checked]:translate-x-[19px]" />
+          <Switch.Thumb asChild>
+            <motion.div
+              className="h-5 w-5 rounded-full bg-white"
+              transition={{ type: "spring", visualDuration: 0.3, bounce: 0.2 }}
+              layout
+            />
+          </Switch.Thumb>
         </motion.div>
       </Switch.Root>
     </motion.div>
