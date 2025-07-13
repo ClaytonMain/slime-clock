@@ -14,6 +14,7 @@ import AccordionControlsItem from "./AccordionControlsItem";
 import AccordionControlsWrapper from "./AccordionControlsWrapper";
 import SlimeStoreSelect from "./SlimeStoreSelect";
 import SlimeStoreSlider from "./SlimeStoreSlider";
+import SlimeStoreSwitch from "./SlimeStoreSwitch";
 import TabContentContainer from "./TabContentContainer";
 import TabContentScrollArea from "./TabContentScrollArea";
 
@@ -124,7 +125,14 @@ export default function SimulationControls() {
     <TabContentContainer tabsValue="simulation-controls">
       <TabContentScrollArea title="Simulation">
         <AccordionControlsWrapper type="multiple">
-          <AccordionControlsItem value="quick-settings" label="Quick Settings">
+          <AccordionControlsItem
+            value="quick-settings"
+            label="Quick Settings"
+            labelHoverTabContentDisplay={[
+              "Quick Settings",
+              "Contains quick access to common simulation settings.",
+            ]}
+          >
             <SlimeStoreSelect
               label="Simulation Quality"
               labelHoverTabContentDisplay={[
@@ -149,8 +157,20 @@ export default function SimulationControls() {
               max={SIMULATION_CONTROLS_BOUNDS.speed!.max}
               step={0.1}
               storePath={["simulationSettings", "speed"]}
+              labelHoverTabContentDisplay={[
+                "Simulation Speed",
+                "Controls the speed of the simulation.",
+              ]}
             />
-            {/* TODO: Add randomization toggle. */}
+            <SlimeStoreSwitch
+              label="Rand. Enabled"
+              labelHoverTabContentDisplay={[
+                "Randomization Enabled",
+                "Enables the simulation to randomize its parameters at set intervals. Interval is set using the 'Randomization Interval' slider.",
+              ]}
+              baseId="randomization-enabled-switch"
+              storePath={["simulationSettings", "randomizationEnabled"]}
+            />
             <SlimeStoreSlider
               label="Randomization Interval"
               baseInputId="randomization-interval-slider"

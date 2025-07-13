@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { CLOCK_CONTROLS_BOUNDS } from "../../constants/constants";
 import useSlimeStore from "../../stores/useSlimeStore";
 import type { ClockFormatValue, ClockStyleValue } from "../../types/types";
+import CodeBlock from "../code-block/CodeBlock";
 import AccordionControlsItem from "./AccordionControlsItem";
 import AccordionControlsWrapper from "./AccordionControlsWrapper";
 import SlimeStoreSelect from "./SlimeStoreSelect";
@@ -105,17 +106,11 @@ export default function ClockControls() {
                 <div className="px-2 py-1">
                   Changes the size of the clock display. Values are a percentage
                   of screen space (by height), where
-                  <span className="mx-1 rounded-xs bg-[#fff4] px-1 py-0.5 font-mono">
-                    1
-                  </span>
+                  <CodeBlock>1</CodeBlock>
                   would be practically invisible,
-                  <span className="mx-1 rounded-xs bg-[#fff4] px-1 py-0.5 font-mono">
-                    50
-                  </span>
+                  <CodeBlock>50</CodeBlock>
                   would fill half the screen, and
-                  <span className="mx-1 rounded-xs bg-[#fff4] px-1 py-0.5 font-mono">
-                    100
-                  </span>
+                  <CodeBlock>100</CodeBlock>
                   would fill the entire screen height.
                 </div>,
               ]}

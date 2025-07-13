@@ -78,11 +78,20 @@ export default function SlimeStoreSwitch({
       </div>
       <Switch.Root
         id={baseId}
-        className="bg-blackA6 shadow-blackA4 relative h-[25px] w-[42px] cursor-default rounded-full shadow-[0_2px_10px] outline-none focus:shadow-[0_0_0_2px] focus:shadow-black data-[state=checked]:bg-black"
         checked={checked}
         onCheckedChange={handleOnCheckedChange}
+        asChild
       >
-        <Switch.Thumb className="shadow-blackA4 block size-[21px] translate-x-0.5 rounded-full bg-white shadow-[0_2px_2px] transition-transform duration-100 will-change-transform data-[state=checked]:translate-x-[19px]" />
+        <motion.div
+          className="relative h-[25px] w-[42px] cursor-pointer rounded-full"
+          animate={{
+            backgroundColor: checked
+              ? "var(--color-sky-500)"
+              : "var(--color-zinc-900)",
+          }}
+        >
+          <Switch.Thumb className="block size-[21px] translate-x-0.5 rounded-full bg-white shadow-[0_2px_2px] transition-transform duration-100 will-change-transform data-[state=checked]:translate-x-[19px]" />
+        </motion.div>
       </Switch.Root>
     </motion.div>
   );
