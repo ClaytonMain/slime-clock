@@ -2,7 +2,7 @@ import { produce } from "immer";
 import { useEffect } from "react";
 import {
   AGENT_START_TYPE_DROPDOWN_OPTIONS,
-  SIMULATION_CONTROLS_BOUNDS,
+  SIMULATION_CONTROLS_CONFIGS,
 } from "../../constants/constants";
 import useSlimeStore from "../../stores/useSlimeStore";
 import type {
@@ -13,6 +13,7 @@ import type {
 import CodeBlock from "../code-block/CodeBlock";
 import AccordionControlsItem from "./AccordionControlsItem";
 import AccordionControlsWrapper from "./AccordionControlsWrapper";
+import HeightScaledPixelValueDisplay from "./HeightScaledPixelValueDisplay";
 import SlimeStoreSelect from "./SlimeStoreSelect";
 import SlimeStoreSlider from "./SlimeStoreSlider";
 import SlimeStoreSwitch from "./SlimeStoreSwitch";
@@ -81,7 +82,7 @@ const trailDisplayTextureResolutionOptions: TrailDisplayTextureResolutionOption[
   ] as const;
 
 export default function SimulationControls() {
-  const controlsState = useSlimeStore((state) => state.controlsState);
+  const selectedTab = useSlimeStore((state) => state.controlsState.selectedTab);
 
   const simulationControlsLabelHoverTabContentDisplay = [
     "Simulation Controls",
@@ -89,7 +90,7 @@ export default function SimulationControls() {
   ];
 
   useEffect(() => {
-    if (controlsState.selectedTab !== "simulation-controls") return;
+    if (selectedTab !== "simulation-controls") return;
     useSlimeStore.setState(
       produce((state) => {
         state.controlsState.displayAreaHtmlContent =
@@ -99,7 +100,7 @@ export default function SimulationControls() {
       }),
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [controlsState.selectedTab]);
+  }, [selectedTab]);
 
   function handleAgentCountChange(value: string) {
     useSlimeStore.setState(
@@ -168,9 +169,9 @@ export default function SimulationControls() {
             <SlimeStoreSlider
               label="Simulation Speed"
               baseInputId="simulation-speed-slider"
-              min={SIMULATION_CONTROLS_BOUNDS.speed!.min}
-              max={SIMULATION_CONTROLS_BOUNDS.speed!.max}
-              step={0.1}
+              min={SIMULATION_CONTROLS_CONFIGS.speed!.min}
+              max={SIMULATION_CONTROLS_CONFIGS.speed!.max}
+              step={SIMULATION_CONTROLS_CONFIGS.speed!.step}
               storePath={["simulationSettings", "speed"]}
               labelHoverTabContentDisplay={[
                 "Simulation Speed",
@@ -193,9 +194,9 @@ export default function SimulationControls() {
                 "Controls how often the simulation randomizes its parameters. Interval is in seconds.",
               ]}
               baseInputId="randomization-interval-slider"
-              min={SIMULATION_CONTROLS_BOUNDS.randomizationInterval!.min}
-              max={SIMULATION_CONTROLS_BOUNDS.randomizationInterval!.max}
-              step={10}
+              min={SIMULATION_CONTROLS_CONFIGS.randomizationInterval!.min}
+              max={SIMULATION_CONTROLS_CONFIGS.randomizationInterval!.max}
+              step={SIMULATION_CONTROLS_CONFIGS.randomizationInterval!.step}
               storePath={["simulationSettings", "randomizationInterval"]}
             />
           </AccordionControlsItem>
@@ -207,8 +208,8 @@ export default function SimulationControls() {
               "Agent Settings",
               <div className="px-2 py-1">
                 <CodeBlock>Agents</CodeBlock> move around within the simulation,
-                depositing "pheramones" on the trail layer while sensing and
-                reacting to pheramone concentrations left by other agents.
+                depositing "pheromones" on the trail layer while sensing and
+                reacting to pheromone concentrations left by other agents.
                 <br />
                 <br />
                 This accordian contains the following settings controlling the
@@ -230,6 +231,10 @@ export default function SimulationControls() {
           >
             <SlimeStoreSelect
               label="Count"
+              labelHoverTabContentDisplay={[
+                "Agent Count",
+                "Controls the number of agents in the simulation. Higher values will increase the load on the GPU. Please note: a higher agent count won't always result in a better simulation since the agents need room to move around.",
+              ]}
               baseInputId="agent-count-select"
               placeholder="Agent Count"
               storePath={["simulationSettings", "agentCount"]}
@@ -238,6 +243,10 @@ export default function SimulationControls() {
             />
             <SlimeStoreSelect
               label="Start Type"
+              labelHoverTabContentDisplay={[
+                "Agent Start Type",
+                'Controls how agents are spawned into the simulation. "Fill" will spawn agents evenly across the display area, which can be good for testing how different settings affect the clock display. Other starting patterns may be more interesting, but may not fill the clock display evenly at first.',
+              ]}
               baseInputId="agent-start-type-select"
               placeholder="Agent Start Type"
               storePath={["simulationSettings", "agentStartType"]}
@@ -246,71 +255,135 @@ export default function SimulationControls() {
             />
             <SlimeStoreSlider
               label="Deposit Rate"
+              labelHoverTabContentDisplay={[
+                "Agent Deposit Rate",
+                "Controls how much pheromone is deposited by each agent [TODO: WHEN?].",
+              ]}
               baseInputId="agent-deposit-rate-slider"
-              min={SIMULATION_CONTROLS_BOUNDS.agentDepositRate!.min}
-              max={SIMULATION_CONTROLS_BOUNDS.agentDepositRate!.max}
-              step={0.1}
+              min={SIMULATION_CONTROLS_CONFIGS.agentDepositRate!.min}
+              max={SIMULATION_CONTROLS_CONFIGS.agentDepositRate!.max}
+              step={SIMULATION_CONTROLS_CONFIGS.agentDepositRate!.step}
               storePath={["simulationSettings", "agentDepositRate"]}
             />
             <SlimeStoreSlider
               label="Sensor Degrees"
+              labelHoverTabContentDisplay={[
+                "Agent Sensor Degrees",
+                "Controls how far to the left and right each agent's sensors are positioned. TODO: Describe the effect of the min/max values.",
+              ]}
               baseInputId="agent-sensor-degrees-slider"
-              min={SIMULATION_CONTROLS_BOUNDS.agentSensorDegrees!.min}
-              max={SIMULATION_CONTROLS_BOUNDS.agentSensorDegrees!.max}
-              step={1}
+              min={SIMULATION_CONTROLS_CONFIGS.agentSensorDegrees!.min}
+              max={SIMULATION_CONTROLS_CONFIGS.agentSensorDegrees!.max}
+              step={SIMULATION_CONTROLS_CONFIGS.agentSensorDegrees!.step}
               storePath={["simulationSettings", "agentSensorDegrees"]}
             />
             <SlimeStoreSlider
               label="Rotation Rate"
+              labelHoverTabContentDisplay={[
+                "Agent Rotation Rate",
+                "Controls how quickly each agent can rotate. TODO: Describe the effect of the min/max values.",
+              ]}
               baseInputId="agent-rotation-rate-slider"
-              min={SIMULATION_CONTROLS_BOUNDS.agentRotationRate!.min}
-              max={SIMULATION_CONTROLS_BOUNDS.agentRotationRate!.max}
-              step={0.1}
+              min={SIMULATION_CONTROLS_CONFIGS.agentRotationRate!.min}
+              max={SIMULATION_CONTROLS_CONFIGS.agentRotationRate!.max}
+              step={SIMULATION_CONTROLS_CONFIGS.agentRotationRate!.step}
               storePath={["simulationSettings", "agentRotationRate"]}
             />
             <SlimeStoreSlider
               label="Sensor Offset"
+              labelHoverTabContentDisplay={[
+                "Agent Sensor Offset",
+                <HeightScaledPixelValueDisplay
+                  storePath={["simulationSettings", "agentSensorOffset"]}
+                  description="Controls how far each agent's sensors are from their center. TODO: Explain what that means. For consistency across resolutions, the slider value is a percentage of the display height."
+                />,
+              ]}
               baseInputId="agent-sensor-offset-slider"
-              min={SIMULATION_CONTROLS_BOUNDS.agentSensorOffset!.min}
-              max={SIMULATION_CONTROLS_BOUNDS.agentSensorOffset!.max}
-              step={0.1}
+              min={SIMULATION_CONTROLS_CONFIGS.agentSensorOffset!.min}
+              max={SIMULATION_CONTROLS_CONFIGS.agentSensorOffset!.max}
+              step={SIMULATION_CONTROLS_CONFIGS.agentSensorOffset!.step}
               storePath={["simulationSettings", "agentSensorOffset"]}
             />
             <SlimeStoreSlider
               label="Sensor Width"
+              labelHoverTabContentDisplay={[
+                "Agent Sensor Width",
+                <HeightScaledPixelValueDisplay
+                  storePath={["simulationSettings", "agentSensorWidth"]}
+                  description="The width of each agent's sensors. TODO: Explain what that means. For consistency across resolutions, the slider value is a percentage of the display height."
+                />,
+              ]}
               baseInputId="agent-sensor-width-slider"
-              min={SIMULATION_CONTROLS_BOUNDS.agentSensorWidth!.min}
-              max={SIMULATION_CONTROLS_BOUNDS.agentSensorWidth!.max}
-              step={0.1}
+              min={SIMULATION_CONTROLS_CONFIGS.agentSensorWidth!.min}
+              max={SIMULATION_CONTROLS_CONFIGS.agentSensorWidth!.max}
+              step={SIMULATION_CONTROLS_CONFIGS.agentSensorWidth!.step}
               storePath={["simulationSettings", "agentSensorWidth"]}
             />
             <SlimeStoreSlider
               label="Step Size"
+              labelHoverTabContentDisplay={[
+                "Agent Step Size",
+                <HeightScaledPixelValueDisplay
+                  storePath={["simulationSettings", "agentStepSize"]}
+                  description="The distance each agent moves forward in a single step. For consistency across resolutions, the slider value is a percentage of the display height."
+                />,
+              ]}
               baseInputId="agent-step-size-slider"
-              min={SIMULATION_CONTROLS_BOUNDS.agentStepSize!.min}
-              max={SIMULATION_CONTROLS_BOUNDS.agentStepSize!.max}
-              step={0.1}
+              min={SIMULATION_CONTROLS_CONFIGS.agentStepSize!.min}
+              max={SIMULATION_CONTROLS_CONFIGS.agentStepSize!.max}
+              step={SIMULATION_CONTROLS_CONFIGS.agentStepSize!.step}
               storePath={["simulationSettings", "agentStepSize"]}
             />
             <SlimeStoreSlider
               label="Crowd Avoidance"
+              labelHoverTabContentDisplay={[
+                "Agent Crowd Avoidance",
+                "Controls how much each agent tries to avoid crowds. TODO: Describe this better; it's an avoidance, but also changes how the pheromones are deposited.",
+              ]}
               baseInputId="agent-crowd-avoidance-slider"
-              min={SIMULATION_CONTROLS_BOUNDS.agentCrowdAvoidance!.min}
-              max={SIMULATION_CONTROLS_BOUNDS.agentCrowdAvoidance!.max}
-              step={0.01}
+              min={SIMULATION_CONTROLS_CONFIGS.agentCrowdAvoidance!.min}
+              max={SIMULATION_CONTROLS_CONFIGS.agentCrowdAvoidance!.max}
+              step={SIMULATION_CONTROLS_CONFIGS.agentCrowdAvoidance!.step}
               storePath={["simulationSettings", "agentCrowdAvoidance"]}
             />
             <SlimeStoreSlider
               label="Wander Strength"
+              labelHoverTabContentDisplay={[
+                "Agent Wander Strength",
+                "Controls the strength of the random wandering behavior of each agent.",
+              ]}
               baseInputId="agent-wander-strength-slider"
-              min={SIMULATION_CONTROLS_BOUNDS.agentWanderStrength!.min}
-              max={SIMULATION_CONTROLS_BOUNDS.agentWanderStrength!.max}
-              step={0.1}
+              min={SIMULATION_CONTROLS_CONFIGS.agentWanderStrength!.min}
+              max={SIMULATION_CONTROLS_CONFIGS.agentWanderStrength!.max}
+              step={SIMULATION_CONTROLS_CONFIGS.agentWanderStrength!.step}
               storePath={["simulationSettings", "agentWanderStrength"]}
             />
           </AccordionControlsItem>
 
-          <AccordionControlsItem value="trail-settings" label="Trail Settings">
+          <AccordionControlsItem
+            value="trail-settings"
+            label="Trail Settings"
+            labelHoverTabContentDisplay={[
+              "Trail Settings",
+              <div className="px-2 py-1">
+                The <CodeBlock>trail</CodeBlock> layer is where the agents
+                deposit pheromones, which are then sensed by other agents.
+                <br />
+                <br />
+                This accordian contains the following settings controlling the
+                trails:
+                <ul className="list-inside list-disc">
+                  <li>Display Texture Resolution</li>
+                  <li>Decay Rate</li>
+                  <li>Diffuse Rate</li>
+                  <li>Text Decay Rate</li>
+                  <li>Text Diffuse Rate</li>
+                  <li>Negative Space Decay Rate</li>
+                  <li>Negative Space Diffuse Rate</li>
+                </ul>
+              </div>,
+            ]}
+          >
             <SlimeStoreSelect
               label="Display Texture Resolution"
               baseInputId="trail-display-texture-resolution-select"
@@ -325,53 +398,57 @@ export default function SimulationControls() {
             <SlimeStoreSlider
               label="Decay Rate"
               baseInputId="trail-decay-rate-slider"
-              min={SIMULATION_CONTROLS_BOUNDS.trailDecayRate!.min}
-              max={SIMULATION_CONTROLS_BOUNDS.trailDecayRate!.max}
-              step={0.01}
+              min={SIMULATION_CONTROLS_CONFIGS.trailDecayRate!.min}
+              max={SIMULATION_CONTROLS_CONFIGS.trailDecayRate!.max}
+              step={SIMULATION_CONTROLS_CONFIGS.trailDecayRate!.step}
               storePath={["simulationSettings", "trailDecayRate"]}
             />
             <SlimeStoreSlider
               label="Diffuse Rate"
               baseInputId="trail-diffuse-rate-slider"
-              min={SIMULATION_CONTROLS_BOUNDS.trailDiffuseRate!.min}
-              max={SIMULATION_CONTROLS_BOUNDS.trailDiffuseRate!.max}
-              step={0.1}
+              min={SIMULATION_CONTROLS_CONFIGS.trailDiffuseRate!.min}
+              max={SIMULATION_CONTROLS_CONFIGS.trailDiffuseRate!.max}
+              step={SIMULATION_CONTROLS_CONFIGS.trailDiffuseRate!.step}
               storePath={["simulationSettings", "trailDiffuseRate"]}
             />
             <SlimeStoreSlider
               label="Text Decay Rate"
               baseInputId="trail-text-decay-rate-slider"
-              min={SIMULATION_CONTROLS_BOUNDS.trailTextDecayRate!.min}
-              max={SIMULATION_CONTROLS_BOUNDS.trailTextDecayRate!.max}
-              step={0.01}
+              min={SIMULATION_CONTROLS_CONFIGS.trailTextDecayRate!.min}
+              max={SIMULATION_CONTROLS_CONFIGS.trailTextDecayRate!.max}
+              step={SIMULATION_CONTROLS_CONFIGS.trailTextDecayRate!.step}
               storePath={["simulationSettings", "trailTextDecayRate"]}
             />
             <SlimeStoreSlider
               label="Text Diffuse Rate"
               baseInputId="trail-text-diffuse-rate-slider"
-              min={SIMULATION_CONTROLS_BOUNDS.trailTextDiffuseRate!.min}
-              max={SIMULATION_CONTROLS_BOUNDS.trailTextDiffuseRate!.max}
-              step={0.1}
+              min={SIMULATION_CONTROLS_CONFIGS.trailTextDiffuseRate!.min}
+              max={SIMULATION_CONTROLS_CONFIGS.trailTextDiffuseRate!.max}
+              step={SIMULATION_CONTROLS_CONFIGS.trailTextDiffuseRate!.step}
               storePath={["simulationSettings", "trailTextDiffuseRate"]}
             />
             <SlimeStoreSlider
               label="Negative Space Decay Rate"
               baseInputId="trail-negative-space-decay-rate-slider"
-              min={SIMULATION_CONTROLS_BOUNDS.trailNegativeSpaceDecayRate!.min}
-              max={SIMULATION_CONTROLS_BOUNDS.trailNegativeSpaceDecayRate!.max}
-              step={0.01}
+              min={SIMULATION_CONTROLS_CONFIGS.trailNegativeSpaceDecayRate!.min}
+              max={SIMULATION_CONTROLS_CONFIGS.trailNegativeSpaceDecayRate!.max}
+              step={
+                SIMULATION_CONTROLS_CONFIGS.trailNegativeSpaceDecayRate!.step
+              }
               storePath={["simulationSettings", "trailNegativeSpaceDecayRate"]}
             />
             <SlimeStoreSlider
               label="Negative Space Diffuse Rate"
               baseInputId="trail-negative-space-diffuse-rate-slider"
               min={
-                SIMULATION_CONTROLS_BOUNDS.trailNegativeSpaceDiffuseRate!.min
+                SIMULATION_CONTROLS_CONFIGS.trailNegativeSpaceDiffuseRate!.min
               }
               max={
-                SIMULATION_CONTROLS_BOUNDS.trailNegativeSpaceDiffuseRate!.max
+                SIMULATION_CONTROLS_CONFIGS.trailNegativeSpaceDiffuseRate!.max
               }
-              step={0.1}
+              step={
+                SIMULATION_CONTROLS_CONFIGS.trailNegativeSpaceDiffuseRate!.step
+              }
               storePath={[
                 "simulationSettings",
                 "trailNegativeSpaceDiffuseRate",

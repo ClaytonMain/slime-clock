@@ -5,6 +5,7 @@ import * as R from "ramda";
 import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import useSlimeStore from "../../stores/useSlimeStore";
+import { roundToFixed } from "../../utils/utils";
 import ThreeControlDisplay from "../three-control-display/ThreeControlDisplay";
 import AgentDataMaterial from "./AgentDataMaterial";
 import AgentPositionsMaterial from "./AgentPositionsMaterial";
@@ -144,9 +145,6 @@ function UniformSetter() {
     (keyof typeof simulationSettings)[],
   ][] = [
     ["uRotationRate", ["agentRotationRate"]],
-    ["uSensorOffset", ["agentSensorOffset"]],
-    ["uSensorWidth", ["agentSensorWidth"]],
-    ["uStepSize", ["agentStepSize"]],
     ["uCrowdAvoidance", ["agentCrowdAvoidance"]],
     ["uWanderStrength", ["agentWanderStrength"]],
     ["uBoundaryBehavior", ["boundaryBehavior"]],
@@ -164,7 +162,6 @@ function UniformSetter() {
     ["uTrailNegativeSpaceDiffuseRate", ["trailNegativeSpaceDiffuseRate"]],
     ["uBoundaryBehavior", ["boundaryBehavior"]],
   ];
-
   useEffect(() => {
     duAgentDataUniforms.forEach(([uniformName, settingsKeys]) => {
       const storePath = ["simulationSettings", ...settingsKeys];
@@ -186,6 +183,55 @@ function UniformSetter() {
       const uniformValue = trailUniforms[uniformName];
       if (uniformValue !== storeValue) {
         uniformValue.value = storeValue;
+      }
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [simulationSettings]);
+
+  // hs - "height-scaled"
+  const hsAgentDataUniforms: [
+    keyof typeof agentDataUniforms,
+    (keyof typeof simulationSettings)[],
+  ][] = [
+    ["uSensorOffset", ["agentSensorOffset"]],
+    ["uSensorWidth", ["agentSensorWidth"]],
+    ["uStepSize", ["agentStepSize"]],
+  ];
+  const hsTrailUniforms: [
+    keyof typeof trailUniforms,
+    (keyof typeof simulationSettings)[],
+  ][] = [];
+  useEffect(() => {
+    const textureHeight =
+      useSlimeStore.getState().simulationSettings.displayTextureHeight;
+    hsAgentDataUniforms.forEach(([uniformName, settingsKeys]) => {
+      const storePath = ["simulationSettings", ...settingsKeys];
+      const storeValue = R.view(
+        R.lensPath(storePath),
+        useSlimeStore.getState(),
+      );
+      const uniformValue = agentDataUniforms[uniformName];
+      const scaledValue = roundToFixed(
+        ((storeValue as number) / 100) * textureHeight,
+        4,
+      );
+      if (uniformValue.value !== scaledValue) {
+        uniformValue.value = scaledValue;
+      }
+    });
+    hsTrailUniforms.forEach(([uniformName, settingsKeys]) => {
+      const storePath = ["simulationSettings", ...settingsKeys];
+      const storeValue = R.view(
+        R.lensPath(storePath),
+        useSlimeStore.getState(),
+      );
+      const uniformValue = trailUniforms[uniformName];
+      const scaledValue = roundToFixed(
+        (storeValue as number) * textureHeight,
+        0,
+      );
+      if (uniformValue.value !== scaledValue) {
+        uniformValue.value = scaledValue;
       }
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps

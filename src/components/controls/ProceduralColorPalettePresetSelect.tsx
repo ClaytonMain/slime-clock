@@ -4,7 +4,7 @@ import { PROCEDURAL_COLOR_PALETTE_PRESETS } from "../../constants/constants";
 import useSlimeStore from "../../stores/useSlimeStore";
 import type { ProceduralColorPaletteName } from "../../types/types";
 import { roundToFixed } from "../../utils/utils";
-import SlimeStoreSelect from "../slime-store-select/old_SlimeStoreSelect";
+import SlimeStoreSelect from "./SlimeStoreSelect";
 
 export default function ProceduralColorPalettePresetSelect() {
   const slimeColorChangedAt = useSlimeStore(
@@ -27,8 +27,9 @@ export default function ProceduralColorPalettePresetSelect() {
         const palette = PROCEDURAL_COLOR_PALETTE_PRESETS[value];
         state.colorSettings.proceduralColorPalette = palette;
         state.colorSettings.slimeColorChangedAt = Date.now();
-        state.footerState.isDimmedForEdit = true;
         state.colorSettings.currentProceduralColorPalettePreset = value;
+        state.controlsState.displayAreaContentName = "procedural-color-palette";
+        state.controlsState.displayAreaContentType = "three";
       }),
     );
   }
@@ -95,11 +96,11 @@ export default function ProceduralColorPalettePresetSelect() {
   return (
     <SlimeStoreSelect
       label="Presets"
-      selectedOptionValue={currentProceduralColorPalettePreset}
+      baseInputId="procedural-color-palette-preset-select"
+      storePath={["colorSettings", "currentProceduralColorPalettePreset"]}
       options={options}
-      onChange={(e) =>
-        handlePresetChange(e.value as ProceduralColorPaletteName)
-      }
+      // @ts-expect-error It's fine. Shhhhhhhh.
+      onValueChange={handlePresetChange}
     />
   );
 }

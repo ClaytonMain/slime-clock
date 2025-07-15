@@ -7,8 +7,8 @@ import type {
   SlimeColorMode,
 } from "../types/types";
 
-type ControlsBounds<T> = {
-  [K in keyof T]?: { min: T[K]; max: T[K] };
+type ControlsConfigs<T> = {
+  [K in keyof T]?: { min: T[K]; max: T[K]; step: number };
 };
 
 /**
@@ -19,8 +19,8 @@ export const DEFAULT_CLOCK_SETTINGS: ClockSettings = {
   format: "24h",
   size: 50,
 };
-export const CLOCK_CONTROLS_BOUNDS: ControlsBounds<ClockSettings> = {
-  size: { min: 1, max: 100 },
+export const CLOCK_CONTROLS_CONFIGS: ControlsConfigs<ClockSettings> = {
+  size: { min: 1, max: 100, step: 1 },
 };
 
 export const DEFAULT_SIMULATION_SETTINGS: SimulationSettings = {
@@ -55,26 +55,27 @@ export const DEFAULT_SIMULATION_SETTINGS: SimulationSettings = {
   trailNegativeSpaceDecayRate: 0.79,
   trailNegativeSpaceDiffuseRate: 19.7,
 };
-export const SIMULATION_CONTROLS_BOUNDS: ControlsBounds<SimulationSettings> = {
-  speed: { min: 0.1, max: 10 },
-  randomizationInterval: { min: 1, max: 1200 },
+export const SIMULATION_CONTROLS_CONFIGS: ControlsConfigs<SimulationSettings> =
+  {
+    speed: { min: 0.1, max: 10, step: 0.1 },
+    randomizationInterval: { min: 1, max: 1200, step: 1 },
 
-  agentDepositRate: { min: 0.0, max: 30.0 },
-  agentSensorDegrees: { min: 0.0, max: 180.0 },
-  agentRotationRate: { min: 0.0, max: 10.0 },
-  agentSensorOffset: { min: 0.0, max: 40.0 },
-  agentSensorWidth: { min: 0.0, max: 20.0 },
-  agentStepSize: { min: 0.0, max: 100.0 },
-  agentCrowdAvoidance: { min: 0.0, max: 1.0 },
-  agentWanderStrength: { min: 0.0, max: 20.0 },
+    agentDepositRate: { min: 0.0, max: 30.0, step: 0.1 },
+    agentSensorDegrees: { min: 0.0, max: 180.0, step: 1.0 },
+    agentRotationRate: { min: 0.0, max: 10.0, step: 0.1 },
+    agentSensorOffset: { min: 0.0, max: 30.0, step: 0.01 },
+    agentSensorWidth: { min: 0.0, max: 30.0, step: 0.01 },
+    agentStepSize: { min: 0.0, max: 30.0, step: 0.01 },
+    agentCrowdAvoidance: { min: 0.0, max: 1.0, step: 0.01 },
+    agentWanderStrength: { min: 0.0, max: 20.0, step: 0.1 },
 
-  trailDecayRate: { min: 0.0, max: 2.0 },
-  trailDiffuseRate: { min: 0.0, max: 30.0 },
-  trailTextDecayRate: { min: 0.0, max: 2.0 },
-  trailTextDiffuseRate: { min: 0.0, max: 30.0 },
-  trailNegativeSpaceDecayRate: { min: 0.0, max: 2.0 },
-  trailNegativeSpaceDiffuseRate: { min: 0.0, max: 30.0 },
-};
+    trailDecayRate: { min: 0.0, max: 2.0, step: 0.01 },
+    trailDiffuseRate: { min: 0.0, max: 30.0, step: 0.1 },
+    trailTextDecayRate: { min: 0.0, max: 2.0, step: 0.01 },
+    trailTextDiffuseRate: { min: 0.0, max: 30.0, step: 0.1 },
+    trailNegativeSpaceDecayRate: { min: 0.0, max: 2.0, step: 0.01 },
+    trailNegativeSpaceDiffuseRate: { min: 0.0, max: 30.0, step: 0.1 },
+  };
 
 export const SLIME_COLOR_MODES: SlimeColorMode[] = ["Procedural", "Single"];
 

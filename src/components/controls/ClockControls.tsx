@@ -1,6 +1,6 @@
 import { produce } from "immer";
 import { useEffect } from "react";
-import { CLOCK_CONTROLS_BOUNDS } from "../../constants/constants";
+import { CLOCK_CONTROLS_CONFIGS } from "../../constants/constants";
 import useSlimeStore from "../../stores/useSlimeStore";
 import type { ClockFormatValue, ClockStyleValue } from "../../types/types";
 import CodeBlock from "../code-block/CodeBlock";
@@ -38,7 +38,7 @@ const clockFormatOptions: ClockFormatOption[] = [
 ] as const;
 
 export default function ClockControls() {
-  const controlsState = useSlimeStore((state) => state.controlsState);
+  const selectedTab = useSlimeStore((state) => state.controlsState.selectedTab);
 
   const clockControlsLabelHoverTabContentDisplay = [
     "Clock",
@@ -46,7 +46,7 @@ export default function ClockControls() {
   ];
 
   useEffect(() => {
-    if (controlsState.selectedTab !== "clock-controls") return;
+    if (selectedTab !== "clock-controls") return;
     useSlimeStore.setState(
       produce((state) => {
         state.controlsState.displayAreaHtmlContent =
@@ -56,7 +56,7 @@ export default function ClockControls() {
       }),
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [controlsState.selectedTab]);
+  }, [selectedTab]);
 
   return (
     <TabContentContainer tabsValue="clock-controls">
@@ -97,9 +97,9 @@ export default function ClockControls() {
             <SlimeStoreSlider
               label="Size"
               baseInputId="clock-size-slider"
-              min={CLOCK_CONTROLS_BOUNDS.size!.min}
-              max={CLOCK_CONTROLS_BOUNDS.size!.max}
-              step={1}
+              min={CLOCK_CONTROLS_CONFIGS.size!.min}
+              max={CLOCK_CONTROLS_CONFIGS.size!.max}
+              step={CLOCK_CONTROLS_CONFIGS.size!.step}
               storePath={["clockSettings", "size"]}
               labelHoverTabContentDisplay={[
                 "Clock Size",
