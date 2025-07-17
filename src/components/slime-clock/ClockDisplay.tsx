@@ -1,15 +1,65 @@
 import { Text } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import useSlimeStore from "../../stores/useSlimeStore";
+import type { ClockFormatValue, ClockStyleValue } from "../../types/types";
+
+function getFontUrl(style: ClockStyleValue): string {
+  switch (style) {
+    case "7segment":
+      return "fonts/DSEG7ClassicMini-Regular.woff";
+    case "14segment":
+      return "fonts/DSEG14Modern-Regular.woff";
+    case "dotmatrix":
+      return "fonts/Doto.ttf";
+    default:
+      return "fonts/DSEG14Modern-Regular.woff";
+  }
+}
+
+function getFormattedTime({
+  format,
+  includeSeconds = false,
+  includeAmPm = false,
+  padHours = true,
+}: {
+  format: ClockFormatValue;
+  includeSeconds?: boolean;
+  includeAmPm?: boolean;
+  padHours?: boolean;
+}): string {
+  const currentTime = new Date();
+  const nHours = currentTime.getHours() % (format === "24h" ? 24 : 12);
+  const hours = padHours ? String(nHours).padStart(2, "0") : String(nHours);
+  const minutes = String(currentTime.getMinutes()).padStart(2, "0");
+  const seconds = includeSeconds
+    ? String(currentTime.getSeconds()).padStart(2, "0")
+    : null;
+  const amPm =
+    includeAmPm && format === "12h"
+      ? currentTime.getHours() >= 12
+        ? "PM"
+        : "AM"
+      : "";
+  return `${[hours, minutes, seconds].filter(Boolean).join(":")}${amPm}`;
+}
 
 export default function ClockDisplay() {
-  const [displayText1, setDisplayText1] = useState<string>("ME:OW");
+  const clockSettings = useSlimeStore((state) => state.clockSettings);
+  const [displayText1, setDisplayText1] = useState<string>(
+    Math.random() > 0.99 && clockSettings.style === "14segment"
+      ? "ME:OW"
+      : "00:00",
+  );
   const [displayText2, setDisplayText2] = useState<string>(displayText1);
-  const [fontUrl] = useState("fonts/DSEG14Modern-Regular.woff");
-  // const [fontUrl] = useState("fonts/Doto.ttf");
-  const simulationSettings = useSlimeStore((state) => state.simulationSettings);
+  const [fontUrl, setFontUrl] = useState(getFontUrl(clockSettings.style));
+  const displayTextureWidth = useSlimeStore(
+    (state) => state.simulationSettings.displayTextureWidth,
+  );
+  const displayTextureHeight = useSlimeStore(
+    (state) => state.simulationSettings.displayTextureHeight,
+  );
 
   const material1Ref = useRef<THREE.ShaderMaterial>(null!);
   const material2Ref = useRef<THREE.ShaderMaterial>(null!);
@@ -18,10 +68,12 @@ export default function ClockDisplay() {
   // PLASMODIMETER
 
   useFrame((_, delta) => {
-    const currentTime = new Date();
-    const hours = String(currentTime.getHours()).padStart(2, "0");
-    const minutes = String(currentTime.getMinutes()).padStart(2, "0");
-    const formattedTime = `${hours}:${minutes}`;
+    const formattedTime = getFormattedTime({
+      format: clockSettings.format,
+      includeSeconds: false,
+      includeAmPm: true,
+      padHours: true,
+    });
 
     if (opacityRef.current < 1.0) {
       opacityRef.current += delta * 0.1;
@@ -44,27 +96,23 @@ export default function ClockDisplay() {
     setDisplayText1(formattedTime);
   });
 
+  useEffect(() => {
+    setFontUrl(getFontUrl(clockSettings.style));
+  }, [clockSettings.style]);
+
   return (
     <>
       <Text
-        position={[
-          simulationSettings.displayTextureWidth / 2,
-          simulationSettings.displayTextureHeight / 2,
-          0.0,
-        ]}
-        scale={550}
+        position={[displayTextureWidth / 2, displayTextureHeight / 2, 0.0]}
+        scale={(displayTextureHeight * clockSettings.size) / 100}
         font={fontUrl}
       >
         <meshBasicMaterial ref={material1Ref} transparent />
         {displayText1}
       </Text>
       <Text
-        position={[
-          simulationSettings.displayTextureWidth / 2,
-          simulationSettings.displayTextureHeight / 2,
-          -0.1,
-        ]}
-        scale={550}
+        position={[displayTextureWidth / 2, displayTextureHeight / 2, -0.1]}
+        scale={(displayTextureHeight * clockSettings.size) / 100}
         font={fontUrl}
       >
         <meshBasicMaterial ref={material2Ref} transparent />

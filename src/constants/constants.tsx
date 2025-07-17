@@ -15,9 +15,12 @@ type ControlsConfigs<T> = {
  * Clock Settings
  */
 export const DEFAULT_CLOCK_SETTINGS: ClockSettings = {
-  style: "7segment",
+  style: "14segment",
   format: "24h",
   size: 50,
+  includeSeconds: false,
+  includeAmPm: false,
+  padHours: true,
 };
 export const CLOCK_CONTROLS_CONFIGS: ControlsConfigs<ClockSettings> = {
   size: { min: 1, max: 100, step: 1 },
@@ -32,9 +35,10 @@ export const DEFAULT_SIMULATION_SETTINGS: SimulationSettings = {
 
   boundaryBehavior: 0, // 0: Wrap, 1: Bounce
 
-  agentCount: "147456",
-  gpuTextureWidth: Math.floor(Math.sqrt(147456)),
-  gpuTextureHeight: Math.floor(Math.sqrt(147456)),
+  // agentCount: "147456",
+  agentDensity: 0.1,
+  gpuTextureWidth: Math.floor(Math.sqrt(1280 * 720 * 0.1)),
+  gpuTextureHeight: Math.floor(Math.sqrt(1280 * 720 * 0.1)),
   agentStartType: -1,
   agentDepositRate: 6.1,
   agentSensorDegrees: 24,

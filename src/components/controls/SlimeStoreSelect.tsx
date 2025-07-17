@@ -91,6 +91,7 @@ export default function SlimeStoreSelect({
     if (labelHoverTabContentDisplay) {
       useSlimeStore.setState(
         produce((state) => {
+          state.controlsState.displayAreaContentUpdatedAt = Date.now();
           state.controlsState.displayAreaContentName = null;
           state.controlsState.displayAreaHtmlContent =
             labelHoverTabContentDisplay;

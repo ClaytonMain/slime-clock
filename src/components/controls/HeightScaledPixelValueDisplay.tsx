@@ -35,6 +35,9 @@ export default function HeightScaledPixelValueDisplay({
   const height = useSlimeStore(
     (state) => state.simulationSettings.displayTextureHeight,
   );
+  const displayAreaContentUpdatedAt = useSlimeStore(
+    (state) => state.controlsState.displayAreaContentUpdatedAt,
+  );
   const [pixelValue, setPixelValue] = useState<number>(
     convertToPixelValue({
       value: R.view(R.lensPath(storePath), useSlimeStore.getState()),
@@ -53,6 +56,18 @@ export default function HeightScaledPixelValueDisplay({
     );
     return () => unsubscribe();
   }, [storePath, height]);
+
+  useEffect(() => {
+    setPixelValue(
+      convertToPixelValue({
+        value: R.view(R.lensPath(storePath), useSlimeStore.getState()),
+        height,
+        valueIsPercent,
+        precision,
+      }),
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [displayAreaContentUpdatedAt]);
 
   return (
     <div className="flex flex-col gap-1 px-2 py-1">

@@ -51,6 +51,7 @@ export default function SlimeStoreSwitch({
     if (labelHoverTabContentDisplay) {
       useSlimeStore.setState(
         produce((state) => {
+          state.controlsState.displayAreaContentUpdatedAt = Date.now();
           state.controlsState.displayAreaContentName = null;
           state.controlsState.displayAreaHtmlContent =
             labelHoverTabContentDisplay;
@@ -66,7 +67,7 @@ export default function SlimeStoreSwitch({
       whileHover={{ backgroundColor: "#0004" }}
       className="flex w-full items-center gap-1 py-2"
     >
-      <div className="flex flex-col items-center p-0.5">
+      <motion.div className="flex flex-col items-center p-0.5">
         {label && (
           <Label.Root
             className="h-full w-(--footer-left-label-width) flex-none place-content-center p-0.5 text-right text-xs leading-none font-medium"
@@ -75,7 +76,7 @@ export default function SlimeStoreSwitch({
             {label}
           </Label.Root>
         )}
-      </div>
+      </motion.div>
       <Switch.Root
         id={baseId}
         checked={checked}
@@ -96,7 +97,11 @@ export default function SlimeStoreSwitch({
           <Switch.Thumb asChild>
             <motion.div
               className="h-5 w-5 rounded-full bg-white"
-              transition={{ type: "spring", visualDuration: 0.3, bounce: 0.2 }}
+              transition={{
+                type: "spring",
+                visualDuration: 0.3,
+                bounce: 0.2,
+              }}
               layout
             />
           </Switch.Thumb>

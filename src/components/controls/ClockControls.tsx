@@ -1,4 +1,5 @@
 import { produce } from "immer";
+import { AnimatePresence, motion } from "motion/react";
 import { useEffect } from "react";
 import { CLOCK_CONTROLS_CONFIGS } from "../../constants/constants";
 import useSlimeStore from "../../stores/useSlimeStore";
@@ -8,6 +9,7 @@ import AccordionControlsItem from "./AccordionControlsItem";
 import AccordionControlsWrapper from "./AccordionControlsWrapper";
 import SlimeStoreSelect from "./SlimeStoreSelect";
 import SlimeStoreSlider from "./SlimeStoreSlider";
+import SlimeStoreSwitch from "./SlimeStoreSwitch";
 import TabContentContainer from "./TabContentContainer";
 import TabContentScrollArea from "./TabContentScrollArea";
 
@@ -21,6 +23,7 @@ type ClockStyleOption = {
 };
 const clockStyleOptions: ClockStyleOption[] = [
   { value: "7segment", label: "7 Segment" },
+  { value: "14segment", label: "14 Segment" },
   { value: "dotmatrix", label: "Dot Matrix" },
 ] as const;
 
@@ -39,6 +42,7 @@ const clockFormatOptions: ClockFormatOption[] = [
 
 export default function ClockControls() {
   const selectedTab = useSlimeStore((state) => state.controlsState.selectedTab);
+  const clockFormat = useSlimeStore((state) => state.clockSettings.format);
 
   const clockControlsLabelHoverTabContentDisplay = [
     "Clock",
@@ -83,6 +87,24 @@ export default function ClockControls() {
                 "Changes the style of the clock display.",
               ]}
             />
+            <SlimeStoreSwitch
+              label="Pad Hours"
+              baseId="clock-pad-hours-switch"
+              storePath={["clockSettings", "padHours"]}
+              labelHoverTabContentDisplay={[
+                "Pad Hours",
+                "Whether to pad hours with a leading zero.",
+              ]}
+            />
+            <SlimeStoreSwitch
+              label="Show Seconds"
+              baseId="clock-show-seconds-switch"
+              storePath={["clockSettings", "showSeconds"]}
+              labelHoverTabContentDisplay={[
+                "Show Seconds",
+                "Whether to show seconds in the clock display.",
+              ]}
+            />
             <SlimeStoreSelect
               label="Format"
               baseInputId="clock-format-select"
@@ -94,6 +116,26 @@ export default function ClockControls() {
                 "Changes the format of the clock display.",
               ]}
             />
+            <AnimatePresence>
+              {clockFormat === "12h" && (
+                <motion.div
+                  className="overflow-clip"
+                  initial={{ height: 0 }}
+                  animate={{ height: "auto" }}
+                  exit={{ height: 0 }}
+                >
+                  <SlimeStoreSwitch
+                    label="Include AM/PM"
+                    labelHoverTabContentDisplay={[
+                      "Include AM/PM",
+                      "Whether to include AM/PM in the clock display.",
+                    ]}
+                    baseId="clock-include-am-pm-switch"
+                    storePath={["clockSettings", "includeAmPm"]}
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
             <SlimeStoreSlider
               label="Size"
               baseInputId="clock-size-slider"

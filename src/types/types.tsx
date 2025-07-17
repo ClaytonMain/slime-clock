@@ -17,6 +17,9 @@ export interface ClockSettings {
   style: ClockStyleValue;
   format: ClockFormatValue;
   size: number;
+  includeSeconds: boolean;
+  includeAmPm: boolean;
+  padHours: boolean;
 }
 
 export interface SimulationSettings {
@@ -28,7 +31,8 @@ export interface SimulationSettings {
 
   boundaryBehavior: 0 | 1; // 0: Wrap, 1: Bounce
 
-  agentCount: AgentCount;
+  // agentCount: AgentCount;
+  agentDensity: number;
   gpuTextureWidth: number;
   gpuTextureHeight: number;
   agentStartType: number;
@@ -78,7 +82,7 @@ export interface ColorSettings {
 /**
  * Clock Settings Types
  */
-export type ClockStyleValue = "7segment" | "dotmatrix";
+export type ClockStyleValue = "7segment" | "14segment" | "dotmatrix";
 export type ClockFormatValue = "12h" | "24h";
 
 /**
@@ -91,23 +95,23 @@ export type SimulationQuality =
   | "High"
   | "Very High"
   | "Custom";
-export type AgentCount =
-  | "16384" // 128^2
-  | "65536" // 256^2
-  | "147456" // 384^2
-  | "262144" // 512^2
-  | "409600" // 640^2
-  | "589824" // 768^2
-  | "802816" // 896^2
-  | "1048576" // 1024^2
-  | "1327104" // 1152^2
-  | "1638400" // 1280^2
-  | "1982464" // 1408^2
-  | "2359296" // 1536^2
-  | "2768896" // 1664^2
-  | "3211264" // 1792^2
-  | "3686400" // 1920^2
-  | "4194304"; // 2048^2
+// export type AgentCount =
+//   | "16384" // 128^2
+//   | "65536" // 256^2
+//   | "147456" // 384^2
+//   | "262144" // 512^2
+//   | "409600" // 640^2
+//   | "589824" // 768^2
+//   | "802816" // 896^2
+//   | "1048576" // 1024^2
+//   | "1327104" // 1152^2
+//   | "1638400" // 1280^2
+//   | "1982464" // 1408^2
+//   | "2359296" // 1536^2
+//   | "2768896" // 1664^2
+//   | "3211264" // 1792^2
+//   | "3686400" // 1920^2
+//   | "4194304"; // 2048^2
 export type AgentStartType =
   | "Random"
   | "Center"

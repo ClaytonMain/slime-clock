@@ -19,7 +19,7 @@ extend({ AgentDataMaterial, AgentPositionsMaterial, TrailMaterial });
 
 const texturePlaneUniforms = {
   uWindowResolution: new THREE.Uniform(new THREE.Vector2()),
-  uShowTexture: new THREE.Uniform(0),
+  uShowTexture: new THREE.Uniform(1),
 };
 const slimeMoldDisplayPlaneUniforms = {
   uTrailTexture: new THREE.Uniform(new THREE.Texture()),
@@ -433,7 +433,13 @@ function SlimeClock() {
   );
 
   const agentPositionsAttribute = useMemo(() => {
-    const length = parseInt(simulationSettings.agentCount, 10);
+    const agentDensity = simulationSettings.agentDensity;
+    const displayTextureWidth = simulationSettings.displayTextureWidth;
+    const displayTextureHeight = simulationSettings.displayTextureHeight;
+    const length = Math.floor(
+      displayTextureWidth * displayTextureHeight * agentDensity,
+    );
+    console.log(length);
     const attributes = new Float32Array(length * 3);
     for (let i = 0; i < length; i++) {
       const i3 = i * 3;
@@ -449,7 +455,7 @@ function SlimeClock() {
   }, [
     simulationSettings.displayTextureWidth,
     simulationSettings.displayTextureHeight,
-    simulationSettings.agentCount,
+    simulationSettings.agentDensity,
   ]);
 
   // Anything that should trigger a re-initialization of the simulation.
@@ -461,7 +467,7 @@ function SlimeClock() {
       }),
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [simulationSettings.agentCount]);
+  }, [simulationSettings.agentDensity]);
 
   // Any window resize dependencies.
   useEffect(() => {

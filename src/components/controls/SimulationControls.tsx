@@ -6,7 +6,6 @@ import {
 } from "../../constants/constants";
 import useSlimeStore from "../../stores/useSlimeStore";
 import type {
-  AgentCount,
   SimulationQuality,
   TrailDisplayTextureResolution,
 } from "../../types/types";
@@ -38,31 +37,53 @@ const simulationQualityOptions: SimulationQualityOption[] = [
   { value: "Custom", label: "Custom" },
 ] as const;
 
+// /**
+//  * Agent Counts
+//  */
+// type AgentCountOption = {
+//   value: AgentCount;
+//   label: string;
+// };
+// const agentCountOptions: AgentCountOption[] = [
+//   { value: "16384", label: "16,384" },
+//   { value: "65536", label: "65,536" },
+//   { value: "147456", label: "147,456" },
+//   { value: "262144", label: "262,144" },
+//   { value: "409600", label: "409,600" },
+//   { value: "589824", label: "589,824" },
+//   { value: "802816", label: "802,816" },
+//   { value: "1048576", label: "1,048,576" },
+//   { value: "1327104", label: "1,327,104" },
+//   { value: "1638400", label: "1,638,400" },
+//   { value: "1982464", label: "1,982,464" },
+//   { value: "2359296", label: "2,359,296" },
+//   { value: "2768896", label: "2,768,896" },
+//   { value: "3211264", label: "3,211,264" },
+//   { value: "3686400", label: "3,686,400" },
+//   { value: "4194304", label: "4,194,304" },
+// ] as const;
+
 /**
- * Agent Counts
+ * Agent Densities
  */
-type AgentCountOption = {
-  value: AgentCount;
+type AgentDensityOption = {
+  value: string;
   label: string;
 };
-const agentCountOptions: AgentCountOption[] = [
-  { value: "16384", label: "16,384" },
-  { value: "65536", label: "65,536" },
-  { value: "147456", label: "147,456" },
-  { value: "262144", label: "262,144" },
-  { value: "409600", label: "409,600" },
-  { value: "589824", label: "589,824" },
-  { value: "802816", label: "802,816" },
-  { value: "1048576", label: "1,048,576" },
-  { value: "1327104", label: "1,327,104" },
-  { value: "1638400", label: "1,638,400" },
-  { value: "1982464", label: "1,982,464" },
-  { value: "2359296", label: "2,359,296" },
-  { value: "2768896", label: "2,768,896" },
-  { value: "3211264", label: "3,211,264" },
-  { value: "3686400", label: "3,686,400" },
-  { value: "4194304", label: "4,194,304" },
-] as const;
+const agentDensityOptions: AgentDensityOption[] = [
+  { value: "0.01", label: "1%" },
+  { value: "0.05", label: "5%" },
+  { value: "0.1", label: "10%" },
+  { value: "0.2", label: "20%" },
+  { value: "0.25", label: "25%" },
+  { value: "0.3", label: "30%" },
+  { value: "0.4", label: "40%" },
+  { value: "0.5", label: "50%" },
+  { value: "0.6", label: "60%" },
+  { value: "0.7", label: "70%" },
+  { value: "0.8", label: "80%" },
+  { value: "0.9", label: "90%" },
+];
 
 /**
  * Trail Display Texture Resolution
@@ -102,11 +123,17 @@ export default function SimulationControls() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedTab]);
 
-  function handleAgentCountChange(value: string) {
+  function handleAgentDensityChange(value: string) {
+    const displayTextureWidth =
+      useSlimeStore.getState().simulationSettings.displayTextureWidth;
+    const displayTextureHeight =
+      useSlimeStore.getState().simulationSettings.displayTextureHeight;
+    const gpuTextureSize = Math.floor(
+      Math.sqrt(displayTextureWidth * displayTextureHeight * Number(value)),
+    );
     useSlimeStore.setState(
       produce((state) => {
-        const gpuTextureSize = Math.floor(Math.sqrt(Number(value)));
-        state.simulationSettings.agentCount = value;
+        state.simulationSettings.agentDensity = value;
         state.simulationSettings.gpuTextureWidth = gpuTextureSize;
         state.simulationSettings.gpuTextureHeight = gpuTextureSize;
       }),
@@ -230,16 +257,16 @@ export default function SimulationControls() {
             ]}
           >
             <SlimeStoreSelect
-              label="Count"
+              label="Density"
               labelHoverTabContentDisplay={[
-                "Agent Count",
-                "Controls the number of agents in the simulation. Higher values will increase the load on the GPU. Please note: a higher agent count won't always result in a better simulation since the agents need room to move around.",
+                "Agent Density",
+                "Controls the density of agents in the simulation. Higher values will increase the load on the GPU. Please note: a higher agent density won't always result in a better simulation since the agents need room to move around.",
               ]}
-              baseInputId="agent-count-select"
-              placeholder="Agent Count"
-              storePath={["simulationSettings", "agentCount"]}
-              options={agentCountOptions}
-              onValueChange={handleAgentCountChange}
+              baseInputId="agent-density-select"
+              placeholder="Agent Density"
+              storePath={["simulationSettings", "agentDensity"]}
+              options={agentDensityOptions}
+              onValueChange={handleAgentDensityChange}
             />
             <SlimeStoreSelect
               label="Start Type"
