@@ -15,7 +15,9 @@ function getDigitFontUrl(style: ClockDigitStyleValue): string {
     case "14segment":
       return "fonts/DSEG14Modern-Regular.woff";
     case "dotmatrix":
-      return "fonts/Doto.ttf";
+      return "fonts/5by7/5by7.ttf";
+    case "opticbot":
+      return "fonts/optic-bot/opticbot.ttf";
     default:
       return "fonts/DSEG14Modern-Regular.woff";
   }
@@ -76,8 +78,8 @@ export default function ClockDisplay() {
     const formattedTime = getFormattedDigitTime({
       hourFormat: clockSettings.hourFormat,
       showSeconds: false,
-      showAmPm: true,
-      padHours: true,
+      showAmPm: false,
+      padHours: clockSettings.padHours,
     });
 
     // TODO: ping pong between displayText1 and displayText2 to make the fade effect smoother.

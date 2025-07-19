@@ -5,10 +5,7 @@ import {
   SIMULATION_CONTROLS_CONFIGS,
 } from "../../constants/constants";
 import useSlimeStore from "../../stores/useSlimeStore";
-import type {
-  SimulationQuality,
-  TrailDisplayTextureResolution,
-} from "../../types/types";
+import type { TrailDisplayTextureResolution } from "../../types/types";
 import CodeBlock from "../code-block/CodeBlock";
 import AccordionControlsItem from "./AccordionControlsItem";
 import AccordionControlsWrapper from "./AccordionControlsWrapper";
@@ -24,43 +21,17 @@ import TabContentScrollArea from "./TabContentScrollArea";
  * Will set multiple settings at once.
  * TODO: Make the quality options dynamic based on the current simulation settings.
  */
-type SimulationQualityOption = {
-  value: SimulationQuality;
-  label: string;
-};
-const simulationQualityOptions: SimulationQualityOption[] = [
-  { value: "Very Low", label: "Very Low" },
-  { value: "Low", label: "Low" },
-  { value: "Medium", label: "Medium" },
-  { value: "High", label: "High" },
-  { value: "Very High", label: "Very High" },
-  { value: "Custom", label: "Custom" },
-] as const;
-
-// /**
-//  * Agent Counts
-//  */
-// type AgentCountOption = {
-//   value: AgentCount;
+// type SimulationQualityOption = {
+//   value: SimulationQuality;
 //   label: string;
 // };
-// const agentCountOptions: AgentCountOption[] = [
-//   { value: "16384", label: "16,384" },
-//   { value: "65536", label: "65,536" },
-//   { value: "147456", label: "147,456" },
-//   { value: "262144", label: "262,144" },
-//   { value: "409600", label: "409,600" },
-//   { value: "589824", label: "589,824" },
-//   { value: "802816", label: "802,816" },
-//   { value: "1048576", label: "1,048,576" },
-//   { value: "1327104", label: "1,327,104" },
-//   { value: "1638400", label: "1,638,400" },
-//   { value: "1982464", label: "1,982,464" },
-//   { value: "2359296", label: "2,359,296" },
-//   { value: "2768896", label: "2,768,896" },
-//   { value: "3211264", label: "3,211,264" },
-//   { value: "3686400", label: "3,686,400" },
-//   { value: "4194304", label: "4,194,304" },
+// const simulationQualityOptions: SimulationQualityOption[] = [
+//   { value: "Very Low", label: "Very Low" },
+//   { value: "Low", label: "Low" },
+//   { value: "Medium", label: "Medium" },
+//   { value: "High", label: "High" },
+//   { value: "Very High", label: "Very High" },
+//   { value: "Custom", label: "Custom" },
 // ] as const;
 
 /**
@@ -94,8 +65,9 @@ type TrailDisplayTextureResolutionOption = {
 };
 const trailDisplayTextureResolutionOptions: TrailDisplayTextureResolutionOption[] =
   [
-    { value: "640 x 480", label: "640 x 480" },
-    { value: "800 x 600", label: "800 x 600" },
+    { value: "426 x 240", label: "426 x 240" },
+    { value: "640 x 360", label: "640 x 360" },
+    { value: "854 x 480", label: "854 x 480" },
     { value: "1280 x 720", label: "1280 x 720" },
     { value: "1920 x 1080", label: "1920 x 1080" },
     { value: "2560 x 1440", label: "2560 x 1440" },
@@ -128,6 +100,7 @@ export default function SimulationControls() {
       useSlimeStore.getState().simulationSettings.displayTextureWidth;
     const displayTextureHeight =
       useSlimeStore.getState().simulationSettings.displayTextureHeight;
+    if (!displayTextureWidth || !displayTextureHeight) return;
     const gpuTextureSize = Math.floor(
       Math.sqrt(displayTextureWidth * displayTextureHeight * Number(value)),
     );
@@ -154,7 +127,7 @@ export default function SimulationControls() {
     <TabContentContainer tabsValue="simulation-controls">
       <TabContentScrollArea title="Simulation">
         <AccordionControlsWrapper type="multiple">
-          <AccordionControlsItem
+          {/* <AccordionControlsItem
             value="quick-settings"
             label="Quick Settings"
             labelHoverTabContentDisplay={[
@@ -177,7 +150,7 @@ export default function SimulationControls() {
               storePath={["simulationSettings", "quality"]}
               options={simulationQualityOptions}
             />
-          </AccordionControlsItem>
+          </AccordionControlsItem> */}
 
           <AccordionControlsItem
             value="simulation-settings"

@@ -28,6 +28,7 @@ const clockStyleOptions: ClockDigitStyleOption[] = [
   { value: "7segment", label: "7 Segment" },
   { value: "14segment", label: "14 Segment" },
   { value: "dotmatrix", label: "Dot Matrix" },
+  { value: "opticbot", label: "Optic Bot" },
 ] as const;
 
 /**
@@ -45,12 +46,13 @@ const clockFormatOptions: ClockHourFormatOption[] = [
 
 export default function ClockControls() {
   const selectedTab = useSlimeStore((state) => state.controlsState.selectedTab);
-  const clockHourFormat = useSlimeStore(
-    (state) => state.clockSettings.hourFormat,
-  );
+  // const clockHourFormat = useSlimeStore(
+  //   (state) => state.clockSettings.hourFormat,
+  // );
+  const showClock = useSlimeStore((state) => state.clockSettings.show);
 
   const clockControlsLabelHoverTabContentDisplay = [
-    "Clock",
+    "Clock Controls",
     "Controls related to the clock display.",
   ];
 
@@ -81,87 +83,109 @@ export default function ClockControls() {
               clockControlsLabelHoverTabContentDisplay
             }
           >
-            <SlimeStoreSelect
-              label="Style"
-              baseInputId="clock-style-select"
-              placeholder="Clock Style"
-              storePath={["clockSettings", "style"]}
-              options={clockStyleOptions}
+            {/* <SlimeStoreSwitch
+              label="Show Clock"
+              baseId="clock-show-switch"
+              storePath={["clockSettings", "show"]}
               labelHoverTabContentDisplay={[
-                "Clock Style",
-                "Changes the style of the clock display.",
+                "Show Clock",
+                "Whether to show the clock display. Please note that disabling the clock will remove some options from the ",
               ]}
-            />
-            <SlimeStoreSwitch
-              label="Pad Hours"
-              baseId="clock-pad-hours-switch"
-              storePath={["clockSettings", "padHours"]}
-              labelHoverTabContentDisplay={[
-                "Pad Hours",
-                "Whether to pad hours with a leading zero.",
-              ]}
-            />
-            <SlimeStoreSwitch
-              label="Show Seconds"
-              baseId="clock-show-seconds-switch"
-              storePath={["clockSettings", "showSeconds"]}
-              labelHoverTabContentDisplay={[
-                "Show Seconds",
-                "Whether to show seconds in the clock display.",
-              ]}
-            />
-            <SlimeStoreSelect
-              label="Format"
-              baseInputId="clock-format-select"
-              placeholder="Clock Format"
-              storePath={["clockSettings", "format"]}
-              options={clockFormatOptions}
-              labelHoverTabContentDisplay={[
-                "Clock Format",
-                "Changes the format of the clock display.",
-              ]}
-            />
+            /> */}
             <AnimatePresence>
-              {clockHourFormat === "12h" && (
+              {showClock && (
                 <motion.div
                   className="overflow-clip"
                   initial={{ height: 0 }}
                   animate={{ height: "auto" }}
                   exit={{ height: 0 }}
                 >
-                  <SlimeStoreSwitch
-                    label="Include AM/PM"
+                  <SlimeStoreSlider
+                    label="Size"
+                    baseInputId="clock-size-slider"
+                    min={CLOCK_CONTROLS_CONFIGS.size!.min}
+                    max={CLOCK_CONTROLS_CONFIGS.size!.max}
+                    step={CLOCK_CONTROLS_CONFIGS.size!.step}
+                    storePath={["clockSettings", "size"]}
                     labelHoverTabContentDisplay={[
-                      "Include AM/PM",
-                      "Whether to include AM/PM in the clock display.",
+                      "Clock Size",
+                      <div className="px-2 py-1">
+                        Changes the size of the clock display. Values are a
+                        percentage of screen height, where
+                        <CodeBlock>1</CodeBlock>
+                        would be practically invisible,
+                        <CodeBlock>50</CodeBlock>
+                        would fill half the screen, and
+                        <CodeBlock>100</CodeBlock>
+                        would fill the entire screen height.
+                      </div>,
                     ]}
-                    baseId="clock-include-am-pm-switch"
-                    storePath={["clockSettings", "includeAmPm"]}
                   />
+                  {/* TODO: Add position */}
+                  <SlimeStoreSelect
+                    label="Hour Format"
+                    baseInputId="clock-hour-format-select"
+                    placeholder="Hour Format"
+                    storePath={["clockSettings", "hourFormat"]}
+                    options={clockFormatOptions}
+                    labelHoverTabContentDisplay={[
+                      "Hour Format",
+                      "12 hour or 24 hour format.",
+                    ]}
+                  />
+                  {/* <AnimatePresence>
+                    {clockHourFormat === "12h" && (
+                      <motion.div
+                        className="overflow-clip"
+                        initial={{ height: 0 }}
+                        animate={{ height: "auto" }}
+                        exit={{ height: 0 }}
+                      >
+                        <SlimeStoreSwitch
+                          label="Show AM/PM"
+                          labelHoverTabContentDisplay={[
+                            "Show AM/PM",
+                            "Whether to show AM/PM in the clock display.",
+                          ]}
+                          baseId="clock-show-am-pm-switch"
+                          storePath={["clockSettings", "showAmPm"]}
+                        />
+                      </motion.div>
+                      // TODO: Add AM/PM size and position settings.
+                    )}
+                  </AnimatePresence> */}
+                  <SlimeStoreSelect
+                    label="Digit Style"
+                    baseInputId="clock-digit-style-select"
+                    placeholder="Digit Style"
+                    storePath={["clockSettings", "digitStyle"]}
+                    options={clockStyleOptions}
+                    labelHoverTabContentDisplay={[
+                      "Digit Style",
+                      "Changes the digit style of the clock display.",
+                    ]}
+                  />
+                  <SlimeStoreSwitch
+                    label="Pad Hours"
+                    baseId="clock-pad-hours-switch"
+                    storePath={["clockSettings", "padHours"]}
+                    labelHoverTabContentDisplay={[
+                      "Pad Hours",
+                      "Whether to pad hours with a leading zero.",
+                    ]}
+                  />
+                  {/* <SlimeStoreSwitch
+                    label="Show Seconds"
+                    baseId="clock-show-seconds-switch"
+                    storePath={["clockSettings", "showSeconds"]}
+                    labelHoverTabContentDisplay={[
+                      "Show Seconds",
+                      "Whether to show seconds in the clock display.",
+                    ]}
+                  /> */}
                 </motion.div>
               )}
             </AnimatePresence>
-            <SlimeStoreSlider
-              label="Size"
-              baseInputId="clock-size-slider"
-              min={CLOCK_CONTROLS_CONFIGS.size!.min}
-              max={CLOCK_CONTROLS_CONFIGS.size!.max}
-              step={CLOCK_CONTROLS_CONFIGS.size!.step}
-              storePath={["clockSettings", "size"]}
-              labelHoverTabContentDisplay={[
-                "Clock Size",
-                <div className="px-2 py-1">
-                  Changes the size of the clock display. Values are a percentage
-                  of screen space (by height), where
-                  <CodeBlock>1</CodeBlock>
-                  would be practically invisible,
-                  <CodeBlock>50</CodeBlock>
-                  would fill half the screen, and
-                  <CodeBlock>100</CodeBlock>
-                  would fill the entire screen height.
-                </div>,
-              ]}
-            />
           </AccordionControlsItem>
         </AccordionControlsWrapper>
       </TabContentScrollArea>

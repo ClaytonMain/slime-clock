@@ -32,6 +32,7 @@ interface ControlsState {
 }
 
 interface SlimeStore {
+  resolutionsSet: boolean;
   initialized: boolean;
   clockSettings: ClockSettings;
   simulationSettings: SimulationSettings;
@@ -44,12 +45,15 @@ const persistOmit: (keyof SlimeStore)[] = [
   "colorSettings",
   "initialized",
   "controlsState",
+  "resolutionsSet",
 ];
 
 const useSlimeStore = create<SlimeStore>()(
   subscribeWithSelector(
     persist(
       (set) => ({
+        resolutionsSet: false,
+
         initialized: false,
 
         clockSettings: DEFAULT_CLOCK_SETTINGS,

@@ -4,7 +4,9 @@ import { produce } from "immer";
 import * as R from "ramda";
 import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
+import { DISPLAY_TEXTURE_RESOLUTIONS } from "../../constants/constants";
 import useSlimeStore from "../../stores/useSlimeStore";
+import type { TrailDisplayTextureResolution } from "../../types/types";
 import { roundToFixed } from "../../utils/utils";
 import ThreeControlDisplay from "../three-control-display/ThreeControlDisplay";
 import AgentDataMaterial from "./AgentDataMaterial";
@@ -19,7 +21,7 @@ extend({ AgentDataMaterial, AgentPositionsMaterial, TrailMaterial });
 
 const texturePlaneUniforms = {
   uWindowResolution: new THREE.Uniform(new THREE.Vector2()),
-  uShowTexture: new THREE.Uniform(1),
+  uShowTexture: new THREE.Uniform(0),
 };
 const slimeMoldDisplayPlaneUniforms = {
   uTrailTexture: new THREE.Uniform(new THREE.Texture()),
@@ -251,6 +253,13 @@ function UniformSetter() {
         agentDataUniforms.uDisplayTextureResolution.value = newResolution;
         agentPositionsUniforms.uDisplayTextureResolution.value = newResolution;
         trailUniforms.uDisplayTextureResolution.value = newResolution;
+        texturePlaneUniforms.uWindowResolution.value =
+          UTILS.getWindowResolutionVector();
+        slimeMoldDisplayPlaneUniforms.uDisplayScale.value =
+          UTILS.getDisplayScaleVector(
+            simulationSettings.displayTextureWidth,
+            simulationSettings.displayTextureHeight,
+          );
       },
     );
     const unsubDisplayTextureHeight = useSlimeStore.subscribe(
@@ -265,6 +274,13 @@ function UniformSetter() {
         agentDataUniforms.uDisplayTextureResolution.value = newResolution;
         agentPositionsUniforms.uDisplayTextureResolution.value = newResolution;
         trailUniforms.uDisplayTextureResolution.value = newResolution;
+        texturePlaneUniforms.uWindowResolution.value =
+          UTILS.getWindowResolutionVector();
+        slimeMoldDisplayPlaneUniforms.uDisplayScale.value =
+          UTILS.getDisplayScaleVector(
+            simulationSettings.displayTextureWidth,
+            simulationSettings.displayTextureHeight,
+          );
       },
     );
     const unsubSlimeColorChangedAt = useSlimeStore.subscribe(
@@ -299,6 +315,7 @@ function UniformSetter() {
       unsubDisplayTextureHeight();
       unsubSlimeColorChangedAt();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return null;
@@ -306,6 +323,7 @@ function UniformSetter() {
 
 function SlimeClock() {
   const simulationSettings = useSlimeStore((state) => state.simulationSettings);
+  const resolutionsSet = useSlimeStore((state) => state.resolutionsSet);
   const initialized = useSlimeStore((state) => state.initialized);
 
   const timeSinceRandomizeRef = useRef(0);
@@ -458,6 +476,18 @@ function SlimeClock() {
     simulationSettings.agentDensity,
   ]);
 
+  // Anything that should trigger the resolutions to reset.
+  useEffect(() => {
+    if (!resolutionsSet) return;
+    useSlimeStore.setState(
+      produce((state) => {
+        state.resolutionsSet = false;
+        state.initialized = false;
+      }),
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [simulationSettings.trailDisplayTextureResolution]);
+
   // Anything that should trigger a re-initialization of the simulation.
   useEffect(() => {
     if (!initialized) return;
@@ -480,6 +510,62 @@ function SlimeClock() {
       );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [window.innerWidth, window.innerHeight]);
+
+  function setInitialResolutions() {
+    const simulationSettings = useSlimeStore.getState().simulationSettings;
+    const trailDisplayTextureResolution =
+      simulationSettings.trailDisplayTextureResolution;
+    // IMPORTANT: DISPLAY_TEXTURE_RESOLUTIONS is ordered from smallest to largest.
+    let newDisplayTextureResolution: TrailDisplayTextureResolution =
+      DISPLAY_TEXTURE_RESOLUTIONS[0];
+
+    if (trailDisplayTextureResolution === "16 x 9") {
+      // Hasn't been set yet; choose appropriate resolution from DISPLAY_TEXTURE_RESOLUTIONS.
+      const windowAspect = window.innerWidth / window.innerHeight;
+      const scaleTo = windowAspect > 16 / 9 ? "height" : "width";
+      DISPLAY_TEXTURE_RESOLUTIONS.every((resolution) => {
+        const [width, height] = resolution.split(" x ").map(Number);
+        if (scaleTo === "width") {
+          if (width >= window.innerWidth) {
+            return false;
+          }
+        } else {
+          if (height >= window.innerHeight) {
+            return false;
+          }
+        }
+        newDisplayTextureResolution =
+          resolution as TrailDisplayTextureResolution;
+        return true;
+      });
+    } else {
+      // Has been set; use it.
+      newDisplayTextureResolution = trailDisplayTextureResolution;
+    }
+
+    const [newDisplayTextureWidth, newDisplayTextureHeight] =
+      newDisplayTextureResolution.split(" x ").map(Number);
+    const gpuTextureSize = Math.floor(
+      Math.sqrt(
+        newDisplayTextureWidth *
+          newDisplayTextureHeight *
+          simulationSettings.agentDensity,
+      ),
+    );
+    useSlimeStore.setState(
+      produce((state) => {
+        state.simulationSettings.gpuTextureWidth = gpuTextureSize;
+        state.simulationSettings.gpuTextureHeight = gpuTextureSize;
+
+        state.simulationSettings.trailDisplayTextureResolution =
+          newDisplayTextureResolution;
+        state.simulationSettings.displayTextureWidth = newDisplayTextureWidth;
+        state.simulationSettings.displayTextureHeight = newDisplayTextureHeight;
+
+        state.resolutionsSet = true;
+      }),
+    );
+  }
 
   function initializeUniforms() {
     const simulationSettings = useSlimeStore.getState().simulationSettings;
@@ -563,13 +649,17 @@ function SlimeClock() {
   // Initialize everything.
   useEffect(() => {
     if (initialized) return;
+    if (!resolutionsSet) {
+      setInitialResolutions();
+      return;
+    }
     initializeUniforms();
     useSlimeStore.setState(
       produce((state) => {
         state.initialized = true;
       }),
     );
-  }, [initialized]);
+  }, [initialized, resolutionsSet]);
 
   const pingPongRef = useRef(true);
   const uDeltaRef = useRef(0.0);
@@ -577,7 +667,7 @@ function SlimeClock() {
 
   useFrame(({ gl }, delta) => {
     // Hoo boy, this is a doozy.
-    if (!initialized) return;
+    if (!initialized || !resolutionsSet) return;
 
     timeSinceRandomizeRef.current += delta;
     if (

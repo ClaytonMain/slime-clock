@@ -1,4 +1,3 @@
-import * as THREE from "three";
 import type {
   AgentStartTypeDropdownOption,
   ClockSettings,
@@ -6,6 +5,7 @@ import type {
   ProceduralColorPalettePresets,
   SimulationSettings,
   SlimeColorMode,
+  TrailDisplayTextureResolution,
 } from "../types/types";
 
 type ControlsConfigs<T> = {
@@ -19,20 +19,20 @@ export const DEFAULT_CLOCK_SETTINGS: ClockSettings = {
   // Shared settings
   show: true,
   size: 50,
-  position: new THREE.Vector2(0, 0),
+  // position: new THREE.Vector2(0, 0),
   hourFormat: "24h",
-  showAmPm: false,
-  amPmPosition: new THREE.Vector2(0.5, -0.5),
-  amPmSize: 10,
-  showSeconds: false,
-  type: "Digital",
+  // showAmPm: false,
+  // amPmPosition: new THREE.Vector2(0.5, -0.5),
+  // amPmSize: 10,
+  // showSeconds: false,
+  // type: "Digital",
   // Analog settings
   // TODO: Add analog settings
   // Digital settings
   digitStyle: "14segment",
   padHours: true,
-  secondsPosition: new THREE.Vector2(0.5, -0.5),
-  secondsSize: 10,
+  // secondsPosition: new THREE.Vector2(0.5, -0.5),
+  // secondsSize: 10,
 };
 export const CLOCK_CONTROLS_CONFIGS: ControlsConfigs<ClockSettings> = {
   size: { min: 1, max: 100, step: 1 },
@@ -48,8 +48,8 @@ export const DEFAULT_SIMULATION_SETTINGS: SimulationSettings = {
   boundaryBehavior: 0, // 0: Wrap, 1: Bounce
 
   agentDensity: 0.25,
-  gpuTextureWidth: Math.floor(Math.sqrt(1920 * 1080 * 0.25)),
-  gpuTextureHeight: Math.floor(Math.sqrt(1920 * 1080 * 0.25)),
+  gpuTextureWidth: 16,
+  gpuTextureHeight: 16,
   agentStartType: 5,
   agentDepositRate: 6.5,
   agentSensorDegrees: 25,
@@ -60,9 +60,9 @@ export const DEFAULT_SIMULATION_SETTINGS: SimulationSettings = {
   agentCrowdAvoidance: 0.1,
   agentWanderStrength: 5.3,
 
-  trailDisplayTextureResolution: "1920 x 1080",
-  displayTextureWidth: 1920,
-  displayTextureHeight: 1080,
+  trailDisplayTextureResolution: "16 x 9",
+  displayTextureWidth: 16,
+  displayTextureHeight: 9,
   trailDecayRate: 0.05,
   trailDiffuseRate: 4.5,
   trailTextDecayRate: 0.39,
@@ -179,3 +179,14 @@ export const AGENT_START_TYPE_DROPDOWN_OPTIONS: AgentStartTypeDropdownOption[] =
     { value: "4", label: "Spiral" },
     { value: "5", label: "Fill" },
   ] as const;
+
+// IMPORTANT: Keep this ordered from smallest to largest resolution.
+export const DISPLAY_TEXTURE_RESOLUTIONS: TrailDisplayTextureResolution[] = [
+  "426 x 240",
+  "640 x 360",
+  "854 x 480",
+  "1280 x 720",
+  "1920 x 1080",
+  "2560 x 1440",
+  "3840 x 2160",
+];

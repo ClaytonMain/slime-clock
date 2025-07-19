@@ -1,5 +1,3 @@
-import * as THREE from "three";
-
 export type ControlsTabName =
   | "clock-controls"
   | "simulation-controls"
@@ -11,23 +9,25 @@ export type SelectOption<T> = {
 };
 
 export interface ClockSettings {
-  // Shared settings
   show: boolean;
   size: number;
-  position: THREE.Vector2;
+  // yPosition: number;
+  // xPosition: number;
   hourFormat: ClockHourFormatValue;
-  showAmPm: boolean;
-  amPmPosition: THREE.Vector2;
-  amPmSize: number;
-  showSeconds: boolean;
-  type: "Analog" | "Digital";
+  // showAmPm: boolean;
+  // amPmYPosition: number;
+  // amPmXPosition: number;
+  // amPmSize: number;
+  // showSeconds: boolean;
+  // type: "Analog" | "Digital";
   // Analog settings
   // TODO: Add analog settings
   // Digital settings
   digitStyle: ClockDigitStyleValue;
   padHours: boolean;
-  secondsPosition: THREE.Vector2;
-  secondsSize: number;
+  // secondsYPosition: number;
+  // secondsXPosition: number;
+  // secondsSize: number;
 }
 
 export interface SimulationSettings {
@@ -53,7 +53,7 @@ export interface SimulationSettings {
   agentCrowdAvoidance: number;
   agentWanderStrength: number;
 
-  trailDisplayTextureResolution: TrailDisplayTextureResolution;
+  trailDisplayTextureResolution: TrailDisplayTextureResolution | "16 x 9";
   displayTextureWidth: number;
   displayTextureHeight: number;
   trailDecayRate: number;
@@ -90,7 +90,11 @@ export interface ColorSettings {
 /**
  * Clock Settings Types
  */
-export type ClockDigitStyleValue = "7segment" | "14segment" | "dotmatrix";
+export type ClockDigitStyleValue =
+  | "7segment"
+  | "14segment"
+  | "dotmatrix"
+  | "opticbot";
 export type ClockHourFormatValue = "12h" | "24h";
 
 /**
@@ -103,23 +107,6 @@ export type SimulationQuality =
   | "High"
   | "Very High"
   | "Custom";
-// export type AgentCount =
-//   | "16384" // 128^2
-//   | "65536" // 256^2
-//   | "147456" // 384^2
-//   | "262144" // 512^2
-//   | "409600" // 640^2
-//   | "589824" // 768^2
-//   | "802816" // 896^2
-//   | "1048576" // 1024^2
-//   | "1327104" // 1152^2
-//   | "1638400" // 1280^2
-//   | "1982464" // 1408^2
-//   | "2359296" // 1536^2
-//   | "2768896" // 1664^2
-//   | "3211264" // 1792^2
-//   | "3686400" // 1920^2
-//   | "4194304"; // 2048^2
 export type AgentStartType =
   | "Random"
   | "Center"
@@ -129,8 +116,9 @@ export type AgentStartType =
   | "Spiral"
   | "Fill";
 export type TrailDisplayTextureResolution =
-  | "640 x 480"
-  | "800 x 600"
+  | "426 x 240"
+  | "640 x 360"
+  | "854 x 480"
   | "1280 x 720"
   | "1920 x 1080"
   | "2560 x 1440"
