@@ -3,9 +3,12 @@ import { useFrame } from "@react-three/fiber";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import useSlimeStore from "../../stores/useSlimeStore";
-import type { ClockFormatValue, ClockStyleValue } from "../../types/types";
+import type {
+  ClockDigitStyleValue,
+  ClockHourFormatValue,
+} from "../../types/types";
 
-function getFontUrl(style: ClockStyleValue): string {
+function getDigitFontUrl(style: ClockDigitStyleValue): string {
   switch (style) {
     case "7segment":
       return "fonts/DSEG7ClassicMini-Regular.woff";
@@ -18,26 +21,26 @@ function getFontUrl(style: ClockStyleValue): string {
   }
 }
 
-function getFormattedTime({
-  format,
-  includeSeconds = false,
-  includeAmPm = false,
+function getFormattedDigitTime({
+  hourFormat,
+  showSeconds = false,
+  showAmPm = false,
   padHours = true,
 }: {
-  format: ClockFormatValue;
-  includeSeconds?: boolean;
-  includeAmPm?: boolean;
+  hourFormat: ClockHourFormatValue;
+  showSeconds?: boolean;
+  showAmPm?: boolean;
   padHours?: boolean;
 }): string {
   const currentTime = new Date();
-  const nHours = currentTime.getHours() % (format === "24h" ? 24 : 12);
+  const nHours = currentTime.getHours() % (hourFormat === "24h" ? 24 : 12);
   const hours = padHours ? String(nHours).padStart(2, "0") : String(nHours);
   const minutes = String(currentTime.getMinutes()).padStart(2, "0");
-  const seconds = includeSeconds
+  const seconds = showSeconds
     ? String(currentTime.getSeconds()).padStart(2, "0")
     : null;
   const amPm =
-    includeAmPm && format === "12h"
+    showAmPm && hourFormat === "12h"
       ? currentTime.getHours() >= 12
         ? "PM"
         : "AM"
@@ -48,12 +51,14 @@ function getFormattedTime({
 export default function ClockDisplay() {
   const clockSettings = useSlimeStore((state) => state.clockSettings);
   const [displayText1, setDisplayText1] = useState<string>(
-    Math.random() > 0.99 && clockSettings.style === "14segment"
+    Math.random() > 0.99 && clockSettings.digitStyle === "14segment"
       ? "ME:OW"
       : "00:00",
   );
   const [displayText2, setDisplayText2] = useState<string>(displayText1);
-  const [fontUrl, setFontUrl] = useState(getFontUrl(clockSettings.style));
+  const [fontUrl, setFontUrl] = useState(
+    getDigitFontUrl(clockSettings.digitStyle),
+  );
   const displayTextureWidth = useSlimeStore(
     (state) => state.simulationSettings.displayTextureWidth,
   );
@@ -68,13 +73,14 @@ export default function ClockDisplay() {
   // PLASMODIMETER
 
   useFrame((_, delta) => {
-    const formattedTime = getFormattedTime({
-      format: clockSettings.format,
-      includeSeconds: false,
-      includeAmPm: true,
+    const formattedTime = getFormattedDigitTime({
+      hourFormat: clockSettings.hourFormat,
+      showSeconds: false,
+      showAmPm: true,
       padHours: true,
     });
 
+    // TODO: ping pong between displayText1 and displayText2 to make the fade effect smoother.
     if (opacityRef.current < 1.0) {
       opacityRef.current += delta * 0.1;
     } else if (opacityRef.current > 1.0) {
@@ -97,8 +103,8 @@ export default function ClockDisplay() {
   });
 
   useEffect(() => {
-    setFontUrl(getFontUrl(clockSettings.style));
-  }, [clockSettings.style]);
+    setFontUrl(getDigitFontUrl(clockSettings.digitStyle));
+  }, [clockSettings.digitStyle]);
 
   return (
     <>

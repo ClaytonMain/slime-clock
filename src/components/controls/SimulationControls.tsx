@@ -133,7 +133,7 @@ export default function SimulationControls() {
     );
     useSlimeStore.setState(
       produce((state) => {
-        state.simulationSettings.agentDensity = value;
+        state.simulationSettings.agentDensity = Number(value);
         state.simulationSettings.gpuTextureWidth = gpuTextureSize;
         state.simulationSettings.gpuTextureHeight = gpuTextureSize;
       }),
@@ -242,7 +242,7 @@ export default function SimulationControls() {
                 This accordian contains the following settings controlling the
                 agents:
                 <ul className="list-inside list-disc">
-                  <li>Count</li>
+                  <li>Density</li>
                   <li>Start Type</li>
                   <li>Deposit Rate</li>
                   <li>Sensor Degrees</li>
@@ -267,6 +267,7 @@ export default function SimulationControls() {
               storePath={["simulationSettings", "agentDensity"]}
               options={agentDensityOptions}
               onValueChange={handleAgentDensityChange}
+              valueType="number"
             />
             <SlimeStoreSelect
               label="Start Type"

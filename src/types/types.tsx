@@ -1,7 +1,4 @@
-export type FooterTabName =
-  | "clock-settings"
-  | "simulation-settings"
-  | "color-settings";
+import * as THREE from "three";
 
 export type ControlsTabName =
   | "clock-controls"
@@ -14,12 +11,23 @@ export type SelectOption<T> = {
 };
 
 export interface ClockSettings {
-  style: ClockStyleValue;
-  format: ClockFormatValue;
+  // Shared settings
+  show: boolean;
   size: number;
-  includeSeconds: boolean;
-  includeAmPm: boolean;
+  position: THREE.Vector2;
+  hourFormat: ClockHourFormatValue;
+  showAmPm: boolean;
+  amPmPosition: THREE.Vector2;
+  amPmSize: number;
+  showSeconds: boolean;
+  type: "Analog" | "Digital";
+  // Analog settings
+  // TODO: Add analog settings
+  // Digital settings
+  digitStyle: ClockDigitStyleValue;
   padHours: boolean;
+  secondsPosition: THREE.Vector2;
+  secondsSize: number;
 }
 
 export interface SimulationSettings {
@@ -82,8 +90,8 @@ export interface ColorSettings {
 /**
  * Clock Settings Types
  */
-export type ClockStyleValue = "7segment" | "14segment" | "dotmatrix";
-export type ClockFormatValue = "12h" | "24h";
+export type ClockDigitStyleValue = "7segment" | "14segment" | "dotmatrix";
+export type ClockHourFormatValue = "12h" | "24h";
 
 /**
  * Simulation Settings Types

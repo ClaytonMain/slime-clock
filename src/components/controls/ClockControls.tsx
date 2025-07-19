@@ -3,7 +3,10 @@ import { AnimatePresence, motion } from "motion/react";
 import { useEffect } from "react";
 import { CLOCK_CONTROLS_CONFIGS } from "../../constants/constants";
 import useSlimeStore from "../../stores/useSlimeStore";
-import type { ClockFormatValue, ClockStyleValue } from "../../types/types";
+import type {
+  ClockDigitStyleValue,
+  ClockHourFormatValue,
+} from "../../types/types";
 import CodeBlock from "../code-block/CodeBlock";
 import AccordionControlsItem from "./AccordionControlsItem";
 import AccordionControlsWrapper from "./AccordionControlsWrapper";
@@ -14,35 +17,37 @@ import TabContentContainer from "./TabContentContainer";
 import TabContentScrollArea from "./TabContentScrollArea";
 
 /**
- * Clock Style
+ * Clock Digit Style
  * 7 Segment, Dot Matrix
  */
-type ClockStyleOption = {
-  value: ClockStyleValue;
+type ClockDigitStyleOption = {
+  value: ClockDigitStyleValue;
   label: string;
 };
-const clockStyleOptions: ClockStyleOption[] = [
+const clockStyleOptions: ClockDigitStyleOption[] = [
   { value: "7segment", label: "7 Segment" },
   { value: "14segment", label: "14 Segment" },
   { value: "dotmatrix", label: "Dot Matrix" },
 ] as const;
 
 /**
- * Clock Format
+ * Clock Hour Format
  * 12 Hour, 24 Hour
  */
-type ClockFormatOption = {
-  value: ClockFormatValue;
+type ClockHourFormatOption = {
+  value: ClockHourFormatValue;
   label: string;
 };
-const clockFormatOptions: ClockFormatOption[] = [
+const clockFormatOptions: ClockHourFormatOption[] = [
   { value: "12h", label: "12 Hour" },
   { value: "24h", label: "24 Hour" },
 ] as const;
 
 export default function ClockControls() {
   const selectedTab = useSlimeStore((state) => state.controlsState.selectedTab);
-  const clockFormat = useSlimeStore((state) => state.clockSettings.format);
+  const clockHourFormat = useSlimeStore(
+    (state) => state.clockSettings.hourFormat,
+  );
 
   const clockControlsLabelHoverTabContentDisplay = [
     "Clock",
@@ -117,7 +122,7 @@ export default function ClockControls() {
               ]}
             />
             <AnimatePresence>
-              {clockFormat === "12h" && (
+              {clockHourFormat === "12h" && (
                 <motion.div
                   className="overflow-clip"
                   initial={{ height: 0 }}

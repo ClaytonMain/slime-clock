@@ -1,3 +1,4 @@
+import * as THREE from "three";
 import type {
   AgentStartTypeDropdownOption,
   ClockSettings,
@@ -15,12 +16,23 @@ type ControlsConfigs<T> = {
  * Clock Settings
  */
 export const DEFAULT_CLOCK_SETTINGS: ClockSettings = {
-  style: "14segment",
-  format: "24h",
+  // Shared settings
+  show: true,
   size: 50,
-  includeSeconds: false,
-  includeAmPm: false,
+  position: new THREE.Vector2(0, 0),
+  hourFormat: "24h",
+  showAmPm: false,
+  amPmPosition: new THREE.Vector2(0.5, -0.5),
+  amPmSize: 10,
+  showSeconds: false,
+  type: "Digital",
+  // Analog settings
+  // TODO: Add analog settings
+  // Digital settings
+  digitStyle: "14segment",
   padHours: true,
+  secondsPosition: new THREE.Vector2(0.5, -0.5),
+  secondsSize: 10,
 };
 export const CLOCK_CONTROLS_CONFIGS: ControlsConfigs<ClockSettings> = {
   size: { min: 1, max: 100, step: 1 },
@@ -29,34 +41,33 @@ export const CLOCK_CONTROLS_CONFIGS: ControlsConfigs<ClockSettings> = {
 export const DEFAULT_SIMULATION_SETTINGS: SimulationSettings = {
   quality: "Medium",
 
-  speed: 2.7,
+  speed: 3.3,
   randomizationEnabled: false,
   randomizationInterval: 120,
 
   boundaryBehavior: 0, // 0: Wrap, 1: Bounce
 
-  // agentCount: "147456",
-  agentDensity: 0.1,
-  gpuTextureWidth: Math.floor(Math.sqrt(1280 * 720 * 0.1)),
-  gpuTextureHeight: Math.floor(Math.sqrt(1280 * 720 * 0.1)),
-  agentStartType: -1,
-  agentDepositRate: 6.1,
-  agentSensorDegrees: 24,
-  agentRotationRate: 1.7,
-  agentSensorOffset: 17.2,
-  agentSensorWidth: 3.0,
-  agentStepSize: 10.0,
-  agentCrowdAvoidance: 0.21,
-  agentWanderStrength: 4.1,
+  agentDensity: 0.25,
+  gpuTextureWidth: Math.floor(Math.sqrt(1920 * 1080 * 0.25)),
+  gpuTextureHeight: Math.floor(Math.sqrt(1920 * 1080 * 0.25)),
+  agentStartType: 5,
+  agentDepositRate: 6.5,
+  agentSensorDegrees: 25,
+  agentRotationRate: 2.2,
+  agentSensorOffset: 1.85,
+  agentSensorWidth: 0.42,
+  agentStepSize: 1.52,
+  agentCrowdAvoidance: 0.1,
+  agentWanderStrength: 5.3,
 
-  trailDisplayTextureResolution: "1280 x 720",
-  displayTextureWidth: 1280,
-  displayTextureHeight: 720,
-  trailDecayRate: 0.39,
-  trailDiffuseRate: 11.7,
+  trailDisplayTextureResolution: "1920 x 1080",
+  displayTextureWidth: 1920,
+  displayTextureHeight: 1080,
+  trailDecayRate: 0.05,
+  trailDiffuseRate: 4.5,
   trailTextDecayRate: 0.39,
   trailTextDiffuseRate: 11.7,
-  trailNegativeSpaceDecayRate: 0.79,
+  trailNegativeSpaceDecayRate: 1.8,
   trailNegativeSpaceDiffuseRate: 19.7,
 };
 export const SIMULATION_CONTROLS_CONFIGS: ControlsConfigs<SimulationSettings> =
