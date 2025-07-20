@@ -1,7 +1,8 @@
 uniform sampler2D uAgentDataTexture;
-uniform sampler2D uAgentPositionsTexture;
+uniform sampler2D uClockTexture;
 uniform sampler2D uTrailTexture;
 uniform vec2 uDisplayTextureResolution;
+uniform float uClockAttraction;
 uniform float uSensorAngle;
 uniform float uRotationRate;
 uniform float uSensorOffset;
@@ -9,7 +10,6 @@ uniform float uSensorWidth;
 uniform float uStepSize;
 uniform float uCrowdAvoidance;
 uniform float uWanderStrength;
-uniform float uSensorSampleLevel;
 uniform int uBoundaryBehavior; // 0 = wrap, 1 = bounce
 uniform float uDelta;
 uniform float uTime;
@@ -22,91 +22,62 @@ varying vec2 vUv;
 // // Offsets for the 8 neighboring pixels in a 2D grid.
 // float neighborOffsets[8] = float[](1.0, 1.0, 0.0, -1.0, -1.0, -1.0, 0.0, 1.0);
 // float getTrailIntensity(vec2 position) {
-//     float sensorWidthDivSampleLevel = uSensorWidth / uSensorSampleLevel;
 //     float intensity = texture2D(uTrailTexture, position / uDisplayTextureResolution).r;
 //     bool hasSensorOffscreen = false;
 //     for (int i = 0; i < 8; i++) {
 //         if (hasSensorOffscreen) {
 //             break;
 //         }
-//         int iy = (i + 6) % 8;
-//         for (float j = 1.0; j <= uSensorSampleLevel; j++) {
-//             vec2 neighborUv = (position + vec2(neighborOffsets[i], neighborOffsets[iy]) * j * sensorWidthDivSampleLevel) / uDisplayTextureResolution;
-//             if (neighborUv.x < 0.0 || neighborUv.x > 1.0 || neighborUv.y < 0.0 || neighborUv.y > 1.0) {
-//                 if (uBoundaryBehavior == 0) { // Wrap
-//                     neighborUv = fract(neighborUv);
-//                 } else if (uBoundaryBehavior == 1) { // Bounce
-//                     hasSensorOffscreen = true;
-//                     continue;
-//                 }
-//             }
-//             // trailData.r := Current trail intensity.
-//             // trailData.g := 1.0 (unused).
-//             // trailData.b := 1.0 (unused).
-//             // trailData.a := 1.0 (unused).
-//             // vec4 trailData = texture2D(uTrailTexture, neighborUv);
-//             intensity += texture2D(uTrailTexture, neighborUv).r;
-//         }
-//     }
-//     return hasSensorOffscreen ? -1000.0 : intensity / (uSensorSampleLevel * 8.0 + 1.0);
-// }
-
-// Worse than original.
-// float getTrailIntensity(vec2 position) {
-//     float intensity = 0.0;
-//     bool hasSensorOffscreen = false;
-//     for (float i = -uSensorSampleLevel; i <= uSensorSampleLevel; i++) {
-//         if (hasSensorOffscreen) {
-//             break;
-//         }
-//         for (float j = -uSensorSampleLevel; j <= uSensorSampleLevel; j++) {
-//             vec2 neighborUv = (position + vec2(i, j) * uSensorWidth / uSensorSampleLevel) / uDisplayTextureResolution;
-//             if (neighborUv.x <= 0.0 || neighborUv.x >= 1.0 || neighborUv.y <= 0.0 || neighborUv.y >= 1.0) {
-//                 if (uBoundaryBehavior == 0) { // Wrap
-//                     neighborUv = fract(neighborUv);
-//                 } else if (uBoundaryBehavior == 1) { // Bounce
-//                     hasSensorOffscreen = true;
-//                     continue;
-//                 }
-//             }
-//             // trailData.r := Current trail intensity.
-//             // trailData.g := 1.0 (unused).
-//             // trailData.b := 1.0 (unused).
-//             // trailData.a := 1.0 (unused).
-//             intensity += texture2D(uTrailTexture, neighborUv).r;
-//         }
-//     }
-//     return hasSensorOffscreen ? -1000.0 : intensity / (4.0 * uSensorSampleLevel * uSensorSampleLevel);
-// }
-
-// Fast, but doesn't factor in uSensorSampleLevel or uSensorWidth.
-// float offset[3] = float[](0.0, 1.3846153846, 3.2307692308);
-// float weight[3] = float[](0.2270270270, 0.3162162162, 0.0702702703);
-// float getTrailIntensity(vec2 position) {
-//     float intensity = texture2D(uTrailTexture, position / uDisplayTextureResolution).r * weight[0];
-//     bool hasSensorOffscreen = false;
-//     for (int i = 1; i < 3; i++) {
-//         vec2 neighborUvOne = (position + vec2(0.0, offset[i])) / uDisplayTextureResolution;
-//         vec2 neighborUvTwo = (position - vec2(0.0, offset[i])) / uDisplayTextureResolution;
-//         if (neighborUvOne.x <= 0.0 || neighborUvOne.x >= 1.0 || neighborUvOne.y <= 0.0 || neighborUvOne.y >= 1.0 || neighborUvTwo.x <= 0.0 || neighborUvTwo.x >= 1.0 || neighborUvTwo.y <= 0.0 || neighborUvTwo.y >= 1.0) {
+//         vec2 neighborUv = (position + vec2(neighborOffsets[i], neighborOffsets[(i + 6) % 8]) * uSensorWidth) / uDisplayTextureResolution;
+//         if (neighborUv.x < 0.0 || neighborUv.x > 1.0 || neighborUv.y < 0.0 || neighborUv.y > 1.0) {
 //             if (uBoundaryBehavior == 0) { // Wrap
-//                 neighborUvOne = fract(neighborUvOne);
-//                 neighborUvTwo = fract(neighborUvTwo);
+//                 neighborUv = fract(neighborUv);
 //             } else if (uBoundaryBehavior == 1) { // Bounce
 //                 hasSensorOffscreen = true;
 //                 continue;
 //             }
 //         }
-//         intensity += texture2D(uTrailTexture, neighborUvOne).r * weight[i];
-//         intensity += texture2D(uTrailTexture, neighborUvTwo).r * weight[i];
+//         // trailData.r := Current trail intensity.
+//         // trailData.g := 1.0 (unused).
+//         // trailData.b := 1.0 (unused).
+//         // trailData.a := 1.0 (unused).
+//         // vec4 trailData = texture2D(uTrailTexture, neighborUv);
+//         intensity += texture2D(uTrailTexture, neighborUv).r;
 //     }
-//     return hasSensorOffscreen ? -1000.0 : intensity;
+//     return hasSensorOffscreen ? -1000.0 : intensity / 9.0;
+// }
+
+// float getTrailIntensity(vec2 position) {
+//     vec2 textureUv = position / uDisplayTextureResolution;
+//     float intensity = max(texture2D(uTrailTexture, textureUv).r, texture2D(uClockTexture, textureUv).r * uClockAttraction);
+//     bool hasSensorOffscreen = false;
+//     for (int i = 0; i < 4; i++) {
+//         if (hasSensorOffscreen) {
+//             break;
+//         }
+//         vec2 neighborUv = (position + vec2((i % 2) * 2 - 1, (i / 2) * 2 - 1) * uSensorWidth) / uDisplayTextureResolution;
+//         if (neighborUv.x < 0.0 || neighborUv.x > 1.0 || neighborUv.y < 0.0 || neighborUv.y > 1.0) {
+//             if (uBoundaryBehavior == 0) { // Wrap
+//                 neighborUv = fract(neighborUv);
+//             } else if (uBoundaryBehavior == 1) { // Bounce
+//                 hasSensorOffscreen = true;
+//                 continue;
+//             }
+//         }
+//         // trailData.r := Current trail intensity.
+//         // trailData.g := Last present agent's direction.
+//         // trailData.b := 1.0 (unused).
+//         // trailData.a := 1.0 (unused).
+//         // vec4 trailData = texture2D(uTrailTexture, neighborUv);
+//         intensity += texture2D(uTrailTexture, neighborUv).r;
+//     }
+//     return hasSensorOffscreen ? -1000.0 : intensity / 5.0;
 // }
 
 // Offsets for the 8 neighboring pixels in a 2D grid.
 float neighborOffsets[8] = float[](1.0, 1.0, 0.0, -1.0, -1.0, -1.0, 0.0, 1.0);
 float getTrailIntensity(vec2 position) {
-    float intensity = texture2D(uTrailTexture, position / uDisplayTextureResolution).r;
+    float intensity = max(texture2D(uTrailTexture, position / uDisplayTextureResolution).r, texture2D(uClockTexture, position / uDisplayTextureResolution).r * uClockAttraction);
     bool hasSensorOffscreen = false;
     for (int i = 0; i < 8; i++) {
         if (hasSensorOffscreen) {
@@ -142,12 +113,14 @@ void main() {
     // agentData.r := Agent x position.
     // agentData.g := Agent y position.
     // agentData.b := Agent direction angle.
-    // agentData.a := 0.0 or 1.0 -> Agent took step boolean.
+    // agentData.a := Agent deposit amount.
     vec4 agentData = texture2D(uAgentDataTexture, vUv);
 
     // Motor stage.
-    // The agent moves in the direction of its current angle by a fixed step size,
-    // if it's able. If not, it randomizes its direction.
+    // The agent moves in its current direction by a fixed step size
+    // if it's able. Moving increases its available deposit amount.
+    // If it can't move, it randomizes its direction and decreases its
+    // available deposit amount.
     vec2 agentPosition = agentData.xy * uDisplayTextureResolution;
     float agentDirectionAngle = agentData.z * PI2;
     vec2 agentDirection = vec2(cos(agentDirectionAngle), sin(agentDirectionAngle));
@@ -158,44 +131,40 @@ void main() {
 
     float agentDepositAmount = agentData.w;
 
-    // agentDirectionAngle = atan(-1.0, 0.0);
-
     if (newAgentPosition.x <= 0.0 || newAgentPosition.x >= (uDisplayTextureResolution.x - 1.0) || newAgentPosition.y <= 0.0 || newAgentPosition.y >= (uDisplayTextureResolution.y - 1.0)) {
         if (uBoundaryBehavior == 0) { // Wrap
             newAgentPosition = mod(newAgentPosition, uDisplayTextureResolution);
             newAgentTrailUv = fract(newAgentTrailUv);
         } else if (uBoundaryBehavior == 1) { // Bounce
-            // if (newAgentPosition.x <= 0.0 || newAgentPosition.x >= (uDisplayTextureResolution.x - 1.0)) {
-            //     agentDirection.x *= -1.0;
-            // }
-            // if (newAgentPosition.y <= 0.0 || newAgentPosition.y >= (uDisplayTextureResolution.y - 1.0)) {
-            //     agentDirection.y *= -1.0;
-            // }
             agentDirectionAngle = atan(-(agentTrailUv.y - 0.5), -(agentTrailUv.x - 0.5));
             agentDirection = vec2(cos(agentDirectionAngle), sin(agentDirectionAngle));
             newAgentPosition = agentPosition + agentDirection * uStepSize * uDelta;
             newAgentTrailUv = newAgentPosition / uDisplayTextureResolution;
-
-            agentDepositAmount -= uDelta * 0.5;
         }
     }
 
     float newAgentPositionIntensity = getTrailIntensity(newAgentPosition);
 
+    // If the new position isn't off the screen, handle movement.
     if (newAgentPositionIntensity >= 0.0) {
-        // If the new position isn't overcrowded, update the agent position.
         agentPosition = newAgentPosition;
         agentTrailUv = newAgentTrailUv;
         agentDirectionAngle += uWanderStrength * positiveOrNegative * uDelta;
+        // If the new position is too crowded, decrease deposit amount
+        // and randomize direction.
         if (newAgentPositionIntensity > oneMinusCrowdAvoidance) {
-            agentDepositAmount -= uDelta * 0.5;
-        } else {
-            agentDepositAmount += uDelta * 0.5;
+            agentDirectionAngle += rotationWeight * positiveOrNegative;
+            agentDepositAmount -= uDelta * 0.1;
         }
-    } else {
-        // Otherwise, randomize the direction.
+        // Otherwise, just increase deposit amount.
+        else {
+            agentDepositAmount += uDelta * 0.1;
+        }
+    }
+    // Otherwise, randomize the direction.
+    else {
         agentDirectionAngle += rotationWeight * positiveOrNegative;
-        agentDepositAmount -= uDelta * 0.5;
+        agentDepositAmount -= uDelta * 0.1;
     }
 
     // Sensory stage.
@@ -212,9 +181,9 @@ void main() {
 
     // Strongly discourage overcrowding while allowing to steer towards least crowded
     // position.
-    frontIntensity -= max(0.0, frontIntensity - oneMinusCrowdAvoidance) * 100.0;
-    frontLeftIntensity -= max(0.0, frontLeftIntensity - oneMinusCrowdAvoidance) * 100.0;
-    frontRightIntensity -= max(0.0, frontRightIntensity - oneMinusCrowdAvoidance) * 100.0;
+    frontIntensity -= max(0.0, frontIntensity - oneMinusCrowdAvoidance) * 10.0;
+    frontLeftIntensity -= max(0.0, frontLeftIntensity - oneMinusCrowdAvoidance) * 10.0;
+    frontRightIntensity -= max(0.0, frontRightIntensity - oneMinusCrowdAvoidance) * 10.0;
 
     float chosenIntensity = 0.0;
 
@@ -238,14 +207,3 @@ void main() {
 
     gl_FragColor = vec4(fract(agentPosition / uDisplayTextureResolution), fract(agentDirectionAngle / PI2), agentDepositAmount);
 }
-
-// TODO
-// Add toggle for boundary repetition.
-// Add options for initial agent distribution.
-// Increase UI slider ranges.
-// Improve angle sliders.
-// Add randomization button.
-// Add reset button.
-// Add color options (obviously).
-// Add simulation speed slider.
-// Add preset options.

@@ -5,7 +5,7 @@ import useSlimeStore from "../../stores/useSlimeStore";
 import AccordionControlsItem from "./AccordionControlsItem";
 import AccordionControlsWrapper from "./AccordionControlsWrapper";
 import ProceduralColorPalettePresetSelect from "./ProceduralColorPalettePresetSelect";
-import SlimeStoreSlider from "./SlimeStoreSlider";
+import SlimeStoreSliderControl from "./SlimeStoreSliderControl";
 import TabContentContainer from "./TabContentContainer";
 import TabContentScrollArea from "./TabContentScrollArea";
 
@@ -59,7 +59,16 @@ export default function ColorControls() {
               defaultValue={["red", "green", "blue"]}
             >
               <AccordionControlsItem value="red" label="Red">
-                <SlimeStoreSlider
+                <SlimeStoreSliderControl
+                  label="Test"
+                  baseInputId="procedural-color-palette-r-test"
+                  min={-1}
+                  max={2}
+                  step={0.01}
+                  storePath={["testRange"]}
+                  type="range"
+                />
+                <SlimeStoreSliderControl
                   label="Y-Offset"
                   baseInputId="procedural-color-palette-r-y-offset"
                   min={-1}
@@ -80,7 +89,7 @@ export default function ColorControls() {
                     ])
                   }
                 />
-                <SlimeStoreSlider
+                <SlimeStoreSliderControl
                   label="amplitude"
                   baseInputId="procedural-color-palette-r-amplitude"
                   min={-5}
@@ -101,7 +110,7 @@ export default function ColorControls() {
                     ])
                   }
                 />
-                <SlimeStoreSlider
+                <SlimeStoreSliderControl
                   label="frequency"
                   baseInputId="procedural-color-palette-r-frequency"
                   min={-5}
@@ -122,7 +131,7 @@ export default function ColorControls() {
                     ])
                   }
                 />
-                <SlimeStoreSlider
+                <SlimeStoreSliderControl
                   label="phase"
                   baseInputId="procedural-color-palette-r-phase"
                   min={Math.round(-Math.PI * 100) / 100}
@@ -145,7 +154,7 @@ export default function ColorControls() {
                 />
               </AccordionControlsItem>
               <AccordionControlsItem value="green" label="Green">
-                <SlimeStoreSlider
+                <SlimeStoreSliderControl
                   label="Y-Offset"
                   baseInputId="procedural-color-palette-g-y-offset"
                   min={-1}
@@ -166,7 +175,7 @@ export default function ColorControls() {
                     ])
                   }
                 />
-                <SlimeStoreSlider
+                <SlimeStoreSliderControl
                   label="amplitude"
                   baseInputId="procedural-color-palette-g-amplitude"
                   min={-5}
@@ -187,7 +196,7 @@ export default function ColorControls() {
                     ])
                   }
                 />
-                <SlimeStoreSlider
+                <SlimeStoreSliderControl
                   label="frequency"
                   baseInputId="procedural-color-palette-g-frequency"
                   min={-5}
@@ -208,7 +217,7 @@ export default function ColorControls() {
                     ])
                   }
                 />
-                <SlimeStoreSlider
+                <SlimeStoreSliderControl
                   label="phase"
                   baseInputId="procedural-color-palette-g-phase"
                   min={Math.round(-Math.PI * 100) / 100}
@@ -231,7 +240,7 @@ export default function ColorControls() {
                 />
               </AccordionControlsItem>
               <AccordionControlsItem value="blue" label="Blue">
-                <SlimeStoreSlider
+                <SlimeStoreSliderControl
                   label="Y-Offset"
                   baseInputId="procedural-color-palette-b-y-offset"
                   min={-1}
@@ -252,7 +261,7 @@ export default function ColorControls() {
                     ])
                   }
                 />
-                <SlimeStoreSlider
+                <SlimeStoreSliderControl
                   label="amplitude"
                   baseInputId="procedural-color-palette-b-amplitude"
                   min={-5}
@@ -273,7 +282,7 @@ export default function ColorControls() {
                     ])
                   }
                 />
-                <SlimeStoreSlider
+                <SlimeStoreSliderControl
                   label="frequency"
                   baseInputId="procedural-color-palette-b-frequency"
                   min={-5}
@@ -294,7 +303,7 @@ export default function ColorControls() {
                     ])
                   }
                 />
-                <SlimeStoreSlider
+                <SlimeStoreSliderControl
                   label="phase"
                   baseInputId="procedural-color-palette-b-phase"
                   min={Math.round(-Math.PI * 100) / 100}

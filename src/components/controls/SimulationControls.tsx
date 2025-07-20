@@ -9,30 +9,13 @@ import type { TrailDisplayTextureResolution } from "../../types/types";
 import CodeBlock from "../code-block/CodeBlock";
 import AccordionControlsItem from "./AccordionControlsItem";
 import AccordionControlsWrapper from "./AccordionControlsWrapper";
+import ControlButton from "./ControlButton";
 import HeightScaledPixelValueDisplay from "./HeightScaledPixelValueDisplay";
-import SlimeStoreSelect from "./SlimeStoreSelect";
-import SlimeStoreSlider from "./SlimeStoreSlider";
+import SlimeStoreSelectControl from "./SlimeStoreSelectControl";
+import SlimeStoreSliderControl from "./SlimeStoreSliderControl";
 import SlimeStoreSwitch from "./SlimeStoreSwitch";
 import TabContentContainer from "./TabContentContainer";
 import TabContentScrollArea from "./TabContentScrollArea";
-
-/**
- * Quality
- * Will set multiple settings at once.
- * TODO: Make the quality options dynamic based on the current simulation settings.
- */
-// type SimulationQualityOption = {
-//   value: SimulationQuality;
-//   label: string;
-// };
-// const simulationQualityOptions: SimulationQualityOption[] = [
-//   { value: "Very Low", label: "Very Low" },
-//   { value: "Low", label: "Low" },
-//   { value: "Medium", label: "Medium" },
-//   { value: "High", label: "High" },
-//   { value: "Very High", label: "Very High" },
-//   { value: "Custom", label: "Custom" },
-// ] as const;
 
 /**
  * Agent Densities
@@ -126,31 +109,71 @@ export default function SimulationControls() {
   return (
     <TabContentContainer tabsValue="simulation-controls">
       <TabContentScrollArea title="Simulation">
-        <AccordionControlsWrapper type="multiple">
-          {/* <AccordionControlsItem
+        <AccordionControlsWrapper
+          type="multiple"
+          defaultValue={["quick-settings"]}
+        >
+          <AccordionControlsItem
             value="quick-settings"
             label="Quick Settings"
             labelHoverTabContentDisplay={[
               "Quick Settings",
               <div className="px-2 py-1">
                 <ul className="list-inside list-disc">
-                  <li>Simulation Quality</li>
+                  <li>Randomize Simulation</li>
+                  <li>Randomize Agent Settings</li>
+                  <li>Randomize Trail Settings</li>
                 </ul>
               </div>,
             ]}
           >
-            <SlimeStoreSelect
-              label="Simulation Quality"
+            <ControlButton
+              label="Randomize Simulation"
               labelHoverTabContentDisplay={[
-                "Simulation Quality",
-                "Sets multiple settings at once. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+                "Randomize Simulation",
+                "Randomizes simulation settings based on enabled randomization options.",
               ]}
-              baseInputId="simulation-quality-select"
-              placeholder="Simulation Quality"
-              storePath={["simulationSettings", "quality"]}
-              options={simulationQualityOptions}
+              baseId="randomize-simulation-button"
+              onClick={() => {
+                useSlimeStore.setState(
+                  produce((state) => {
+                    state.simulationSettings.agentsNeedRandomization = true;
+                    state.simulationSettings.trailNeedsRandomization = true;
+                  }),
+                );
+              }}
             />
-          </AccordionControlsItem> */}
+            <ControlButton
+              label="Randomize Agent Settings"
+              labelHoverTabContentDisplay={[
+                "Randomize Agent Settings",
+                "Randomizes agent settings based on enabled randomization options.",
+              ]}
+              baseId="randomize-agent-settings-button"
+              onClick={() => {
+                useSlimeStore.setState(
+                  produce((state) => {
+                    state.simulationSettings.agentsNeedRandomization = true;
+                  }),
+                );
+              }}
+            />
+            <ControlButton
+              label="Randomize Trail Settings"
+              labelHoverTabContentDisplay={[
+                "Randomize Trail Settings",
+                "Randomizes trail settings based on enabled randomization options.",
+              ]}
+              baseId="randomize-trail-settings-button"
+              onClick={() => {
+                useSlimeStore.setState(
+                  produce((state) => {
+                    state.simulationSettings.trailNeedsRandomization = true;
+                  }),
+                );
+              }}
+            />
+          </AccordionControlsItem>
 
           <AccordionControlsItem
             value="simulation-settings"
@@ -166,7 +189,7 @@ export default function SimulationControls() {
               </div>,
             ]}
           >
-            <SlimeStoreSlider
+            <SlimeStoreSliderControl
               label="Simulation Speed"
               baseInputId="simulation-speed-slider"
               min={SIMULATION_CONTROLS_CONFIGS.speed!.min}
@@ -187,7 +210,7 @@ export default function SimulationControls() {
               baseId="randomization-enabled-switch"
               storePath={["simulationSettings", "randomizationEnabled"]}
             />
-            <SlimeStoreSlider
+            <SlimeStoreSliderControl
               label="Randomization Interval"
               labelHoverTabContentDisplay={[
                 "Randomization Interval",
@@ -229,7 +252,7 @@ export default function SimulationControls() {
               </div>,
             ]}
           >
-            <SlimeStoreSelect
+            <SlimeStoreSelectControl
               label="Density"
               labelHoverTabContentDisplay={[
                 "Agent Density",
@@ -242,7 +265,7 @@ export default function SimulationControls() {
               onValueChange={handleAgentDensityChange}
               valueType="number"
             />
-            <SlimeStoreSelect
+            <SlimeStoreSelectControl
               label="Start Type"
               labelHoverTabContentDisplay={[
                 "Agent Start Type",
@@ -254,7 +277,19 @@ export default function SimulationControls() {
               options={AGENT_START_TYPE_DROPDOWN_OPTIONS}
               valueType="number"
             />
-            <SlimeStoreSlider
+            <SlimeStoreSliderControl
+              label="Clock Attraction"
+              labelHoverTabContentDisplay={[
+                "Agent Clock Attraction",
+                "Controls how strongly the agents are attracted to the clock, even if no pheromones are present.",
+              ]}
+              baseInputId="agent-clock-attraction-slider"
+              min={SIMULATION_CONTROLS_CONFIGS.agentClockAttraction!.min}
+              max={SIMULATION_CONTROLS_CONFIGS.agentClockAttraction!.max}
+              step={SIMULATION_CONTROLS_CONFIGS.agentClockAttraction!.step}
+              storePath={["simulationSettings", "agentClockAttraction"]}
+            />
+            <SlimeStoreSliderControl
               label="Clock Deposit Rate"
               labelHoverTabContentDisplay={[
                 "Agent Clock Deposit Rate",
@@ -266,7 +301,7 @@ export default function SimulationControls() {
               step={SIMULATION_CONTROLS_CONFIGS.agentClockDepositRate!.step}
               storePath={["simulationSettings", "agentClockDepositRate"]}
             />
-            <SlimeStoreSlider
+            <SlimeStoreSliderControl
               label="Background Deposit Rate"
               labelHoverTabContentDisplay={[
                 "Agent Background Deposit Rate",
@@ -280,7 +315,7 @@ export default function SimulationControls() {
               }
               storePath={["simulationSettings", "agentBackgroundDepositRate"]}
             />
-            <SlimeStoreSlider
+            <SlimeStoreSliderControl
               label="Sensor Degrees"
               labelHoverTabContentDisplay={[
                 "Agent Sensor Degrees",
@@ -292,7 +327,7 @@ export default function SimulationControls() {
               step={SIMULATION_CONTROLS_CONFIGS.agentSensorDegrees!.step}
               storePath={["simulationSettings", "agentSensorDegrees"]}
             />
-            <SlimeStoreSlider
+            <SlimeStoreSliderControl
               label="Rotation Rate"
               labelHoverTabContentDisplay={[
                 "Agent Rotation Rate",
@@ -304,7 +339,7 @@ export default function SimulationControls() {
               step={SIMULATION_CONTROLS_CONFIGS.agentRotationRate!.step}
               storePath={["simulationSettings", "agentRotationRate"]}
             />
-            <SlimeStoreSlider
+            <SlimeStoreSliderControl
               label="Sensor Offset"
               labelHoverTabContentDisplay={[
                 "Agent Sensor Offset",
@@ -319,7 +354,7 @@ export default function SimulationControls() {
               step={SIMULATION_CONTROLS_CONFIGS.agentSensorOffset!.step}
               storePath={["simulationSettings", "agentSensorOffset"]}
             />
-            <SlimeStoreSlider
+            <SlimeStoreSliderControl
               label="Sensor Width"
               labelHoverTabContentDisplay={[
                 "Agent Sensor Width",
@@ -334,7 +369,7 @@ export default function SimulationControls() {
               step={SIMULATION_CONTROLS_CONFIGS.agentSensorWidth!.step}
               storePath={["simulationSettings", "agentSensorWidth"]}
             />
-            <SlimeStoreSlider
+            <SlimeStoreSliderControl
               label="Step Size"
               labelHoverTabContentDisplay={[
                 "Agent Step Size",
@@ -349,7 +384,7 @@ export default function SimulationControls() {
               step={SIMULATION_CONTROLS_CONFIGS.agentStepSize!.step}
               storePath={["simulationSettings", "agentStepSize"]}
             />
-            <SlimeStoreSlider
+            <SlimeStoreSliderControl
               label="Crowd Avoidance"
               labelHoverTabContentDisplay={[
                 "Agent Crowd Avoidance",
@@ -361,7 +396,7 @@ export default function SimulationControls() {
               step={SIMULATION_CONTROLS_CONFIGS.agentCrowdAvoidance!.step}
               storePath={["simulationSettings", "agentCrowdAvoidance"]}
             />
-            <SlimeStoreSlider
+            <SlimeStoreSliderControl
               label="Wander Strength"
               labelHoverTabContentDisplay={[
                 "Agent Wander Strength",
@@ -399,7 +434,7 @@ export default function SimulationControls() {
               </div>,
             ]}
           >
-            <SlimeStoreSelect
+            <SlimeStoreSelectControl
               label="Display Texture Resolution"
               baseInputId="trail-display-texture-resolution-select"
               placeholder="Trail Display Texture Resolution"
@@ -410,7 +445,7 @@ export default function SimulationControls() {
               options={trailDisplayTextureResolutionOptions}
               onValueChange={handleDisplayTextureResolutionChange}
             />
-            <SlimeStoreSlider
+            <SlimeStoreSliderControl
               label="Clock Decay Rate"
               baseInputId="trail-clock-decay-rate-slider"
               min={SIMULATION_CONTROLS_CONFIGS.trailClockDecayRate!.min}
@@ -418,7 +453,7 @@ export default function SimulationControls() {
               step={SIMULATION_CONTROLS_CONFIGS.trailClockDecayRate!.step}
               storePath={["simulationSettings", "trailClockDecayRate"]}
             />
-            <SlimeStoreSlider
+            <SlimeStoreSliderControl
               label="Clock Diffuse Rate"
               baseInputId="trail-clock-diffuse-rate-slider"
               min={SIMULATION_CONTROLS_CONFIGS.trailClockDiffuseRate!.min}
@@ -426,7 +461,7 @@ export default function SimulationControls() {
               step={SIMULATION_CONTROLS_CONFIGS.trailClockDiffuseRate!.step}
               storePath={["simulationSettings", "trailClockDiffuseRate"]}
             />
-            <SlimeStoreSlider
+            <SlimeStoreSliderControl
               label="Background Decay Rate"
               baseInputId="trail-background-decay-rate-slider"
               min={SIMULATION_CONTROLS_CONFIGS.trailBackgroundDecayRate!.min}
@@ -434,7 +469,7 @@ export default function SimulationControls() {
               step={SIMULATION_CONTROLS_CONFIGS.trailBackgroundDecayRate!.step}
               storePath={["simulationSettings", "trailBackgroundDecayRate"]}
             />
-            <SlimeStoreSlider
+            <SlimeStoreSliderControl
               label="Background Diffuse Rate"
               baseInputId="trail-background-diffuse-rate-slider"
               min={SIMULATION_CONTROLS_CONFIGS.trailBackgroundDiffuseRate!.min}

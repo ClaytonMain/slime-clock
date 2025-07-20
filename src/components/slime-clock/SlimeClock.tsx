@@ -61,10 +61,13 @@ const slimeMoldDisplayPlaneUniforms = {
 };
 const agentDataUniforms = {
   uAgentDataTexture: { value: new THREE.Texture() },
-  uAgentPositionsTexture: { value: new THREE.Texture() },
+  uClockTexture: { value: new THREE.Texture() },
   uTrailTexture: { value: new THREE.Texture() },
   uDisplayTextureResolution: {
     value: new THREE.Vector2(),
+  },
+  uClockAttraction: {
+    value: useSlimeStore.getState().simulationSettings.agentClockAttraction,
   },
   uSensorAngle: {
     value:
@@ -143,6 +146,7 @@ function UniformSetter() {
     keyof typeof agentDataUniforms,
     (keyof typeof simulationSettings)[],
   ][] = [
+    ["uClockAttraction", ["agentClockAttraction"]],
     ["uRotationRate", ["agentRotationRate"]],
     ["uCrowdAvoidance", ["agentCrowdAvoidance"]],
     ["uWanderStrength", ["agentWanderStrength"]],
@@ -611,7 +615,6 @@ function SlimeClock() {
     };
     const agentDataUniformsUpdates = {
       uAgentDataTexture: new THREE.Uniform(agentDataTexture),
-      uAgentPositionsTexture: new THREE.Uniform(agentPositionsTexture),
       uTrailTexture: new THREE.Uniform(trailTexture),
       uDisplayTextureResolution: new THREE.Uniform(
         displayTextureResolutionVector,
@@ -677,6 +680,11 @@ function SlimeClock() {
     uDeltaRef.current = Math.min(delta * simulationSettings.speed, 0.1);
     uTimeRef.current += uDeltaRef.current;
 
+    // Render the clock.
+    gl.setRenderTarget(clockRenderTarget);
+    gl.clear();
+    gl.render(clockScene, cameraB);
+
     /**
      * Agent data.
      */
@@ -684,6 +692,8 @@ function SlimeClock() {
       // Update agent data A time uniforms.
       agentDataMaterialRefA.current.uniforms.uDelta.value = uDeltaRef.current;
       agentDataMaterialRefA.current.uniforms.uTime.value = uTimeRef.current;
+      agentDataMaterialRefA.current.uniforms.uClockTexture.value =
+        clockRenderTarget.texture;
 
       // Render agent data A.
       gl.setRenderTarget(agentDataRenderTargetA);
@@ -699,6 +709,8 @@ function SlimeClock() {
       // Update agent data B time uniforms.
       agentDataMaterialRefB.current.uniforms.uDelta.value = uDeltaRef.current;
       agentDataMaterialRefB.current.uniforms.uTime.value = uTimeRef.current;
+      agentDataMaterialRefB.current.uniforms.uClockTexture.value =
+        clockRenderTarget.texture;
 
       // Render agent data B.
       gl.setRenderTarget(agentDataRenderTargetB);
@@ -716,11 +728,6 @@ function SlimeClock() {
     gl.setRenderTarget(agentPositionsRenderTarget);
     gl.clear();
     gl.render(agentPositionsScene, cameraB);
-
-    // Render the clock.
-    gl.setRenderTarget(clockRenderTarget);
-    gl.clear();
-    gl.render(clockScene, cameraB);
 
     if (pingPongRef.current) {
       // Update relevant trail A uniforms.

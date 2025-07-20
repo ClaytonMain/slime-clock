@@ -3,9 +3,8 @@ import {
   ChevronDownIcon,
   ChevronUpIcon,
 } from "@radix-ui/react-icons";
-import { produce } from "immer";
 import { motion } from "motion/react";
-import { Label, Select } from "radix-ui";
+import { Select } from "radix-ui";
 import * as R from "ramda";
 import { forwardRef, useEffect, useState, type ReactNode } from "react";
 import useSlimeStore from "../../stores/useSlimeStore";
@@ -29,8 +28,6 @@ const SelectItem = forwardRef<HTMLDivElement, Select.SelectItemProps>(
 );
 
 export default function SlimeStoreSelect({
-  label,
-  labelHoverTabContentDisplay,
   baseInputId,
   placeholder,
   storePath,
@@ -88,66 +85,36 @@ export default function SlimeStoreSelect({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  function handlePointerOver() {
-    if (labelHoverTabContentDisplay) {
-      useSlimeStore.setState(
-        produce((state) => {
-          state.controlsState.displayAreaContentUpdatedAt = Date.now();
-          state.controlsState.displayAreaContentName = null;
-          state.controlsState.displayAreaHtmlContent =
-            labelHoverTabContentDisplay;
-          state.controlsState.displayAreaContentType = "html";
-        }),
-      );
-    }
-  }
-
   return (
-    <motion.div
-      onPointerOver={handlePointerOver}
-      whileHover={{ backgroundColor: "#0004" }}
-      className="flex w-full items-center gap-1 py-2"
-    >
-      <div className="flex flex-col items-center p-0.5">
-        {label && (
-          <Label.Root
-            className="h-full w-(--footer-left-label-width) flex-none place-content-center p-0.5 text-right text-xs leading-none font-medium"
-            htmlFor={baseInputId}
-          >
-            {label}
-          </Label.Root>
-        )}
-      </div>
-      <Select.Root value={selectedValue} onValueChange={handleOnValueChange}>
-        <Select.Trigger
-          className="inline-flex h-7 items-center justify-center gap-1 border border-sky-800 bg-zinc-900 px-2 py-1 text-sm leading-none font-medium shadow-[0_2px_10px] shadow-black/10 outline-none"
-          id={baseInputId}
-        >
-          <Select.Value placeholder={placeholder} />
-          <Select.Icon>
+    <Select.Root value={selectedValue} onValueChange={handleOnValueChange}>
+      <Select.Trigger
+        className="inline-flex h-7 items-center justify-center gap-1 border border-sky-800 bg-zinc-900 px-2 py-1 text-sm leading-none font-medium shadow-[0_2px_10px] shadow-black/10 outline-none"
+        id={baseInputId}
+      >
+        <Select.Value placeholder={placeholder} />
+        <Select.Icon>
+          <ChevronDownIcon />
+        </Select.Icon>
+      </Select.Trigger>
+      <Select.Portal>
+        <Select.Content className="overflow-hidden bg-zinc-700">
+          <Select.ScrollUpButton className="flex h-6 cursor-default items-center justify-center bg-zinc-700 text-sky-50">
+            <ChevronUpIcon />
+          </Select.ScrollUpButton>
+          <Select.Viewport className="p-1">
+            <Select.Group>
+              {options.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </Select.Group>
+          </Select.Viewport>
+          <Select.ScrollDownButton className="flex h-6 cursor-default items-center justify-center bg-zinc-900">
             <ChevronDownIcon />
-          </Select.Icon>
-        </Select.Trigger>
-        <Select.Portal>
-          <Select.Content className="overflow-hidden bg-zinc-700">
-            <Select.ScrollUpButton className="flex h-6 cursor-default items-center justify-center bg-zinc-700 text-sky-50">
-              <ChevronUpIcon />
-            </Select.ScrollUpButton>
-            <Select.Viewport className="p-1">
-              <Select.Group>
-                {options.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </Select.Group>
-            </Select.Viewport>
-            <Select.ScrollDownButton className="flex h-6 cursor-default items-center justify-center bg-zinc-900">
-              <ChevronDownIcon />
-            </Select.ScrollDownButton>
-          </Select.Content>
-        </Select.Portal>
-      </Select.Root>
-    </motion.div>
+          </Select.ScrollDownButton>
+        </Select.Content>
+      </Select.Portal>
+    </Select.Root>
   );
 }

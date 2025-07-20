@@ -10,8 +10,8 @@ import type {
 import CodeBlock from "../code-block/CodeBlock";
 import AccordionControlsItem from "./AccordionControlsItem";
 import AccordionControlsWrapper from "./AccordionControlsWrapper";
-import SlimeStoreSelect from "./SlimeStoreSelect";
-import SlimeStoreSlider from "./SlimeStoreSlider";
+import SlimeStoreSelectControl from "./SlimeStoreSelectControl";
+import SlimeStoreSliderControl from "./SlimeStoreSliderControl";
 import SlimeStoreSwitch from "./SlimeStoreSwitch";
 import TabContentContainer from "./TabContentContainer";
 import TabContentScrollArea from "./TabContentScrollArea";
@@ -100,7 +100,7 @@ export default function ClockControls() {
                   animate={{ height: "auto" }}
                   exit={{ height: 0 }}
                 >
-                  <SlimeStoreSlider
+                  <SlimeStoreSliderControl
                     label="Size"
                     baseInputId="clock-size-slider"
                     min={CLOCK_CONTROLS_CONFIGS.size!.min}
@@ -122,7 +122,7 @@ export default function ClockControls() {
                     ]}
                   />
                   {/* TODO: Add position */}
-                  <SlimeStoreSelect
+                  <SlimeStoreSelectControl
                     label="Hour Format"
                     baseInputId="clock-hour-format-select"
                     placeholder="Hour Format"
@@ -154,7 +154,7 @@ export default function ClockControls() {
                       // TODO: Add AM/PM size and position settings.
                     )}
                   </AnimatePresence> */}
-                  <SlimeStoreSelect
+                  <SlimeStoreSelectControl
                     label="Digit Style"
                     baseInputId="clock-digit-style-select"
                     placeholder="Digit Style"

@@ -3,6 +3,7 @@ import type {
   ClockSettings,
   ColorSettings,
   ProceduralColorPalettePresets,
+  SimulationRandomizationSettings,
   SimulationSettings,
   SlimeColorMode,
   TrailDisplayTextureResolution,
@@ -39,7 +40,8 @@ export const CLOCK_CONTROLS_CONFIGS: ControlsConfigs<ClockSettings> = {
 };
 
 export const DEFAULT_SIMULATION_SETTINGS: SimulationSettings = {
-  quality: "Medium",
+  agentsNeedRandomization: false,
+  trailNeedsRandomization: false,
 
   speed: 3.3,
   randomizationEnabled: false,
@@ -51,6 +53,7 @@ export const DEFAULT_SIMULATION_SETTINGS: SimulationSettings = {
   gpuTextureWidth: 16,
   gpuTextureHeight: 16,
   agentStartType: 5,
+  agentClockAttraction: 0.05,
   agentClockDepositRate: 6.5,
   agentBackgroundDepositRate: 6.5,
   agentSensorDegrees: 25,
@@ -69,11 +72,13 @@ export const DEFAULT_SIMULATION_SETTINGS: SimulationSettings = {
   trailBackgroundDecayRate: 0.39,
   trailBackgroundDiffuseRate: 11.7,
 };
+
 export const SIMULATION_CONTROLS_CONFIGS: ControlsConfigs<SimulationSettings> =
   {
     speed: { min: 0.1, max: 10, step: 0.1 },
     randomizationInterval: { min: 1, max: 1200, step: 1 },
 
+    agentClockAttraction: { min: 0.0, max: 1.0, step: 0.01 },
     agentClockDepositRate: { min: 0.0, max: 30.0, step: 0.1 },
     agentBackgroundDepositRate: { min: 0.0, max: 30.0, step: 0.1 },
     agentSensorDegrees: { min: 0.0, max: 180.0, step: 1.0 },
@@ -88,6 +93,109 @@ export const SIMULATION_CONTROLS_CONFIGS: ControlsConfigs<SimulationSettings> =
     trailClockDiffuseRate: { min: 0.0, max: 30.0, step: 0.1 },
     trailBackgroundDecayRate: { min: 0.0, max: 2.0, step: 0.01 },
     trailBackgroundDiffuseRate: { min: 0.0, max: 30.0, step: 0.1 },
+  };
+
+export const DEFAULT_SIMULATION_RANDOMIZATION_SETTINGS: SimulationRandomizationSettings =
+  {
+    agentClockAttraction: {
+      enabled: true,
+      range: [
+        SIMULATION_CONTROLS_CONFIGS.agentClockAttraction!.min,
+        SIMULATION_CONTROLS_CONFIGS.agentClockAttraction!.max,
+      ],
+    },
+    agentClockDepositRate: {
+      enabled: true,
+      range: [
+        SIMULATION_CONTROLS_CONFIGS.agentClockDepositRate!.min,
+        SIMULATION_CONTROLS_CONFIGS.agentClockDepositRate!.max,
+      ],
+    },
+    agentBackgroundDepositRate: {
+      enabled: true,
+      range: [
+        SIMULATION_CONTROLS_CONFIGS.agentBackgroundDepositRate!.min,
+        SIMULATION_CONTROLS_CONFIGS.agentBackgroundDepositRate!.max,
+      ],
+    },
+    agentSensorDegrees: {
+      enabled: true,
+      range: [
+        SIMULATION_CONTROLS_CONFIGS.agentSensorDegrees!.min,
+        SIMULATION_CONTROLS_CONFIGS.agentSensorDegrees!.max,
+      ],
+    },
+    agentRotationRate: {
+      enabled: true,
+      range: [
+        SIMULATION_CONTROLS_CONFIGS.agentRotationRate!.min,
+        SIMULATION_CONTROLS_CONFIGS.agentRotationRate!.max,
+      ],
+    },
+    agentSensorOffset: {
+      enabled: true,
+      range: [
+        SIMULATION_CONTROLS_CONFIGS.agentSensorOffset!.min,
+        SIMULATION_CONTROLS_CONFIGS.agentSensorOffset!.max,
+      ],
+    },
+    agentSensorWidth: {
+      enabled: true,
+      range: [
+        SIMULATION_CONTROLS_CONFIGS.agentSensorWidth!.min,
+        SIMULATION_CONTROLS_CONFIGS.agentSensorWidth!.max,
+      ],
+    },
+    agentStepSize: {
+      enabled: true,
+      range: [
+        SIMULATION_CONTROLS_CONFIGS.agentStepSize!.min,
+        SIMULATION_CONTROLS_CONFIGS.agentStepSize!.max,
+      ],
+    },
+    agentCrowdAvoidance: {
+      enabled: true,
+      range: [
+        SIMULATION_CONTROLS_CONFIGS.agentCrowdAvoidance!.min,
+        SIMULATION_CONTROLS_CONFIGS.agentCrowdAvoidance!.max,
+      ],
+    },
+    agentWanderStrength: {
+      enabled: true,
+      range: [
+        SIMULATION_CONTROLS_CONFIGS.agentWanderStrength!.min,
+        SIMULATION_CONTROLS_CONFIGS.agentWanderStrength!.max,
+      ],
+    },
+
+    trailClockDecayRate: {
+      enabled: true,
+      range: [
+        SIMULATION_CONTROLS_CONFIGS.trailClockDecayRate!.min,
+        SIMULATION_CONTROLS_CONFIGS.trailClockDecayRate!.max,
+      ],
+    },
+    trailClockDiffuseRate: {
+      enabled: true,
+      range: [
+        SIMULATION_CONTROLS_CONFIGS.trailClockDiffuseRate!.min,
+        SIMULATION_CONTROLS_CONFIGS.trailClockDiffuseRate!.max,
+      ],
+    },
+    trailBackgroundDecayRate: {
+      enabled: true,
+      range: [
+        SIMULATION_CONTROLS_CONFIGS.trailBackgroundDecayRate!.min,
+        SIMULATION_CONTROLS_CONFIGS.trailBackgroundDecayRate!.max,
+      ],
+    },
+    trailBackgroundDiffuseRate: {
+      enabled: true,
+      range: [
+        SIMULATION_CONTROLS_CONFIGS.trailBackgroundDiffuseRate!.min,
+        SIMULATION_CONTROLS_CONFIGS.trailBackgroundDiffuseRate!.max,
+      ],
+    },
   };
 
 export const SLIME_COLOR_MODES: SlimeColorMode[] = ["Procedural", "Single"];

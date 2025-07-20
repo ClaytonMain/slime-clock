@@ -31,7 +31,8 @@ export interface ClockSettings {
 }
 
 export interface SimulationSettings {
-  quality: SimulationQuality;
+  agentsNeedRandomization: boolean;
+  trailNeedsRandomization: boolean;
 
   speed: number;
   randomizationEnabled: boolean;
@@ -44,6 +45,7 @@ export interface SimulationSettings {
   gpuTextureWidth: number;
   gpuTextureHeight: number;
   agentStartType: number;
+  agentClockAttraction: number;
   agentClockDepositRate: number;
   agentBackgroundDepositRate: number;
   agentSensorDegrees: number;
@@ -61,6 +63,29 @@ export interface SimulationSettings {
   trailClockDiffuseRate: number;
   trailBackgroundDecayRate: number;
   trailBackgroundDiffuseRate: number;
+}
+
+interface RandomizationSetting {
+  enabled: boolean;
+  range: [number, number];
+}
+
+export interface SimulationRandomizationSettings {
+  agentClockAttraction: RandomizationSetting;
+  agentClockDepositRate: RandomizationSetting;
+  agentBackgroundDepositRate: RandomizationSetting;
+  agentSensorDegrees: RandomizationSetting;
+  agentRotationRate: RandomizationSetting;
+  agentSensorOffset: RandomizationSetting;
+  agentSensorWidth: RandomizationSetting;
+  agentStepSize: RandomizationSetting;
+  agentCrowdAvoidance: RandomizationSetting;
+  agentWanderStrength: RandomizationSetting;
+
+  trailClockDecayRate: RandomizationSetting;
+  trailClockDiffuseRate: RandomizationSetting;
+  trailBackgroundDecayRate: RandomizationSetting;
+  trailBackgroundDiffuseRate: RandomizationSetting;
 }
 
 interface ProceduralColorPaletteChannel {

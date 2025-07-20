@@ -8,12 +8,14 @@ import {
 import {
   DEFAULT_CLOCK_SETTINGS,
   DEFAULT_COLOR_SETTINGS,
+  DEFAULT_SIMULATION_RANDOMIZATION_SETTINGS,
   DEFAULT_SIMULATION_SETTINGS,
 } from "../constants/constants";
 import type {
   ClockSettings,
   ColorSettings,
   ControlsTabName,
+  SimulationRandomizationSettings,
   SimulationSettings,
 } from "../types/types";
 
@@ -36,6 +38,7 @@ interface SlimeStore {
   initialized: boolean;
   clockSettings: ClockSettings;
   simulationSettings: SimulationSettings;
+  simulationRandomizationSettings: SimulationRandomizationSettings;
   colorSettings: ColorSettings;
   resetSettings: () => void;
   controlsState: ControlsState;
@@ -52,6 +55,8 @@ const useSlimeStore = create<SlimeStore>()(
   subscribeWithSelector(
     persist(
       (set) => ({
+        testRange: [0, 1],
+
         resolutionsSet: false,
 
         initialized: false,
@@ -59,6 +64,9 @@ const useSlimeStore = create<SlimeStore>()(
         clockSettings: DEFAULT_CLOCK_SETTINGS,
 
         simulationSettings: DEFAULT_SIMULATION_SETTINGS,
+
+        simulationRandomizationSettings:
+          DEFAULT_SIMULATION_RANDOMIZATION_SETTINGS,
 
         colorSettings: DEFAULT_COLOR_SETTINGS,
 

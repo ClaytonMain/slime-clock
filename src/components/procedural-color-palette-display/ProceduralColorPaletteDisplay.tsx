@@ -5,6 +5,11 @@ import useSlimeStore from "../../stores/useSlimeStore";
 import fragmentShader from "./shaders/paletteDisplay.frag";
 import vertexShader from "./shaders/paletteDisplay.vert";
 
+// TODO: Attribute.
+// https://iquilezles.org/articles/palettes/
+// https://www.reddit.com/r/desmos/comments/s6odh5/cosine_gradient_maker/
+// https://www.desmos.com/calculator/ykhhoau7k5
+
 const yMax = 9 / 16;
 const yMin = 0.1;
 const yAmp = yMax - yMin;

@@ -1,6 +1,7 @@
 import { Stats } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Suspense, useEffect, useRef } from "react";
+
 import useSlimeStore from "../../stores/useSlimeStore";
 import SlimeClock from "./SlimeClock";
 

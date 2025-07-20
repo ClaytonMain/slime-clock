@@ -36,7 +36,7 @@ void main() {
     vec4 clockData = texture2D(uClockTexture, uv);
 
     // agentPositionData.r := 1.0 or 0.0 -> Agent presence boolean.
-    // agentPositionData.g := 1.0 or 0.0 -> Agent took step boolean.
+    // agentPositionData.g := Agent deposit amount.
     // agentPositionData.b := Agent direction.
     // agentPositionData.a := 1.0 (unused).
     vec4 agentPositionData = texture2D(uAgentPositionsTexture, uv);
@@ -44,7 +44,7 @@ void main() {
     float intensity = trailData.x;
     // Deposit trail if agent took a step. Deposit rate is different for clock and background.
     float depositRate = (uClockDepositRate * clockData.r) + (uBackgroundDepositRate * (1.0 - clockData.r));
-    intensity += agentPositionData.x * agentPositionData.y * depositRate * uDelta;
+    intensity += agentPositionData.y * depositRate * uDelta;
 
     // Diffuse the trail intensity based on the neighboring trail intensities.
     int i;
@@ -64,25 +64,17 @@ void main() {
         vec4 neighborClockData = texture2D(uClockTexture, neighborUv);
         float neighborIntensity = neighborTrailData.x;
         float neighborDepositRate = (uClockDepositRate * neighborClockData.r) + (uBackgroundDepositRate * (1.0 - neighborClockData.r));
-        averageNeighborIntensity += min(neighborIntensity + neighborPositionData.x * neighborPositionData.y * neighborDepositRate * uDelta, 1.0);
+        averageNeighborIntensity += min(neighborIntensity + neighborPositionData.y * neighborDepositRate * uDelta, 1.0);
     }
     averageNeighborIntensity /= 9.0;
 
     float decayRate = (uClockDecayRate * clockData.r) + (uBackgroundDecayRate * (1.0 - clockData.r));
-    // if (averageNeighborIntensity < 0.0) {
-    //     intensity = 0.0;
-    // } else {
     float diffuseRate = (uClockDiffuseRate * clockData.r) + (uBackgroundDiffuseRate * (1.0 - clockData.r));
     // Borrowing some diffuse logic from Sebastian Lague's implementation.
     // https://github.com/SebLague/Slime-Simulation/blob/main/Assets/Scripts/Slime/SlimeSim.compute
     float diffuseWeight = min(diffuseRate * uDelta, 1.0);
     averageNeighborIntensity = intensity * (1.0 - diffuseWeight) + averageNeighborIntensity * diffuseWeight;
-    // intensity = max(averageNeighborIntensity - uTrailDecayRate * uDelta, 0.0);
     intensity = max(averageNeighborIntensity - decayRate * uDelta, 0.0);
-    // }
-
-    // float negativeSpaceDecayRate = uTrailNegativeSpaceDecayRate * (1.0 - clamp(clockData.r, 0.0, 1.0));
-    // intensity = max(intensity - negativeSpaceDecayRate * uDelta, 0.0);
 
     float lastAgentDirection = agentPositionData.z > 0.0 ? agentPositionData.z : trailData.y;
 
