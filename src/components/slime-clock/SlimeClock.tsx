@@ -108,28 +108,25 @@ const trailUniforms = {
   uDisplayTextureResolution: {
     value: new THREE.Vector2(),
   },
-  uDepositRate: {
-    value: useSlimeStore.getState().simulationSettings.agentDepositRate,
+  uClockDepositRate: {
+    value: useSlimeStore.getState().simulationSettings.agentClockDepositRate,
   },
-  uTrailDecayRate: {
-    value: useSlimeStore.getState().simulationSettings.trailDecayRate,
-  },
-  uTrailDiffuseRate: {
-    value: useSlimeStore.getState().simulationSettings.trailDiffuseRate,
-  },
-  uTrailTextDecayRate: {
-    value: useSlimeStore.getState().simulationSettings.trailTextDecayRate,
-  },
-  uTrailTextDiffuseRate: {
-    value: useSlimeStore.getState().simulationSettings.trailTextDiffuseRate,
-  },
-  uTrailNegativeSpaceDecayRate: {
+  uBackgroundDepositRate: {
     value:
-      useSlimeStore.getState().simulationSettings.trailNegativeSpaceDecayRate,
+      useSlimeStore.getState().simulationSettings.agentBackgroundDepositRate,
   },
-  uTrailNegativeSpaceDiffuseRate: {
+  uClockDecayRate: {
+    value: useSlimeStore.getState().simulationSettings.trailClockDecayRate,
+  },
+  uClockDiffuseRate: {
+    value: useSlimeStore.getState().simulationSettings.trailClockDiffuseRate,
+  },
+  uBackgroundDecayRate: {
+    value: useSlimeStore.getState().simulationSettings.trailBackgroundDecayRate,
+  },
+  uBackgroundDiffuseRate: {
     value:
-      useSlimeStore.getState().simulationSettings.trailNegativeSpaceDiffuseRate,
+      useSlimeStore.getState().simulationSettings.trailBackgroundDiffuseRate,
   },
   uBoundaryBehavior: {
     value: useSlimeStore.getState().simulationSettings.boundaryBehavior,
@@ -155,13 +152,12 @@ function UniformSetter() {
     keyof typeof trailUniforms,
     (keyof typeof simulationSettings)[],
   ][] = [
-    ["uDepositRate", ["agentDepositRate"]],
-    ["uTrailDecayRate", ["trailDecayRate"]],
-    ["uTrailDiffuseRate", ["trailDiffuseRate"]],
-    ["uTrailTextDecayRate", ["trailTextDecayRate"]],
-    ["uTrailTextDiffuseRate", ["trailTextDiffuseRate"]],
-    ["uTrailNegativeSpaceDecayRate", ["trailNegativeSpaceDecayRate"]],
-    ["uTrailNegativeSpaceDiffuseRate", ["trailNegativeSpaceDiffuseRate"]],
+    ["uClockDepositRate", ["agentClockDepositRate"]],
+    ["uBackgroundDepositRate", ["agentBackgroundDepositRate"]],
+    ["uClockDecayRate", ["trailClockDecayRate"]],
+    ["uClockDiffuseRate", ["trailClockDiffuseRate"]],
+    ["uBackgroundDecayRate", ["trailBackgroundDecayRate"]],
+    ["uBackgroundDiffuseRate", ["trailBackgroundDiffuseRate"]],
     ["uBoundaryBehavior", ["boundaryBehavior"]],
   ];
   useEffect(() => {

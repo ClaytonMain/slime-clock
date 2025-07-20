@@ -91,6 +91,7 @@ export default function SlimeStoreSwitch({
               : "var(--color-zinc-900)",
           }}
           style={{
+            backgroundColor: "var(--color-zinc-900)",
             justifyContent: checked ? "flex-end" : "flex-start",
           }}
         >

@@ -51,7 +51,8 @@ export const DEFAULT_SIMULATION_SETTINGS: SimulationSettings = {
   gpuTextureWidth: 16,
   gpuTextureHeight: 16,
   agentStartType: 5,
-  agentDepositRate: 6.5,
+  agentClockDepositRate: 6.5,
+  agentBackgroundDepositRate: 6.5,
   agentSensorDegrees: 25,
   agentRotationRate: 2.2,
   agentSensorOffset: 1.85,
@@ -63,19 +64,18 @@ export const DEFAULT_SIMULATION_SETTINGS: SimulationSettings = {
   trailDisplayTextureResolution: "16 x 9",
   displayTextureWidth: 16,
   displayTextureHeight: 9,
-  trailDecayRate: 0.05,
-  trailDiffuseRate: 4.5,
-  trailTextDecayRate: 0.39,
-  trailTextDiffuseRate: 11.7,
-  trailNegativeSpaceDecayRate: 1.8,
-  trailNegativeSpaceDiffuseRate: 19.7,
+  trailClockDecayRate: 0.05,
+  trailClockDiffuseRate: 4.5,
+  trailBackgroundDecayRate: 0.39,
+  trailBackgroundDiffuseRate: 11.7,
 };
 export const SIMULATION_CONTROLS_CONFIGS: ControlsConfigs<SimulationSettings> =
   {
     speed: { min: 0.1, max: 10, step: 0.1 },
     randomizationInterval: { min: 1, max: 1200, step: 1 },
 
-    agentDepositRate: { min: 0.0, max: 30.0, step: 0.1 },
+    agentClockDepositRate: { min: 0.0, max: 30.0, step: 0.1 },
+    agentBackgroundDepositRate: { min: 0.0, max: 30.0, step: 0.1 },
     agentSensorDegrees: { min: 0.0, max: 180.0, step: 1.0 },
     agentRotationRate: { min: 0.0, max: 10.0, step: 0.1 },
     agentSensorOffset: { min: 0.0, max: 30.0, step: 0.01 },
@@ -84,12 +84,10 @@ export const SIMULATION_CONTROLS_CONFIGS: ControlsConfigs<SimulationSettings> =
     agentCrowdAvoidance: { min: 0.0, max: 1.0, step: 0.01 },
     agentWanderStrength: { min: 0.0, max: 20.0, step: 0.1 },
 
-    trailDecayRate: { min: 0.0, max: 2.0, step: 0.01 },
-    trailDiffuseRate: { min: 0.0, max: 30.0, step: 0.1 },
-    trailTextDecayRate: { min: 0.0, max: 2.0, step: 0.01 },
-    trailTextDiffuseRate: { min: 0.0, max: 30.0, step: 0.1 },
-    trailNegativeSpaceDecayRate: { min: 0.0, max: 2.0, step: 0.01 },
-    trailNegativeSpaceDiffuseRate: { min: 0.0, max: 30.0, step: 0.1 },
+    trailClockDecayRate: { min: 0.0, max: 2.0, step: 0.01 },
+    trailClockDiffuseRate: { min: 0.0, max: 30.0, step: 0.1 },
+    trailBackgroundDecayRate: { min: 0.0, max: 2.0, step: 0.01 },
+    trailBackgroundDiffuseRate: { min: 0.0, max: 30.0, step: 0.1 },
   };
 
 export const SLIME_COLOR_MODES: SlimeColorMode[] = ["Procedural", "Single"];

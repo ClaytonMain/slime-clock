@@ -15,8 +15,9 @@ const SelectItem = forwardRef<HTMLDivElement, Select.SelectItemProps>(
   ({ children, ...props }, forwardedRef) => (
     <Select.Item asChild {...props} ref={forwardedRef}>
       <motion.div
-        className="relative flex h-6 items-center pr-9 pl-6 text-sm leading-none text-sky-50 select-none data-[disabled]:pointer-events-none data-[disabled]:text-zinc-500"
+        className="relative flex h-6 items-center pr-9 pl-6 text-sm leading-none text-sky-50 outline-none select-none data-[disabled]:pointer-events-none data-[disabled]:text-zinc-500"
         whileHover={{ backgroundColor: "var(--color-zinc-800)" }}
+        style={{ backgroundColor: "var(--color-zinc-700)" }}
       >
         <Select.ItemText>{children}</Select.ItemText>
         <Select.ItemIndicator className="absolute left-0 inline-flex w-[25px] items-center justify-center">

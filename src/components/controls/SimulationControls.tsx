@@ -255,16 +255,30 @@ export default function SimulationControls() {
               valueType="number"
             />
             <SlimeStoreSlider
-              label="Deposit Rate"
+              label="Clock Deposit Rate"
               labelHoverTabContentDisplay={[
-                "Agent Deposit Rate",
-                "Controls how much pheromone is deposited by each agent [TODO: WHEN?].",
+                "Agent Clock Deposit Rate",
+                "Controls how much pheromone is deposited by each agent when taking an uncrowded step inside the clock display.",
               ]}
-              baseInputId="agent-deposit-rate-slider"
-              min={SIMULATION_CONTROLS_CONFIGS.agentDepositRate!.min}
-              max={SIMULATION_CONTROLS_CONFIGS.agentDepositRate!.max}
-              step={SIMULATION_CONTROLS_CONFIGS.agentDepositRate!.step}
-              storePath={["simulationSettings", "agentDepositRate"]}
+              baseInputId="agent-clock-deposit-rate-slider"
+              min={SIMULATION_CONTROLS_CONFIGS.agentClockDepositRate!.min}
+              max={SIMULATION_CONTROLS_CONFIGS.agentClockDepositRate!.max}
+              step={SIMULATION_CONTROLS_CONFIGS.agentClockDepositRate!.step}
+              storePath={["simulationSettings", "agentClockDepositRate"]}
+            />
+            <SlimeStoreSlider
+              label="Background Deposit Rate"
+              labelHoverTabContentDisplay={[
+                "Agent Background Deposit Rate",
+                "Controls how much pheromone is deposited by each agent when taking an uncrowded step outside the clock display.",
+              ]}
+              baseInputId="agent-background-deposit-rate-slider"
+              min={SIMULATION_CONTROLS_CONFIGS.agentBackgroundDepositRate!.min}
+              max={SIMULATION_CONTROLS_CONFIGS.agentBackgroundDepositRate!.max}
+              step={
+                SIMULATION_CONTROLS_CONFIGS.agentBackgroundDepositRate!.step
+              }
+              storePath={["simulationSettings", "agentBackgroundDepositRate"]}
             />
             <SlimeStoreSlider
               label="Sensor Degrees"
@@ -397,63 +411,38 @@ export default function SimulationControls() {
               onValueChange={handleDisplayTextureResolutionChange}
             />
             <SlimeStoreSlider
-              label="Decay Rate"
-              baseInputId="trail-decay-rate-slider"
-              min={SIMULATION_CONTROLS_CONFIGS.trailDecayRate!.min}
-              max={SIMULATION_CONTROLS_CONFIGS.trailDecayRate!.max}
-              step={SIMULATION_CONTROLS_CONFIGS.trailDecayRate!.step}
-              storePath={["simulationSettings", "trailDecayRate"]}
+              label="Clock Decay Rate"
+              baseInputId="trail-clock-decay-rate-slider"
+              min={SIMULATION_CONTROLS_CONFIGS.trailClockDecayRate!.min}
+              max={SIMULATION_CONTROLS_CONFIGS.trailClockDecayRate!.max}
+              step={SIMULATION_CONTROLS_CONFIGS.trailClockDecayRate!.step}
+              storePath={["simulationSettings", "trailClockDecayRate"]}
             />
             <SlimeStoreSlider
-              label="Diffuse Rate"
-              baseInputId="trail-diffuse-rate-slider"
-              min={SIMULATION_CONTROLS_CONFIGS.trailDiffuseRate!.min}
-              max={SIMULATION_CONTROLS_CONFIGS.trailDiffuseRate!.max}
-              step={SIMULATION_CONTROLS_CONFIGS.trailDiffuseRate!.step}
-              storePath={["simulationSettings", "trailDiffuseRate"]}
+              label="Clock Diffuse Rate"
+              baseInputId="trail-clock-diffuse-rate-slider"
+              min={SIMULATION_CONTROLS_CONFIGS.trailClockDiffuseRate!.min}
+              max={SIMULATION_CONTROLS_CONFIGS.trailClockDiffuseRate!.max}
+              step={SIMULATION_CONTROLS_CONFIGS.trailClockDiffuseRate!.step}
+              storePath={["simulationSettings", "trailClockDiffuseRate"]}
             />
             <SlimeStoreSlider
-              label="Text Decay Rate"
-              baseInputId="trail-text-decay-rate-slider"
-              min={SIMULATION_CONTROLS_CONFIGS.trailTextDecayRate!.min}
-              max={SIMULATION_CONTROLS_CONFIGS.trailTextDecayRate!.max}
-              step={SIMULATION_CONTROLS_CONFIGS.trailTextDecayRate!.step}
-              storePath={["simulationSettings", "trailTextDecayRate"]}
+              label="Background Decay Rate"
+              baseInputId="trail-background-decay-rate-slider"
+              min={SIMULATION_CONTROLS_CONFIGS.trailBackgroundDecayRate!.min}
+              max={SIMULATION_CONTROLS_CONFIGS.trailBackgroundDecayRate!.max}
+              step={SIMULATION_CONTROLS_CONFIGS.trailBackgroundDecayRate!.step}
+              storePath={["simulationSettings", "trailBackgroundDecayRate"]}
             />
             <SlimeStoreSlider
-              label="Text Diffuse Rate"
-              baseInputId="trail-text-diffuse-rate-slider"
-              min={SIMULATION_CONTROLS_CONFIGS.trailTextDiffuseRate!.min}
-              max={SIMULATION_CONTROLS_CONFIGS.trailTextDiffuseRate!.max}
-              step={SIMULATION_CONTROLS_CONFIGS.trailTextDiffuseRate!.step}
-              storePath={["simulationSettings", "trailTextDiffuseRate"]}
-            />
-            <SlimeStoreSlider
-              label="Negative Space Decay Rate"
-              baseInputId="trail-negative-space-decay-rate-slider"
-              min={SIMULATION_CONTROLS_CONFIGS.trailNegativeSpaceDecayRate!.min}
-              max={SIMULATION_CONTROLS_CONFIGS.trailNegativeSpaceDecayRate!.max}
+              label="Background Diffuse Rate"
+              baseInputId="trail-background-diffuse-rate-slider"
+              min={SIMULATION_CONTROLS_CONFIGS.trailBackgroundDiffuseRate!.min}
+              max={SIMULATION_CONTROLS_CONFIGS.trailBackgroundDiffuseRate!.max}
               step={
-                SIMULATION_CONTROLS_CONFIGS.trailNegativeSpaceDecayRate!.step
+                SIMULATION_CONTROLS_CONFIGS.trailBackgroundDiffuseRate!.step
               }
-              storePath={["simulationSettings", "trailNegativeSpaceDecayRate"]}
-            />
-            <SlimeStoreSlider
-              label="Negative Space Diffuse Rate"
-              baseInputId="trail-negative-space-diffuse-rate-slider"
-              min={
-                SIMULATION_CONTROLS_CONFIGS.trailNegativeSpaceDiffuseRate!.min
-              }
-              max={
-                SIMULATION_CONTROLS_CONFIGS.trailNegativeSpaceDiffuseRate!.max
-              }
-              step={
-                SIMULATION_CONTROLS_CONFIGS.trailNegativeSpaceDiffuseRate!.step
-              }
-              storePath={[
-                "simulationSettings",
-                "trailNegativeSpaceDiffuseRate",
-              ]}
+              storePath={["simulationSettings", "trailBackgroundDiffuseRate"]}
             />
           </AccordionControlsItem>
         </AccordionControlsWrapper>

@@ -80,7 +80,11 @@ export default function AccordionControlsItem({
         </Accordion.Trigger>
       </Accordion.Header>
       <AnimatePresence propagate>
-        <Accordion.Content key="accordion-content-radix" asChild forceMount>
+        <Accordion.Content
+          key={`${value}-accordion-content-radix`}
+          asChild
+          forceMount
+        >
           <motion.div
             className={
               "flex flex-col overflow-hidden border-l-8 border-zinc-900 bg-sky-200/20 text-sky-50 drop-shadow-lg/25" +

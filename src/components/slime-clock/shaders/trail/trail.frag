@@ -1,14 +1,17 @@
 uniform sampler2D uAgentPositionsTexture;
 uniform sampler2D uClockTexture;
 uniform sampler2D uTrailTexture;
+
 uniform vec2 uDisplayTextureResolution;
-uniform float uDepositRate;
-uniform float uTrailDecayRate;
-uniform float uTrailDiffuseRate;
-uniform float uTrailTextDecayRate;
-uniform float uTrailTextDiffuseRate;
-uniform float uTrailNegativeSpaceDecayRate;
-uniform float uTrailNegativeSpaceDiffuseRate;
+
+uniform float uClockDepositRate;
+uniform float uBackgroundDepositRate;
+
+uniform float uClockDecayRate;
+uniform float uClockDiffuseRate;
+uniform float uBackgroundDecayRate;
+uniform float uBackgroundDiffuseRate;
+
 uniform int uBoundaryBehavior;
 uniform float uDelta;
 uniform float uTime;
@@ -29,7 +32,7 @@ void main() {
     // trailData.a := 1.0 (unused).
     vec4 trailData = texture2D(uTrailTexture, uv);
 
-    // It's just white wherever there's text.
+    // It's just white wherever the clock is.
     vec4 clockData = texture2D(uClockTexture, uv);
 
     // agentPositionData.r := 1.0 or 0.0 -> Agent presence boolean.
@@ -39,8 +42,9 @@ void main() {
     vec4 agentPositionData = texture2D(uAgentPositionsTexture, uv);
 
     float intensity = trailData.x;
-    // Deposit trail if there is an agent present.
-    intensity += agentPositionData.x * agentPositionData.y * uDepositRate * uDelta;
+    // Deposit trail if agent took a step. Deposit rate is different for clock and background.
+    float depositRate = (uClockDepositRate * clockData.r) + (uBackgroundDepositRate * (1.0 - clockData.r));
+    intensity += agentPositionData.x * agentPositionData.y * depositRate * uDelta;
 
     // Diffuse the trail intensity based on the neighboring trail intensities.
     int i;
@@ -55,40 +59,32 @@ void main() {
                 continue;
             }
         }
-        float neighborTrail = texture2D(uTrailTexture, neighborUv).x;
-        vec2 neighborData = texture2D(uAgentPositionsTexture, neighborUv).xy;
-        averageNeighborIntensity += min(neighborTrail + neighborData.x * neighborData.y * uDepositRate * uDelta, 1.0);
-        // averageNeighborIntensity += neighborTrail;
-        // averageNeighborIntensity += texture2D(uTrailTexture, neighborUv).x;
+        vec4 neighborTrailData = texture2D(uTrailTexture, neighborUv);
+        vec4 neighborPositionData = texture2D(uAgentPositionsTexture, neighborUv);
+        vec4 neighborClockData = texture2D(uClockTexture, neighborUv);
+        float neighborIntensity = neighborTrailData.x;
+        float neighborDepositRate = (uClockDepositRate * neighborClockData.r) + (uBackgroundDepositRate * (1.0 - neighborClockData.r));
+        averageNeighborIntensity += min(neighborIntensity + neighborPositionData.x * neighborPositionData.y * neighborDepositRate * uDelta, 1.0);
     }
     averageNeighborIntensity /= 9.0;
 
-    if (averageNeighborIntensity < 0.0) {
-        intensity = 0.0;
-    } else {
-        // Borrowing some diffuse logic from Sebastian Lague's implementation.
-        // https://github.com/SebLague/Slime-Simulation/blob/main/Assets/Scripts/Slime/SlimeSim.compute
-        float diffuseWeight = min(uTrailDiffuseRate * uDelta, 1.0);
-        averageNeighborIntensity = intensity * (1.0 - diffuseWeight) + averageNeighborIntensity * diffuseWeight;
-        intensity = max(averageNeighborIntensity - uTrailDecayRate * uDelta, 0.0);
-    }
+    float decayRate = (uClockDecayRate * clockData.r) + (uBackgroundDecayRate * (1.0 - clockData.r));
+    // if (averageNeighborIntensity < 0.0) {
+    //     intensity = 0.0;
+    // } else {
+    float diffuseRate = (uClockDiffuseRate * clockData.r) + (uBackgroundDiffuseRate * (1.0 - clockData.r));
+    // Borrowing some diffuse logic from Sebastian Lague's implementation.
+    // https://github.com/SebLague/Slime-Simulation/blob/main/Assets/Scripts/Slime/SlimeSim.compute
+    float diffuseWeight = min(diffuseRate * uDelta, 1.0);
+    averageNeighborIntensity = intensity * (1.0 - diffuseWeight) + averageNeighborIntensity * diffuseWeight;
+    // intensity = max(averageNeighborIntensity - uTrailDecayRate * uDelta, 0.0);
+    intensity = max(averageNeighborIntensity - decayRate * uDelta, 0.0);
+    // }
 
-    // // Decay negative space
-    // vec2 centerRelativePosition = (uv - 0.5) * uDisplayTextureResolution;
-    // float edgeDistance = sdRoundBox(centerRelativePosition, uDisplayTextureResolution * 0.5 - uBorderDistance, vec4(uBorderRoundness));
-    // edgeDistance = edgeDistance > 0.0 ? clamp(edgeDistance * (1.0 - uBorderSmoothing) / uBorderDistance, 0.0, 1.0) : 0.0;
-
-    // // edgeDistance = 1.0 - edgeDistance * uBorderStrength;
-    // float edgeDecayRate = edgeDistance * uBorderStrength;
-
-    float negativeSpaceDecayRate = uTrailNegativeSpaceDecayRate * (1.0 - clamp(clockData.r, 0.0, 1.0));
-
-    // intensity *= edgeDistance;
-    intensity = max(intensity - negativeSpaceDecayRate * uDelta, 0.0);
+    // float negativeSpaceDecayRate = uTrailNegativeSpaceDecayRate * (1.0 - clamp(clockData.r, 0.0, 1.0));
+    // intensity = max(intensity - negativeSpaceDecayRate * uDelta, 0.0);
 
     float lastAgentDirection = agentPositionData.z > 0.0 ? agentPositionData.z : trailData.y;
 
     gl_FragColor = vec4(intensity, lastAgentDirection, 0.0, 1.0);
-    // gl_FragColor = vec4(intensity, edgeDistance, edgeDistance, 1.0);
-    // gl_FragColor = vec4(intensity, edgeDecayRate, edgeDecayRate, 1.0);
 }

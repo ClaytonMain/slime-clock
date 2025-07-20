@@ -44,7 +44,8 @@ export interface SimulationSettings {
   gpuTextureWidth: number;
   gpuTextureHeight: number;
   agentStartType: number;
-  agentDepositRate: number;
+  agentClockDepositRate: number;
+  agentBackgroundDepositRate: number;
   agentSensorDegrees: number;
   agentRotationRate: number;
   agentSensorOffset: number;
@@ -56,12 +57,10 @@ export interface SimulationSettings {
   trailDisplayTextureResolution: TrailDisplayTextureResolution | "16 x 9";
   displayTextureWidth: number;
   displayTextureHeight: number;
-  trailDecayRate: number;
-  trailDiffuseRate: number;
-  trailTextDecayRate: number;
-  trailTextDiffuseRate: number;
-  trailNegativeSpaceDecayRate: number;
-  trailNegativeSpaceDiffuseRate: number;
+  trailClockDecayRate: number;
+  trailClockDiffuseRate: number;
+  trailBackgroundDecayRate: number;
+  trailBackgroundDiffuseRate: number;
 }
 
 interface ProceduralColorPaletteChannel {
