@@ -15,11 +15,21 @@ import TabContentVerticalSeparator from "./TabContentVerticalSeparator";
 import TooltipWrapper from "./TooltipWrapper";
 
 export default function Controls() {
-  const [dialogContainer, setDialogContainer] = useState(null);
+  const [portalContainer, setPortalContainer] = useState<HTMLDivElement | null>(
+    null,
+  );
   const isOpen = useSlimeStore((state) => state.controlsState.isOpen);
   const selectedTab = useSlimeStore((state) => state.controlsState.selectedTab);
 
   const controlsContentOuterContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    useSlimeStore.setState(
+      produce((state) => {
+        state.portalContainer = portalContainer;
+      }),
+    );
+  }, [portalContainer]);
 
   function handleControlsContentOuterContainerViewportEnter(
     enter: IntersectionObserverEntry | null,
@@ -93,7 +103,7 @@ export default function Controls() {
             <Dialog.Portal
               key="controls-dialog-portal"
               forceMount
-              container={dialogContainer}
+              container={portalContainer}
             >
               <Dialog.Overlay key="controls-dialog-overlay" asChild forceMount>
                 <motion.div className="fixed inset-0" />
@@ -313,10 +323,7 @@ export default function Controls() {
           )}
         </AnimatePresence>
       </Dialog.Root>
-      <div
-        // @ts-expect-error This is what the Radix docs said to do don't blame me.
-        ref={setDialogContainer}
-      />
+      <div ref={setPortalContainer} />
     </div>
   );
 }

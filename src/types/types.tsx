@@ -65,7 +65,7 @@ export interface SimulationSettings {
   trailBackgroundDiffuseRate: number;
 }
 
-interface RandomizationSetting {
+export interface RandomizationSetting {
   enabled: boolean;
   range: [number, number];
 }

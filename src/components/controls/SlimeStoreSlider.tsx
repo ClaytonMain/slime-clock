@@ -70,7 +70,6 @@ export default function SlimeStoreSlider({
       className="flex w-full items-center gap-1"
       style={{
         flexDirection: type === "slider" ? "row" : "column",
-        marginLeft: type === "range" ? "4.5rem" : "0",
       }}
     >
       {type === "slider" && (

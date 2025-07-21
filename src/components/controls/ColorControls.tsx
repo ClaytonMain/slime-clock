@@ -60,15 +60,6 @@ export default function ColorControls() {
             >
               <AccordionControlsItem value="red" label="Red">
                 <SlimeStoreSliderControl
-                  label="Test"
-                  baseInputId="procedural-color-palette-r-test"
-                  min={-1}
-                  max={2}
-                  step={0.01}
-                  storePath={["testRange"]}
-                  type="range"
-                />
-                <SlimeStoreSliderControl
                   label="Y-Offset"
                   baseInputId="procedural-color-palette-r-y-offset"
                   min={-1}

@@ -34,6 +34,7 @@ interface ControlsState {
 }
 
 interface SlimeStore {
+  portalContainer: HTMLDivElement | null;
   resolutionsSet: boolean;
   initialized: boolean;
   clockSettings: ClockSettings;
@@ -45,6 +46,7 @@ interface SlimeStore {
 }
 
 const persistOmit: (keyof SlimeStore)[] = [
+  "portalContainer",
   "colorSettings",
   "initialized",
   "controlsState",
@@ -55,7 +57,7 @@ const useSlimeStore = create<SlimeStore>()(
   subscribeWithSelector(
     persist(
       (set) => ({
-        testRange: [0, 1],
+        portalContainer: null,
 
         resolutionsSet: false,
 

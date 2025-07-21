@@ -11,9 +11,10 @@ import AccordionControlsItem from "./AccordionControlsItem";
 import AccordionControlsWrapper from "./AccordionControlsWrapper";
 import ControlButton from "./ControlButton";
 import HeightScaledPixelValueDisplay from "./HeightScaledPixelValueDisplay";
+import SlimeStoreRandomizationControl from "./SlimeStoreRandomizationControl";
 import SlimeStoreSelectControl from "./SlimeStoreSelectControl";
 import SlimeStoreSliderControl from "./SlimeStoreSliderControl";
-import SlimeStoreSwitch from "./SlimeStoreSwitch";
+import SlimeStoreSwitchControl from "./SlimeStoreSwitchControl";
 import TabContentContainer from "./TabContentContainer";
 import TabContentScrollArea from "./TabContentScrollArea";
 
@@ -201,7 +202,7 @@ export default function SimulationControls() {
                 "Controls the speed of the entire simulation.",
               ]}
             />
-            <SlimeStoreSwitch
+            <SlimeStoreSwitchControl
               label="Rand. Enabled"
               labelHoverTabContentDisplay={[
                 "Randomization Enabled",
@@ -480,6 +481,112 @@ export default function SimulationControls() {
               storePath={["simulationSettings", "trailBackgroundDiffuseRate"]}
             />
           </AccordionControlsItem>
+          <AccordionControlsWrapper type="multiple">
+            <AccordionControlsItem
+              value="agent-randomization-settings"
+              label="Agent Randomization Settings"
+              labelHoverTabContentDisplay={[
+                "Agent Randomization Settings",
+                "Controls the randomization settings for agents.",
+              ]}
+            >
+              <SlimeStoreRandomizationControl
+                label="Clock Attraction"
+                labelHoverTabContentDisplay={["Clock Attraction"]}
+                baseId="clock-attraction-randomization-control"
+                controlName={"agentClockAttraction"}
+              />
+              <SlimeStoreRandomizationControl
+                label="Clock Deposit Rate"
+                labelHoverTabContentDisplay={["Clock Deposit Rate"]}
+                baseId="clock-deposit-rate-randomization-control"
+                controlName={"agentClockDepositRate"}
+              />
+              <SlimeStoreRandomizationControl
+                label="Background Deposit Rate"
+                labelHoverTabContentDisplay={["Background Deposit Rate"]}
+                baseId="background-deposit-rate-randomization-control"
+                controlName={"agentBackgroundDepositRate"}
+              />
+              <SlimeStoreRandomizationControl
+                label="Sensor Degrees"
+                labelHoverTabContentDisplay={["Sensor Degrees"]}
+                baseId="sensor-degrees-randomization-control"
+                controlName={"agentSensorDegrees"}
+              />
+              <SlimeStoreRandomizationControl
+                label="Rotation Rate"
+                labelHoverTabContentDisplay={["Rotation Rate"]}
+                baseId="rotation-rate-randomization-control"
+                controlName={"agentRotationRate"}
+              />
+              <SlimeStoreRandomizationControl
+                label="Sensor Offset"
+                labelHoverTabContentDisplay={["Sensor Offset"]}
+                baseId="sensor-offset-randomization-control"
+                controlName={"agentSensorOffset"}
+              />
+              <SlimeStoreRandomizationControl
+                label="Sensor Width"
+                labelHoverTabContentDisplay={["Sensor Width"]}
+                baseId="sensor-width-randomization-control"
+                controlName={"agentSensorWidth"}
+              />
+              <SlimeStoreRandomizationControl
+                label="Step Size"
+                labelHoverTabContentDisplay={["Step Size"]}
+                baseId="step-size-randomization-control"
+                controlName={"agentStepSize"}
+              />
+              <SlimeStoreRandomizationControl
+                label="Crowd Avoidance"
+                labelHoverTabContentDisplay={["Crowd Avoidance"]}
+                baseId="crowd-avoidance-randomization-control"
+                controlName={"agentCrowdAvoidance"}
+              />
+              <SlimeStoreRandomizationControl
+                label="Wander Strength"
+                labelHoverTabContentDisplay={["Wander Strength"]}
+                baseId="wander-strength-randomization-control"
+                controlName={"agentWanderStrength"}
+              />
+            </AccordionControlsItem>
+          </AccordionControlsWrapper>
+          <AccordionControlsWrapper type="multiple">
+            <AccordionControlsItem
+              value="trail-randomization-settings"
+              label="Trail Randomization Settings"
+              labelHoverTabContentDisplay={[
+                "Trail Randomization Settings",
+                "Controls the randomization settings for trails.",
+              ]}
+            >
+              <SlimeStoreRandomizationControl
+                label="Clock Decay Rate"
+                labelHoverTabContentDisplay={["Clock Decay Rate"]}
+                baseId="clock-decay-rate-randomization-control"
+                controlName={"trailClockDecayRate"}
+              />
+              <SlimeStoreRandomizationControl
+                label="Clock Diffuse Rate"
+                labelHoverTabContentDisplay={["Clock Diffuse Rate"]}
+                baseId="clock-diffuse-rate-randomization-control"
+                controlName={"trailClockDiffuseRate"}
+              />
+              <SlimeStoreRandomizationControl
+                label="Background Decay Rate"
+                labelHoverTabContentDisplay={["Background Decay Rate"]}
+                baseId="background-decay-rate-randomization-control"
+                controlName={"trailBackgroundDecayRate"}
+              />
+              <SlimeStoreRandomizationControl
+                label="Background Diffuse Rate"
+                labelHoverTabContentDisplay={["Background Diffuse Rate"]}
+                baseId="background-diffuse-rate-randomization-control"
+                controlName={"trailBackgroundDiffuseRate"}
+              />
+            </AccordionControlsItem>
+          </AccordionControlsWrapper>
         </AccordionControlsWrapper>
       </TabContentScrollArea>
     </TabContentContainer>

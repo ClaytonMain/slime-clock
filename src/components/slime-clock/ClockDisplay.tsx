@@ -11,15 +11,15 @@ import type {
 function getDigitFontUrl(style: ClockDigitStyleValue): string {
   switch (style) {
     case "7segment":
-      return "fonts/DSEG7ClassicMini-Regular.woff";
+      return "../../fonts/DSEG7ClassicMini-Regular.woff";
     case "14segment":
-      return "fonts/DSEG14Modern-Regular.woff";
+      return "../../fonts/DSEG14Modern-Regular.woff";
     case "dotmatrix":
-      return "fonts/5by7/5by7.ttf";
+      return "../../fonts/5by7/5by7.ttf";
     case "opticbot":
-      return "fonts/optic-bot/opticbot.ttf";
+      return "../../fonts/optic-bot/opticbot.ttf";
     default:
-      return "fonts/DSEG14Modern-Regular.woff";
+      return "../../fonts/DSEG14Modern-Regular.woff";
   }
 }
 

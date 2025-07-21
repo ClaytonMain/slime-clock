@@ -46,6 +46,7 @@ export default function SlimeStoreSelect({
   listen?: boolean;
   valueType?: "string" | "number";
 }) {
+  const portalContainer = useSlimeStore((state) => state.portalContainer);
   const [selectedValue, setSelectedValue] = useState<string>(
     valueType === "string"
       ? R.view(R.lensPath(storePath), useSlimeStore.getState())
@@ -96,7 +97,7 @@ export default function SlimeStoreSelect({
           <ChevronDownIcon />
         </Select.Icon>
       </Select.Trigger>
-      <Select.Portal>
+      <Select.Portal container={portalContainer}>
         <Select.Content className="overflow-hidden bg-zinc-700">
           <Select.ScrollUpButton className="flex h-6 cursor-default items-center justify-center bg-zinc-700 text-sky-50">
             <ChevronUpIcon />

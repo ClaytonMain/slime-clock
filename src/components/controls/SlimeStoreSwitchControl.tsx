@@ -3,33 +3,23 @@ import { motion } from "motion/react";
 import { Label } from "radix-ui";
 import { type ReactNode } from "react";
 import useSlimeStore from "../../stores/useSlimeStore";
-import SlimeStoreSlider from "./SlimeStoreSlider";
+import SlimeStoreSwitch from "./SlimeStoreSwitch";
 
-export default function SlimeStoreSliderControl({
+export default function SlimeStoreSwitchControl({
   label,
   labelHoverTabContentDisplay,
-  baseInputId,
-  min,
-  max,
-  step,
+  baseId,
   storePath,
-  onValueChange,
+  onCheckedChange,
   listen = true,
-  type = "slider",
 }: {
   label?: string;
   labelHoverTabContentDisplay?: string | [string, string] | ReactNode;
-  baseInputId?: string;
-  min?: number;
-  max?: number;
-  step?: number;
+  baseId?: string;
   storePath: string[];
-  onValueChange?: (value: number[]) => void;
+  onCheckedChange?: (value: boolean) => void;
   listen?: boolean;
-  type?: "slider" | "range";
 }) {
-  const inputId = `${baseInputId}-input`;
-
   function handlePointerOver() {
     if (labelHoverTabContentDisplay) {
       useSlimeStore.setState(
@@ -50,28 +40,21 @@ export default function SlimeStoreSliderControl({
       whileHover={{ backgroundColor: "#0004" }}
       className="flex w-full items-center gap-1 py-2"
     >
-      <div className="flex flex-none items-center gap-1 p-0.5">
+      <motion.div className="flex flex-col items-center p-0.5">
         {label && (
           <Label.Root
-            className="h-full w-(--footer-left-label-width) flex-none place-content-center p-0.5 text-right text-xs leading-none font-medium select-none"
-            htmlFor={inputId}
+            className="h-full w-(--footer-left-label-width) flex-none place-content-center p-0.5 text-right text-xs leading-none font-medium"
+            htmlFor={baseId}
           >
             {label}
           </Label.Root>
         )}
-        {type === "range" && (
-          <div className="flex w-18 flex-none items-center justify-center border border-transparent px-2 py-1" />
-        )}
-      </div>
-      <SlimeStoreSlider
-        baseInputId={inputId}
-        min={min}
-        max={max}
-        step={step}
+      </motion.div>
+      <SlimeStoreSwitch
+        baseId={baseId}
         storePath={storePath}
-        onValueChange={onValueChange}
+        onCheckedChange={onCheckedChange}
         listen={listen}
-        type={type}
       />
     </motion.div>
   );

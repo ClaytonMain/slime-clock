@@ -12,7 +12,7 @@ import AccordionControlsItem from "./AccordionControlsItem";
 import AccordionControlsWrapper from "./AccordionControlsWrapper";
 import SlimeStoreSelectControl from "./SlimeStoreSelectControl";
 import SlimeStoreSliderControl from "./SlimeStoreSliderControl";
-import SlimeStoreSwitch from "./SlimeStoreSwitch";
+import SlimeStoreSwitchControl from "./SlimeStoreSwitchControl";
 import TabContentContainer from "./TabContentContainer";
 import TabContentScrollArea from "./TabContentScrollArea";
 
@@ -83,7 +83,7 @@ export default function ClockControls() {
               clockControlsLabelHoverTabContentDisplay
             }
           >
-            {/* <SlimeStoreSwitch
+            {/* <SlimeStoreSwitchControl
               label="Show Clock"
               baseId="clock-show-switch"
               storePath={["clockSettings", "show"]}
@@ -141,7 +141,7 @@ export default function ClockControls() {
                         animate={{ height: "auto" }}
                         exit={{ height: 0 }}
                       >
-                        <SlimeStoreSwitch
+                        <SlimeStoreSwitchControl
                           label="Show AM/PM"
                           labelHoverTabContentDisplay={[
                             "Show AM/PM",
@@ -165,7 +165,7 @@ export default function ClockControls() {
                       "Changes the digit style of the clock display.",
                     ]}
                   />
-                  <SlimeStoreSwitch
+                  <SlimeStoreSwitchControl
                     label="Pad Hours"
                     baseId="clock-pad-hours-switch"
                     storePath={["clockSettings", "padHours"]}
@@ -174,7 +174,7 @@ export default function ClockControls() {
                       "Whether to pad hours with a leading zero.",
                     ]}
                   />
-                  {/* <SlimeStoreSwitch
+                  {/* <SlimeStoreSwitchControl
                     label="Show Seconds"
                     baseId="clock-show-seconds-switch"
                     storePath={["clockSettings", "showSeconds"]}

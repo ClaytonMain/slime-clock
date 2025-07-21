@@ -4,10 +4,17 @@ import { produce } from "immer";
 import * as R from "ramda";
 import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
-import { DISPLAY_TEXTURE_RESOLUTIONS } from "../../constants/constants";
+import {
+  DISPLAY_TEXTURE_RESOLUTIONS,
+  SIMULATION_CONTROLS_CONFIGS,
+} from "../../constants/constants";
 import useSlimeStore from "../../stores/useSlimeStore";
-import type { TrailDisplayTextureResolution } from "../../types/types";
-import { roundToFixed } from "../../utils/utils";
+import type {
+  RandomizationSetting,
+  SimulationSettings,
+  TrailDisplayTextureResolution,
+} from "../../types/types";
+import { randBetween, roundToFixed } from "../../utils/utils";
 import ThreeControlDisplay from "../three-control-display/ThreeControlDisplay";
 import AgentDataMaterial from "./AgentDataMaterial";
 import AgentPositionsMaterial from "./AgentPositionsMaterial";
@@ -457,7 +464,6 @@ function SlimeClock() {
     const length = Math.floor(
       displayTextureWidth * displayTextureHeight * agentDensity,
     );
-    console.log(length);
     const attributes = new Float32Array(length * 3);
     for (let i = 0; i < length; i++) {
       const i3 = i * 3;
@@ -660,6 +666,62 @@ function SlimeClock() {
     );
   }, [initialized, resolutionsSet]);
 
+  // Randomize agent settings.
+  useEffect(() => {
+    if (!simulationSettings.agentsNeedRandomization) return;
+    const simulationRandomizationSettings =
+      useSlimeStore.getState().simulationRandomizationSettings;
+    useSlimeStore.setState(
+      produce((state) => {
+        state.simulationSettings.agentsNeedRandomization = false;
+        Object.entries(simulationRandomizationSettings).forEach(
+          ([key, value]) => {
+            const settingKey = key as keyof SimulationSettings;
+            const randConfig = value as RandomizationSetting;
+            if (!settingKey.startsWith("agent") || !randConfig.enabled) return;
+            let randValue = randBetween(
+              randConfig.range[0],
+              randConfig.range[1],
+            );
+            const step = SIMULATION_CONTROLS_CONFIGS[settingKey]!.step;
+            if (step) {
+              randValue = roundToFixed(Math.round(randValue / step) * step, 4);
+            }
+            state.simulationSettings[settingKey] = randValue;
+          },
+        );
+      }),
+    );
+  }, [simulationSettings.agentsNeedRandomization]);
+
+  // Randomize trail settings.
+  useEffect(() => {
+    if (!simulationSettings.trailNeedsRandomization) return;
+    const simulationRandomizationSettings =
+      useSlimeStore.getState().simulationRandomizationSettings;
+    useSlimeStore.setState(
+      produce((state) => {
+        state.simulationSettings.trailNeedsRandomization = false;
+        Object.entries(simulationRandomizationSettings).forEach(
+          ([key, value]) => {
+            const settingKey = key as keyof SimulationSettings;
+            const randConfig = value as RandomizationSetting;
+            if (!settingKey.startsWith("trail") || !randConfig.enabled) return;
+            let randValue = randBetween(
+              randConfig.range[0],
+              randConfig.range[1],
+            );
+            const step = SIMULATION_CONTROLS_CONFIGS[settingKey]!.step;
+            if (step) {
+              randValue = roundToFixed(Math.round(randValue / step) * step, 4);
+            }
+            state.simulationSettings[settingKey] = randValue;
+          },
+        );
+      }),
+    );
+  }, [simulationSettings.trailNeedsRandomization]);
+
   const pingPongRef = useRef(true);
   const uDeltaRef = useRef(0.0);
   const uTimeRef = useRef(0.0);
@@ -673,11 +735,15 @@ function SlimeClock() {
       simulationSettings.randomizationEnabled &&
       timeSinceRandomizeRef.current >= simulationSettings.randomizationInterval
     ) {
-      // TODO: Randomize the simulation
-      // randomizeSimulation();
+      useSlimeStore.setState(
+        produce((state) => {
+          state.simulationSettings.agentsNeedRandomization = true;
+          state.simulationSettings.trailNeedsRandomization = true;
+        }),
+      );
       timeSinceRandomizeRef.current = 0;
     }
-    uDeltaRef.current = Math.min(delta * simulationSettings.speed, 0.1);
+    uDeltaRef.current = Math.min(delta * simulationSettings.speed, 0.05);
     uTimeRef.current += uDeltaRef.current;
 
     // Render the clock.

@@ -25,7 +25,8 @@ export default function SlimeClockScene() {
         flat
         ref={canvasRef}
         gl={{
-          preserveDrawingBuffer: true,
+          precision: "lowp",
+          // preserveDrawingBuffer: true,
         }}
         style={{
           touchAction: "none",
