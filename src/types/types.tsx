@@ -31,6 +31,8 @@ export interface ClockSettings {
 }
 
 export interface SimulationSettings {
+  preset: string;
+
   agentsNeedRandomization: boolean;
   trailNeedsRandomization: boolean;
 

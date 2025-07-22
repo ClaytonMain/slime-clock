@@ -1,4 +1,4 @@
-import { Stats } from "@react-three/drei";
+import { Loader, Stats } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Suspense, useEffect, useRef } from "react";
 
@@ -51,6 +51,7 @@ export default function SlimeClockScene() {
           <SlimeClock />
         </Suspense>
       </Canvas>
+      <Loader />
     </>
   );
 }

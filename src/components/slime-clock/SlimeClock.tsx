@@ -653,11 +653,8 @@ function SlimeClock() {
 
   // Initialize everything.
   useEffect(() => {
-    if (initialized) return;
-    if (!resolutionsSet) {
-      setInitialResolutions();
-      return;
-    }
+    if (initialized && resolutionsSet) return;
+    setInitialResolutions();
     initializeUniforms();
     useSlimeStore.setState(
       produce((state) => {
@@ -692,6 +689,7 @@ function SlimeClock() {
         );
       }),
     );
+    timeSinceRandomizeRef.current = 0;
   }, [simulationSettings.agentsNeedRandomization]);
 
   // Randomize trail settings.
@@ -720,6 +718,7 @@ function SlimeClock() {
         );
       }),
     );
+    timeSinceRandomizeRef.current = 0;
   }, [simulationSettings.trailNeedsRandomization]);
 
   const pingPongRef = useRef(true);
@@ -741,6 +740,12 @@ function SlimeClock() {
           state.simulationSettings.trailNeedsRandomization = true;
         }),
       );
+      timeSinceRandomizeRef.current = 0;
+    }
+    if (
+      !simulationSettings.randomizationEnabled &&
+      timeSinceRandomizeRef.current > 0
+    ) {
       timeSinceRandomizeRef.current = 0;
     }
     uDeltaRef.current = Math.min(delta * simulationSettings.speed, 0.05);

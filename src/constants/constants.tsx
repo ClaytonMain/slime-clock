@@ -40,11 +40,13 @@ export const CLOCK_CONTROLS_CONFIGS: ControlsConfigs<ClockSettings> = {
 };
 
 export const DEFAULT_SIMULATION_SETTINGS: SimulationSettings = {
+  preset: "Default",
+
   agentsNeedRandomization: false,
   trailNeedsRandomization: false,
 
   speed: 3.3,
-  randomizationEnabled: false,
+  randomizationEnabled: true,
   randomizationInterval: 120,
 
   boundaryBehavior: 0, // 0: Wrap, 1: Bounce
@@ -99,102 +101,60 @@ export const DEFAULT_SIMULATION_RANDOMIZATION_SETTINGS: SimulationRandomizationS
   {
     agentClockAttraction: {
       enabled: true,
-      range: [
-        SIMULATION_CONTROLS_CONFIGS.agentClockAttraction!.min,
-        SIMULATION_CONTROLS_CONFIGS.agentClockAttraction!.max,
-      ],
+      range: [0.01, 0.3],
     },
     agentClockDepositRate: {
       enabled: true,
-      range: [
-        SIMULATION_CONTROLS_CONFIGS.agentClockDepositRate!.min,
-        SIMULATION_CONTROLS_CONFIGS.agentClockDepositRate!.max,
-      ],
+      range: [2.0, 15.0],
     },
     agentBackgroundDepositRate: {
       enabled: true,
-      range: [
-        SIMULATION_CONTROLS_CONFIGS.agentBackgroundDepositRate!.min,
-        SIMULATION_CONTROLS_CONFIGS.agentBackgroundDepositRate!.max,
-      ],
+      range: [2.0, 15.0],
     },
     agentSensorDegrees: {
       enabled: true,
-      range: [
-        SIMULATION_CONTROLS_CONFIGS.agentSensorDegrees!.min,
-        SIMULATION_CONTROLS_CONFIGS.agentSensorDegrees!.max,
-      ],
+      range: [15, 75],
     },
     agentRotationRate: {
       enabled: true,
-      range: [
-        SIMULATION_CONTROLS_CONFIGS.agentRotationRate!.min,
-        SIMULATION_CONTROLS_CONFIGS.agentRotationRate!.max,
-      ],
+      range: [1.0, 5.0],
     },
     agentSensorOffset: {
       enabled: true,
-      range: [
-        SIMULATION_CONTROLS_CONFIGS.agentSensorOffset!.min,
-        SIMULATION_CONTROLS_CONFIGS.agentSensorOffset!.max,
-      ],
+      range: [0.5, 2.5],
     },
     agentSensorWidth: {
       enabled: true,
-      range: [
-        SIMULATION_CONTROLS_CONFIGS.agentSensorWidth!.min,
-        SIMULATION_CONTROLS_CONFIGS.agentSensorWidth!.max,
-      ],
+      range: [0.2, 0.8],
     },
     agentStepSize: {
       enabled: true,
-      range: [
-        SIMULATION_CONTROLS_CONFIGS.agentStepSize!.min,
-        SIMULATION_CONTROLS_CONFIGS.agentStepSize!.max,
-      ],
+      range: [0.5, 2.5],
     },
     agentCrowdAvoidance: {
       enabled: true,
-      range: [
-        SIMULATION_CONTROLS_CONFIGS.agentCrowdAvoidance!.min,
-        SIMULATION_CONTROLS_CONFIGS.agentCrowdAvoidance!.max,
-      ],
+      range: [0.05, 0.5],
     },
     agentWanderStrength: {
       enabled: true,
-      range: [
-        SIMULATION_CONTROLS_CONFIGS.agentWanderStrength!.min,
-        SIMULATION_CONTROLS_CONFIGS.agentWanderStrength!.max,
-      ],
+      range: [0.1, 10.0],
     },
 
     trailClockDecayRate: {
       enabled: true,
-      range: [
-        SIMULATION_CONTROLS_CONFIGS.trailClockDecayRate!.min,
-        SIMULATION_CONTROLS_CONFIGS.trailClockDecayRate!.max,
-      ],
+      range: [0.01, 0.5],
     },
     trailClockDiffuseRate: {
       enabled: true,
-      range: [
-        SIMULATION_CONTROLS_CONFIGS.trailClockDiffuseRate!.min,
-        SIMULATION_CONTROLS_CONFIGS.trailClockDiffuseRate!.max,
-      ],
+      range: [2.0, 10.0],
     },
     trailBackgroundDecayRate: {
       enabled: true,
-      range: [
-        SIMULATION_CONTROLS_CONFIGS.trailBackgroundDecayRate!.min,
-        SIMULATION_CONTROLS_CONFIGS.trailBackgroundDecayRate!.max,
-      ],
+      range: [0.01, 0.5],
     },
     trailBackgroundDiffuseRate: {
       enabled: true,
-      range: [
-        SIMULATION_CONTROLS_CONFIGS.trailBackgroundDiffuseRate!.min,
-        SIMULATION_CONTROLS_CONFIGS.trailBackgroundDiffuseRate!.max,
-      ],
+      range: [2.0, 15.0],
     },
   };
 
@@ -296,3 +256,27 @@ export const DISPLAY_TEXTURE_RESOLUTIONS: TrailDisplayTextureResolution[] = [
   "2560 x 1440",
   "3840 x 2160",
 ];
+
+export const SIMULATION_PRESETS: Record<string, Partial<SimulationSettings>> = {
+  Default: {},
+  "Inverted Gooey": {
+    speed: 3.3,
+    randomizationEnabled: false,
+    agentDensity: 0.25,
+    agentStartType: 5,
+    agentClockAttraction: 0.09,
+    agentClockDepositRate: 5.6,
+    agentBackgroundDepositRate: 2.5,
+    agentSensorDegrees: 19,
+    agentRotationRate: 2.3,
+    agentSensorOffset: 1.77,
+    agentSensorWidth: 0.52,
+    agentStepSize: 2.34,
+    agentCrowdAvoidance: 0.22,
+    agentWanderStrength: 2.9,
+    trailClockDecayRate: 0.28,
+    trailClockDiffuseRate: 6.4,
+    trailBackgroundDecayRate: 0.07,
+    trailBackgroundDiffuseRate: 2.9,
+  },
+};

@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import {
   AGENT_START_TYPE_DROPDOWN_OPTIONS,
   SIMULATION_CONTROLS_CONFIGS,
+  SIMULATION_PRESETS,
 } from "../../constants/constants";
 import useSlimeStore from "../../stores/useSlimeStore";
 import type { TrailDisplayTextureResolution } from "../../types/types";
@@ -57,6 +58,20 @@ const trailDisplayTextureResolutionOptions: TrailDisplayTextureResolutionOption[
     { value: "2560 x 1440", label: "2560 x 1440" },
     { value: "3840 x 2160", label: "3840 x 2160" },
   ] as const;
+
+function handleSimulationPresetChange(value: string) {
+  const preset = SIMULATION_PRESETS[value];
+  if (!preset) return;
+
+  useSlimeStore.setState(
+    produce((state) => {
+      state.simulationSettings.preset = value;
+      Object.entries(preset).forEach(([key, val]) => {
+        state.simulationSettings[key] = val;
+      });
+    }),
+  );
+}
 
 export default function SimulationControls() {
   const selectedTab = useSlimeStore((state) => state.controlsState.selectedTab);
@@ -128,6 +143,20 @@ export default function SimulationControls() {
               </div>,
             ]}
           >
+            <SlimeStoreSelectControl
+              label="Simulation Presets"
+              labelHoverTabContentDisplay={[
+                "Simulation Presets",
+                "Select a preset to quickly apply a set of simulation settings.",
+              ]}
+              baseInputId="simulation-presets-select"
+              storePath={["simulationSettings", "preset"]}
+              options={Object.keys(SIMULATION_PRESETS).map((key) => ({
+                value: key,
+                label: key,
+              }))}
+              onValueChange={handleSimulationPresetChange}
+            />
             <ControlButton
               label="Randomize Simulation"
               labelHoverTabContentDisplay={[
