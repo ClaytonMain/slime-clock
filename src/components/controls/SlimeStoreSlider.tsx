@@ -13,15 +13,19 @@ export default function SlimeStoreSlider({
   onValueChange,
   listen = true,
   type = "slider",
+  hideSlider = false,
+  boundValue = true,
 }: {
   baseInputId?: string;
-  min?: number;
-  max?: number;
+  min: number;
+  max: number;
   step?: number;
   storePath: string[];
   onValueChange?: (value: [number] | [number, number]) => void;
   listen?: boolean;
   type?: "slider" | "range";
+  hideSlider?: boolean; // I just didn't want to write a `SlimeStoreInput` component for this.
+  boundValue?: boolean;
 }) {
   const sliderId = `${baseInputId}-slider`;
   const inputId = `${baseInputId}-input`;
@@ -35,16 +39,29 @@ export default function SlimeStoreSlider({
   );
 
   function handleOnValueChange(value: [number] | [number, number]) {
+    let processedValue = value;
+    if (boundValue) {
+      processedValue = value.map((v) => Math.min(Math.max(v, min), max)) as
+        | [number]
+        | [number, number];
+    }
+    processedValue = processedValue.sort((a, b) => a - b) as
+      | [number]
+      | [number, number];
     if (onValueChange) {
-      onValueChange(value);
-    } else if (storePath) {
+      onValueChange(processedValue);
+    } else {
       if (type === "slider") {
-        useSlimeStore.setState(R.over(R.lensPath(storePath), () => value[0]));
+        useSlimeStore.setState(
+          R.over(R.lensPath(storePath), () => processedValue[0]),
+        );
       } else {
-        useSlimeStore.setState(R.over(R.lensPath(storePath), () => value));
+        useSlimeStore.setState(
+          R.over(R.lensPath(storePath), () => processedValue),
+        );
       }
     }
-    setSelectedValue(value);
+    setSelectedValue(processedValue);
   }
 
   useEffect(() => {
@@ -81,7 +98,7 @@ export default function SlimeStoreSlider({
           min={min}
           max={max}
           step={step}
-          className="h-7 w-18 flex-initial border border-sky-800 bg-zinc-900 px-2 py-1 text-sm text-sky-50"
+          className="h-7 w-18 flex-initial border border-sky-800 bg-zinc-900 px-2 py-1 text-lg text-sky-50 md:text-sm"
         />
       )}
       {type === "range" && (
@@ -99,7 +116,7 @@ export default function SlimeStoreSlider({
             min={min}
             max={max}
             step={step}
-            className="h-7 w-18 flex-initial border border-sky-800 bg-zinc-900 px-2 py-1 text-sm text-sky-50"
+            className="h-7 w-18 flex-initial border border-sky-800 bg-zinc-900 px-2 py-1 text-lg text-sky-50 md:text-sm"
           />
           <input
             id={`${inputId}-max`}
@@ -114,32 +131,25 @@ export default function SlimeStoreSlider({
             min={min}
             max={max}
             step={step}
-            className="h-7 w-18 flex-initial border border-sky-800 bg-zinc-900 px-2 py-1 text-sm text-sky-50"
+            className="h-7 w-18 flex-initial border border-sky-800 bg-zinc-900 px-2 py-1 text-lg text-sky-50 md:text-sm"
           />
         </div>
       )}
       <div className="flex w-full items-center justify-center">
-        <Slider.Root
-          id={sliderId}
-          value={selectedValue}
-          onValueChange={handleOnValueChange}
-          min={min}
-          max={max}
-          step={step}
-          className="relative z-0 mr-4 flex h-5 grow touch-none items-center select-none"
-          minStepsBetweenThumbs={type === "range" ? step : undefined}
-        >
-          <Slider.Track className="relative h-1.5 grow rounded-full border border-sky-800 bg-zinc-900">
-            <Slider.Range className="absolute h-full rounded-full bg-sky-500" />
-          </Slider.Track>
-          <Slider.Thumb asChild>
-            <motion.div
-              className="block size-5 rounded-[10px] focus:shadow-[0_0_0_5px] focus:shadow-sky-600 focus:outline-none"
-              whileHover={{ backgroundColor: "var(--color-sky-100)" }}
-              style={{ backgroundColor: "var(--color-sky-50)" }}
-            />
-          </Slider.Thumb>
-          {type === "range" && (
+        {!hideSlider && (
+          <Slider.Root
+            id={sliderId}
+            value={selectedValue}
+            onValueChange={handleOnValueChange}
+            min={min}
+            max={max}
+            step={step}
+            className="relative z-0 mr-4 flex h-5 grow touch-none items-center select-none"
+            minStepsBetweenThumbs={type === "range" ? step : undefined}
+          >
+            <Slider.Track className="relative h-1.5 grow rounded-full border border-sky-800 bg-zinc-900">
+              <Slider.Range className="absolute h-full rounded-full bg-sky-500" />
+            </Slider.Track>
             <Slider.Thumb asChild>
               <motion.div
                 className="block size-5 rounded-[10px] focus:shadow-[0_0_0_5px] focus:shadow-sky-600 focus:outline-none"
@@ -147,8 +157,17 @@ export default function SlimeStoreSlider({
                 style={{ backgroundColor: "var(--color-sky-50)" }}
               />
             </Slider.Thumb>
-          )}
-        </Slider.Root>
+            {type === "range" && (
+              <Slider.Thumb asChild>
+                <motion.div
+                  className="block size-5 rounded-[10px] focus:shadow-[0_0_0_5px] focus:shadow-sky-600 focus:outline-none"
+                  whileHover={{ backgroundColor: "var(--color-sky-100)" }}
+                  style={{ backgroundColor: "var(--color-sky-50)" }}
+                />
+              </Slider.Thumb>
+            )}
+          </Slider.Root>
+        )}
       </div>
     </div>
   );

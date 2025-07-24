@@ -6,10 +6,12 @@ import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import {
   DISPLAY_TEXTURE_RESOLUTIONS,
+  PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS,
   SIMULATION_CONTROLS_CONFIGS,
 } from "../../constants/constants";
 import useSlimeStore from "../../stores/useSlimeStore";
 import type {
+  ProceduralColorPaletteChannel,
   RandomizationSetting,
   SimulationSettings,
   TrailDisplayTextureResolution,
@@ -330,6 +332,7 @@ function UniformSetter() {
 
 function SlimeClock() {
   const simulationSettings = useSlimeStore((state) => state.simulationSettings);
+  const colorSettings = useSlimeStore((state) => state.colorSettings);
   const resolutionsSet = useSlimeStore((state) => state.resolutionsSet);
   const initialized = useSlimeStore((state) => state.initialized);
 
@@ -721,6 +724,41 @@ function SlimeClock() {
     timeSinceRandomizeRef.current = 0;
   }, [simulationSettings.trailNeedsRandomization]);
 
+  // Randomize color settings.
+  useEffect(() => {
+    if (!colorSettings.proceduralColorPaletteNeedsRandomization) return;
+    useSlimeStore.setState(
+      produce((state) => {
+        state.colorSettings.proceduralColorPaletteNeedsRandomization = false;
+        Object.entries(colorSettings.proceduralColorPalette).forEach(
+          ([key, value]) => {
+            const colorKey =
+              key as keyof typeof colorSettings.proceduralColorPalette;
+            Object.keys(value as ProceduralColorPaletteChannel).forEach(
+              (channelKey) => {
+                const controlConfig =
+                  PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS[
+                    channelKey as keyof typeof PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS
+                  ];
+                const randValue = randBetween(
+                  controlConfig!.min / 2.0,
+                  controlConfig!.max / 2.0,
+                  2.0,
+                );
+                state.colorSettings.proceduralColorPalette[colorKey][
+                  channelKey
+                ] = randValue;
+              },
+            );
+          },
+        );
+        state.colorSettings.slimeColorChangedAt = Date.now();
+      }),
+    );
+    timeSinceRandomizeRef.current = 0;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [colorSettings.proceduralColorPaletteNeedsRandomization]);
+
   const pingPongRef = useRef(true);
   const uDeltaRef = useRef(0.0);
   const uTimeRef = useRef(0.0);
@@ -738,6 +776,7 @@ function SlimeClock() {
         produce((state) => {
           state.simulationSettings.agentsNeedRandomization = true;
           state.simulationSettings.trailNeedsRandomization = true;
+          state.colorSettings.proceduralColorPaletteNeedsRandomization = true;
         }),
       );
       timeSinceRandomizeRef.current = 0;

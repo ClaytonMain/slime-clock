@@ -19,27 +19,27 @@ import SlimeStoreSwitchControl from "./SlimeStoreSwitchControl";
 import TabContentContainer from "./TabContentContainer";
 import TabContentScrollArea from "./TabContentScrollArea";
 
-/**
- * Agent Densities
- */
-type AgentDensityOption = {
-  value: string;
-  label: string;
-};
-const agentDensityOptions: AgentDensityOption[] = [
-  { value: "0.01", label: "1%" },
-  { value: "0.05", label: "5%" },
-  { value: "0.1", label: "10%" },
-  { value: "0.2", label: "20%" },
-  { value: "0.25", label: "25%" },
-  { value: "0.3", label: "30%" },
-  { value: "0.4", label: "40%" },
-  { value: "0.5", label: "50%" },
-  { value: "0.6", label: "60%" },
-  { value: "0.7", label: "70%" },
-  { value: "0.8", label: "80%" },
-  { value: "0.9", label: "90%" },
-];
+// /**
+//  * Agent Densities
+//  */
+// type AgentDensityOption = {
+//   value: string;
+//   label: string;
+// };
+// const agentDensityOptions: AgentDensityOption[] = [
+//   { value: "0.01", label: "1%" },
+//   { value: "0.05", label: "5%" },
+//   { value: "0.1", label: "10%" },
+//   { value: "0.2", label: "20%" },
+//   { value: "0.25", label: "25%" },
+//   { value: "0.3", label: "30%" },
+//   { value: "0.4", label: "40%" },
+//   { value: "0.5", label: "50%" },
+//   { value: "0.6", label: "60%" },
+//   { value: "0.7", label: "70%" },
+//   { value: "0.8", label: "80%" },
+//   { value: "0.9", label: "90%" },
+// ];
 
 /**
  * Trail Display Texture Resolution
@@ -94,18 +94,39 @@ export default function SimulationControls() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedTab]);
 
-  function handleAgentDensityChange(value: string) {
+  // // Dropdown function
+  // function handleAgentDensityChange(value: string) {
+  //   const displayTextureWidth =
+  //     useSlimeStore.getState().simulationSettings.displayTextureWidth;
+  //   const displayTextureHeight =
+  //     useSlimeStore.getState().simulationSettings.displayTextureHeight;
+  //   if (!displayTextureWidth || !displayTextureHeight) return;
+  //   const gpuTextureSize = Math.floor(
+  //     Math.sqrt(displayTextureWidth * displayTextureHeight * Number(value)),
+  //   );
+  //   useSlimeStore.setState(
+  //     produce((state) => {
+  //       state.simulationSettings.agentDensity = Number(value);
+  //       state.simulationSettings.gpuTextureWidth = gpuTextureSize;
+  //       state.simulationSettings.gpuTextureHeight = gpuTextureSize;
+  //     }),
+  //   );
+  // }
+
+  // Slider function
+  function handleAgentDensityChange(value: number[]) {
+    console.log("handleAgentDensityChange", value);
     const displayTextureWidth =
       useSlimeStore.getState().simulationSettings.displayTextureWidth;
     const displayTextureHeight =
       useSlimeStore.getState().simulationSettings.displayTextureHeight;
     if (!displayTextureWidth || !displayTextureHeight) return;
     const gpuTextureSize = Math.floor(
-      Math.sqrt(displayTextureWidth * displayTextureHeight * Number(value)),
+      Math.sqrt(displayTextureWidth * displayTextureHeight * Number(value[0])),
     );
     useSlimeStore.setState(
       produce((state) => {
-        state.simulationSettings.agentDensity = Number(value);
+        state.simulationSettings.agentDensity = Number(value[0]);
         state.simulationSettings.gpuTextureWidth = gpuTextureSize;
         state.simulationSettings.gpuTextureHeight = gpuTextureSize;
       }),
@@ -282,7 +303,7 @@ export default function SimulationControls() {
               </div>,
             ]}
           >
-            <SlimeStoreSelectControl
+            {/* <SlimeStoreSelectControl
               label="Density"
               labelHoverTabContentDisplay={[
                 "Agent Density",
@@ -294,6 +315,20 @@ export default function SimulationControls() {
               options={agentDensityOptions}
               onValueChange={handleAgentDensityChange}
               valueType="number"
+            /> */}
+            <SlimeStoreSliderControl
+              label="Density"
+              labelHoverTabContentDisplay={[
+                "Agent Density",
+                "Controls the density of agents in the simulation. Higher values will increase the load on the GPU. Please note: a higher agent density won't always result in a better simulation since the agents need room to move around.",
+              ]}
+              baseInputId="agent-density-slider"
+              min={0.01}
+              max={1}
+              step={0.01}
+              storePath={["simulationSettings", "agentDensity"]}
+              onValueChange={handleAgentDensityChange}
+              hideSlider={true}
             />
             <SlimeStoreSelectControl
               label="Start Type"

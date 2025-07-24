@@ -90,7 +90,7 @@ export interface SimulationRandomizationSettings {
   trailBackgroundDiffuseRate: RandomizationSetting;
 }
 
-interface ProceduralColorPaletteChannel {
+export interface ProceduralColorPaletteChannel {
   yOffset: number;
   amplitude: number;
   frequency: number;
@@ -111,6 +111,7 @@ export interface ColorSettings {
   slimeColorChangedAt: number;
   currentProceduralColorPalettePreset: ProceduralColorPaletteName | "Custom";
   proceduralColorPalette: ProceduralColorPalette;
+  proceduralColorPaletteNeedsRandomization: boolean;
 }
 
 /**

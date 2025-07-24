@@ -58,7 +58,7 @@ export default function TabContentDisplayArea() {
   return (
     <motion.div
       key="tab-content-display-area"
-      className="flex h-full w-56 flex-none items-center px-3 pt-12 pb-3"
+      className="flex h-48 w-full flex-none items-center px-3 pt-3 pb-3 sm:h-full sm:w-4/12 sm:pt-12 md:h-8/12 md:pt-0 md:pb-0"
     >
       <motion.div
         ref={displayAreaRef}

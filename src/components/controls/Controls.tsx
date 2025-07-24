@@ -11,7 +11,6 @@ import SelectedTabCornerIcons from "./SelectedTabCornerIcons";
 import SimulationControls from "./SimulationControls";
 import TabButton from "./TabButton";
 import TabContentDisplayArea from "./TabContentDisplayArea";
-import TabContentVerticalSeparator from "./TabContentVerticalSeparator";
 import TooltipWrapper from "./TooltipWrapper";
 
 export default function Controls() {
@@ -115,7 +114,7 @@ export default function Controls() {
                   handleControlsContentOuterContainerViewportEnter
                 }
                 key="controls-dialog-content-outer-container"
-                className="fixed top-1/2 left-1/2 flex h-96 max-h-11/12 w-9/12 max-w-2xl -translate-1/2 flex-col rounded-xs text-sky-50"
+                className="fixed top-1/2 left-1/2 flex h-full w-full -translate-1/2 flex-col rounded-xs text-sky-50 sm:h-10/12 sm:w-10/12 md:h-10/12 md:py-0 lg:w-8/12 xl:h-9/12 xl:w-7/12 2xl:h-7/12 2xl:w-5/12"
                 exit={{
                   transition: { duration: 0.3, when: "afterChildren" },
                 }}
@@ -240,14 +239,14 @@ export default function Controls() {
                       <AnimatePresence propagate>
                         <motion.div
                           key="controls-content-inner-container"
-                          className="flex w-full grow items-center"
+                          className="flex w-full grow flex-col-reverse items-center sm:flex-row"
                           initial={{ opacity: 0 }}
                           animate={ANIMATION_CONFIGS.flickerIn}
                           exit={ANIMATION_CONFIGS.flickerOut}
                         >
                           <motion.div
                             key="tab-content-controls-content-inner-container"
-                            className="flex h-full grow items-center px-2 py-3"
+                            className="flex w-full grow items-center px-3 py-3 sm:h-full"
                             initial={{ opacity: 0 }}
                             animate={ANIMATION_CONFIGS.flickerIn}
                             exit={ANIMATION_CONFIGS.flickerOut}
@@ -256,13 +255,16 @@ export default function Controls() {
                             <SimulationControls key="simulation-controls" />
                             <ColorControls key="color-controls" />
                           </motion.div>
-                          <TabContentVerticalSeparator key="tab-content-separator" />
+                          <Separator.Root
+                            key="tab-content-separator"
+                            className="flex h-px w-10/12 border-b border-sky-50 sm:h-10/12 sm:w-px sm:border-l"
+                          />
                           <TabContentDisplayArea key="tab-content-display-area" />
                         </motion.div>
 
                         <Separator.Root
                           key="tab-content-separator"
-                          className="h-px w-11/12 border-b border-sky-50"
+                          className="h-px w-10/12 border-b border-sky-50"
                         />
 
                         <Tabs.List

@@ -2,6 +2,7 @@ import type {
   AgentStartTypeDropdownOption,
   ClockSettings,
   ColorSettings,
+  ProceduralColorPaletteChannel,
   ProceduralColorPalettePresets,
   SimulationRandomizationSettings,
   SimulationSettings,
@@ -196,7 +197,20 @@ export const DEFAULT_COLOR_SETTINGS: ColorSettings = {
   slimeColorChangedAt: Date.now(),
   currentProceduralColorPalettePreset: "Rainbow",
   proceduralColorPalette: PROCEDURAL_COLOR_PALETTE_PRESETS.Rainbow,
+  proceduralColorPaletteNeedsRandomization: false,
 };
+
+export const PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS: ControlsConfigs<ProceduralColorPaletteChannel> =
+  {
+    yOffset: { min: 0.0, max: 1.0, step: 0.01 },
+    amplitude: { min: 0.0, max: 5.0, step: 0.01 },
+    frequency: { min: 0.0, max: 5.0, step: 0.01 },
+    phase: {
+      min: 0.0,
+      max: Math.round(Math.PI * 100) / 100,
+      step: 0.01,
+    },
+  };
 
 const flickerPoints = Array.from({ length: 11 }, (_, i) => i / 10);
 const flickerInOpacity = flickerPoints.map((point) =>

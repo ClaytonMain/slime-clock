@@ -16,17 +16,21 @@ export default function SlimeStoreSliderControl({
   onValueChange,
   listen = true,
   type = "slider",
+  hideSlider = false,
+  boundValue = true,
 }: {
   label?: string;
   labelHoverTabContentDisplay?: string | [string, string] | ReactNode;
   baseInputId?: string;
-  min?: number;
-  max?: number;
+  min: number;
+  max: number;
   step?: number;
   storePath: string[];
   onValueChange?: (value: number[]) => void;
   listen?: boolean;
   type?: "slider" | "range";
+  hideSlider?: boolean;
+  boundValue?: boolean;
 }) {
   const inputId = `${baseInputId}-input`;
 
@@ -72,6 +76,8 @@ export default function SlimeStoreSliderControl({
         onValueChange={onValueChange}
         listen={listen}
         type={type}
+        hideSlider={hideSlider}
+        boundValue={boundValue}
       />
     </motion.div>
   );

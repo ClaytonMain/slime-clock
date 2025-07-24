@@ -1,9 +1,11 @@
 import { produce } from "immer";
 import * as R from "ramda";
 import { useEffect } from "react";
+import { PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS } from "../../constants/constants";
 import useSlimeStore from "../../stores/useSlimeStore";
 import AccordionControlsItem from "./AccordionControlsItem";
 import AccordionControlsWrapper from "./AccordionControlsWrapper";
+import ControlButton from "./ControlButton";
 import ProceduralColorPalettePresetSelect from "./ProceduralColorPalettePresetSelect";
 import SlimeStoreSliderControl from "./SlimeStoreSliderControl";
 import TabContentContainer from "./TabContentContainer";
@@ -53,6 +55,25 @@ export default function ColorControls() {
             label="Procedural Color Palette"
             padContent={false}
           >
+            <ControlButton
+              label="Randomize Color Palette"
+              baseId="procedural-color-palette-randomize-button"
+              onClick={() => {
+                useSlimeStore.setState(
+                  produce((state) => {
+                    state.colorSettings.proceduralColorPaletteNeedsRandomization =
+                      true;
+                    state.colorSettings.slimeColorChangedAt = Date.now();
+                    state.controlsState.displayAreaContentName =
+                      "procedural-color-palette";
+                    state.controlsState.displayAreaContentType = "three";
+                    state.controlsState.displayAreaHtmlContent = null;
+                    state.controlsState.displayAreaContentUpdatedAt =
+                      Date.now();
+                  }),
+                );
+              }}
+            />
             <ProceduralColorPalettePresetSelect />
             <AccordionControlsWrapper
               type="multiple"
@@ -62,9 +83,9 @@ export default function ColorControls() {
                 <SlimeStoreSliderControl
                   label="Y-Offset"
                   baseInputId="procedural-color-palette-r-y-offset"
-                  min={-1}
-                  max={2}
-                  step={0.01}
+                  min={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.yOffset!.min}
+                  max={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.yOffset!.max}
+                  step={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.yOffset!.step}
                   storePath={[
                     "colorSettings",
                     "proceduralColorPalette",
@@ -81,11 +102,13 @@ export default function ColorControls() {
                   }
                 />
                 <SlimeStoreSliderControl
-                  label="amplitude"
+                  label="Amplitude"
                   baseInputId="procedural-color-palette-r-amplitude"
-                  min={-5}
-                  max={5}
-                  step={0.01}
+                  min={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.amplitude!.min}
+                  max={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.amplitude!.max}
+                  step={
+                    PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.amplitude!.step
+                  }
                   storePath={[
                     "colorSettings",
                     "proceduralColorPalette",
@@ -102,11 +125,13 @@ export default function ColorControls() {
                   }
                 />
                 <SlimeStoreSliderControl
-                  label="frequency"
+                  label="Frequency"
                   baseInputId="procedural-color-palette-r-frequency"
-                  min={-5}
-                  max={5}
-                  step={0.01}
+                  min={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.frequency!.min}
+                  max={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.frequency!.max}
+                  step={
+                    PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.frequency!.step
+                  }
                   storePath={[
                     "colorSettings",
                     "proceduralColorPalette",
@@ -123,11 +148,11 @@ export default function ColorControls() {
                   }
                 />
                 <SlimeStoreSliderControl
-                  label="phase"
+                  label="Phase"
                   baseInputId="procedural-color-palette-r-phase"
-                  min={Math.round(-Math.PI * 100) / 100}
-                  max={Math.round(Math.PI * 100) / 100}
-                  step={0.01}
+                  min={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.phase!.min}
+                  max={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.phase!.max}
+                  step={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.phase!.step}
                   storePath={[
                     "colorSettings",
                     "proceduralColorPalette",
@@ -148,9 +173,9 @@ export default function ColorControls() {
                 <SlimeStoreSliderControl
                   label="Y-Offset"
                   baseInputId="procedural-color-palette-g-y-offset"
-                  min={-1}
-                  max={2}
-                  step={0.01}
+                  min={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.yOffset!.min}
+                  max={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.yOffset!.max}
+                  step={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.yOffset!.step}
                   storePath={[
                     "colorSettings",
                     "proceduralColorPalette",
@@ -167,11 +192,13 @@ export default function ColorControls() {
                   }
                 />
                 <SlimeStoreSliderControl
-                  label="amplitude"
+                  label="Amplitude"
                   baseInputId="procedural-color-palette-g-amplitude"
-                  min={-5}
-                  max={5}
-                  step={0.01}
+                  min={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.amplitude!.min}
+                  max={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.amplitude!.max}
+                  step={
+                    PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.amplitude!.step
+                  }
                   storePath={[
                     "colorSettings",
                     "proceduralColorPalette",
@@ -188,11 +215,13 @@ export default function ColorControls() {
                   }
                 />
                 <SlimeStoreSliderControl
-                  label="frequency"
+                  label="Frequency"
                   baseInputId="procedural-color-palette-g-frequency"
-                  min={-5}
-                  max={5}
-                  step={0.01}
+                  min={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.frequency!.min}
+                  max={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.frequency!.max}
+                  step={
+                    PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.frequency!.step
+                  }
                   storePath={[
                     "colorSettings",
                     "proceduralColorPalette",
@@ -209,11 +238,11 @@ export default function ColorControls() {
                   }
                 />
                 <SlimeStoreSliderControl
-                  label="phase"
+                  label="Phase"
                   baseInputId="procedural-color-palette-g-phase"
-                  min={Math.round(-Math.PI * 100) / 100}
-                  max={Math.round(Math.PI * 100) / 100}
-                  step={0.01}
+                  min={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.phase!.min}
+                  max={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.phase!.max}
+                  step={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.phase!.step}
                   storePath={[
                     "colorSettings",
                     "proceduralColorPalette",
@@ -234,9 +263,9 @@ export default function ColorControls() {
                 <SlimeStoreSliderControl
                   label="Y-Offset"
                   baseInputId="procedural-color-palette-b-y-offset"
-                  min={-1}
-                  max={2}
-                  step={0.01}
+                  min={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.yOffset!.min}
+                  max={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.yOffset!.max}
+                  step={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.yOffset!.step}
                   storePath={[
                     "colorSettings",
                     "proceduralColorPalette",
@@ -253,11 +282,13 @@ export default function ColorControls() {
                   }
                 />
                 <SlimeStoreSliderControl
-                  label="amplitude"
+                  label="Amplitude"
                   baseInputId="procedural-color-palette-b-amplitude"
-                  min={-5}
-                  max={5}
-                  step={0.01}
+                  min={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.amplitude!.min}
+                  max={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.amplitude!.max}
+                  step={
+                    PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.amplitude!.step
+                  }
                   storePath={[
                     "colorSettings",
                     "proceduralColorPalette",
@@ -274,11 +305,13 @@ export default function ColorControls() {
                   }
                 />
                 <SlimeStoreSliderControl
-                  label="frequency"
+                  label="Frequency"
                   baseInputId="procedural-color-palette-b-frequency"
-                  min={-5}
-                  max={5}
-                  step={0.01}
+                  min={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.frequency!.min}
+                  max={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.frequency!.max}
+                  step={
+                    PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.frequency!.step
+                  }
                   storePath={[
                     "colorSettings",
                     "proceduralColorPalette",
@@ -295,11 +328,11 @@ export default function ColorControls() {
                   }
                 />
                 <SlimeStoreSliderControl
-                  label="phase"
+                  label="Phase"
                   baseInputId="procedural-color-palette-b-phase"
-                  min={Math.round(-Math.PI * 100) / 100}
-                  max={Math.round(Math.PI * 100) / 100}
-                  step={0.01}
+                  min={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.phase!.min}
+                  max={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.phase!.max}
+                  step={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.phase!.step}
                   storePath={[
                     "colorSettings",
                     "proceduralColorPalette",
