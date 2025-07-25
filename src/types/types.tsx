@@ -11,6 +11,7 @@ export type SelectOption<T> = {
 export interface ClockSettings {
   show: boolean;
   size: number;
+  digitLayout: "vertical" | "horizontal";
   // yPosition: number;
   // xPosition: number;
   hourFormat: ClockHourFormatValue;
@@ -58,7 +59,8 @@ export interface SimulationSettings {
   agentCrowdAvoidance: number;
   agentWanderStrength: number;
 
-  trailDisplayTextureResolution: TrailDisplayTextureResolution | "16 x 9";
+  displayTextureAspectRatio: TrailDisplayTextureAspectRatio;
+  displayTextureTargetQuality: number;
   displayTextureWidth: number;
   displayTextureHeight: number;
   trailClockDecayRate: number;
@@ -150,6 +152,17 @@ export type TrailDisplayTextureResolution =
   | "1920 x 1080"
   | "2560 x 1440"
   | "3840 x 2160";
+export type TrailDisplayTextureAspectRatio =
+  | "Window"
+  | "16:10"
+  | "16:9"
+  | "4:3"
+  | "3:2"
+  | "1:1"
+  | "2:3"
+  | "3:4"
+  | "9:16"
+  | "10:16";
 
 export type ProceduralColorPaletteName = "Rainbow" | "B" | "C" | "D" | "E";
 
@@ -161,4 +174,9 @@ export type ProceduralColorPalettePresets = Record<
 export type AgentStartTypeDropdownOption = {
   value: string;
   label: AgentStartType;
+};
+
+export type TrailDisplayTextureAspectRatioDropdownOption = {
+  label: string;
+  value: TrailDisplayTextureAspectRatio;
 };

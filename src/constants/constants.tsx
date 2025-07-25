@@ -7,20 +7,18 @@ import type {
   SimulationRandomizationSettings,
   SimulationSettings,
   SlimeColorMode,
-  TrailDisplayTextureResolution,
+  TrailDisplayTextureAspectRatioDropdownOption,
 } from "../types/types";
 
 type ControlsConfigs<T> = {
   [K in keyof T]?: { min: T[K]; max: T[K]; step: number };
 };
 
-/**
- * Clock Settings
- */
 export const DEFAULT_CLOCK_SETTINGS: ClockSettings = {
   // Shared settings
   show: true,
   size: 50,
+  digitLayout: "horizontal",
   // position: new THREE.Vector2(0, 0),
   hourFormat: "24h",
   // showAmPm: false,
@@ -67,9 +65,10 @@ export const DEFAULT_SIMULATION_SETTINGS: SimulationSettings = {
   agentCrowdAvoidance: 0.1,
   agentWanderStrength: 5.3,
 
-  trailDisplayTextureResolution: "16 x 9",
-  displayTextureWidth: 16,
-  displayTextureHeight: 9,
+  displayTextureAspectRatio: "Window",
+  displayTextureTargetQuality: 1.0,
+  displayTextureWidth: -1,
+  displayTextureHeight: -1,
   trailClockDecayRate: 0.05,
   trailClockDiffuseRate: 4.5,
   trailBackgroundDecayRate: 0.39,
@@ -92,6 +91,7 @@ export const SIMULATION_CONTROLS_CONFIGS: ControlsConfigs<SimulationSettings> =
     agentCrowdAvoidance: { min: 0.0, max: 1.0, step: 0.01 },
     agentWanderStrength: { min: 0.0, max: 20.0, step: 0.1 },
 
+    displayTextureTargetQuality: { min: 0.1, max: 10.0, step: 0.1 },
     trailClockDecayRate: { min: 0.0, max: 2.0, step: 0.01 },
     trailClockDiffuseRate: { min: 0.0, max: 30.0, step: 0.1 },
     trailBackgroundDecayRate: { min: 0.0, max: 2.0, step: 0.01 },
@@ -260,17 +260,6 @@ export const AGENT_START_TYPE_DROPDOWN_OPTIONS: AgentStartTypeDropdownOption[] =
     { value: "5", label: "Fill" },
   ] as const;
 
-// IMPORTANT: Keep this ordered from smallest to largest resolution.
-export const DISPLAY_TEXTURE_RESOLUTIONS: TrailDisplayTextureResolution[] = [
-  "426 x 240",
-  "640 x 360",
-  "854 x 480",
-  "1280 x 720",
-  "1920 x 1080",
-  "2560 x 1440",
-  "3840 x 2160",
-];
-
 export const SIMULATION_PRESETS: Record<string, Partial<SimulationSettings>> = {
   Default: {},
   "Inverted Gooey": {
@@ -294,3 +283,17 @@ export const SIMULATION_PRESETS: Record<string, Partial<SimulationSettings>> = {
     trailBackgroundDiffuseRate: 2.9,
   },
 };
+
+export const TRAIL_DISPLAY_TEXTURE_ASPECT_RATIO_OPTIONS: TrailDisplayTextureAspectRatioDropdownOption[] =
+  [
+    { value: "Window", label: "Window" },
+    { value: "16:10", label: "16:10" },
+    { value: "16:9", label: "16:9" },
+    { value: "4:3", label: "4:3" },
+    { value: "3:2", label: "3:2" },
+    { value: "1:1", label: "1:1" },
+    { value: "2:3", label: "2:3" },
+    { value: "3:4", label: "3:4" },
+    { value: "9:16", label: "9:16" },
+    { value: "10:16", label: "10:16" },
+  ];

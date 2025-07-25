@@ -5,7 +5,6 @@ import * as R from "ramda";
 import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import {
-  DISPLAY_TEXTURE_RESOLUTIONS,
   PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS,
   SIMULATION_CONTROLS_CONFIGS,
 } from "../../constants/constants";
@@ -14,9 +13,9 @@ import type {
   ProceduralColorPaletteChannel,
   RandomizationSetting,
   SimulationSettings,
-  TrailDisplayTextureResolution,
 } from "../../types/types";
 import { randBetween, roundToFixed } from "../../utils/utils";
+import * as UTILS from "../../utils/utils.tsx";
 import ThreeControlDisplay from "../three-control-display/ThreeControlDisplay";
 import AgentDataMaterial from "./AgentDataMaterial";
 import AgentPositionsMaterial from "./AgentPositionsMaterial";
@@ -24,9 +23,11 @@ import ClockDisplay from "./ClockDisplay";
 import TrailMaterial from "./TrailMaterial";
 import displayFragmentShader from "./shaders/display/display.frag";
 import displayVertexShader from "./shaders/display/display.vert";
-import * as UTILS from "./utils/utils";
+import * as SC_UTILS from "./utils/utils"; // "Slime Clock Utils"
 
 extend({ AgentDataMaterial, AgentPositionsMaterial, TrailMaterial });
+
+UTILS.randBetween(0.0, 1.0);
 
 const texturePlaneUniforms = {
   uWindowResolution: new THREE.Uniform(new THREE.Vector2()),
@@ -263,9 +264,9 @@ function UniformSetter() {
         agentPositionsUniforms.uDisplayTextureResolution.value = newResolution;
         trailUniforms.uDisplayTextureResolution.value = newResolution;
         texturePlaneUniforms.uWindowResolution.value =
-          UTILS.getWindowResolutionVector();
+          SC_UTILS.getWindowResolutionVector();
         slimeMoldDisplayPlaneUniforms.uDisplayScale.value =
-          UTILS.getDisplayScaleVector(
+          SC_UTILS.getDisplayScaleVector(
             simulationSettings.displayTextureWidth,
             simulationSettings.displayTextureHeight,
           );
@@ -284,9 +285,9 @@ function UniformSetter() {
         agentPositionsUniforms.uDisplayTextureResolution.value = newResolution;
         trailUniforms.uDisplayTextureResolution.value = newResolution;
         texturePlaneUniforms.uWindowResolution.value =
-          UTILS.getWindowResolutionVector();
+          SC_UTILS.getWindowResolutionVector();
         slimeMoldDisplayPlaneUniforms.uDisplayScale.value =
-          UTILS.getDisplayScaleVector(
+          SC_UTILS.getDisplayScaleVector(
             simulationSettings.displayTextureWidth,
             simulationSettings.displayTextureHeight,
           );
@@ -495,7 +496,12 @@ function SlimeClock() {
       }),
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [simulationSettings.trailDisplayTextureResolution]);
+  }, [
+    simulationSettings.displayTextureTargetQuality,
+    simulationSettings.displayTextureAspectRatio,
+    window.innerWidth,
+    window.innerHeight,
+  ]);
 
   // Anything that should trigger a re-initialization of the simulation.
   useEffect(() => {
@@ -508,68 +514,34 @@ function SlimeClock() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [simulationSettings.agentDensity]);
 
-  // Any window resize dependencies.
-  useEffect(() => {
-    texturePlaneUniforms.uWindowResolution.value =
-      UTILS.getWindowResolutionVector();
-    slimeMoldDisplayPlaneUniforms.uDisplayScale.value =
-      UTILS.getDisplayScaleVector(
-        simulationSettings.displayTextureWidth,
-        simulationSettings.displayTextureHeight,
-      );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [window.innerWidth, window.innerHeight]);
-
   function setInitialResolutions() {
     const simulationSettings = useSlimeStore.getState().simulationSettings;
-    const trailDisplayTextureResolution =
-      simulationSettings.trailDisplayTextureResolution;
-    // IMPORTANT: DISPLAY_TEXTURE_RESOLUTIONS is ordered from smallest to largest.
-    let newDisplayTextureResolution: TrailDisplayTextureResolution =
-      DISPLAY_TEXTURE_RESOLUTIONS[0];
 
-    if (trailDisplayTextureResolution === "16 x 9") {
-      // Hasn't been set yet; choose appropriate resolution from DISPLAY_TEXTURE_RESOLUTIONS.
-      const windowAspect = window.innerWidth / window.innerHeight;
-      const scaleTo = windowAspect > 16 / 9 ? "height" : "width";
-      DISPLAY_TEXTURE_RESOLUTIONS.every((resolution) => {
-        const [width, height] = resolution.split(" x ").map(Number);
-        if (scaleTo === "width") {
-          if (width >= window.innerWidth) {
-            return false;
-          }
-        } else {
-          if (height >= window.innerHeight) {
-            return false;
-          }
-        }
-        newDisplayTextureResolution =
-          resolution as TrailDisplayTextureResolution;
-        return true;
-      });
-    } else {
-      // Has been set; use it.
-      newDisplayTextureResolution = trailDisplayTextureResolution;
-    }
+    const resolution = UTILS.getTrailDisplayTextureResolution(
+      simulationSettings.displayTextureAspectRatio,
+      simulationSettings.displayTextureTargetQuality,
+    );
 
-    const [newDisplayTextureWidth, newDisplayTextureHeight] =
-      newDisplayTextureResolution.split(" x ").map(Number);
     const gpuTextureSize = Math.floor(
       Math.sqrt(
-        newDisplayTextureWidth *
-          newDisplayTextureHeight *
+        simulationSettings.displayTextureTargetQuality *
+          1000000 *
           simulationSettings.agentDensity,
       ),
     );
+
+    texturePlaneUniforms.uWindowResolution.value =
+      SC_UTILS.getWindowResolutionVector();
+    slimeMoldDisplayPlaneUniforms.uDisplayScale.value =
+      SC_UTILS.getDisplayScaleVector(resolution.width, resolution.height);
+
     useSlimeStore.setState(
       produce((state) => {
         state.simulationSettings.gpuTextureWidth = gpuTextureSize;
         state.simulationSettings.gpuTextureHeight = gpuTextureSize;
 
-        state.simulationSettings.trailDisplayTextureResolution =
-          newDisplayTextureResolution;
-        state.simulationSettings.displayTextureWidth = newDisplayTextureWidth;
-        state.simulationSettings.displayTextureHeight = newDisplayTextureHeight;
+        state.simulationSettings.displayTextureWidth = resolution.width;
+        state.simulationSettings.displayTextureHeight = resolution.height;
 
         state.resolutionsSet = true;
       }),
@@ -580,33 +552,33 @@ function SlimeClock() {
     const simulationSettings = useSlimeStore.getState().simulationSettings;
 
     // Get data textures.
-    const agentDataTexture = UTILS.getAgentDataTexture(
+    const agentDataTexture = SC_UTILS.getAgentDataTexture(
       simulationSettings.gpuTextureWidth,
       simulationSettings.gpuTextureHeight,
       simulationSettings.displayTextureWidth,
       simulationSettings.displayTextureHeight,
       simulationSettings.agentStartType,
     );
-    const agentPositionsTexture = UTILS.getAgentPositionsTexture(
+    const agentPositionsTexture = SC_UTILS.getAgentPositionsTexture(
       simulationSettings.displayTextureWidth,
       simulationSettings.displayTextureHeight,
     );
-    const trailTexture = UTILS.getTrailTexture(
+    const trailTexture = SC_UTILS.getTrailTexture(
       simulationSettings.displayTextureWidth,
       simulationSettings.displayTextureHeight,
     );
 
     // Get shared uniforms.
     const displayTextureResolutionVector =
-      UTILS.getDisplayTextureResolutionVector(
+      SC_UTILS.getDisplayTextureResolutionVector(
         simulationSettings.displayTextureWidth,
         simulationSettings.displayTextureHeight,
       );
-    const displayScaleVector = UTILS.getDisplayScaleVector(
+    const displayScaleVector = SC_UTILS.getDisplayScaleVector(
       simulationSettings.displayTextureWidth,
       simulationSettings.displayTextureHeight,
     );
-    const windowResolutionVector = UTILS.getWindowResolutionVector();
+    const windowResolutionVector = SC_UTILS.getWindowResolutionVector();
 
     // TODO: See if we need to initialize more uniforms here.
 

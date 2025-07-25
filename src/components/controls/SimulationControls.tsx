@@ -4,9 +4,11 @@ import {
   AGENT_START_TYPE_DROPDOWN_OPTIONS,
   SIMULATION_CONTROLS_CONFIGS,
   SIMULATION_PRESETS,
+  TRAIL_DISPLAY_TEXTURE_ASPECT_RATIO_OPTIONS,
 } from "../../constants/constants";
 import useSlimeStore from "../../stores/useSlimeStore";
-import type { TrailDisplayTextureResolution } from "../../types/types";
+import type { TrailDisplayTextureAspectRatio } from "../../types/types";
+import * as UTILS from "../../utils/utils.tsx";
 import CodeBlock from "../code-block/CodeBlock";
 import AccordionControlsItem from "./AccordionControlsItem";
 import AccordionControlsWrapper from "./AccordionControlsWrapper";
@@ -18,46 +20,6 @@ import SlimeStoreSliderControl from "./SlimeStoreSliderControl";
 import SlimeStoreSwitchControl from "./SlimeStoreSwitchControl";
 import TabContentContainer from "./TabContentContainer";
 import TabContentScrollArea from "./TabContentScrollArea";
-
-// /**
-//  * Agent Densities
-//  */
-// type AgentDensityOption = {
-//   value: string;
-//   label: string;
-// };
-// const agentDensityOptions: AgentDensityOption[] = [
-//   { value: "0.01", label: "1%" },
-//   { value: "0.05", label: "5%" },
-//   { value: "0.1", label: "10%" },
-//   { value: "0.2", label: "20%" },
-//   { value: "0.25", label: "25%" },
-//   { value: "0.3", label: "30%" },
-//   { value: "0.4", label: "40%" },
-//   { value: "0.5", label: "50%" },
-//   { value: "0.6", label: "60%" },
-//   { value: "0.7", label: "70%" },
-//   { value: "0.8", label: "80%" },
-//   { value: "0.9", label: "90%" },
-// ];
-
-/**
- * Trail Display Texture Resolution
- */
-type TrailDisplayTextureResolutionOption = {
-  value: TrailDisplayTextureResolution;
-  label: string;
-};
-const trailDisplayTextureResolutionOptions: TrailDisplayTextureResolutionOption[] =
-  [
-    { value: "426 x 240", label: "426 x 240" },
-    { value: "640 x 360", label: "640 x 360" },
-    { value: "854 x 480", label: "854 x 480" },
-    { value: "1280 x 720", label: "1280 x 720" },
-    { value: "1920 x 1080", label: "1920 x 1080" },
-    { value: "2560 x 1440", label: "2560 x 1440" },
-    { value: "3840 x 2160", label: "3840 x 2160" },
-  ] as const;
 
 function handleSimulationPresetChange(value: string) {
   const preset = SIMULATION_PRESETS[value];
@@ -94,25 +56,6 @@ export default function SimulationControls() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedTab]);
 
-  // // Dropdown function
-  // function handleAgentDensityChange(value: string) {
-  //   const displayTextureWidth =
-  //     useSlimeStore.getState().simulationSettings.displayTextureWidth;
-  //   const displayTextureHeight =
-  //     useSlimeStore.getState().simulationSettings.displayTextureHeight;
-  //   if (!displayTextureWidth || !displayTextureHeight) return;
-  //   const gpuTextureSize = Math.floor(
-  //     Math.sqrt(displayTextureWidth * displayTextureHeight * Number(value)),
-  //   );
-  //   useSlimeStore.setState(
-  //     produce((state) => {
-  //       state.simulationSettings.agentDensity = Number(value);
-  //       state.simulationSettings.gpuTextureWidth = gpuTextureSize;
-  //       state.simulationSettings.gpuTextureHeight = gpuTextureSize;
-  //     }),
-  //   );
-  // }
-
   // Slider function
   function handleAgentDensityChange(value: number[]) {
     console.log("handleAgentDensityChange", value);
@@ -133,16 +76,38 @@ export default function SimulationControls() {
     );
   }
 
-  function handleDisplayTextureResolutionChange(value: string) {
+  function handleDisplayTextureAspectRatioChange(value: string) {
+    const displayTextureTargetQuality =
+      useSlimeStore.getState().simulationSettings.displayTextureTargetQuality;
+    const resolution = UTILS.getTrailDisplayTextureResolution(
+      value as TrailDisplayTextureAspectRatio,
+      displayTextureTargetQuality,
+    );
     useSlimeStore.setState(
       produce((state) => {
-        const [width, height] = value.split(" x ").map(Number);
-        state.simulationSettings.trailDisplayTextureResolution = value;
-        state.simulationSettings.displayTextureWidth = width;
-        state.simulationSettings.displayTextureHeight = height;
+        state.simulationSettings.displayTextureAspectRatio = value;
+        state.simulationSettings.displayTextureWidth = resolution.width;
+        state.simulationSettings.displayTextureHeight = resolution.height;
       }),
     );
   }
+
+  function handleDisplayTextureTargetQualityChange(value: number[]) {
+    const displayTextureAspectRatio =
+      useSlimeStore.getState().simulationSettings.displayTextureAspectRatio;
+    const resolution = UTILS.getTrailDisplayTextureResolution(
+      displayTextureAspectRatio,
+      value[0],
+    );
+    useSlimeStore.setState(
+      produce((state) => {
+        state.simulationSettings.displayTextureTargetQuality = value[0];
+        state.simulationSettings.displayTextureWidth = resolution.width;
+        state.simulationSettings.displayTextureHeight = resolution.height;
+      }),
+    );
+  }
+
   return (
     <TabContentContainer tabsValue="simulation-controls">
       <TabContentScrollArea title="Simulation">
@@ -488,7 +453,8 @@ export default function SimulationControls() {
                 This accordian contains the following settings controlling the
                 trails:
                 <ul className="list-inside list-disc">
-                  <li>Display Texture Resolution</li>
+                  <li>Display Texture Aspect Ratio</li>
+                  <li>Display Texture Target Quality</li>
                   <li>Decay Rate</li>
                   <li>Diffuse Rate</li>
                   <li>Text Decay Rate</li>
@@ -500,15 +466,43 @@ export default function SimulationControls() {
             ]}
           >
             <SlimeStoreSelectControl
-              label="Display Texture Resolution"
-              baseInputId="trail-display-texture-resolution-select"
-              placeholder="Trail Display Texture Resolution"
+              label="Display Texture Aspect Ratio"
+              baseInputId="trail-display-texture-aspect-ratio-select"
+              placeholder="Trail Display Texture Aspect Ratio"
               storePath={[
                 "simulationSettings",
-                "trailDisplayTextureResolution",
+                "trailDisplayTextureAspectRatio",
               ]}
-              options={trailDisplayTextureResolutionOptions}
-              onValueChange={handleDisplayTextureResolutionChange}
+              options={TRAIL_DISPLAY_TEXTURE_ASPECT_RATIO_OPTIONS}
+              onValueChange={handleDisplayTextureAspectRatioChange}
+            />
+            <SlimeStoreSliderControl
+              label="Display Texture Target Quality"
+              labelHoverTabContentDisplay={[
+                "Display Texture Target Quality",
+                <div className="px-2 py-1">
+                  Controls the target quality of the trail display texture. The
+                  value is essentially the number of megapixels in the display
+                  texture. Some loose conversions between these quality values
+                  and their corresponding video quality definitions are:
+                  <ul className="list-inside list-disc">
+                    <li>0.3: 480p</li>
+                    <li>0.9: 720p</li>
+                    <li>2.1: 1080p</li>
+                    <li>3.7: 1440p</li>
+                    <li>8.3: 2160p</li>
+                  </ul>
+                  Unless you've got a beefy GPU, use caution with higher values!
+                </div>,
+              ]}
+              baseInputId="trail-display-texture-target-quality-slider"
+              min={SIMULATION_CONTROLS_CONFIGS.displayTextureTargetQuality!.min}
+              max={SIMULATION_CONTROLS_CONFIGS.displayTextureTargetQuality!.max}
+              step={
+                SIMULATION_CONTROLS_CONFIGS.displayTextureTargetQuality!.step
+              }
+              storePath={["simulationSettings", "displayTextureTargetQuality"]}
+              onValueChange={handleDisplayTextureTargetQualityChange}
             />
             <SlimeStoreSliderControl
               label="Clock Decay Rate"

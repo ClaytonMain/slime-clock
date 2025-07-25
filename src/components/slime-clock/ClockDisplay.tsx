@@ -25,11 +25,13 @@ function getDigitFontUrl(style: ClockDigitStyleValue): string {
 
 function getFormattedDigitTime({
   hourFormat,
+  digitLayout = "horizontal",
   showSeconds = false,
   showAmPm = false,
   padHours = true,
 }: {
   hourFormat: ClockHourFormatValue;
+  digitLayout?: "horizontal" | "vertical";
   showSeconds?: boolean;
   showAmPm?: boolean;
   padHours?: boolean;
@@ -47,7 +49,11 @@ function getFormattedDigitTime({
         ? "PM"
         : "AM"
       : "";
-  return `${[hours, minutes, seconds].filter(Boolean).join(":")}${amPm}`;
+  if (digitLayout === "horizontal") {
+    return `${[hours, minutes, seconds].filter(Boolean).join(":")}${amPm}`;
+  } else {
+    return `${hours}\n${minutes}`;
+  }
 }
 
 export default function ClockDisplay() {
@@ -77,6 +83,7 @@ export default function ClockDisplay() {
   useFrame((_, delta) => {
     const formattedTime = getFormattedDigitTime({
       hourFormat: clockSettings.hourFormat,
+      digitLayout: clockSettings.digitLayout,
       showSeconds: false,
       showAmPm: false,
       padHours: clockSettings.padHours,
