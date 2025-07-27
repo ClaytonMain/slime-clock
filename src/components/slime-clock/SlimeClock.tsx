@@ -27,15 +27,13 @@ import * as SC_UTILS from "./utils/utils"; // "Slime Clock Utils"
 
 extend({ AgentDataMaterial, AgentPositionsMaterial, TrailMaterial });
 
-UTILS.randBetween(0.0, 1.0);
-
 const texturePlaneUniforms = {
   uWindowResolution: new THREE.Uniform(new THREE.Vector2()),
   uShowTexture: new THREE.Uniform(0),
 };
 const slimeMoldDisplayPlaneUniforms = {
   uTrailTexture: new THREE.Uniform(new THREE.Texture()),
-  uAgentPositionsTexture: new THREE.Uniform(new THREE.Texture()),
+  uClockTexture: new THREE.Uniform(new THREE.Texture()),
   uDisplayTextureResolution: new THREE.Uniform(new THREE.Vector2()),
   uDisplayScale: new THREE.Uniform(new THREE.Vector2()),
   uTime: new THREE.Uniform(0.0),
@@ -588,7 +586,6 @@ function SlimeClock() {
     };
     const slimeMoldDisplayPlaneUniformsUpdates = {
       uTrailTexture: new THREE.Uniform(trailTexture),
-      uAgentPositionsTexture: new THREE.Uniform(agentPositionsTexture),
       uDisplayTextureResolution: new THREE.Uniform(
         displayTextureResolutionVector,
       ),
@@ -701,6 +698,7 @@ function SlimeClock() {
     if (!colorSettings.proceduralColorPaletteNeedsRandomization) return;
     useSlimeStore.setState(
       produce((state) => {
+        state.colorSettings.backgroundColor = UTILS.generateRandomColor();
         state.colorSettings.proceduralColorPaletteNeedsRandomization = false;
         Object.entries(colorSettings.proceduralColorPalette).forEach(
           ([key, value]) => {
@@ -859,8 +857,8 @@ function SlimeClock() {
     gl.setRenderTarget(null);
 
     // Update the display plane uniforms.
-    slimeMoldDisplayPlaneUniforms.uAgentPositionsTexture.value =
-      agentPositionsRenderTarget.texture;
+    slimeMoldDisplayPlaneUniforms.uClockTexture.value =
+      clockRenderTarget.texture;
     slimeMoldDisplayPlaneUniforms.uDelta.value = uDeltaRef.current;
     slimeMoldDisplayPlaneUniforms.uTime.value = uTimeRef.current;
 
@@ -1003,6 +1001,7 @@ function SlimeClock() {
           uniforms={slimeMoldDisplayPlaneUniforms}
           vertexShader={displayVertexShader}
           fragmentShader={displayFragmentShader}
+          blending={THREE.NormalBlending}
         />
       </Plane>
       <Plane ref={agentDataDisplayPlaneRef} visible={showGpuTextures}>

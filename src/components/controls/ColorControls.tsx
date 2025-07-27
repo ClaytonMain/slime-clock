@@ -7,6 +7,7 @@ import AccordionControlsItem from "./AccordionControlsItem";
 import AccordionControlsWrapper from "./AccordionControlsWrapper";
 import ControlButton from "./ControlButton";
 import ProceduralColorPalettePresetSelect from "./ProceduralColorPalettePresetSelect";
+import SlimeStoreColorPickerControl from "./SlimeStoreColorPickerControl";
 import SlimeStoreSliderControl from "./SlimeStoreSliderControl";
 import TabContentContainer from "./TabContentContainer";
 import TabContentScrollArea from "./TabContentScrollArea";
@@ -50,6 +51,20 @@ export default function ColorControls() {
           type="multiple"
           defaultValue={["procedural-color-palette"]}
         >
+          <AccordionControlsItem
+            value="background-color"
+            label="Background Color"
+          >
+            <SlimeStoreColorPickerControl
+              label="Background Color"
+              labelHoverTabContentDisplay={[
+                "Background Color",
+                "Does what it says on the box.",
+              ]}
+              baseId="background-color"
+              storePath={["colorSettings", "backgroundColor"]}
+            />
+          </AccordionControlsItem>
           <AccordionControlsItem
             value="procedural-color-palette"
             label="Procedural Color Palette"

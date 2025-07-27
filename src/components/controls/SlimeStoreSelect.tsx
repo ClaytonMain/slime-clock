@@ -6,7 +6,7 @@ import {
 import { motion } from "motion/react";
 import { Select } from "radix-ui";
 import * as R from "ramda";
-import { forwardRef, useEffect, useState, type ReactNode } from "react";
+import { forwardRef, useEffect, useState } from "react";
 import useSlimeStore from "../../stores/useSlimeStore";
 import type { SelectOption } from "../../types/types";
 
@@ -36,8 +36,6 @@ export default function SlimeStoreSelect({
   listen = true,
   valueType = "string",
 }: {
-  label?: string;
-  labelHoverTabContentDisplay?: string | [string, string] | ReactNode;
   baseInputId?: string;
   placeholder?: string;
   storePath: string[];

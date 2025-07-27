@@ -1,7 +1,6 @@
 uniform sampler2D uTrailTexture;
-uniform sampler2D uAgentPositionsTexture;
+uniform sampler2D uClockTexture;
 uniform vec2 uDisplayTextureResolution;
-uniform float uDelta;
 uniform float uTime;
 uniform vec3 uPaletteA;
 uniform vec3 uPaletteB;
@@ -10,14 +9,15 @@ uniform vec3 uPaletteD;
 
 varying vec2 vUv;
 
-#define PI2 6.283185307179586
+#define PI2 6.28318
 
 vec3 palette(float t) {
-    return uPaletteA + uPaletteB * cos(6.28318 * (uPaletteC * t + uPaletteD));
+    return uPaletteA + uPaletteB * cos(PI2 * (uPaletteC * t + uPaletteD));
 }
 
 void main() {
     vec4 trailData = texture2D(uTrailTexture, vUv);
+    vec4 clockData = texture2D(uClockTexture, vUv);
     // vec4 agentPositionData = texture2D(uAgentPositionsTexture, vUv);
 
     float intensity = trailData.x;
@@ -37,8 +37,8 @@ void main() {
 
     avgIntensity = mix(intensity, avgIntensity, 0.4);
 
-    vec3 color = palette(mod((avgIntensity + avgLastAgentDirection * 0.2 + uTime * 0.05 + (vUv.x + vUv.y) * 0.5) * 0.2, 1.0)) * (avgIntensity * (intensity * 0.5 + 0.3));
+    vec3 color = palette(mod((avgIntensity + clockData.x * 0.5 + avgLastAgentDirection * 0.2 + uTime * 0.05 + (vUv.x + vUv.y) * 0.5) * 0.2, 1.0)) * (avgIntensity * (intensity * 0.5 + 0.3));
 
     // gl_FragColor = vec4(palette(mod(intensity + uTime * 0.05 + (vUv.x + vUv.y) * 0.01, 1.0)) * intensity, 1.0);
-    gl_FragColor = vec4(color, 1.0);
+    gl_FragColor = vec4(color, avgIntensity + clockData.x * 0.1);
 }
