@@ -80,7 +80,7 @@ const useSlimeStore = create<SlimeStore>()(
           });
         },
         controlsState: {
-          selectedTab: "color-controls",
+          selectedTab: "randomization-controls",
           isOpen: false,
           controlsTriggerDisplayState: "show", // "show" | "hide" | "dimmed"
           displayAreaContentUpdatedAt: Date.now(),

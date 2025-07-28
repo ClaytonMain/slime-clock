@@ -1,4 +1,5 @@
 export type ControlsTabName =
+  | "randomization-controls"
   | "clock-controls"
   | "simulation-controls"
   | "color-controls";
@@ -34,12 +35,18 @@ export interface ClockSettings {
 export interface SimulationSettings {
   preset: string;
 
+  allowAgentsRandomization: boolean;
+  allowTrailRandomization: boolean;
   agentsNeedRandomization: boolean;
   trailNeedsRandomization: boolean;
 
   speed: number;
-  randomizationEnabled: boolean;
-  randomizationInterval: number;
+  autoRandomizationEnabled: boolean;
+  autoRandomizationInterval: number;
+  autoRestartEnabled: boolean;
+  autoRestartInterval: number;
+
+  simulationNeedsRestart: boolean;
 
   boundaryBehavior: 0 | 1; // 0: Wrap, 1: Bounce
 
@@ -114,6 +121,9 @@ export interface ColorSettings {
   currentProceduralColorPalettePreset: ProceduralColorPaletteName | "Custom";
   proceduralColorPalette: ProceduralColorPalette;
   proceduralColorPaletteNeedsRandomization: boolean;
+  backgroundColorNeedsRandomization: boolean;
+  allowProceduralColorPaletteRandomization: boolean;
+  allowBackgroundColorRandomization: boolean;
 }
 
 /**
@@ -180,3 +190,24 @@ export type TrailDisplayTextureAspectRatioDropdownOption = {
   label: string;
   value: TrailDisplayTextureAspectRatio;
 };
+export type TailwindItemsAlignOption =
+  | "baseline"
+  | "baseline-last"
+  | "center"
+  | "center-safe"
+  | "end"
+  | "end-safe"
+  | "start"
+  | "stretch";
+export type TailwindJustifyContentOption =
+  | "start"
+  | "end"
+  | "end-safe"
+  | "center"
+  | "center-safe"
+  | "between"
+  | "around"
+  | "evenly"
+  | "stretch"
+  | "baseline"
+  | "normal";

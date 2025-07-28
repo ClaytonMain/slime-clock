@@ -41,12 +41,18 @@ export const CLOCK_CONTROLS_CONFIGS: ControlsConfigs<ClockSettings> = {
 export const DEFAULT_SIMULATION_SETTINGS: SimulationSettings = {
   preset: "Default",
 
+  allowAgentsRandomization: true,
+  allowTrailRandomization: true,
   agentsNeedRandomization: false,
   trailNeedsRandomization: false,
 
+  simulationNeedsRestart: false,
+
   speed: 3.3,
-  randomizationEnabled: true,
-  randomizationInterval: 120,
+  autoRandomizationEnabled: true,
+  autoRandomizationInterval: 1,
+  autoRestartEnabled: true,
+  autoRestartInterval: 15,
 
   boundaryBehavior: 0, // 0: Wrap, 1: Bounce
 
@@ -78,7 +84,8 @@ export const DEFAULT_SIMULATION_SETTINGS: SimulationSettings = {
 export const SIMULATION_CONTROLS_CONFIGS: ControlsConfigs<SimulationSettings> =
   {
     speed: { min: 0.1, max: 10, step: 0.1 },
-    randomizationInterval: { min: 1, max: 1200, step: 1 },
+    autoRandomizationInterval: { min: 1, max: 60, step: 1 },
+    autoRestartInterval: { min: 1, max: 60, step: 1 },
 
     agentClockAttraction: { min: 0.0, max: 1.0, step: 0.01 },
     agentClockDepositRate: { min: 0.0, max: 30.0, step: 0.1 },
@@ -198,6 +205,9 @@ export const DEFAULT_COLOR_SETTINGS: ColorSettings = {
   currentProceduralColorPalettePreset: "Rainbow",
   proceduralColorPalette: PROCEDURAL_COLOR_PALETTE_PRESETS.Rainbow,
   proceduralColorPaletteNeedsRandomization: false,
+  backgroundColorNeedsRandomization: false,
+  allowProceduralColorPaletteRandomization: true,
+  allowBackgroundColorRandomization: true,
 };
 
 export const PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS: ControlsConfigs<ProceduralColorPaletteChannel> =
@@ -264,7 +274,7 @@ export const SIMULATION_PRESETS: Record<string, Partial<SimulationSettings>> = {
   Default: {},
   "Inverted Gooey": {
     speed: 3.3,
-    randomizationEnabled: false,
+    autoRandomizationEnabled: false,
     agentDensity: 0.25,
     agentStartType: 5,
     agentClockAttraction: 0.09,

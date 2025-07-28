@@ -1,12 +1,9 @@
-import {
-  BlendingModeIcon,
-  ClockIcon,
-  MixerHorizontalIcon,
-} from "@radix-ui/react-icons";
+import { ClockIcon, MixerHorizontalIcon } from "@radix-ui/react-icons";
 import { produce } from "immer";
 import { motion } from "motion/react";
 import { Tabs } from "radix-ui";
 import { useEffect, useRef } from "react";
+import { PiDiceFive, PiPalette } from "react-icons/pi";
 import useSlimeStore from "../../stores/useSlimeStore";
 import type { ControlsTabName } from "../../types/types";
 import TooltipWrapper from "./TooltipWrapper";
@@ -97,6 +94,9 @@ export default function TabButton({
           onPointerLeave={handlePointerLeave}
         >
           <motion.div className="self-end p-1">
+            {tabName === "randomization-controls" && (
+              <PiDiceFive className="absolute top-1/2 left-1/2 z-[1] h-6 w-6 -translate-x-1/2 -translate-y-1/2" />
+            )}
             {tabName === "clock-controls" && (
               <ClockIcon className="absolute top-1/2 left-1/2 z-[1] h-6 w-6 -translate-x-1/2 -translate-y-1/2" />
             )}
@@ -104,7 +104,7 @@ export default function TabButton({
               <MixerHorizontalIcon className="absolute top-1/2 left-1/2 z-[1] h-6 w-6 -translate-x-1/2 -translate-y-1/2 transform" />
             )}
             {tabName === "color-controls" && (
-              <BlendingModeIcon className="absolute top-1/2 left-1/2 z-[1] h-6 w-6 -translate-x-1/2 -translate-y-1/2 transform" />
+              <PiPalette className="absolute top-1/2 left-1/2 z-[1] h-6 w-6 -translate-x-1/2 -translate-y-1/2 transform" />
             )}
           </motion.div>
         </motion.div>

@@ -5,7 +5,7 @@ import { PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS } from "../../constants/const
 import useSlimeStore from "../../stores/useSlimeStore";
 import AccordionControlsItem from "./AccordionControlsItem";
 import AccordionControlsWrapper from "./AccordionControlsWrapper";
-import ControlButton from "./ControlButton";
+import ButtonControlGroup from "./ButtonControlGroup";
 import ProceduralColorPalettePresetSelect from "./ProceduralColorPalettePresetSelect";
 import SlimeStoreColorPickerControl from "./SlimeStoreColorPickerControl";
 import SlimeStoreSliderControl from "./SlimeStoreSliderControl";
@@ -49,8 +49,75 @@ export default function ColorControls() {
       <TabContentScrollArea title="Color">
         <AccordionControlsWrapper
           type="multiple"
-          defaultValue={["procedural-color-palette"]}
+          defaultValue={["quick-controls"]}
         >
+          <AccordionControlsItem
+            value="quick-controls"
+            label="Quick Controls"
+            labelHoverTabContentDisplay={["Quick Controls"]}
+          >
+            <ButtonControlGroup
+              label="Quick Rand."
+              labelHoverTabContentDisplay={[
+                "Quick Randomization",
+                "A set of buttons to quickly randomize various settings.",
+              ]}
+              buttonConfigs={[
+                {
+                  label: "Randomize All",
+                  baseId: "quick-randomization-button",
+                  onClick: () => {
+                    useSlimeStore.setState(
+                      produce((state) => {
+                        state.colorSettings.backgroundColorNeedsRandomization =
+                          true;
+                        state.colorSettings.proceduralColorPaletteNeedsRandomization =
+                          true;
+                        state.colorSettings.slimeColorChangedAt = Date.now();
+                        state.controlsState.displayAreaContentName =
+                          "procedural-color-palette";
+                        state.controlsState.displayAreaContentType = "three";
+                        state.controlsState.displayAreaHtmlContent = null;
+                        state.controlsState.displayAreaContentUpdatedAt =
+                          Date.now();
+                      }),
+                    );
+                  },
+                },
+                {
+                  label: "Randomize Background Color",
+                  baseId: "randomize-background-color-button",
+                  onClick: () => {
+                    useSlimeStore.setState(
+                      produce((state) => {
+                        state.colorSettings.backgroundColorNeedsRandomization =
+                          true;
+                      }),
+                    );
+                  },
+                },
+                {
+                  label: "Randomize Color Palette",
+                  baseId: "randomize-procedural-color-palette-button",
+                  onClick: () => {
+                    useSlimeStore.setState(
+                      produce((state) => {
+                        state.colorSettings.proceduralColorPaletteNeedsRandomization =
+                          true;
+                        state.colorSettings.slimeColorChangedAt = Date.now();
+                        state.controlsState.displayAreaContentName =
+                          "procedural-color-palette";
+                        state.controlsState.displayAreaContentType = "three";
+                        state.controlsState.displayAreaHtmlContent = null;
+                        state.controlsState.displayAreaContentUpdatedAt =
+                          Date.now();
+                      }),
+                    );
+                  },
+                },
+              ]}
+            />
+          </AccordionControlsItem>
           <AccordionControlsItem
             value="background-color"
             label="Background Color"
@@ -70,26 +137,30 @@ export default function ColorControls() {
             label="Procedural Color Palette"
             padContent={false}
           >
-            <ControlButton
-              label="Randomize Color Palette"
-              baseId="procedural-color-palette-randomize-button"
-              onClick={() => {
-                useSlimeStore.setState(
-                  produce((state) => {
-                    state.colorSettings.proceduralColorPaletteNeedsRandomization =
-                      true;
-                    state.colorSettings.slimeColorChangedAt = Date.now();
-                    state.controlsState.displayAreaContentName =
-                      "procedural-color-palette";
-                    state.controlsState.displayAreaContentType = "three";
-                    state.controlsState.displayAreaHtmlContent = null;
-                    state.controlsState.displayAreaContentUpdatedAt =
-                      Date.now();
-                  }),
-                );
-              }}
-            />
             <ProceduralColorPalettePresetSelect />
+            <ButtonControlGroup
+              buttonConfigs={[
+                {
+                  label: "Randomize Color Palette",
+                  baseId: "procedural-color-palette-randomize",
+                  onClick: () => {
+                    useSlimeStore.setState(
+                      produce((state) => {
+                        state.colorSettings.proceduralColorPaletteNeedsRandomization =
+                          true;
+                        state.colorSettings.slimeColorChangedAt = Date.now();
+                        state.controlsState.displayAreaContentName =
+                          "procedural-color-palette";
+                        state.controlsState.displayAreaContentType = "three";
+                        state.controlsState.displayAreaHtmlContent = null;
+                        state.controlsState.displayAreaContentUpdatedAt =
+                          Date.now();
+                      }),
+                    );
+                  },
+                },
+              ]}
+            />
             <AccordionControlsWrapper
               type="multiple"
               defaultValue={["red", "green", "blue"]}

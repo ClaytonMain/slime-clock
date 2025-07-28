@@ -335,7 +335,9 @@ function SlimeClock() {
   const resolutionsSet = useSlimeStore((state) => state.resolutionsSet);
   const initialized = useSlimeStore((state) => state.initialized);
 
-  const timeSinceRandomizeRef = useRef(0);
+  const prevMinutesRef = useRef(0);
+  const lastRandomizedAtMinutesRef = useRef(Math.floor(Date.now() / 60000));
+  const lastRestartedAtMinutesRef = useRef(Math.floor(Date.now() / 60000));
 
   const showGpuTextures = true;
 
@@ -507,10 +509,11 @@ function SlimeClock() {
     useSlimeStore.setState(
       produce((state) => {
         state.initialized = false;
+        state.simulationSettings.simulationNeedsRestart = false;
       }),
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [simulationSettings.agentDensity]);
+  }, [simulationSettings.simulationNeedsRestart]);
 
   function setInitialResolutions() {
     const simulationSettings = useSlimeStore.getState().simulationSettings;
@@ -643,6 +646,7 @@ function SlimeClock() {
     useSlimeStore.setState(
       produce((state) => {
         state.simulationSettings.agentsNeedRandomization = false;
+        if (!simulationSettings.allowAgentsRandomization) return;
         Object.entries(simulationRandomizationSettings).forEach(
           ([key, value]) => {
             const settingKey = key as keyof SimulationSettings;
@@ -661,7 +665,7 @@ function SlimeClock() {
         );
       }),
     );
-    timeSinceRandomizeRef.current = 0;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [simulationSettings.agentsNeedRandomization]);
 
   // Randomize trail settings.
@@ -672,6 +676,7 @@ function SlimeClock() {
     useSlimeStore.setState(
       produce((state) => {
         state.simulationSettings.trailNeedsRandomization = false;
+        if (!simulationSettings.allowTrailRandomization) return;
         Object.entries(simulationRandomizationSettings).forEach(
           ([key, value]) => {
             const settingKey = key as keyof SimulationSettings;
@@ -690,16 +695,16 @@ function SlimeClock() {
         );
       }),
     );
-    timeSinceRandomizeRef.current = 0;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [simulationSettings.trailNeedsRandomization]);
 
-  // Randomize color settings.
+  // Randomize color palette.
   useEffect(() => {
     if (!colorSettings.proceduralColorPaletteNeedsRandomization) return;
     useSlimeStore.setState(
       produce((state) => {
-        state.colorSettings.backgroundColor = UTILS.generateRandomColor();
         state.colorSettings.proceduralColorPaletteNeedsRandomization = false;
+        if (!colorSettings.allowProceduralColorPaletteRandomization) return;
         Object.entries(colorSettings.proceduralColorPalette).forEach(
           ([key, value]) => {
             const colorKey =
@@ -725,9 +730,21 @@ function SlimeClock() {
         state.colorSettings.slimeColorChangedAt = Date.now();
       }),
     );
-    timeSinceRandomizeRef.current = 0;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [colorSettings.proceduralColorPaletteNeedsRandomization]);
+
+  // Randomize background color.
+  useEffect(() => {
+    if (!colorSettings.backgroundColorNeedsRandomization) return;
+    useSlimeStore.setState(
+      produce((state) => {
+        state.colorSettings.backgroundColorNeedsRandomization = false;
+        if (!colorSettings.allowBackgroundColorRandomization) return;
+        state.colorSettings.backgroundColor = UTILS.generateRandomColor();
+      }),
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [colorSettings.backgroundColorNeedsRandomization]);
 
   const pingPongRef = useRef(true);
   const uDeltaRef = useRef(0.0);
@@ -737,26 +754,49 @@ function SlimeClock() {
     // Hoo boy, this is a doozy.
     if (!initialized || !resolutionsSet) return;
 
-    timeSinceRandomizeRef.current += delta;
+    const currentMinutes = Math.floor(Date.now() / 1000 / 60);
+    if (currentMinutes !== prevMinutesRef.current) {
+      prevMinutesRef.current = currentMinutes;
+    }
+
     if (
-      simulationSettings.randomizationEnabled &&
-      timeSinceRandomizeRef.current >= simulationSettings.randomizationInterval
+      simulationSettings.autoRestartEnabled &&
+      currentMinutes % simulationSettings.autoRestartInterval === 0 &&
+      currentMinutes !== lastRestartedAtMinutesRef.current
     ) {
+      lastRestartedAtMinutesRef.current = currentMinutes;
+      useSlimeStore.setState(
+        produce((state) => {
+          state.simulationSettings.simulationNeedsRestart = true;
+          state.initialized = false;
+          if (simulationSettings.autoRandomizationEnabled) {
+            lastRandomizedAtMinutesRef.current = currentMinutes;
+            state.simulationSettings.agentsNeedRandomization = true;
+            state.simulationSettings.trailNeedsRandomization = true;
+            state.colorSettings.proceduralColorPaletteNeedsRandomization = true;
+            state.colorSettings.backgroundColorNeedsRandomization = true;
+          }
+        }),
+      );
+      return;
+    }
+
+    if (
+      simulationSettings.autoRandomizationEnabled &&
+      currentMinutes % simulationSettings.autoRandomizationInterval === 0 &&
+      currentMinutes !== lastRandomizedAtMinutesRef.current
+    ) {
+      lastRandomizedAtMinutesRef.current = currentMinutes;
       useSlimeStore.setState(
         produce((state) => {
           state.simulationSettings.agentsNeedRandomization = true;
           state.simulationSettings.trailNeedsRandomization = true;
           state.colorSettings.proceduralColorPaletteNeedsRandomization = true;
+          state.colorSettings.backgroundColorNeedsRandomization = true;
         }),
       );
-      timeSinceRandomizeRef.current = 0;
     }
-    if (
-      !simulationSettings.randomizationEnabled &&
-      timeSinceRandomizeRef.current > 0
-    ) {
-      timeSinceRandomizeRef.current = 0;
-    }
+
     uDeltaRef.current = Math.min(delta * simulationSettings.speed, 0.05);
     uTimeRef.current += uDeltaRef.current;
 

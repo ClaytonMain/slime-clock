@@ -7,6 +7,7 @@ import { ANIMATION_CONFIGS } from "../../constants/constants";
 import useSlimeStore from "../../stores/useSlimeStore";
 import ClockControls from "./ClockControls";
 import ColorControls from "./ColorControls";
+import RandomizationControls from "./RandomizationControls";
 import SelectedTabCornerIcons from "./SelectedTabCornerIcons";
 import SimulationControls from "./SimulationControls";
 import TabButton from "./TabButton";
@@ -114,7 +115,7 @@ export default function Controls() {
                   handleControlsContentOuterContainerViewportEnter
                 }
                 key="controls-dialog-content-outer-container"
-                className="fixed top-1/2 left-1/2 flex h-full w-full -translate-1/2 flex-col rounded-xs text-sky-50 sm:h-10/12 sm:w-10/12 md:h-10/12 md:py-0 lg:w-8/12 xl:h-9/12 xl:w-7/12 2xl:h-7/12 2xl:w-5/12"
+                className="fixed top-1/2 left-1/2 flex h-full max-h-[50rem] w-full -translate-1/2 flex-col rounded-xs text-sky-50 sm:h-10/12 sm:w-10/12 md:h-10/12 md:py-0 lg:w-8/12 xl:h-9/12 xl:w-7/12 2xl:h-7/12 2xl:w-5/12"
                 exit={{
                   transition: { duration: 0.3, when: "afterChildren" },
                 }}
@@ -239,25 +240,26 @@ export default function Controls() {
                       <AnimatePresence propagate>
                         <motion.div
                           key="controls-content-inner-container"
-                          className="flex w-full grow flex-col-reverse items-center sm:flex-row"
+                          className="flex w-full grow flex-col-reverse items-center md:flex-row"
                           initial={{ opacity: 0 }}
                           animate={ANIMATION_CONFIGS.flickerIn}
                           exit={ANIMATION_CONFIGS.flickerOut}
                         >
                           <motion.div
                             key="tab-content-controls-content-inner-container"
-                            className="flex w-full grow items-center px-3 py-3 sm:h-full"
+                            className="flex w-full grow items-center px-3 py-3 md:h-full"
                             initial={{ opacity: 0 }}
                             animate={ANIMATION_CONFIGS.flickerIn}
                             exit={ANIMATION_CONFIGS.flickerOut}
                           >
+                            <RandomizationControls key="randomization-controls" />
                             <ClockControls key="clock-controls" />
                             <SimulationControls key="simulation-controls" />
                             <ColorControls key="color-controls" />
                           </motion.div>
                           <Separator.Root
                             key="tab-content-separator"
-                            className="flex h-px w-10/12 border-b border-sky-50 sm:h-10/12 sm:w-px sm:border-l"
+                            className="flex h-px w-10/12 border-b border-sky-50 md:h-10/12 md:w-px md:border-l"
                           />
                           <TabContentDisplayArea key="tab-content-display-area" />
                         </motion.div>
@@ -272,6 +274,15 @@ export default function Controls() {
                           className="flex w-full justify-center py-2"
                         >
                           <div className="bg-zinc-950-60 relative flex items-center gap-0.5 rounded-xs p-0.5">
+                            <TabButton
+                              key="tab-button-randomization-controls"
+                              tabName="randomization-controls"
+                              tooltipText="Randomization Controls"
+                            />
+                            <Separator.Root
+                              key="tab-button-separator-01"
+                              className="flex h-2/3 w-px border-l border-sky-50"
+                            />
                             <TabButton
                               key="tab-button-clock-controls"
                               tabName="clock-controls"
