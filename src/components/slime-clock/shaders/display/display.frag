@@ -6,6 +6,9 @@ uniform vec3 uPaletteA;
 uniform vec3 uPaletteB;
 uniform vec3 uPaletteC;
 uniform vec3 uPaletteD;
+uniform float uShowClockShadow;
+uniform float uClockShadowOpacity;
+uniform vec3 uClockShadowColor;
 
 varying vec2 vUv;
 
@@ -37,8 +40,9 @@ void main() {
 
     avgIntensity = mix(intensity, avgIntensity, 0.4);
 
+    // vec3 color = palette(mod((avgIntensity + avgLastAgentDirection * 0.2 + uTime * 0.05 + (vUv.x + vUv.y) * 0.5) * 0.2, 1.0)) * (avgIntensity * (intensity * 0.5 + 0.3));
     vec3 color = palette(mod((avgIntensity + clockData.x * 0.5 + avgLastAgentDirection * 0.2 + uTime * 0.05 + (vUv.x + vUv.y) * 0.5) * 0.2, 1.0)) * (avgIntensity * (intensity * 0.5 + 0.3));
 
-    // gl_FragColor = vec4(palette(mod(intensity + uTime * 0.05 + (vUv.x + vUv.y) * 0.01, 1.0)) * intensity, 1.0);
-    gl_FragColor = vec4(color, avgIntensity + clockData.x * 0.1);
+    // gl_FragColor = vec4(mix(color, uClockShadowColor, uShowClockShadow * clockData.x * uClockShadowOpacity), avgIntensity);
+    gl_FragColor = mix(vec4(color, avgIntensity), vec4(uClockShadowColor, 1.0), uShowClockShadow * clockData.x * uClockShadowOpacity);
 }

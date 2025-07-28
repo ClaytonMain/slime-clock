@@ -15,27 +15,19 @@ type ControlsConfigs<T> = {
 };
 
 export const DEFAULT_CLOCK_SETTINGS: ClockSettings = {
-  // Shared settings
   show: true,
   size: 50,
   digitLayout: "horizontal",
-  // position: new THREE.Vector2(0, 0),
   hourFormat: "24h",
-  // showAmPm: false,
-  // amPmPosition: new THREE.Vector2(0.5, -0.5),
-  // amPmSize: 10,
-  // showSeconds: false,
-  // type: "Digital",
-  // Analog settings
-  // TODO: Add analog settings
-  // Digital settings
   digitStyle: "14segment",
   padHours: true,
-  // secondsPosition: new THREE.Vector2(0.5, -0.5),
-  // secondsSize: 10,
+  showClockShadow: true,
+  clockShadowOpacity: 0.1,
+  clockShadowColor: "#000000",
 };
 export const CLOCK_CONTROLS_CONFIGS: ControlsConfigs<ClockSettings> = {
   size: { min: 1, max: 100, step: 1 },
+  clockShadowOpacity: { min: 0, max: 1, step: 0.01 },
 };
 
 export const DEFAULT_SIMULATION_SETTINGS: SimulationSettings = {

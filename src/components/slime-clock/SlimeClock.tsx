@@ -66,6 +66,15 @@ const slimeMoldDisplayPlaneUniforms = {
       useSlimeStore.getState().colorSettings.proceduralColorPalette.b.phase,
     ),
   ),
+  uShowClockShadow: new THREE.Uniform(
+    useSlimeStore.getState().clockSettings.showClockShadow ? 1 : 0,
+  ),
+  uClockShadowOpacity: new THREE.Uniform(
+    useSlimeStore.getState().clockSettings.clockShadowOpacity,
+  ),
+  uClockShadowColor: new THREE.Uniform(
+    new THREE.Color(useSlimeStore.getState().clockSettings.clockShadowColor),
+  ),
 };
 const agentDataUniforms = {
   uAgentDataTexture: { value: new THREE.Texture() },
@@ -318,10 +327,31 @@ function UniformSetter() {
         );
       },
     );
+    const unsubShowClockShadow = useSlimeStore.subscribe(
+      (state) => state.clockSettings.showClockShadow,
+      (newValue) => {
+        slimeMoldDisplayPlaneUniforms.uShowClockShadow.value = newValue ? 1 : 0;
+      },
+    );
+    const unsubClockShadowOpacity = useSlimeStore.subscribe(
+      (state) => state.clockSettings.clockShadowOpacity,
+      (newValue) => {
+        slimeMoldDisplayPlaneUniforms.uClockShadowOpacity.value = newValue;
+      },
+    );
+    const unsubClockShadowColor = useSlimeStore.subscribe(
+      (state) => state.clockSettings.clockShadowColor,
+      (newValue) => {
+        slimeMoldDisplayPlaneUniforms.uClockShadowColor.value.set(newValue);
+      },
+    );
     return () => {
       unsubDisplayTextureWidth();
       unsubDisplayTextureHeight();
       unsubSlimeColorChangedAt();
+      unsubShowClockShadow();
+      unsubClockShadowOpacity();
+      unsubClockShadowColor();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -513,7 +543,10 @@ function SlimeClock() {
       }),
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [simulationSettings.simulationNeedsRestart]);
+  }, [
+    simulationSettings.simulationNeedsRestart,
+    simulationSettings.agentDensity,
+  ]);
 
   function setInitialResolutions() {
     const simulationSettings = useSlimeStore.getState().simulationSettings;

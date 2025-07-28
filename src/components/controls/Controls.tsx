@@ -289,7 +289,7 @@ export default function Controls() {
                               tooltipText="Clock Controls"
                             />
                             <Separator.Root
-                              key="tab-button-separator-01"
+                              key="tab-button-separator-02"
                               className="flex h-2/3 w-px border-l border-sky-50"
                             />
                             <TabButton
@@ -298,7 +298,7 @@ export default function Controls() {
                               tooltipText="Simulation Controls"
                             />
                             <Separator.Root
-                              key="tab-button-separator-02"
+                              key="tab-button-separator-03"
                               className="flex h-2/3 w-px border-l border-sky-50"
                             />
                             <TabButton

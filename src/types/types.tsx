@@ -13,23 +13,12 @@ export interface ClockSettings {
   show: boolean;
   size: number;
   digitLayout: "vertical" | "horizontal";
-  // yPosition: number;
-  // xPosition: number;
   hourFormat: ClockHourFormatValue;
-  // showAmPm: boolean;
-  // amPmYPosition: number;
-  // amPmXPosition: number;
-  // amPmSize: number;
-  // showSeconds: boolean;
-  // type: "Analog" | "Digital";
-  // Analog settings
-  // TODO: Add analog settings
-  // Digital settings
   digitStyle: ClockDigitStyleValue;
   padHours: boolean;
-  // secondsYPosition: number;
-  // secondsXPosition: number;
-  // secondsSize: number;
+  showClockShadow: boolean;
+  clockShadowOpacity: number;
+  clockShadowColor: string;
 }
 
 export interface SimulationSettings {
