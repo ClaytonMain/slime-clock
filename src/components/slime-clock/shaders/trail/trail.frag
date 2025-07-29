@@ -74,7 +74,7 @@ void main() {
     // https://github.com/SebLague/Slime-Simulation/blob/main/Assets/Scripts/Slime/SlimeSim.compute
     float diffuseWeight = min(diffuseRate * uDelta, 1.0);
     averageNeighborIntensity = intensity * (1.0 - diffuseWeight) + averageNeighborIntensity * diffuseWeight;
-    intensity = max(averageNeighborIntensity - decayRate * uDelta, 0.0);
+    intensity = clamp(averageNeighborIntensity - decayRate * uDelta, 0.0, 1.0);
 
     float lastAgentDirection = agentPositionData.z > 0.0 ? agentPositionData.z : trailData.y;
 

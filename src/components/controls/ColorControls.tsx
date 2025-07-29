@@ -1,7 +1,10 @@
 import { produce } from "immer";
 import * as R from "ramda";
 import { useEffect } from "react";
-import { PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS } from "../../constants/constants";
+import {
+  COLOR_CONTROLS_CONFIGS,
+  PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS,
+} from "../../constants/constants";
 import useSlimeStore from "../../stores/useSlimeStore";
 import AccordionControlsItem from "./AccordionControlsItem";
 import AccordionControlsWrapper from "./AccordionControlsWrapper";
@@ -137,6 +140,27 @@ export default function ColorControls() {
             label="Procedural Color Palette"
             padContent={false}
           >
+            <SlimeStoreSliderControl
+              label="Palette Cycle Speed"
+              baseInputId="procedural-color-palette-cycle-speed"
+              min={COLOR_CONTROLS_CONFIGS.paletteCycleSpeed!.min}
+              max={COLOR_CONTROLS_CONFIGS.paletteCycleSpeed!.max}
+              step={COLOR_CONTROLS_CONFIGS.paletteCycleSpeed!.step}
+              storePath={["colorSettings", "paletteCycleSpeed"]}
+              labelHoverTabContentDisplay={[
+                "Palette Cycle Speed",
+                "The speed at which the procedural color palette cycles through colors.",
+              ]}
+            />
+            <SlimeStoreSliderControl
+              label="Palette Cycle Scale"
+              baseInputId="procedural-color-palette-cycle-scale"
+              min={COLOR_CONTROLS_CONFIGS.paletteCycleScale!.min}
+              max={COLOR_CONTROLS_CONFIGS.paletteCycleScale!.max}
+              step={COLOR_CONTROLS_CONFIGS.paletteCycleScale!.step}
+              storePath={["colorSettings", "paletteCycleScale"]}
+              labelHoverTabContentDisplay={["Palette Cycle Scale"]}
+            />
             <ProceduralColorPalettePresetSelect />
             <ButtonControlGroup
               buttonConfigs={[

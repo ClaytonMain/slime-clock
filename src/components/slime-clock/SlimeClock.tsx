@@ -75,6 +75,10 @@ const slimeMoldDisplayPlaneUniforms = {
   uClockShadowColor: new THREE.Uniform(
     new THREE.Color(useSlimeStore.getState().clockSettings.clockShadowColor),
   ),
+  uPaletteCycleTime: new THREE.Uniform(0.0),
+  uPaletteCycleScale: new THREE.Uniform(
+    useSlimeStore.getState().colorSettings.paletteCycleScale,
+  ),
 };
 const agentDataUniforms = {
   uAgentDataTexture: { value: new THREE.Texture() },
@@ -157,6 +161,8 @@ const trailUniforms = {
 
 function UniformSetter() {
   const simulationSettings = useSlimeStore((state) => state.simulationSettings);
+  const colorSettings = useSlimeStore((state) => state.colorSettings);
+  const clockSettings = useSlimeStore((state) => state.clockSettings);
 
   // du - "directly updatable"
   const duAgentDataUniforms: [
@@ -181,6 +187,14 @@ function UniformSetter() {
     ["uBackgroundDiffuseRate", ["trailBackgroundDiffuseRate"]],
     ["uBoundaryBehavior", ["boundaryBehavior"]],
   ];
+  const duSlimeMoldDisplayPlaneColorUniforms: [
+    keyof typeof slimeMoldDisplayPlaneUniforms,
+    (keyof typeof colorSettings)[],
+  ][] = [["uPaletteCycleScale", ["paletteCycleScale"]]];
+  const duSlimeMoldDisplayPlaneClockUniforms: [
+    keyof typeof slimeMoldDisplayPlaneUniforms,
+    (keyof typeof clockSettings)[],
+  ][] = [["uClockShadowOpacity", ["clockShadowOpacity"]]];
   useEffect(() => {
     duAgentDataUniforms.forEach(([uniformName, settingsKeys]) => {
       const storePath = ["simulationSettings", ...settingsKeys];
@@ -206,6 +220,38 @@ function UniformSetter() {
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [simulationSettings]);
+  useEffect(() => {
+    duSlimeMoldDisplayPlaneColorUniforms.forEach(
+      ([uniformName, settingsKeys]) => {
+        const storePath = ["colorSettings", ...settingsKeys];
+        const storeValue = R.view(
+          R.lensPath(storePath),
+          useSlimeStore.getState(),
+        );
+        const uniformValue = slimeMoldDisplayPlaneUniforms[uniformName];
+        if (uniformValue.value !== storeValue) {
+          uniformValue.value = storeValue;
+        }
+      },
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [colorSettings]);
+  useEffect(() => {
+    duSlimeMoldDisplayPlaneClockUniforms.forEach(
+      ([uniformName, settingsKeys]) => {
+        const storePath = ["clockSettings", ...settingsKeys];
+        const storeValue = R.view(
+          R.lensPath(storePath),
+          useSlimeStore.getState(),
+        );
+        const uniformValue = slimeMoldDisplayPlaneUniforms[uniformName];
+        if (uniformValue.value !== storeValue) {
+          uniformValue.value = storeValue;
+        }
+      },
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [clockSettings]);
 
   // hs - "height-scaled"
   const hsAgentDataUniforms: [
@@ -333,12 +379,6 @@ function UniformSetter() {
         slimeMoldDisplayPlaneUniforms.uShowClockShadow.value = newValue ? 1 : 0;
       },
     );
-    const unsubClockShadowOpacity = useSlimeStore.subscribe(
-      (state) => state.clockSettings.clockShadowOpacity,
-      (newValue) => {
-        slimeMoldDisplayPlaneUniforms.uClockShadowOpacity.value = newValue;
-      },
-    );
     const unsubClockShadowColor = useSlimeStore.subscribe(
       (state) => state.clockSettings.clockShadowColor,
       (newValue) => {
@@ -350,7 +390,6 @@ function UniformSetter() {
       unsubDisplayTextureHeight();
       unsubSlimeColorChangedAt();
       unsubShowClockShadow();
-      unsubClockShadowOpacity();
       unsubClockShadowColor();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -782,6 +821,7 @@ function SlimeClock() {
   const pingPongRef = useRef(true);
   const uDeltaRef = useRef(0.0);
   const uTimeRef = useRef(0.0);
+  const uPaletteCycleTimeRef = useRef(0.0);
 
   useFrame(({ gl }, delta) => {
     // Hoo boy, this is a doozy.
@@ -832,6 +872,8 @@ function SlimeClock() {
 
     uDeltaRef.current = Math.min(delta * simulationSettings.speed, 0.05);
     uTimeRef.current += uDeltaRef.current;
+    uPaletteCycleTimeRef.current +=
+      uDeltaRef.current * colorSettings.paletteCycleSpeed;
 
     // Render the clock.
     gl.setRenderTarget(clockRenderTarget);
@@ -934,6 +976,8 @@ function SlimeClock() {
       clockRenderTarget.texture;
     slimeMoldDisplayPlaneUniforms.uDelta.value = uDeltaRef.current;
     slimeMoldDisplayPlaneUniforms.uTime.value = uTimeRef.current;
+    slimeMoldDisplayPlaneUniforms.uPaletteCycleTime.value =
+      uPaletteCycleTimeRef.current;
 
     // Update the gpu texture display uniforms.
     // @ts-expect-error `map` does exist.

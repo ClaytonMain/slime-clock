@@ -168,6 +168,11 @@ export const PROCEDURAL_COLOR_PALETTE_PRESETS: ProceduralColorPalettePresets = {
     g: { yOffset: 0.5, amplitude: 0.5, frequency: 1.0, phase: 0.33 },
     b: { yOffset: 0.5, amplitude: 0.5, frequency: 1.0, phase: 0.66 },
   },
+  Red: {
+    r: { yOffset: 0.5, amplitude: 0.5, frequency: 0.5, phase: 0.5 },
+    g: { yOffset: 0.0, amplitude: 0.0, frequency: 0.0, phase: 0.0 },
+    b: { yOffset: 0.0, amplitude: 0.0, frequency: 0.0, phase: 0.0 },
+  },
   B: {
     r: { yOffset: 0.5, amplitude: 0.5, frequency: 1.0, phase: 0.0 },
     g: { yOffset: 0.5, amplitude: 0.5, frequency: 1.0, phase: 0.1 },
@@ -191,15 +196,27 @@ export const PROCEDURAL_COLOR_PALETTE_PRESETS: ProceduralColorPalettePresets = {
 };
 
 export const DEFAULT_COLOR_SETTINGS: ColorSettings = {
-  backgroundColor: "#060808",
+  // backgroundColor: "#060808",
+  backgroundColor: "#000000",
   slimeColorMode: "Procedural",
   slimeColorChangedAt: Date.now(),
-  currentProceduralColorPalettePreset: "Rainbow",
-  proceduralColorPalette: PROCEDURAL_COLOR_PALETTE_PRESETS.Rainbow,
+  // currentProceduralColorPalettePreset: "Rainbow",
+  currentProceduralColorPalettePreset: "Red",
+  // proceduralColorPalette: PROCEDURAL_COLOR_PALETTE_PRESETS.Rainbow,
+  proceduralColorPalette: PROCEDURAL_COLOR_PALETTE_PRESETS.Red,
   proceduralColorPaletteNeedsRandomization: false,
   backgroundColorNeedsRandomization: false,
-  allowProceduralColorPaletteRandomization: true,
-  allowBackgroundColorRandomization: true,
+  // allowProceduralColorPaletteRandomization: true,
+  // allowBackgroundColorRandomization: true,
+  allowProceduralColorPaletteRandomization: false,
+  allowBackgroundColorRandomization: false,
+  paletteCycleSpeed: 0.05,
+  paletteCycleScale: 0.2,
+};
+
+export const COLOR_CONTROLS_CONFIGS: ControlsConfigs<ColorSettings> = {
+  paletteCycleSpeed: { min: 0.0, max: 1.0, step: 0.01 },
+  paletteCycleScale: { min: 0.01, max: 1.0, step: 0.01 },
 };
 
 export const PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS: ControlsConfigs<ProceduralColorPaletteChannel> =

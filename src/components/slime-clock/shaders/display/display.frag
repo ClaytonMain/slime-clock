@@ -9,6 +9,8 @@ uniform vec3 uPaletteD;
 uniform float uShowClockShadow;
 uniform float uClockShadowOpacity;
 uniform vec3 uClockShadowColor;
+uniform float uPaletteCycleTime;
+uniform float uPaletteCycleScale;
 
 varying vec2 vUv;
 
@@ -24,6 +26,7 @@ void main() {
     // vec4 agentPositionData = texture2D(uAgentPositionsTexture, vUv);
 
     float intensity = trailData.x;
+    float lastAgentDirection = trailData.y;
 
     float avgIntensity = 0.0;
     float avgLastAgentDirection = 0.0;
@@ -35,14 +38,39 @@ void main() {
             avgLastAgentDirection += neighborData.y;
         }
     }
-    avgIntensity /= 25.0;
-    avgLastAgentDirection /= 25.0;
+    avgIntensity *= 0.04;
+    avgLastAgentDirection *= 0.04;
 
-    avgIntensity = mix(intensity, avgIntensity, 0.4);
+    // avgIntensity = mix(intensity, avgIntensity, 0.3);
+
+    float uIntensitySmoothing = 0.5;
+    float uAgentDirectionSmoothing = 0.5;
+    float uAgentDirectionColorOffset = 0.5;
+    float uClockColorOffset = 0.5;
+    float uXColorOffset = 0.5;
+    float uYColorOffset = 0.5;
+
+    // float paletteValue = clamp(avgIntensity, 0.0, 1.0);
+    float smoothedIntensity = mix(intensity, avgIntensity, uIntensitySmoothing);
+    float smoothedAgentDirection = mix(lastAgentDirection, avgLastAgentDirection, uAgentDirectionSmoothing);
+
+    float paletteValue = smoothedIntensity;
+    paletteValue += smoothedAgentDirection * uAgentDirectionColorOffset;
+    paletteValue += clockData.x * uClockColorOffset;
+
+    // Normalize the palette value to ensure it stays within [0, 1] prior to scaling.
+    paletteValue /= (1.0 + uAgentDirectionColorOffset + uClockColorOffset);
+
+    // paletteValue = step(0.0, paletteValue);
+    // paletteValue = step(1.0, paletteValue);
 
     // vec3 color = palette(mod((avgIntensity + avgLastAgentDirection * 0.2 + uTime * 0.05 + (vUv.x + vUv.y) * 0.5) * 0.2, 1.0)) * (avgIntensity * (intensity * 0.5 + 0.3));
-    vec3 color = palette(mod((avgIntensity + clockData.x * 0.5 + avgLastAgentDirection * 0.2 + uTime * 0.05 + (vUv.x + vUv.y) * 0.5) * 0.2, 1.0)) * (avgIntensity * (intensity * 0.5 + 0.3));
+    // vec3 color = palette(mod((avgIntensity + clockData.x * 0.5 + avgLastAgentDirection * 0.2 + uPaletteCycleTime + (vUv.x + vUv.y) * 0.5) * 0.2, 1.0)) * (avgIntensity * (intensity * 0.5 + 0.3));
+    // vec3 color = palette(mod((avgIntensity + clockData.x * 0.5 + avgLastAgentDirection * 0.2 + uPaletteCycleTime + (vUv.x + vUv.y) * 0.5) * 0.2, 1.0));
+    vec3 color = palette(mod((paletteValue + uPaletteCycleTime + (vUv.x + vUv.y) * 0.5) * 0.2, 1.0)) * smoothedIntensity;
+    // vec3 color = palette(paletteValue);
 
     // gl_FragColor = vec4(mix(color, uClockShadowColor, uShowClockShadow * clockData.x * uClockShadowOpacity), avgIntensity);
-    gl_FragColor = mix(vec4(color, avgIntensity), vec4(uClockShadowColor, 1.0), uShowClockShadow * clockData.x * uClockShadowOpacity);
+    // gl_FragColor = mix(vec4(color, avgIntensity), vec4(uClockShadowColor, 1.0), uShowClockShadow * clockData.x * uClockShadowOpacity);
+    gl_FragColor = vec4(color, smoothedIntensity);
 }

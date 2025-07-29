@@ -113,6 +113,8 @@ export interface ColorSettings {
   backgroundColorNeedsRandomization: boolean;
   allowProceduralColorPaletteRandomization: boolean;
   allowBackgroundColorRandomization: boolean;
+  paletteCycleSpeed: number;
+  paletteCycleScale: number;
 }
 
 /**
@@ -163,7 +165,13 @@ export type TrailDisplayTextureAspectRatio =
   | "9:16"
   | "10:16";
 
-export type ProceduralColorPaletteName = "Rainbow" | "B" | "C" | "D" | "E";
+export type ProceduralColorPaletteName =
+  | "Rainbow"
+  | "Red"
+  | "B"
+  | "C"
+  | "D"
+  | "E";
 
 export type ProceduralColorPalettePresets = Record<
   ProceduralColorPaletteName,
