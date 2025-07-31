@@ -2,12 +2,13 @@ import type {
   AgentStartTypeDropdownOption,
   ClockSettings,
   ColorSettings,
+  DisplayTextureAspectRatioDropdownOption,
+  PaletteCycleTypeOption,
   ProceduralColorPaletteChannel,
   ProceduralColorPalettePresets,
   SimulationRandomizationSettings,
   SimulationSettings,
   SlimeColorMode,
-  TrailDisplayTextureAspectRatioDropdownOption,
 } from "../types/types";
 
 type ControlsConfigs<T> = {
@@ -189,32 +190,41 @@ export const PROCEDURAL_COLOR_PALETTE_PRESETS: ProceduralColorPalettePresets = {
     b: { yOffset: 0.5, amplitude: 0.5, frequency: 9.0, phase: 0.0 },
   },
   E: {
-    r: { yOffset: 0.5, amplitude: 0.5, frequency: 1.0, phase: 0.0 },
-    g: { yOffset: 0.8, amplitude: 0.1, frequency: 2.0, phase: 0.0 },
-    b: { yOffset: 0.2, amplitude: 0.1, frequency: 3.0, phase: 0.8 },
+    r: { yOffset: 0.43, amplitude: 0.59, frequency: 1.87, phase: 0.04 },
+    g: { yOffset: 0.18, amplitude: 1.24, frequency: 0.35, phase: 0.43 },
+    b: { yOffset: 0.44, amplitude: 0.69, frequency: 1.71, phase: 0.78 },
   },
 };
 
 export const DEFAULT_COLOR_SETTINGS: ColorSettings = {
   // backgroundColor: "#060808",
-  backgroundColor: "#000000",
+  backgroundColor: "#70f3eb",
   slimeColorMode: "Procedural",
   slimeColorChangedAt: Date.now(),
-  // currentProceduralColorPalettePreset: "Rainbow",
-  currentProceduralColorPalettePreset: "Red",
-  // proceduralColorPalette: PROCEDURAL_COLOR_PALETTE_PRESETS.Rainbow,
-  proceduralColorPalette: PROCEDURAL_COLOR_PALETTE_PRESETS.Red,
+  currentProceduralColorPalettePreset: "Rainbow",
+  proceduralColorPalette: PROCEDURAL_COLOR_PALETTE_PRESETS.Rainbow,
   proceduralColorPaletteNeedsRandomization: false,
   backgroundColorNeedsRandomization: false,
-  // allowProceduralColorPaletteRandomization: true,
-  // allowBackgroundColorRandomization: true,
-  allowProceduralColorPaletteRandomization: false,
-  allowBackgroundColorRandomization: false,
-  paletteCycleSpeed: 0.05,
-  paletteCycleScale: 0.2,
+  allowProceduralColorPaletteRandomization: true,
+  allowBackgroundColorRandomization: true,
+  intensitySmoothing: 0.59,
+  agentDirectionSmoothing: 0.68,
+  agentDirectionColorOffset: 0.42,
+  clockColorOffset: 0.64,
+  xColorOffset: 0.65,
+  yColorOffset: 0.8,
+  paletteCycleSpeed: 0.54,
+  paletteCycleScale: 0.1,
+  paletteCycleType: 1,
 };
 
 export const COLOR_CONTROLS_CONFIGS: ControlsConfigs<ColorSettings> = {
+  intensitySmoothing: { min: 0.0, max: 1.0, step: 0.01 },
+  agentDirectionSmoothing: { min: 0.0, max: 1.0, step: 0.01 },
+  agentDirectionColorOffset: { min: -1.0, max: 1.0, step: 0.01 },
+  clockColorOffset: { min: -1.0, max: 1.0, step: 0.01 },
+  xColorOffset: { min: -1.0, max: 1.0, step: 0.01 },
+  yColorOffset: { min: -1.0, max: 1.0, step: 0.01 },
   paletteCycleSpeed: { min: 0.0, max: 1.0, step: 0.01 },
   paletteCycleScale: { min: 0.01, max: 1.0, step: 0.01 },
 };
@@ -280,7 +290,26 @@ export const AGENT_START_TYPE_DROPDOWN_OPTIONS: AgentStartTypeDropdownOption[] =
   ] as const;
 
 export const SIMULATION_PRESETS: Record<string, Partial<SimulationSettings>> = {
-  Default: {},
+  Default: {
+    speed: 3.3,
+    autoRandomizationEnabled: false,
+    agentDensity: 0.25,
+    agentStartType: -1,
+    agentClockAttraction: 0.35,
+    agentClockDepositRate: 17.7,
+    agentBackgroundDepositRate: 17.2,
+    agentSensorDegrees: 59,
+    agentRotationRate: 3.7,
+    agentSensorOffset: 0.86,
+    agentSensorWidth: 0.23,
+    agentStepSize: 1.55,
+    agentCrowdAvoidance: 0.37,
+    agentWanderStrength: 5.5,
+    trailClockDecayRate: 0.15,
+    trailClockDiffuseRate: 3.0,
+    trailBackgroundDecayRate: 0.66,
+    trailBackgroundDiffuseRate: 2.3,
+  },
   "Inverted Gooey": {
     speed: 3.3,
     autoRandomizationEnabled: false,
@@ -303,7 +332,7 @@ export const SIMULATION_PRESETS: Record<string, Partial<SimulationSettings>> = {
   },
 };
 
-export const TRAIL_DISPLAY_TEXTURE_ASPECT_RATIO_OPTIONS: TrailDisplayTextureAspectRatioDropdownOption[] =
+export const DISPLAY_TEXTURE_ASPECT_RATIO_OPTIONS: DisplayTextureAspectRatioDropdownOption[] =
   [
     { value: "Window", label: "Window" },
     { value: "16:10", label: "16:10" },
@@ -315,4 +344,10 @@ export const TRAIL_DISPLAY_TEXTURE_ASPECT_RATIO_OPTIONS: TrailDisplayTextureAspe
     { value: "3:4", label: "3:4" },
     { value: "9:16", label: "9:16" },
     { value: "10:16", label: "10:16" },
-  ];
+  ] as const;
+
+export const PALETTE_CYCLE_TYPE_OPTIONS: PaletteCycleTypeOption[] = [
+  { value: "0", label: "Oscillating" },
+  { value: "1", label: "Repeating" },
+  { value: "2", label: "Continuous" },
+] as const;

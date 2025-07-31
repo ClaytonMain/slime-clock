@@ -9,8 +9,15 @@ uniform vec3 uPaletteD;
 uniform float uShowClockShadow;
 uniform float uClockShadowOpacity;
 uniform vec3 uClockShadowColor;
+uniform float uIntensitySmoothing;
+uniform float uAgentDirectionSmoothing;
+uniform float uAgentDirectionColorOffset;
+uniform float uClockColorOffset;
+uniform float uXColorOffset;
+uniform float uYColorOffset;
 uniform float uPaletteCycleTime;
 uniform float uPaletteCycleScale;
+uniform int uPaletteCycleType; // 0: Oscilating, 1: Repeating, 2: Continuous
 
 varying vec2 vUv;
 
@@ -41,36 +48,43 @@ void main() {
     avgIntensity *= 0.04;
     avgLastAgentDirection *= 0.04;
 
-    // avgIntensity = mix(intensity, avgIntensity, 0.3);
-
-    float uIntensitySmoothing = 0.5;
-    float uAgentDirectionSmoothing = 0.5;
-    float uAgentDirectionColorOffset = 0.5;
-    float uClockColorOffset = 0.5;
-    float uXColorOffset = 0.5;
-    float uYColorOffset = 0.5;
-
-    // float paletteValue = clamp(avgIntensity, 0.0, 1.0);
     float smoothedIntensity = mix(intensity, avgIntensity, uIntensitySmoothing);
     float smoothedAgentDirection = mix(lastAgentDirection, avgLastAgentDirection, uAgentDirectionSmoothing);
-
+    // float paletteValue = (smoothedIntensity - 0.5) * 2.0;
     float paletteValue = smoothedIntensity;
+
+    // Alrighty. Just going to ensure that the offset uniforms are in range [-1.0, 1.0]
+    // before passing them to the shader.
     paletteValue += smoothedAgentDirection * uAgentDirectionColorOffset;
+    paletteValue += vUv.x * uXColorOffset;
+    paletteValue += vUv.y * uYColorOffset;
+
+    // paletteValue /= (1.0 + abs(uAgentDirectionColorOffset) + abs(uXColorOffset) + abs(uYColorOffset));
+
+    // paletteValue = paletteValue * 0.5 + 0.5;
+
     paletteValue += clockData.x * uClockColorOffset;
 
-    // Normalize the palette value to ensure it stays within [0, 1] prior to scaling.
-    paletteValue /= (1.0 + uAgentDirectionColorOffset + uClockColorOffset);
+    paletteValue += uPaletteCycleTime;
 
-    // paletteValue = step(0.0, paletteValue);
-    // paletteValue = step(1.0, paletteValue);
+    // TODO: Double-check if this is where I want to put the palette cycle scale.
+    paletteValue *= uPaletteCycleScale;
+
+    if (uPaletteCycleType == 0) {
+        paletteValue = sin(paletteValue * PI2) * 0.5 + 0.5;
+    } else if (uPaletteCycleType == 1) {
+        paletteValue = mod(paletteValue, 1.0);
+    }
+    // No `else if` for continuous.
 
     // vec3 color = palette(mod((avgIntensity + avgLastAgentDirection * 0.2 + uTime * 0.05 + (vUv.x + vUv.y) * 0.5) * 0.2, 1.0)) * (avgIntensity * (intensity * 0.5 + 0.3));
     // vec3 color = palette(mod((avgIntensity + clockData.x * 0.5 + avgLastAgentDirection * 0.2 + uPaletteCycleTime + (vUv.x + vUv.y) * 0.5) * 0.2, 1.0)) * (avgIntensity * (intensity * 0.5 + 0.3));
     // vec3 color = palette(mod((avgIntensity + clockData.x * 0.5 + avgLastAgentDirection * 0.2 + uPaletteCycleTime + (vUv.x + vUv.y) * 0.5) * 0.2, 1.0));
-    vec3 color = palette(mod((paletteValue + uPaletteCycleTime + (vUv.x + vUv.y) * 0.5) * 0.2, 1.0)) * smoothedIntensity;
-    // vec3 color = palette(paletteValue);
+    // vec3 color = palette(mod((paletteValue + uPaletteCycleTime + (vUv.x + vUv.y) * 0.5) * 0.2, 1.0)) * smoothedIntensity;
+
+    vec3 color = palette(paletteValue) * smoothedIntensity;
 
     // gl_FragColor = vec4(mix(color, uClockShadowColor, uShowClockShadow * clockData.x * uClockShadowOpacity), avgIntensity);
-    // gl_FragColor = mix(vec4(color, avgIntensity), vec4(uClockShadowColor, 1.0), uShowClockShadow * clockData.x * uClockShadowOpacity);
-    gl_FragColor = vec4(color, smoothedIntensity);
+    gl_FragColor = clamp(mix(vec4(color, smoothedIntensity), vec4(uClockShadowColor, 1.0), uShowClockShadow * clockData.x * uClockShadowOpacity), 0.0, 1.0);
+    // gl_FragColor = vec4(color, smoothedIntensity);
 }

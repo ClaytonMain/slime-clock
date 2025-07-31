@@ -55,7 +55,7 @@ export interface SimulationSettings {
   agentCrowdAvoidance: number;
   agentWanderStrength: number;
 
-  displayTextureAspectRatio: TrailDisplayTextureAspectRatio;
+  displayTextureAspectRatio: DisplayTextureAspectRatio;
   displayTextureTargetQuality: number;
   displayTextureWidth: number;
   displayTextureHeight: number;
@@ -113,8 +113,15 @@ export interface ColorSettings {
   backgroundColorNeedsRandomization: boolean;
   allowProceduralColorPaletteRandomization: boolean;
   allowBackgroundColorRandomization: boolean;
+  intensitySmoothing: number;
+  agentDirectionSmoothing: number;
+  agentDirectionColorOffset: number;
+  clockColorOffset: number;
+  xColorOffset: number;
+  yColorOffset: number;
   paletteCycleSpeed: number;
   paletteCycleScale: number;
+  paletteCycleType: number;
 }
 
 /**
@@ -153,7 +160,7 @@ export type TrailDisplayTextureResolution =
   | "1920 x 1080"
   | "2560 x 1440"
   | "3840 x 2160";
-export type TrailDisplayTextureAspectRatio =
+export type DisplayTextureAspectRatio =
   | "Window"
   | "16:10"
   | "16:9"
@@ -183,9 +190,9 @@ export type AgentStartTypeDropdownOption = {
   label: AgentStartType;
 };
 
-export type TrailDisplayTextureAspectRatioDropdownOption = {
-  label: string;
-  value: TrailDisplayTextureAspectRatio;
+export type DisplayTextureAspectRatioDropdownOption = {
+  value: string;
+  label: DisplayTextureAspectRatio;
 };
 export type TailwindItemsAlignOption =
   | "baseline"
@@ -208,3 +215,9 @@ export type TailwindJustifyContentOption =
   | "stretch"
   | "baseline"
   | "normal";
+
+export type PaletteCycleType = "Oscillating" | "Repeating" | "Continuous";
+export type PaletteCycleTypeOption = {
+  value: string;
+  label: PaletteCycleType;
+};

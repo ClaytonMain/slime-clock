@@ -2,12 +2,12 @@ import { produce } from "immer";
 import { useEffect } from "react";
 import {
   AGENT_START_TYPE_DROPDOWN_OPTIONS,
+  DISPLAY_TEXTURE_ASPECT_RATIO_OPTIONS,
   SIMULATION_CONTROLS_CONFIGS,
   SIMULATION_PRESETS,
-  TRAIL_DISPLAY_TEXTURE_ASPECT_RATIO_OPTIONS,
 } from "../../constants/constants";
 import useSlimeStore from "../../stores/useSlimeStore";
-import type { TrailDisplayTextureAspectRatio } from "../../types/types";
+import type { DisplayTextureAspectRatio } from "../../types/types";
 import * as UTILS from "../../utils/utils.tsx";
 import CodeBlock from "../code-block/CodeBlock";
 import AccordionControlsItem from "./AccordionControlsItem";
@@ -79,8 +79,8 @@ export default function SimulationControls() {
   function handleDisplayTextureAspectRatioChange(value: string) {
     const displayTextureTargetQuality =
       useSlimeStore.getState().simulationSettings.displayTextureTargetQuality;
-    const resolution = UTILS.getTrailDisplayTextureResolution(
-      value as TrailDisplayTextureAspectRatio,
+    const resolution = UTILS.getDisplayTextureResolution(
+      value as DisplayTextureAspectRatio,
       displayTextureTargetQuality,
     );
     useSlimeStore.setState(
@@ -95,7 +95,7 @@ export default function SimulationControls() {
   function handleDisplayTextureTargetQualityChange(value: number[]) {
     const displayTextureAspectRatio =
       useSlimeStore.getState().simulationSettings.displayTextureAspectRatio;
-    const resolution = UTILS.getTrailDisplayTextureResolution(
+    const resolution = UTILS.getDisplayTextureResolution(
       displayTextureAspectRatio,
       value[0],
     );
@@ -472,13 +472,11 @@ export default function SimulationControls() {
           >
             <SlimeStoreSelectControl
               label="Display Texture Aspect Ratio"
-              baseInputId="trail-display-texture-aspect-ratio-select"
-              placeholder="Trail Display Texture Aspect Ratio"
-              storePath={[
-                "simulationSettings",
-                "trailDisplayTextureAspectRatio",
-              ]}
-              options={TRAIL_DISPLAY_TEXTURE_ASPECT_RATIO_OPTIONS}
+              labelHoverTabContentDisplay={["Display Texture Aspect Ratio"]}
+              baseInputId="display-texture-aspect-ratio-select"
+              placeholder="Display Texture Aspect Ratio"
+              storePath={["simulationSettings", "displayTextureAspectRatio"]}
+              options={DISPLAY_TEXTURE_ASPECT_RATIO_OPTIONS}
               onValueChange={handleDisplayTextureAspectRatioChange}
             />
             <SlimeStoreSliderControl

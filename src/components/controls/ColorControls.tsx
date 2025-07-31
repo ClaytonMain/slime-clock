@@ -3,6 +3,7 @@ import * as R from "ramda";
 import { useEffect } from "react";
 import {
   COLOR_CONTROLS_CONFIGS,
+  PALETTE_CYCLE_TYPE_OPTIONS,
   PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS,
 } from "../../constants/constants";
 import useSlimeStore from "../../stores/useSlimeStore";
@@ -11,6 +12,7 @@ import AccordionControlsWrapper from "./AccordionControlsWrapper";
 import ButtonControlGroup from "./ButtonControlGroup";
 import ProceduralColorPalettePresetSelect from "./ProceduralColorPalettePresetSelect";
 import SlimeStoreColorPickerControl from "./SlimeStoreColorPickerControl";
+import SlimeStoreSelectControl from "./SlimeStoreSelectControl";
 import SlimeStoreSliderControl from "./SlimeStoreSliderControl";
 import TabContentContainer from "./TabContentContainer";
 import TabContentScrollArea from "./TabContentScrollArea";
@@ -141,6 +143,54 @@ export default function ColorControls() {
             padContent={false}
           >
             <SlimeStoreSliderControl
+              label="Intensity Smoothing"
+              baseInputId="intensity-smoothing"
+              min={COLOR_CONTROLS_CONFIGS.intensitySmoothing!.min}
+              max={COLOR_CONTROLS_CONFIGS.intensitySmoothing!.max}
+              step={COLOR_CONTROLS_CONFIGS.intensitySmoothing!.step}
+              storePath={["colorSettings", "intensitySmoothing"]}
+            />
+            <SlimeStoreSliderControl
+              label="Agent Direction Smoothing"
+              baseInputId="agent-direction-smoothing"
+              min={COLOR_CONTROLS_CONFIGS.agentDirectionSmoothing!.min}
+              max={COLOR_CONTROLS_CONFIGS.agentDirectionSmoothing!.max}
+              step={COLOR_CONTROLS_CONFIGS.agentDirectionSmoothing!.step}
+              storePath={["colorSettings", "agentDirectionSmoothing"]}
+            />
+            <SlimeStoreSliderControl
+              label="Agent Direction Color Offset"
+              baseInputId="agent-direction-color-offset"
+              min={COLOR_CONTROLS_CONFIGS.agentDirectionColorOffset!.min}
+              max={COLOR_CONTROLS_CONFIGS.agentDirectionColorOffset!.max}
+              step={COLOR_CONTROLS_CONFIGS.agentDirectionColorOffset!.step}
+              storePath={["colorSettings", "agentDirectionColorOffset"]}
+            />
+            <SlimeStoreSliderControl
+              label="Clock Color Offset"
+              baseInputId="clock-color-offset"
+              min={COLOR_CONTROLS_CONFIGS.clockColorOffset!.min}
+              max={COLOR_CONTROLS_CONFIGS.clockColorOffset!.max}
+              step={COLOR_CONTROLS_CONFIGS.clockColorOffset!.step}
+              storePath={["colorSettings", "clockColorOffset"]}
+            />
+            <SlimeStoreSliderControl
+              label="X Color Offset"
+              baseInputId="x-color-offset"
+              min={COLOR_CONTROLS_CONFIGS.xColorOffset!.min}
+              max={COLOR_CONTROLS_CONFIGS.xColorOffset!.max}
+              step={COLOR_CONTROLS_CONFIGS.xColorOffset!.step}
+              storePath={["colorSettings", "xColorOffset"]}
+            />
+            <SlimeStoreSliderControl
+              label="Y Color Offset"
+              baseInputId="y-color-offset"
+              min={COLOR_CONTROLS_CONFIGS.yColorOffset!.min}
+              max={COLOR_CONTROLS_CONFIGS.yColorOffset!.max}
+              step={COLOR_CONTROLS_CONFIGS.yColorOffset!.step}
+              storePath={["colorSettings", "yColorOffset"]}
+            />
+            <SlimeStoreSliderControl
               label="Palette Cycle Speed"
               baseInputId="procedural-color-palette-cycle-speed"
               min={COLOR_CONTROLS_CONFIGS.paletteCycleSpeed!.min}
@@ -160,6 +210,13 @@ export default function ColorControls() {
               step={COLOR_CONTROLS_CONFIGS.paletteCycleScale!.step}
               storePath={["colorSettings", "paletteCycleScale"]}
               labelHoverTabContentDisplay={["Palette Cycle Scale"]}
+            />
+            <SlimeStoreSelectControl
+              label="Palette Cycle Type"
+              baseInputId="procedural-color-palette-cycle-type-select"
+              placeholder="Palette Cycle Type"
+              storePath={["colorSettings", "paletteCycleType"]}
+              options={PALETTE_CYCLE_TYPE_OPTIONS}
             />
             <ProceduralColorPalettePresetSelect />
             <ButtonControlGroup

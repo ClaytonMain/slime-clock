@@ -75,10 +75,29 @@ const slimeMoldDisplayPlaneUniforms = {
   uClockShadowColor: new THREE.Uniform(
     new THREE.Color(useSlimeStore.getState().clockSettings.clockShadowColor),
   ),
+  uIntensitySmoothing: new THREE.Uniform(
+    useSlimeStore.getState().colorSettings.intensitySmoothing,
+  ),
+  uAgentDirectionSmoothing: new THREE.Uniform(
+    useSlimeStore.getState().colorSettings.agentDirectionSmoothing,
+  ),
+  uAgentDirectionColorOffset: new THREE.Uniform(
+    useSlimeStore.getState().colorSettings.agentDirectionColorOffset,
+  ),
+  uClockColorOffset: new THREE.Uniform(
+    useSlimeStore.getState().colorSettings.clockColorOffset,
+  ),
+  uXColorOffset: new THREE.Uniform(
+    useSlimeStore.getState().colorSettings.xColorOffset,
+  ),
+  uYColorOffset: new THREE.Uniform(
+    useSlimeStore.getState().colorSettings.yColorOffset,
+  ),
   uPaletteCycleTime: new THREE.Uniform(0.0),
   uPaletteCycleScale: new THREE.Uniform(
     useSlimeStore.getState().colorSettings.paletteCycleScale,
   ),
+  uPaletteCycleType: new THREE.Uniform(0),
 };
 const agentDataUniforms = {
   uAgentDataTexture: { value: new THREE.Texture() },
@@ -190,7 +209,16 @@ function UniformSetter() {
   const duSlimeMoldDisplayPlaneColorUniforms: [
     keyof typeof slimeMoldDisplayPlaneUniforms,
     (keyof typeof colorSettings)[],
-  ][] = [["uPaletteCycleScale", ["paletteCycleScale"]]];
+  ][] = [
+    ["uPaletteCycleScale", ["paletteCycleScale"]],
+    ["uIntensitySmoothing", ["intensitySmoothing"]],
+    ["uAgentDirectionSmoothing", ["agentDirectionSmoothing"]],
+    ["uAgentDirectionColorOffset", ["agentDirectionColorOffset"]],
+    ["uClockColorOffset", ["clockColorOffset"]],
+    ["uXColorOffset", ["xColorOffset"]],
+    ["uYColorOffset", ["yColorOffset"]],
+    ["uPaletteCycleType", ["paletteCycleType"]],
+  ];
   const duSlimeMoldDisplayPlaneClockUniforms: [
     keyof typeof slimeMoldDisplayPlaneUniforms,
     (keyof typeof clockSettings)[],
@@ -590,7 +618,7 @@ function SlimeClock() {
   function setInitialResolutions() {
     const simulationSettings = useSlimeStore.getState().simulationSettings;
 
-    const resolution = UTILS.getTrailDisplayTextureResolution(
+    const resolution = UTILS.getDisplayTextureResolution(
       simulationSettings.displayTextureAspectRatio,
       simulationSettings.displayTextureTargetQuality,
     );
@@ -870,10 +898,11 @@ function SlimeClock() {
       );
     }
 
-    uDeltaRef.current = Math.min(delta * simulationSettings.speed, 0.05);
+    const cappedDelta = Math.min(delta, 0.05);
+    uDeltaRef.current = Math.min(cappedDelta * simulationSettings.speed, 0.05);
     uTimeRef.current += uDeltaRef.current;
     uPaletteCycleTimeRef.current +=
-      uDeltaRef.current * colorSettings.paletteCycleSpeed;
+      cappedDelta * colorSettings.paletteCycleSpeed;
 
     // Render the clock.
     gl.setRenderTarget(clockRenderTarget);

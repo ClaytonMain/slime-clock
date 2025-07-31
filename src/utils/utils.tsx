@@ -1,4 +1,4 @@
-import type { TrailDisplayTextureAspectRatio } from "../types/types";
+import type { DisplayTextureAspectRatio } from "../types/types";
 
 export function roundToFixed(value: number, decimals: number): number {
   const factor = Math.pow(10, decimals);
@@ -14,8 +14,8 @@ export function randBetween(
   return decimals !== undefined ? roundToFixed(value, decimals) : value;
 }
 
-export function getTrailDisplayTextureResolution(
-  aspectRatio: TrailDisplayTextureAspectRatio,
+export function getDisplayTextureResolution(
+  aspectRatio: DisplayTextureAspectRatio,
   targetQuality: number, // Approximate megapixel value.
 ): { width: number; height: number } {
   const resolution: { width: number; height: number } = {
