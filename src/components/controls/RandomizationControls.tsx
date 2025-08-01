@@ -1,10 +1,13 @@
 import { produce } from "immer";
 import { useEffect } from "react";
+import { SIMULATION_CONTROLS_CONFIGS } from "../../constants/constants";
 import useSlimeStore from "../../stores/useSlimeStore";
 import AccordionControlsItem from "./AccordionControlsItem";
 import AccordionControlsWrapper from "./AccordionControlsWrapper";
 import ButtonControlGroup from "./ButtonControlGroup";
 import SlimeStoreRandomizationControl from "./SlimeStoreRandomizationControl";
+import SlimeStoreSliderControl from "./SlimeStoreSliderControl";
+import SlimeStoreSwitchControl from "./SlimeStoreSwitchControl";
 import SwitchControlGroup from "./SwitchControlGroup";
 import TabContentContainer from "./TabContentContainer";
 import TabContentScrollArea from "./TabContentScrollArea";
@@ -69,6 +72,36 @@ export default function RandomizationControls() {
               "Allows quick access to randomization toggles and buttons.",
             ]}
           >
+            <SlimeStoreSwitchControl
+              label="Auto Rand. Enabled"
+              labelHoverTabContentDisplay={[]}
+              baseId="auto-randomization-enabled-switch"
+              storePath={["simulationSettings", "autoRandomizationEnabled"]}
+            />
+            <SlimeStoreSliderControl
+              label="Auto Rand. Interval"
+              labelHoverTabContentDisplay={[]}
+              baseInputId="auto-randomization-interval-slider"
+              min={SIMULATION_CONTROLS_CONFIGS.autoRandomizationInterval!.min}
+              max={SIMULATION_CONTROLS_CONFIGS.autoRandomizationInterval!.max}
+              step={SIMULATION_CONTROLS_CONFIGS.autoRandomizationInterval!.step}
+              storePath={["simulationSettings", "autoRandomizationInterval"]}
+            />
+            <SlimeStoreSwitchControl
+              label="Auto Restart Enabled"
+              labelHoverTabContentDisplay={[]}
+              baseId="auto-restart-enabled-switch"
+              storePath={["simulationSettings", "autoRestartEnabled"]}
+            />
+            <SlimeStoreSliderControl
+              label="Auto Restart Interval"
+              labelHoverTabContentDisplay={[]}
+              baseInputId="auto-restart-interval-slider"
+              min={SIMULATION_CONTROLS_CONFIGS.autoRestartInterval!.min}
+              max={SIMULATION_CONTROLS_CONFIGS.autoRestartInterval!.max}
+              step={SIMULATION_CONTROLS_CONFIGS.autoRestartInterval!.step}
+              storePath={["simulationSettings", "autoRestartInterval"]}
+            />
             <SwitchControlGroup
               label="Enabled Rands."
               labelHoverTabContentDisplay={[

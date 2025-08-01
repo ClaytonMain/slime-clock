@@ -2,7 +2,8 @@ export type ControlsTabName =
   | "randomization-controls"
   | "clock-controls"
   | "simulation-controls"
-  | "color-controls";
+  | "color-controls"
+  | "presets-controls";
 
 export type SelectOption<T> = {
   value: T;

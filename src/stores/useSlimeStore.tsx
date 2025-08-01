@@ -43,6 +43,7 @@ interface SlimeStore {
   colorSettings: ColorSettings;
   resetSettings: () => void;
   controlsState: ControlsState;
+  presets: Record<string, Partial<SlimeStore>>;
 }
 
 const persistOmit: (keyof SlimeStore)[] = [
@@ -92,6 +93,7 @@ const useSlimeStore = create<SlimeStore>()(
           selectedTabButtonClientRect: null,
           showSelectedTabCornerIcons: false,
         },
+        presets: {},
       }),
       {
         name: "slime-storage",
