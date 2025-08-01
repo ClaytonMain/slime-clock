@@ -74,7 +74,10 @@ export default function RandomizationControls() {
           >
             <SlimeStoreSwitchControl
               label="Auto Rand. Enabled"
-              labelHoverTabContentDisplay={[]}
+              labelHoverTabContentDisplay={[
+                "Auto Randomization Enabled",
+                'Allows the simulation to randomize certain parameters at set intervals. The randomization interval is set using the \'Randomization Interval\' slider. Control over which parameters are randomized can be found in the "Agent Randomization Settings" and "Trail Randomization Settings" accordions below. Auto randomization is disabled when the controls are open.',
+              ]}
               baseId="auto-randomization-enabled-switch"
               storePath={["simulationSettings", "autoRandomizationEnabled"]}
             />

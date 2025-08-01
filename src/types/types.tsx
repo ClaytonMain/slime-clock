@@ -10,7 +10,7 @@ export type SelectOption<T> = {
   label: string;
 };
 
-export interface ClockSettings {
+export interface ClockSettingsHistory {
   show: boolean;
   size: number;
   digitLayout: "vertical" | "horizontal";
@@ -21,29 +21,15 @@ export interface ClockSettings {
   clockShadowOpacity: number;
   clockShadowColor: string;
 }
+// To match the SimulationSettings and ColorSettings interface layout.
+export type ClockSettings = ClockSettingsHistory;
 
-export interface SimulationSettings {
-  preset: string;
-
-  allowAgentsRandomization: boolean;
-  allowTrailRandomization: boolean;
-  agentsNeedRandomization: boolean;
-  trailNeedsRandomization: boolean;
-
+export interface SimulationSettingsHistory {
   speed: number;
-  autoRandomizationEnabled: boolean;
-  autoRandomizationInterval: number;
-  autoRestartEnabled: boolean;
-  autoRestartInterval: number;
-
-  simulationNeedsRestart: boolean;
 
   boundaryBehavior: 0 | 1; // 0: Wrap, 1: Bounce
 
-  // agentCount: AgentCount;
   agentDensity: number;
-  gpuTextureWidth: number;
-  gpuTextureHeight: number;
   agentStartType: number;
   agentClockAttraction: number;
   agentClockDepositRate: number;
@@ -58,12 +44,33 @@ export interface SimulationSettings {
 
   displayTextureAspectRatio: DisplayTextureAspectRatio;
   displayTextureTargetQuality: number;
-  displayTextureWidth: number;
-  displayTextureHeight: number;
   trailClockDecayRate: number;
   trailClockDiffuseRate: number;
   trailBackgroundDecayRate: number;
   trailBackgroundDiffuseRate: number;
+}
+
+export interface SimulationSettings extends SimulationSettingsHistory {
+  preset: string;
+
+  // TODO: Move these randomization settings somewhere else.
+  allowAgentsRandomization: boolean;
+  allowTrailRandomization: boolean;
+  agentsNeedRandomization: boolean;
+  trailNeedsRandomization: boolean;
+
+  autoRandomizationEnabled: boolean;
+  autoRandomizationInterval: number;
+  autoRestartEnabled: boolean;
+  autoRestartInterval: number;
+
+  simulationNeedsRestart: boolean;
+
+  gpuTextureWidth: number;
+  gpuTextureHeight: number;
+
+  displayTextureWidth: number;
+  displayTextureHeight: number;
 }
 
 export interface RandomizationSetting {
@@ -104,16 +111,10 @@ export interface ProceduralColorPalette {
 
 export type SlimeColorMode = "Procedural" | "Single";
 
-export interface ColorSettings {
+export interface ColorSettingsHistory {
   backgroundColor: string;
   slimeColorMode: SlimeColorMode;
-  slimeColorChangedAt: number;
-  currentProceduralColorPalettePreset: ProceduralColorPaletteName | "Custom";
   proceduralColorPalette: ProceduralColorPalette;
-  proceduralColorPaletteNeedsRandomization: boolean;
-  backgroundColorNeedsRandomization: boolean;
-  allowProceduralColorPaletteRandomization: boolean;
-  allowBackgroundColorRandomization: boolean;
   intensitySmoothing: number;
   agentDirectionSmoothing: number;
   agentDirectionColorOffset: number;
@@ -123,6 +124,14 @@ export interface ColorSettings {
   paletteCycleSpeed: number;
   paletteCycleScale: number;
   paletteCycleType: number;
+}
+export interface ColorSettings extends ColorSettingsHistory {
+  slimeColorChangedAt: number;
+  currentProceduralColorPalettePreset: ProceduralColorPaletteName | "Custom";
+  proceduralColorPaletteNeedsRandomization: boolean;
+  backgroundColorNeedsRandomization: boolean;
+  allowProceduralColorPaletteRandomization: boolean;
+  allowBackgroundColorRandomization: boolean;
 }
 
 /**
@@ -221,4 +230,10 @@ export type PaletteCycleType = "Oscillating" | "Repeating" | "Continuous";
 export type PaletteCycleTypeOption = {
   value: string;
   label: PaletteCycleType;
+};
+
+export type SlimeStoreSettingsHistory = {
+  clockSettings: ClockSettingsHistory;
+  simulationSettings: SimulationSettingsHistory;
+  colorSettings: ColorSettingsHistory;
 };

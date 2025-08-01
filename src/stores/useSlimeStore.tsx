@@ -17,6 +17,7 @@ import type {
   ControlsTabName,
   SimulationRandomizationSettings,
   SimulationSettings,
+  SlimeStoreSettingsHistory,
 } from "../types/types";
 
 interface ControlsState {
@@ -31,9 +32,11 @@ interface ControlsState {
   controlsAreaBoundingClientRect: DOMRect | null;
   selectedTabButtonClientRect: DOMRect | null;
   showSelectedTabCornerIcons: boolean;
+  controlsEditStoppedAt: number;
 }
 
 interface SlimeStore {
+  placeholderSetFunction: () => void;
   portalContainer: HTMLDivElement | null;
   resolutionsSet: boolean;
   initialized: boolean;
@@ -41,8 +44,8 @@ interface SlimeStore {
   simulationSettings: SimulationSettings;
   simulationRandomizationSettings: SimulationRandomizationSettings;
   colorSettings: ColorSettings;
-  resetSettings: () => void;
   controlsState: ControlsState;
+  history: SlimeStoreSettingsHistory[];
   presets: Record<string, Partial<SlimeStore>>;
 }
 
@@ -58,6 +61,10 @@ const useSlimeStore = create<SlimeStore>()(
   subscribeWithSelector(
     persist(
       (set) => ({
+        placeholderSetFunction: () => {
+          set({});
+        },
+
         portalContainer: null,
 
         resolutionsSet: false,
@@ -73,13 +80,6 @@ const useSlimeStore = create<SlimeStore>()(
 
         colorSettings: DEFAULT_COLOR_SETTINGS,
 
-        resetSettings: () => {
-          set({
-            clockSettings: DEFAULT_CLOCK_SETTINGS,
-            simulationSettings: DEFAULT_SIMULATION_SETTINGS,
-            colorSettings: DEFAULT_COLOR_SETTINGS,
-          });
-        },
         controlsState: {
           selectedTab: "randomization-controls",
           isOpen: false,
@@ -92,7 +92,9 @@ const useSlimeStore = create<SlimeStore>()(
           controlsAreaBoundingClientRect: null,
           selectedTabButtonClientRect: null,
           showSelectedTabCornerIcons: false,
+          controlsEditStoppedAt: Date.now(),
         },
+        history: [],
         presets: {},
       }),
       {

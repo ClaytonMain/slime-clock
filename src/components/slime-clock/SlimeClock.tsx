@@ -16,6 +16,7 @@ import type {
 } from "../../types/types";
 import { randBetween, roundToFixed } from "../../utils/utils";
 import * as UTILS from "../../utils/utils.tsx";
+import SettingsHistoryListener from "../controls/SettingsHistoryListener.tsx";
 import ThreeControlDisplay from "../three-control-display/ThreeControlDisplay";
 import AgentDataMaterial from "./AgentDataMaterial";
 import AgentPositionsMaterial from "./AgentPositionsMaterial";
@@ -431,6 +432,7 @@ function SlimeClock() {
   const colorSettings = useSlimeStore((state) => state.colorSettings);
   const resolutionsSet = useSlimeStore((state) => state.resolutionsSet);
   const initialized = useSlimeStore((state) => state.initialized);
+  const controlsAreOpen = useSlimeStore((state) => state.controlsState.isOpen);
 
   const prevMinutesRef = useRef(0);
   const lastRandomizedAtMinutesRef = useRef(Math.floor(Date.now() / 60000));
@@ -816,8 +818,8 @@ function SlimeClock() {
                     channelKey as keyof typeof PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS
                   ];
                 const randValue = randBetween(
-                  controlConfig!.min / 2.0,
-                  controlConfig!.max / 2.0,
+                  controlConfig!.min / 3.0,
+                  controlConfig!.max / 3.0,
                   2.0,
                 );
                 state.colorSettings.proceduralColorPalette[colorKey][
@@ -860,7 +862,13 @@ function SlimeClock() {
       prevMinutesRef.current = currentMinutes;
     }
 
+    if (controlsAreOpen) {
+      lastRestartedAtMinutesRef.current = currentMinutes;
+      lastRandomizedAtMinutesRef.current = currentMinutes;
+    }
+
     if (
+      !controlsAreOpen &&
       simulationSettings.autoRestartEnabled &&
       currentMinutes % simulationSettings.autoRestartInterval === 0 &&
       currentMinutes !== lastRestartedAtMinutesRef.current
@@ -883,6 +891,7 @@ function SlimeClock() {
     }
 
     if (
+      !controlsAreOpen &&
       simulationSettings.autoRandomizationEnabled &&
       currentMinutes % simulationSettings.autoRandomizationInterval === 0 &&
       currentMinutes !== lastRandomizedAtMinutesRef.current
@@ -1027,6 +1036,7 @@ function SlimeClock() {
   return (
     <>
       <UniformSetter />
+      <SettingsHistoryListener />
 
       {createPortal(
         <mesh>

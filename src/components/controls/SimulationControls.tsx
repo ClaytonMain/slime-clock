@@ -218,7 +218,7 @@ export default function SimulationControls() {
               label="Auto Rand. Enabled"
               labelHoverTabContentDisplay={[
                 "Auto Randomization Enabled",
-                "Allows the simulation to randomize parameters at set intervals. Interval is set using the 'Randomization Interval' slider. Randomization settings can be customized on the 'Randomization Settings' tab.",
+                'Allows the simulation to randomize certain parameters at set intervals. The randomization interval is set using the "Randomization Interval" slider. Control over which parameters are randomized can be found in the "Randomization Controls" tab. Auto randomization is disabled when the controls are open.',
               ]}
               baseId="auto-randomization-enabled-switch"
               storePath={["simulationSettings", "autoRandomizationEnabled"]}
@@ -227,7 +227,7 @@ export default function SimulationControls() {
               label="Auto Randomization Interval"
               labelHoverTabContentDisplay={[
                 "Auto Randomization Interval",
-                "Controls how often the simulation randomizes its parameters. Interval is in minutes.",
+                'Controls how often (in minutes) the simulation randomizes its parameters. Control over which parameters are randomized can be found in the "Randomization Controls" tab. Has no effect when auto randomization is disabled. Auto randomization is disabled when the controls are open.',
               ]}
               baseInputId="auto-randomization-interval-slider"
               min={SIMULATION_CONTROLS_CONFIGS.autoRandomizationInterval!.min}

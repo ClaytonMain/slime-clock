@@ -1,13 +1,16 @@
 import type {
   AgentStartTypeDropdownOption,
   ClockSettings,
+  ClockSettingsHistory,
   ColorSettings,
+  ColorSettingsHistory,
   DisplayTextureAspectRatioDropdownOption,
   PaletteCycleTypeOption,
   ProceduralColorPaletteChannel,
   ProceduralColorPalettePresets,
   SimulationRandomizationSettings,
   SimulationSettings,
+  SimulationSettingsHistory,
   SlimeColorMode,
 } from "../types/types";
 
@@ -351,3 +354,52 @@ export const PALETTE_CYCLE_TYPE_OPTIONS: PaletteCycleTypeOption[] = [
   { value: "1", label: "Repeating" },
   { value: "2", label: "Continuous" },
 ] as const;
+
+export const CLOCK_SETTINGS_HISTORY_KEYS: (keyof ClockSettingsHistory)[] = [
+  "show",
+  "size",
+  "digitLayout",
+  "hourFormat",
+  "digitStyle",
+  "padHours",
+  "showClockShadow",
+  "clockShadowOpacity",
+  "clockShadowColor",
+];
+export const SIMULATION_SETTINGS_HISTORY_KEYS: (keyof SimulationSettingsHistory)[] =
+  [
+    "speed",
+    "boundaryBehavior",
+    "agentDensity",
+    "agentStartType",
+    "agentClockAttraction",
+    "agentClockDepositRate",
+    "agentBackgroundDepositRate",
+    "agentSensorDegrees",
+    "agentRotationRate",
+    "agentSensorOffset",
+    "agentSensorWidth",
+    "agentStepSize",
+    "agentCrowdAvoidance",
+    "agentWanderStrength",
+    "displayTextureAspectRatio",
+    "displayTextureTargetQuality",
+    "trailClockDecayRate",
+    "trailClockDiffuseRate",
+    "trailBackgroundDecayRate",
+    "trailBackgroundDiffuseRate",
+  ];
+export const COLOR_SETTINGS_HISTORY_KEYS: (keyof ColorSettingsHistory)[] = [
+  "backgroundColor",
+  "slimeColorMode",
+  "proceduralColorPalette",
+  "intensitySmoothing",
+  "agentDirectionSmoothing",
+  "agentDirectionColorOffset",
+  "clockColorOffset",
+  "xColorOffset",
+  "yColorOffset",
+  "paletteCycleSpeed",
+  "paletteCycleScale",
+  "paletteCycleType",
+];
