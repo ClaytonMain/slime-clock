@@ -232,7 +232,10 @@ export type PaletteCycleTypeOption = {
   label: PaletteCycleType;
 };
 
+// TODO: Change naming to something like "LoadableSlimeStoreSettings".
+// TODO: Change "timestamp" to "name" or something.
 export type SlimeStoreSettingsHistory = {
+  timestamp: string;
   clockSettings: ClockSettingsHistory;
   simulationSettings: SimulationSettingsHistory;
   colorSettings: ColorSettingsHistory;

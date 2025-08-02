@@ -47,6 +47,7 @@ interface SlimeStore {
   controlsState: ControlsState;
   history: SlimeStoreSettingsHistory[];
   presets: Record<string, Partial<SlimeStore>>;
+  presetLoadedAt: number;
 }
 
 const persistOmit: (keyof SlimeStore)[] = [
@@ -96,6 +97,7 @@ const useSlimeStore = create<SlimeStore>()(
         },
         history: [],
         presets: {},
+        presetLoadedAt: Date.now(),
       }),
       {
         name: "slime-storage",

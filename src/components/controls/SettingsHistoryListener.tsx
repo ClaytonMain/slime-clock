@@ -20,6 +20,9 @@ export default function SettingsHistoryListener() {
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
+      const presetLoadedAt = useSlimeStore.getState().presetLoadedAt;
+      if (Date.now() - presetLoadedAt < 1500) return;
+
       const previousEntry: Partial<SlimeStoreSettingsHistory> =
         [...useSlimeStore.getState().history][0] || {};
       let hasChanges = false;
@@ -75,6 +78,7 @@ export default function SettingsHistoryListener() {
 
       if (hasChanges) {
         const newEntry: SlimeStoreSettingsHistory = {
+          timestamp: new Date().toLocaleString(),
           clockSettings: newClockSettings as ClockSettingsHistory,
           simulationSettings:
             newSimulationSettings as SimulationSettingsHistory,

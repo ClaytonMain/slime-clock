@@ -1,52 +1,16 @@
 import { produce } from "immer";
-import * as R from "ramda";
 import { useEffect } from "react";
 import useSlimeStore from "../../stores/useSlimeStore";
-import type { SimulationSettings } from "../../types/types.tsx";
 import AccordionControlsItem from "./AccordionControlsItem";
 import AccordionControlsWrapper from "./AccordionControlsWrapper";
 import ButtonControlGroup from "./ButtonControlGroup.tsx";
+import SettingsLoadSaveControl from "./SettingsLoadSaveControl.tsx";
 import TabContentContainer from "./TabContentContainer";
 import TabContentScrollArea from "./TabContentScrollArea";
 
 export default function PresetsControls() {
   const selectedTab = useSlimeStore((state) => state.controlsState.selectedTab);
-
-  function saveSimulationSettingsAsPreset() {
-    const storePaths: ["simulationSettings", keyof SimulationSettings][] = [
-      ["simulationSettings", "speed"],
-      ["simulationSettings", "boundaryBehavior"],
-      ["simulationSettings", "agentStartType"],
-      ["simulationSettings", "agentClockAttraction"],
-      ["simulationSettings", "agentClockDepositRate"],
-      ["simulationSettings", "agentBackgroundDepositRate"],
-      ["simulationSettings", "agentSensorDegrees"],
-      ["simulationSettings", "agentRotationRate"],
-      ["simulationSettings", "agentSensorOffset"],
-      ["simulationSettings", "agentSensorWidth"],
-      ["simulationSettings", "agentStepSize"],
-      ["simulationSettings", "agentCrowdAvoidance"],
-      ["simulationSettings", "agentWanderStrength"],
-      ["simulationSettings", "trailClockDecayRate"],
-      ["simulationSettings", "trailClockDiffuseRate"],
-      ["simulationSettings", "trailBackgroundDecayRate"],
-      ["simulationSettings", "trailBackgroundDiffuseRate"],
-    ];
-
-    const simulationSettings = useSlimeStore.getState().simulationSettings;
-
-    const preset: Partial<SimulationSettings> = {};
-    storePaths.forEach(([path, key]) => {
-      preset[key] = R.view(R.lensPath(path), simulationSettings);
-    });
-    console.log(preset);
-    useSlimeStore.setState(
-      produce((state) => {
-        const presetName = `preset-${Date.now()}`;
-        state.presets[presetName] = preset;
-      }),
-    );
-  }
+  const history = useSlimeStore((state) => state.history);
 
   const presetsControlsLabelHoverTabContentDisplay = [
     "Presets Controls",
@@ -90,19 +54,19 @@ export default function PresetsControls() {
               labelHoverTabContentDisplay={["Quick Actions"]}
               buttonConfigs={[
                 {
-                  label: "Save All as Preset",
+                  label: "(disabled) Save All as Preset",
                   baseId: "save-all-as-preset-button",
                   onClick: () => {
                     // Implement save preset logic here
                   },
                 },
                 {
-                  label: "Save Sim. Settings as Preset",
+                  label: "(disabled) Save Sim. Settings as Preset",
                   baseId: "save-simulation-settings-as-preset-button",
-                  onClick: saveSimulationSettingsAsPreset,
+                  onClick: () => null,
                 },
                 {
-                  label: "Save Color Settings as Preset",
+                  label: "(disabled) Save Color Settings as Preset",
                   baseId: "save-color-settings-as-preset-button",
                   onClick: () => {
                     // Implement save preset logic here
@@ -110,6 +74,26 @@ export default function PresetsControls() {
                 },
               ]}
             />
+          </AccordionControlsItem>
+
+          <AccordionControlsItem
+            value="history"
+            label="History"
+            labelHoverTabContentDisplay={[]}
+          >
+            {history.map((entry) => (
+              <SettingsLoadSaveControl
+                key={entry.timestamp}
+                label={entry.timestamp}
+                labelHoverTabContentDisplay={[
+                  entry.timestamp,
+                  <pre className="px-2 py-1 text-[0.6rem] whitespace-pre-wrap">
+                    {JSON.stringify(entry, null, 1)}
+                  </pre>,
+                ]}
+                settings={entry}
+              />
+            ))}
           </AccordionControlsItem>
         </AccordionControlsWrapper>
       </TabContentScrollArea>
