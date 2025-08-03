@@ -1,7 +1,9 @@
+import { ClockIcon, MixerHorizontalIcon } from "@radix-ui/react-icons";
 import { produce } from "immer";
 import { motion } from "motion/react";
 import { Label } from "radix-ui";
 import { useEffect, useState, type ReactNode } from "react";
+import { PiPalette } from "react-icons/pi";
 import useSlimeStore from "../../stores/useSlimeStore";
 import type { LoadableSlimeStoreSettings } from "../../types/types";
 import LoadOrSaveSettingsPopoverButton from "./LoadOrSaveSettingsPopoverButton";
@@ -63,9 +65,18 @@ export default function SettingsLoadSaveControl({
     >
       {label && (
         <div className="flex flex-col items-center p-0.5">
-          <Label.Root className="h-full w-(--footer-left-label-width) flex-none place-content-center p-0.5 text-right text-xs leading-none font-medium">
+          <Label.Root className="h-full w-24 flex-none place-content-center p-0.5 text-right text-xs leading-none font-medium">
             {label}
           </Label.Root>
+        </div>
+      )}
+      {controlType === "presets" && (
+        <div className="flex w-18 flex-none items-center justify-center gap-1 p-1">
+          {settings.clockSettings && <ClockIcon className="h-3 w-3" />}
+          {settings.simulationSettings && (
+            <MixerHorizontalIcon className="h-3 w-3" />
+          )}
+          {settings.colorSettings && <PiPalette className="h-3 w-3" />}
         </div>
       )}
       <div
@@ -85,10 +96,14 @@ export default function SettingsLoadSaveControl({
             buttonType="save"
           />
         )}
-        {controlType === "presets" && (
+        {controlType === "presets" && !settings.isBasePreset && (
           <motion.button
-            className="flex cursor-pointer border border-rose-800 bg-rose-950 px-2 py-1"
+            className="flex cursor-pointer border border-rose-800 px-2 py-1"
             onClick={deletePreset}
+            style={{
+              backgroundColor: "#4d0218",
+            }}
+            whileHover={{ backgroundColor: "#8b0836" }}
           >
             {deletePresetText}
           </motion.button>

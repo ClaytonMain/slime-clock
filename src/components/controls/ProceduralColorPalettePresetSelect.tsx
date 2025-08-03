@@ -1,97 +1,49 @@
 import { produce } from "immer";
-import { useEffect } from "react";
-import { PROCEDURAL_COLOR_PALETTE_PRESETS } from "../../constants/constants";
+import { useEffect, useState } from "react";
 import useSlimeStore from "../../stores/useSlimeStore";
-import type { ProceduralColorPaletteName } from "../../types/types";
-import { roundToFixed } from "../../utils/utils";
+import { type LoadableSlimeStoreSettings } from "../../types/types";
 import SlimeStoreSelectControl from "./SlimeStoreSelectControl";
 
 export default function ProceduralColorPalettePresetSelect() {
-  const slimeColorChangedAt = useSlimeStore(
-    (state) => state.colorSettings.slimeColorChangedAt,
+  const presets = useSlimeStore((state) => state.presets);
+  const [presetColorSettings, setPresetColorSettings] = useState<
+    LoadableSlimeStoreSettings[]
+  >([]);
+  const [options, setOptions] = useState<{ value: string; label: string }[]>(
+    [],
   );
-  const currentProceduralColorPalettePreset = useSlimeStore(
-    (state) => state.colorSettings.currentProceduralColorPalettePreset,
-  );
-  const options = [
-    ...Object.keys(PROCEDURAL_COLOR_PALETTE_PRESETS),
-    "Custom",
-  ].map((key) => ({
-    value: key,
-    label: key,
-  }));
 
-  function handlePresetChange(value: ProceduralColorPaletteName) {
+  useEffect(() => {
+    const newPresetColorSettings = presets.filter(
+      (preset) => preset.colorSettings,
+    );
+    setPresetColorSettings(newPresetColorSettings);
+    setOptions(
+      newPresetColorSettings.map((preset) => ({
+        value: preset.name,
+        label: preset.name,
+      })),
+    );
+  }, [presets]);
+
+  function handlePresetChange(value: string) {
+    const selectedPreset = presetColorSettings.find(
+      (preset) => preset.name === value,
+    );
+    if (!selectedPreset || !selectedPreset.colorSettings) return;
     useSlimeStore.setState(
       produce((state) => {
-        const palette = PROCEDURAL_COLOR_PALETTE_PRESETS[value];
-        state.colorSettings.proceduralColorPalette = palette;
-        state.colorSettings.slimeColorChangedAt = Date.now();
-        state.colorSettings.currentProceduralColorPalettePreset = value;
+        state.colorSettings = {
+          ...state.colorSettings,
+          ...selectedPreset.colorSettings,
+          slimeColorChangedAt: Date.now(),
+        };
         state.controlsState.displayAreaContentName = "procedural-color-palette";
         state.controlsState.displayAreaContentType = "three";
+        state.presetLoadedAt = Date.now();
       }),
     );
   }
-
-  function handleSlimeColorChangedAt() {
-    const currentPalette =
-      useSlimeStore.getState().colorSettings.proceduralColorPalette;
-    let currentMatchesPreset: boolean = true;
-    for (const [key, preset] of Object.entries(
-      PROCEDURAL_COLOR_PALETTE_PRESETS,
-    )) {
-      currentMatchesPreset = true;
-      for (const channel of ["r", "g", "b"] as const) {
-        for (const property of [
-          "yOffset",
-          "amplitude",
-          "frequency",
-          "phase",
-        ] as const) {
-          const currentValue = roundToFixed(
-            currentPalette[channel][property],
-            4,
-          );
-          const presetValue = roundToFixed(preset[channel][property], 4);
-          if (currentValue !== presetValue) {
-            currentMatchesPreset = false;
-            break;
-          }
-        }
-        if (!currentMatchesPreset) {
-          break;
-        }
-      }
-      if (currentMatchesPreset) {
-        useSlimeStore.setState(
-          produce((state) => {
-            state.colorSettings.currentProceduralColorPalettePreset =
-              key as ProceduralColorPaletteName;
-          }),
-        );
-        break;
-      }
-    }
-    if (
-      !currentMatchesPreset &&
-      currentProceduralColorPalettePreset !== "Custom"
-    ) {
-      useSlimeStore.setState(
-        produce((state) => {
-          state.colorSettings.currentProceduralColorPalettePreset = "Custom";
-        }),
-      );
-    }
-  }
-
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      handleSlimeColorChangedAt();
-    }, 1000);
-    return () => clearTimeout(timeoutId);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [slimeColorChangedAt]);
 
   return (
     <SlimeStoreSelectControl
@@ -99,7 +51,6 @@ export default function ProceduralColorPalettePresetSelect() {
       baseInputId="procedural-color-palette-preset-select"
       storePath={["colorSettings", "currentProceduralColorPalettePreset"]}
       options={options}
-      // @ts-expect-error It's fine. Shhhhhhhh.
       onValueChange={handlePresetChange}
     />
   );

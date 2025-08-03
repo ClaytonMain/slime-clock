@@ -127,7 +127,7 @@ export interface LoadableColorSettings {
 }
 export interface ColorSettings extends LoadableColorSettings {
   slimeColorChangedAt: number;
-  currentProceduralColorPalettePreset: ProceduralColorPaletteName | "Custom";
+  currentProceduralColorPalettePreset: string;
   proceduralColorPaletteNeedsRandomization: boolean;
   backgroundColorNeedsRandomization: boolean;
   allowProceduralColorPaletteRandomization: boolean;
@@ -234,6 +234,7 @@ export type PaletteCycleTypeOption = {
 
 export type LoadableSlimeStoreSettings = {
   name: string;
+  isBasePreset?: boolean;
   clockSettings?: LoadableClockSettings;
   simulationSettings?: LoadableSimulationSettings;
   colorSettings?: LoadableColorSettings;

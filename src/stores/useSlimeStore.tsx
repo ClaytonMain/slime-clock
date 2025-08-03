@@ -8,6 +8,7 @@ import {
 import {
   DEFAULT_CLOCK_SETTINGS,
   DEFAULT_COLOR_SETTINGS,
+  DEFAULT_PRESETS,
   DEFAULT_SIMULATION_RANDOMIZATION_SETTINGS,
   DEFAULT_SIMULATION_SETTINGS,
 } from "../constants/constants";
@@ -23,7 +24,6 @@ import type {
 interface ControlsState {
   selectedTab: ControlsTabName;
   isOpen: boolean;
-  controlsTriggerDisplayState: "show" | "hide" | "dimmed";
   displayAreaContentUpdatedAt: number;
   displayAreaContentName: string | null;
   displayAreaHtmlContent: string | [string, string] | ReactNode | null;
@@ -54,10 +54,12 @@ interface SlimeStore {
 
 const persistOmit: (keyof SlimeStore)[] = [
   "portalContainer",
-  "colorSettings",
+  "resolutionsSet",
   "initialized",
   "controlsState",
-  "resolutionsSet",
+  "presetLoadedAt",
+  "lastInteractionAt",
+  "interactionState",
 ];
 
 const useSlimeStore = create<SlimeStore>()(
@@ -86,7 +88,6 @@ const useSlimeStore = create<SlimeStore>()(
         controlsState: {
           selectedTab: "randomization-controls",
           isOpen: false,
-          controlsTriggerDisplayState: "show", // "show" | "hide" | "dimmed"
           displayAreaContentUpdatedAt: Date.now(),
           displayAreaContentName: null,
           displayAreaHtmlContent: null,
@@ -98,7 +99,7 @@ const useSlimeStore = create<SlimeStore>()(
           controlsEditStoppedAt: Date.now(),
         },
         history: [],
-        presets: [],
+        presets: DEFAULT_PRESETS,
         presetLoadedAt: Date.now(),
         lastInteractionAt: Date.now(),
         interactionState: "active",

@@ -42,7 +42,7 @@ export default function SlimeStoreColorPicker({
   }, []);
 
   return (
-    <div className="flex items-center justify-center gap-2">
+    <div className="flex items-center justify-center gap-5">
       <HexColorInput
         id={`${baseId}-input`}
         color={selectedValue}
@@ -54,6 +54,7 @@ export default function SlimeStoreColorPicker({
         id={`${baseId}-picker`}
         color={selectedValue}
         onChange={handleOnValueChange}
+        className="max-h-24"
       />
     </div>
   );

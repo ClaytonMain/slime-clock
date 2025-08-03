@@ -122,6 +122,7 @@ export default function ColorControls() {
                 },
               ]}
             />
+            <ProceduralColorPalettePresetSelect />
           </AccordionControlsItem>
           <AccordionControlsItem
             value="background-color"
@@ -217,8 +218,8 @@ export default function ColorControls() {
               placeholder="Palette Cycle Type"
               storePath={["colorSettings", "paletteCycleType"]}
               options={PALETTE_CYCLE_TYPE_OPTIONS}
+              valueType="number"
             />
-            <ProceduralColorPalettePresetSelect />
             <ButtonControlGroup
               buttonConfigs={[
                 {
