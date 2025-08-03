@@ -1,16 +1,16 @@
 import { produce } from "immer";
 import { useEffect } from "react";
 import {
-  CLOCK_SETTINGS_HISTORY_KEYS,
-  COLOR_SETTINGS_HISTORY_KEYS,
-  SIMULATION_SETTINGS_HISTORY_KEYS,
+  LOADABLE_CLOCK_SETTINGS_KEYS,
+  LOADABLE_COLOR_SETTINGS_KEYS,
+  LOADABLE_SIMULATION_SETTINGS_KEYS,
 } from "../../constants/constants";
 import useSlimeStore from "../../stores/useSlimeStore";
 import type {
-  ClockSettingsHistory,
-  ColorSettingsHistory,
-  SimulationSettingsHistory,
-  SlimeStoreSettingsHistory,
+  LoadableClockSettings,
+  LoadableColorSettings,
+  LoadableSimulationSettings,
+  LoadableSlimeStoreSettings,
 } from "../../types/types";
 
 export default function SettingsHistoryListener() {
@@ -23,15 +23,15 @@ export default function SettingsHistoryListener() {
       const presetLoadedAt = useSlimeStore.getState().presetLoadedAt;
       if (Date.now() - presetLoadedAt < 1500) return;
 
-      const previousEntry: Partial<SlimeStoreSettingsHistory> =
+      const previousEntry: Partial<LoadableSlimeStoreSettings> =
         [...useSlimeStore.getState().history][0] || {};
       let hasChanges = false;
 
-      const previousClockSettings: Partial<ClockSettingsHistory> =
+      const previousClockSettings: Partial<LoadableClockSettings> =
         previousEntry.clockSettings || {};
-      const newClockSettings: Partial<ClockSettingsHistory> = {};
-      CLOCK_SETTINGS_HISTORY_KEYS.forEach((key) => {
-        const currentKey = key as keyof ClockSettingsHistory;
+      const newClockSettings: Partial<LoadableClockSettings> = {};
+      LOADABLE_CLOCK_SETTINGS_KEYS.forEach((key) => {
+        const currentKey = key as keyof LoadableClockSettings;
         if (previousClockSettings[currentKey] !== clockSettings[currentKey]) {
           // @ts-expect-error These are compatible.
           newClockSettings[currentKey] = clockSettings[currentKey];
@@ -42,11 +42,11 @@ export default function SettingsHistoryListener() {
         }
       });
 
-      const previousSimulationSettings: Partial<SimulationSettingsHistory> =
+      const previousSimulationSettings: Partial<LoadableSimulationSettings> =
         previousEntry.simulationSettings || {};
-      const newSimulationSettings: Partial<SimulationSettingsHistory> = {};
-      SIMULATION_SETTINGS_HISTORY_KEYS.forEach((key) => {
-        const currentKey = key as keyof SimulationSettingsHistory;
+      const newSimulationSettings: Partial<LoadableSimulationSettings> = {};
+      LOADABLE_SIMULATION_SETTINGS_KEYS.forEach((key) => {
+        const currentKey = key as keyof LoadableSimulationSettings;
         if (
           previousSimulationSettings[currentKey] !==
           simulationSettings[currentKey]
@@ -61,11 +61,11 @@ export default function SettingsHistoryListener() {
         }
       });
 
-      const previousColorSettings: Partial<ColorSettingsHistory> =
+      const previousColorSettings: Partial<LoadableColorSettings> =
         previousEntry.colorSettings || {};
-      const newColorSettings: Partial<ColorSettingsHistory> = {};
-      COLOR_SETTINGS_HISTORY_KEYS.forEach((key) => {
-        const currentKey = key as keyof ColorSettingsHistory;
+      const newColorSettings: Partial<LoadableColorSettings> = {};
+      LOADABLE_COLOR_SETTINGS_KEYS.forEach((key) => {
+        const currentKey = key as keyof LoadableColorSettings;
         if (previousColorSettings[currentKey] !== colorSettings[currentKey]) {
           // @ts-expect-error These are compatible.
           newColorSettings[currentKey] = colorSettings[currentKey];
@@ -77,18 +77,18 @@ export default function SettingsHistoryListener() {
       });
 
       if (hasChanges) {
-        const newEntry: SlimeStoreSettingsHistory = {
-          timestamp: new Date().toLocaleString(),
-          clockSettings: newClockSettings as ClockSettingsHistory,
+        const newEntry: LoadableSlimeStoreSettings = {
+          name: new Date().toLocaleString(),
+          clockSettings: newClockSettings as LoadableClockSettings,
           simulationSettings:
-            newSimulationSettings as SimulationSettingsHistory,
-          colorSettings: newColorSettings as ColorSettingsHistory,
+            newSimulationSettings as LoadableSimulationSettings,
+          colorSettings: newColorSettings as LoadableColorSettings,
         };
         console.log("Settings history changes detected:", newEntry);
 
         const history = [newEntry, ...useSlimeStore.getState().history];
         if (history.length > 100) {
-          history.pop(); // Keep the history size manageable
+          history.pop();
         }
         useSlimeStore.setState(
           produce((state) => {

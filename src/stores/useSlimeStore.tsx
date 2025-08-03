@@ -15,9 +15,9 @@ import type {
   ClockSettings,
   ColorSettings,
   ControlsTabName,
+  LoadableSlimeStoreSettings,
   SimulationRandomizationSettings,
   SimulationSettings,
-  SlimeStoreSettingsHistory,
 } from "../types/types";
 
 interface ControlsState {
@@ -45,9 +45,11 @@ interface SlimeStore {
   simulationRandomizationSettings: SimulationRandomizationSettings;
   colorSettings: ColorSettings;
   controlsState: ControlsState;
-  history: SlimeStoreSettingsHistory[];
-  presets: Record<string, Partial<SlimeStore>>;
+  history: LoadableSlimeStoreSettings[];
+  presets: LoadableSlimeStoreSettings[];
   presetLoadedAt: number;
+  lastInteractionAt: number;
+  interactionState: "active" | "inactive";
 }
 
 const persistOmit: (keyof SlimeStore)[] = [
@@ -96,8 +98,10 @@ const useSlimeStore = create<SlimeStore>()(
           controlsEditStoppedAt: Date.now(),
         },
         history: [],
-        presets: {},
+        presets: [],
         presetLoadedAt: Date.now(),
+        lastInteractionAt: Date.now(),
+        interactionState: "active",
       }),
       {
         name: "slime-storage",

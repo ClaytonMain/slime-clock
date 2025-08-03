@@ -1,16 +1,16 @@
 import type {
   AgentStartTypeDropdownOption,
   ClockSettings,
-  ClockSettingsHistory,
   ColorSettings,
-  ColorSettingsHistory,
   DisplayTextureAspectRatioDropdownOption,
+  LoadableClockSettings,
+  LoadableColorSettings,
+  LoadableSimulationSettings,
   PaletteCycleTypeOption,
   ProceduralColorPaletteChannel,
   ProceduralColorPalettePresets,
   SimulationRandomizationSettings,
   SimulationSettings,
-  SimulationSettingsHistory,
   SlimeColorMode,
 } from "../types/types";
 
@@ -355,7 +355,7 @@ export const PALETTE_CYCLE_TYPE_OPTIONS: PaletteCycleTypeOption[] = [
   { value: "2", label: "Continuous" },
 ] as const;
 
-export const CLOCK_SETTINGS_HISTORY_KEYS: (keyof ClockSettingsHistory)[] = [
+export const LOADABLE_CLOCK_SETTINGS_KEYS: (keyof LoadableClockSettings)[] = [
   "show",
   "size",
   "digitLayout",
@@ -366,7 +366,7 @@ export const CLOCK_SETTINGS_HISTORY_KEYS: (keyof ClockSettingsHistory)[] = [
   "clockShadowOpacity",
   "clockShadowColor",
 ];
-export const SIMULATION_SETTINGS_HISTORY_KEYS: (keyof SimulationSettingsHistory)[] =
+export const LOADABLE_SIMULATION_SETTINGS_KEYS: (keyof LoadableSimulationSettings)[] =
   [
     "speed",
     "boundaryBehavior",
@@ -389,7 +389,7 @@ export const SIMULATION_SETTINGS_HISTORY_KEYS: (keyof SimulationSettingsHistory)
     "trailBackgroundDecayRate",
     "trailBackgroundDiffuseRate",
   ];
-export const COLOR_SETTINGS_HISTORY_KEYS: (keyof ColorSettingsHistory)[] = [
+export const LOADABLE_COLOR_SETTINGS_KEYS: (keyof LoadableColorSettings)[] = [
   "backgroundColor",
   "slimeColorMode",
   "proceduralColorPalette",

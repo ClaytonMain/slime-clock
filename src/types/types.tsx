@@ -10,7 +10,7 @@ export type SelectOption<T> = {
   label: string;
 };
 
-export interface ClockSettingsHistory {
+export interface LoadableClockSettings {
   show: boolean;
   size: number;
   digitLayout: "vertical" | "horizontal";
@@ -22,9 +22,9 @@ export interface ClockSettingsHistory {
   clockShadowColor: string;
 }
 // To match the SimulationSettings and ColorSettings interface layout.
-export type ClockSettings = ClockSettingsHistory;
+export type ClockSettings = LoadableClockSettings;
 
-export interface SimulationSettingsHistory {
+export interface LoadableSimulationSettings {
   speed: number;
 
   boundaryBehavior: 0 | 1; // 0: Wrap, 1: Bounce
@@ -50,7 +50,7 @@ export interface SimulationSettingsHistory {
   trailBackgroundDiffuseRate: number;
 }
 
-export interface SimulationSettings extends SimulationSettingsHistory {
+export interface SimulationSettings extends LoadableSimulationSettings {
   preset: string;
 
   // TODO: Move these randomization settings somewhere else.
@@ -111,7 +111,7 @@ export interface ProceduralColorPalette {
 
 export type SlimeColorMode = "Procedural" | "Single";
 
-export interface ColorSettingsHistory {
+export interface LoadableColorSettings {
   backgroundColor: string;
   slimeColorMode: SlimeColorMode;
   proceduralColorPalette: ProceduralColorPalette;
@@ -125,7 +125,7 @@ export interface ColorSettingsHistory {
   paletteCycleScale: number;
   paletteCycleType: number;
 }
-export interface ColorSettings extends ColorSettingsHistory {
+export interface ColorSettings extends LoadableColorSettings {
   slimeColorChangedAt: number;
   currentProceduralColorPalettePreset: ProceduralColorPaletteName | "Custom";
   proceduralColorPaletteNeedsRandomization: boolean;
@@ -232,11 +232,9 @@ export type PaletteCycleTypeOption = {
   label: PaletteCycleType;
 };
 
-// TODO: Change naming to something like "LoadableSlimeStoreSettings".
-// TODO: Change "timestamp" to "name" or something.
-export type SlimeStoreSettingsHistory = {
-  timestamp: string;
-  clockSettings: ClockSettingsHistory;
-  simulationSettings: SimulationSettingsHistory;
-  colorSettings: ColorSettingsHistory;
+export type LoadableSlimeStoreSettings = {
+  name: string;
+  clockSettings?: LoadableClockSettings;
+  simulationSettings?: LoadableSimulationSettings;
+  colorSettings?: LoadableColorSettings;
 };

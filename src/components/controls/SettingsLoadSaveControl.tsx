@@ -1,20 +1,24 @@
 import { produce } from "immer";
 import { motion } from "motion/react";
 import { Label } from "radix-ui";
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import useSlimeStore from "../../stores/useSlimeStore";
-import type { SlimeStoreSettingsHistory } from "../../types/types";
-import LoadSettingsPopoverButton from "./LoadSettingsPopoverButton";
+import type { LoadableSlimeStoreSettings } from "../../types/types";
+import LoadOrSaveSettingsPopoverButton from "./LoadOrSaveSettingsPopoverButton";
 
 export default function SettingsLoadSaveControl({
   label,
   labelHoverTabContentDisplay,
   settings,
+  controlType,
 }: {
-  label?: string; // If you want to label the row containing the buttons.
+  label?: string;
   labelHoverTabContentDisplay?: string | [string, string] | ReactNode;
-  settings: SlimeStoreSettingsHistory;
+  settings: LoadableSlimeStoreSettings;
+  controlType: "history" | "presets";
 }) {
+  const [deletePresetText, setDeletePresetText] = useState<string>("Delete");
+
   function handlePointerOver() {
     if (labelHoverTabContentDisplay) {
       useSlimeStore.setState(
@@ -27,6 +31,28 @@ export default function SettingsLoadSaveControl({
         }),
       );
     }
+  }
+
+  useEffect(() => {
+    if (deletePresetText !== "Are you sure?") return;
+    const timeoutId = setTimeout(() => {
+      setDeletePresetText("Delete");
+    }, 2000);
+    return () => clearTimeout(timeoutId);
+  }, [deletePresetText]);
+
+  function deletePreset() {
+    if (deletePresetText === "Delete") {
+      setDeletePresetText("Are you sure?");
+      return;
+    }
+    let presets = useSlimeStore.getState().presets;
+    presets = presets.filter((preset) => preset.name !== settings.name);
+    useSlimeStore.setState(
+      produce((state) => {
+        state.presets = presets;
+      }),
+    );
   }
 
   return (
@@ -49,7 +75,24 @@ export default function SettingsLoadSaveControl({
           paddingLeft: label ? undefined : "calc(var(--spacing) * 2)",
         }}
       >
-        <LoadSettingsPopoverButton settings={settings} />
+        <LoadOrSaveSettingsPopoverButton
+          settings={settings}
+          buttonType="load"
+        />
+        {controlType === "history" && (
+          <LoadOrSaveSettingsPopoverButton
+            settings={settings}
+            buttonType="save"
+          />
+        )}
+        {controlType === "presets" && (
+          <motion.button
+            className="flex cursor-pointer border border-rose-800 bg-rose-950 px-2 py-1"
+            onClick={deletePreset}
+          >
+            {deletePresetText}
+          </motion.button>
+        )}
       </div>
     </motion.div>
   );

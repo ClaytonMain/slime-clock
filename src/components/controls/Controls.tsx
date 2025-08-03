@@ -21,6 +21,7 @@ export default function Controls() {
   );
   const isOpen = useSlimeStore((state) => state.controlsState.isOpen);
   const selectedTab = useSlimeStore((state) => state.controlsState.selectedTab);
+  const interactionState = useSlimeStore((state) => state.interactionState);
 
   const controlsContentOuterContainerRef = useRef<HTMLDivElement>(null);
 
@@ -88,6 +89,7 @@ export default function Controls() {
                 className="inline-flex cursor-pointer appearance-none rounded-full p-1"
                 animate={{
                   backgroundColor: "var(--color-zinc-950-60)",
+                  opacity: interactionState === "active" || isOpen ? 1 : 0.0,
                 }}
                 whileHover={{
                   backgroundColor: "var(--color-sky-950-60)",

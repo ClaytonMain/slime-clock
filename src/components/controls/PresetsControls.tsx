@@ -3,7 +3,6 @@ import { useEffect } from "react";
 import useSlimeStore from "../../stores/useSlimeStore";
 import AccordionControlsItem from "./AccordionControlsItem";
 import AccordionControlsWrapper from "./AccordionControlsWrapper";
-import ButtonControlGroup from "./ButtonControlGroup.tsx";
 import SettingsLoadSaveControl from "./SettingsLoadSaveControl.tsx";
 import TabContentContainer from "./TabContentContainer";
 import TabContentScrollArea from "./TabContentScrollArea";
@@ -11,6 +10,7 @@ import TabContentScrollArea from "./TabContentScrollArea";
 export default function PresetsControls() {
   const selectedTab = useSlimeStore((state) => state.controlsState.selectedTab);
   const history = useSlimeStore((state) => state.history);
+  const presets = useSlimeStore((state) => state.presets);
 
   const presetsControlsLabelHoverTabContentDisplay = [
     "Presets Controls",
@@ -35,45 +35,27 @@ export default function PresetsControls() {
       <TabContentScrollArea title="Presets">
         <AccordionControlsWrapper
           type="multiple"
-          defaultValue={["quick-settings"]}
+          defaultValue={["presets", "history"]}
         >
           <AccordionControlsItem
-            value="quick-settings"
-            label="Quick Settings"
-            labelHoverTabContentDisplay={[
-              "Quick Settings",
-              <div className="px-2 py-1">
-                <ul className="list-inside list-disc">
-                  <li>Gleep glorp</li>
-                </ul>
-              </div>,
-            ]}
+            value="presets"
+            label="Presets"
+            labelHoverTabContentDisplay={[]}
           >
-            <ButtonControlGroup
-              label="Quick Actions"
-              labelHoverTabContentDisplay={["Quick Actions"]}
-              buttonConfigs={[
-                {
-                  label: "(disabled) Save All as Preset",
-                  baseId: "save-all-as-preset-button",
-                  onClick: () => {
-                    // Implement save preset logic here
-                  },
-                },
-                {
-                  label: "(disabled) Save Sim. Settings as Preset",
-                  baseId: "save-simulation-settings-as-preset-button",
-                  onClick: () => null,
-                },
-                {
-                  label: "(disabled) Save Color Settings as Preset",
-                  baseId: "save-color-settings-as-preset-button",
-                  onClick: () => {
-                    // Implement save preset logic here
-                  },
-                },
-              ]}
-            />
+            {presets.map((preset) => (
+              <SettingsLoadSaveControl
+                key={preset.name}
+                label={preset.name}
+                labelHoverTabContentDisplay={[
+                  preset.name,
+                  <pre className="px-2 py-1 text-[0.6rem] whitespace-pre-wrap">
+                    {JSON.stringify(preset, null, 1)}
+                  </pre>,
+                ]}
+                settings={preset}
+                controlType="presets"
+              />
+            ))}
           </AccordionControlsItem>
 
           <AccordionControlsItem
@@ -83,15 +65,16 @@ export default function PresetsControls() {
           >
             {history.map((entry) => (
               <SettingsLoadSaveControl
-                key={entry.timestamp}
-                label={entry.timestamp}
+                key={entry.name}
+                label={entry.name}
                 labelHoverTabContentDisplay={[
-                  entry.timestamp,
+                  entry.name,
                   <pre className="px-2 py-1 text-[0.6rem] whitespace-pre-wrap">
                     {JSON.stringify(entry, null, 1)}
                   </pre>,
                 ]}
                 settings={entry}
+                controlType="history"
               />
             ))}
           </AccordionControlsItem>
