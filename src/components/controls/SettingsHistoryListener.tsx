@@ -79,6 +79,7 @@ export default function SettingsHistoryListener() {
       if (hasChanges) {
         const newEntry: LoadableSlimeStoreSettings = {
           name: new Date().toLocaleString(),
+          presetType: "Combination",
           clockSettings: newClockSettings as LoadableClockSettings,
           simulationSettings:
             newSimulationSettings as LoadableSimulationSettings,

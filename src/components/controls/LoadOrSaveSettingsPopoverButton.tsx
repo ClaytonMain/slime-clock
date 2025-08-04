@@ -13,14 +13,23 @@ export default function LoadOrSaveSettingsPopoverButton({
   buttonType: "load" | "save";
 }) {
   const [open, setOpen] = useState<boolean>(false);
-  const [includeClockSettings, setIncludeClockSettings] = useState<boolean>(
-    settings.clockSettings ? true : false,
-  );
-  const [includeSimulationSettings, setIncludeSimulationSettings] =
-    useState<boolean>(settings.simulationSettings ? true : false);
-  const [includeColorSettings, setIncludeColorSettings] = useState<boolean>(
-    settings.colorSettings ? true : false,
-  );
+  const [includeSettings, setIncludedSettings] = useState<{
+    clockSettings: boolean;
+    simulationSettings: boolean;
+    colorSettings: boolean;
+  }>({
+    clockSettings: !!settings.clockSettings,
+    simulationSettings: !!settings.simulationSettings,
+    colorSettings: !!settings.colorSettings,
+  });
+  // const [includeClockSettings, setIncludeClockSettings] = useState<boolean>(
+  //   settings.clockSettings ? true : false,
+  // );
+  // const [includeSimulationSettings, setIncludeSimulationSettings] =
+  //   useState<boolean>(settings.simulationSettings ? true : false);
+  // const [includeColorSettings, setIncludeColorSettings] = useState<boolean>(
+  //   settings.colorSettings ? true : false,
+  // );
   const portalContainer = useSlimeStore((state) => state.portalContainer);
   const [presetName, setPresetName] = useState<string>(settings.name);
   const [displayMessage, setDisplayMessage] = useState<string | null>(null);
@@ -37,29 +46,26 @@ export default function LoadOrSaveSettingsPopoverButton({
     const storeState = useSlimeStore.getState();
     useSlimeStore.setState(
       produce((state) => {
-        if (includeClockSettings) {
+        if (includeSettings.clockSettings) {
           state.clockSettings = {
             ...storeState.clockSettings,
             ...settings.clockSettings,
           };
         }
-        if (includeSimulationSettings) {
+        if (includeSettings.simulationSettings) {
           state.simulationSettings = {
             ...storeState.simulationSettings,
             ...settings.simulationSettings,
           };
         }
-        if (includeColorSettings) {
+        if (includeSettings.colorSettings) {
           state.colorSettings = {
             ...storeState.colorSettings,
             ...settings.colorSettings,
+            slimeColorChangedAt: Date.now(),
           };
         }
-        if (
-          includeClockSettings ||
-          includeSimulationSettings ||
-          includeColorSettings
-        ) {
+        if (Object.values(includeSettings).some(Boolean)) {
           state.presetLoadedAt = Date.now();
         }
       }),
@@ -75,9 +81,27 @@ export default function LoadOrSaveSettingsPopoverButton({
       return;
     }
 
+    let presetType:
+      | "Combination"
+      | "Clock Only"
+      | "Simulation Only"
+      | "Color Only" = "Combination";
+    if (Object.values(includeSettings).filter(Boolean).length === 1) {
+      if (includeSettings.clockSettings) {
+        presetType = "Clock Only";
+      } else if (includeSettings.simulationSettings) {
+        presetType = "Simulation Only";
+      } else if (includeSettings.colorSettings) {
+        presetType = "Color Only";
+      }
+    }
+
     const trimmedPresetName = presetName.trim();
     const duplicate = presets.some((preset) => {
-      if (trimmedPresetName === preset.name) {
+      if (
+        trimmedPresetName === preset.name &&
+        preset.presetType === presetType
+      ) {
         setDisplayMessage(
           "Unable to save: custom preset with this name already exists!",
         );
@@ -89,11 +113,16 @@ export default function LoadOrSaveSettingsPopoverButton({
 
     const processedPreset: LoadableSlimeStoreSettings = {
       name: trimmedPresetName,
-      clockSettings: includeClockSettings ? settings.clockSettings : undefined,
-      simulationSettings: includeSimulationSettings
+      presetType,
+      clockSettings: includeSettings.clockSettings
+        ? settings.clockSettings
+        : undefined,
+      simulationSettings: includeSettings.simulationSettings
         ? settings.simulationSettings
         : undefined,
-      colorSettings: includeColorSettings ? settings.colorSettings : undefined,
+      colorSettings: includeSettings.colorSettings
+        ? settings.colorSettings
+        : undefined,
     };
 
     presets = [...presets, processedPreset];
@@ -142,8 +171,13 @@ export default function LoadOrSaveSettingsPopoverButton({
             {settings.clockSettings && (
               <div className="flex gap-2">
                 <input
-                  checked={includeClockSettings}
-                  onChange={(e) => setIncludeClockSettings(e.target.checked)}
+                  checked={includeSettings.clockSettings}
+                  onChange={(e) =>
+                    setIncludedSettings((prev) => ({
+                      ...prev,
+                      clockSettings: e.target.checked,
+                    }))
+                  }
                   type="checkbox"
                   id={`${buttonType}-preset-include-clock-settings-${settings.name}`}
                   disabled={!settings.clockSettings}
@@ -158,9 +192,12 @@ export default function LoadOrSaveSettingsPopoverButton({
             {settings.simulationSettings && (
               <div className="flex gap-2">
                 <input
-                  checked={includeSimulationSettings}
+                  checked={includeSettings.simulationSettings}
                   onChange={(e) =>
-                    setIncludeSimulationSettings(e.target.checked)
+                    setIncludedSettings((prev) => ({
+                      ...prev,
+                      simulationSettings: e.target.checked,
+                    }))
                   }
                   type="checkbox"
                   id={`${buttonType}-preset-include-simulation-settings-${settings.name}`}
@@ -176,8 +213,13 @@ export default function LoadOrSaveSettingsPopoverButton({
             {settings.colorSettings && (
               <div className="flex gap-2">
                 <input
-                  checked={includeColorSettings}
-                  onChange={(e) => setIncludeColorSettings(e.target.checked)}
+                  checked={includeSettings.colorSettings}
+                  onChange={(e) =>
+                    setIncludedSettings((prev) => ({
+                      ...prev,
+                      colorSettings: e.target.checked,
+                    }))
+                  }
                   type="checkbox"
                   id={`${buttonType}-preset-include-color-settings-${settings.name}`}
                   disabled={!settings.colorSettings}

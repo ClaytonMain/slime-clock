@@ -406,7 +406,8 @@ export const LOADABLE_COLOR_SETTINGS_KEYS: (keyof LoadableColorSettings)[] = [
 
 export const DEFAULT_PRESETS: LoadableSlimeStoreSettings[] = [
   {
-    name: "Clock - Horiz.",
+    name: "Horizontal",
+    presetType: "Clock Only",
     isBasePreset: true,
     clockSettings: {
       show: true,
@@ -421,7 +422,8 @@ export const DEFAULT_PRESETS: LoadableSlimeStoreSettings[] = [
     },
   },
   {
-    name: "Clock - Vert.",
+    name: "Vertical",
+    presetType: "Clock Only",
     isBasePreset: true,
     clockSettings: {
       show: true,
@@ -436,7 +438,8 @@ export const DEFAULT_PRESETS: LoadableSlimeStoreSettings[] = [
     },
   },
   {
-    name: "Sim. - Default",
+    name: "Default",
+    presetType: "Simulation Only",
     isBasePreset: true,
     simulationSettings: {
       speed: 3.3,
@@ -462,7 +465,8 @@ export const DEFAULT_PRESETS: LoadableSlimeStoreSettings[] = [
     },
   },
   {
-    name: "Sim. - Inverted Gooey",
+    name: "Inverted Gooey",
+    presetType: "Simulation Only",
     isBasePreset: true,
     simulationSettings: {
       speed: 3.3,
@@ -488,7 +492,8 @@ export const DEFAULT_PRESETS: LoadableSlimeStoreSettings[] = [
     },
   },
   {
-    name: "Color - Rainbow",
+    name: "Rainbow",
+    presetType: "Color Only",
     isBasePreset: true,
     colorSettings: {
       backgroundColor: "#70f3eb",
@@ -510,7 +515,8 @@ export const DEFAULT_PRESETS: LoadableSlimeStoreSettings[] = [
     },
   },
   {
-    name: "Color - Bi",
+    name: "Bi",
+    presetType: "Color Only",
     isBasePreset: true,
     colorSettings: {
       backgroundColor: "#510c43",
