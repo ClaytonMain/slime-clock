@@ -3,7 +3,7 @@ import { motion } from "motion/react";
 import { Popover } from "radix-ui";
 import { useEffect, useState, type ChangeEvent } from "react";
 import useSlimeStore from "../../stores/useSlimeStore";
-import type { LoadableSlimeStoreSettings } from "../../types/types";
+import type { LoadableSlimeStoreSettings, PresetType } from "../../types/types";
 
 export default function LoadOrSaveSettingsPopoverButton({
   settings,
@@ -81,11 +81,7 @@ export default function LoadOrSaveSettingsPopoverButton({
       return;
     }
 
-    let presetType:
-      | "Combination"
-      | "Clock Only"
-      | "Simulation Only"
-      | "Color Only" = "Combination";
+    let presetType: PresetType = "Combination";
     if (Object.values(includeSettings).filter(Boolean).length === 1) {
       if (includeSettings.clockSettings) {
         presetType = "Clock Only";

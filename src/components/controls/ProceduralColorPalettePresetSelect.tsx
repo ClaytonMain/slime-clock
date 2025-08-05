@@ -12,6 +12,20 @@ export default function ProceduralColorPalettePresetSelect() {
   const [options, setOptions] = useState<{ value: string; label: string }[]>(
     [],
   );
+  const slimeColorChangedAt = useSlimeStore(
+    (state) => state.colorSettings.slimeColorChangedAt,
+  );
+
+  useEffect(() => {
+    const presetLoadedAt = useSlimeStore.getState().presetLoadedAt;
+    if (Date.now() - presetLoadedAt < 1500) {
+      useSlimeStore.setState(
+        produce((state) => {
+          state.colorSettings.currentProceduralColorPalettePreset = "Custom";
+        }),
+      );
+    }
+  }, [slimeColorChangedAt]);
 
   useEffect(() => {
     const newPresetColorSettings = presets.filter(
@@ -48,6 +62,7 @@ export default function ProceduralColorPalettePresetSelect() {
   return (
     <SlimeStoreSelectControl
       label="Presets"
+      placeholder="Select a preset"
       baseInputId="procedural-color-palette-preset-select"
       storePath={["colorSettings", "currentProceduralColorPalettePreset"]}
       options={options}

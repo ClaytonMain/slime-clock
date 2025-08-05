@@ -1,5 +1,5 @@
 import { produce } from "immer";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   LOADABLE_CLOCK_SETTINGS_KEYS,
   LOADABLE_COLOR_SETTINGS_KEYS,
@@ -10,6 +10,8 @@ import type {
   LoadableClockSettings,
   LoadableColorSettings,
   LoadableSimulationSettings,
+  LoadableSlimeStoreSettings,
+  PresetType,
 } from "../../types/types.tsx";
 import AccordionControlsItem from "./AccordionControlsItem";
 import AccordionControlsWrapper from "./AccordionControlsWrapper";
@@ -18,10 +20,35 @@ import SettingsLoadSaveControl from "./SettingsLoadSaveControl.tsx";
 import TabContentContainer from "./TabContentContainer";
 import TabContentScrollArea from "./TabContentScrollArea";
 
+function presetSortFunction(
+  a: LoadableSlimeStoreSettings,
+  b: LoadableSlimeStoreSettings,
+) {
+  const presetTypeOrder: Record<PresetType, number> = {
+    "Clock Only": 1,
+    "Simulation Only": 2,
+    "Color Only": 3,
+    Combination: 4,
+  };
+  const typeOrderA = presetTypeOrder[a.presetType];
+  const typeOrderB = presetTypeOrder[b.presetType];
+  if (typeOrderA !== typeOrderB) {
+    return typeOrderA - typeOrderB;
+  }
+  return a.name.localeCompare(b.name);
+}
+
 export default function PresetsControls() {
   const selectedTab = useSlimeStore((state) => state.controlsState.selectedTab);
   const history = useSlimeStore((state) => state.history);
   const presets = useSlimeStore((state) => state.presets);
+  const [sortedPresets, setSortedPresets] =
+    useState<LoadableSlimeStoreSettings[]>(presets);
+
+  useEffect(() => {
+    const sorted = [...presets].sort(presetSortFunction);
+    setSortedPresets(sorted);
+  }, [presets]);
 
   const presetsControlsLabelHoverTabContentDisplay = [
     "Presets Controls",
@@ -173,7 +200,7 @@ export default function PresetsControls() {
             label="Presets"
             labelHoverTabContentDisplay={[]}
           >
-            {presets.map((preset) => (
+            {sortedPresets.map((preset) => (
               <SettingsLoadSaveControl
                 key={preset.name}
                 label={preset.name}

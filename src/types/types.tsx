@@ -232,87 +232,14 @@ export type PaletteCycleTypeOption = {
   label: PaletteCycleType;
 };
 
+export type SinglePresetType = "Clock Only" | "Simulation Only" | "Color Only";
+export type MultiplePresetType = "Combination";
+export type PresetType = SinglePresetType | MultiplePresetType;
 export type LoadableSlimeStoreSettings = {
   name: string;
-  presetType?: "Clock Only" | "Simulation Only" | "Color Only" | "Combination";
+  presetType: PresetType;
   isBasePreset?: boolean;
   clockSettings?: LoadableClockSettings;
   simulationSettings?: LoadableSimulationSettings;
   colorSettings?: LoadableColorSettings;
 };
-
-// {
-//   "name": "Slimy 01",
-//   "simulationSettings": {
-//     "speed": 3.3,
-//     "boundaryBehavior": 0,
-//     "agentDensity": 0.25,
-//     "agentStartType": 5,
-//     "agentClockAttraction": 0.18,
-//     "agentClockDepositRate": 7.6,
-//     "agentBackgroundDepositRate": 9.4,
-//     "agentSensorDegrees": 17,
-//     "agentRotationRate": 2.8,
-//     "agentSensorOffset": 1.59,
-//     "agentSensorWidth": 0.31,
-//     "agentStepSize": 2.24,
-//     "agentCrowdAvoidance": 0.41,
-//     "agentWanderStrength": 0.4,
-//     "displayTextureAspectRatio": "Window",
-//     "displayTextureTargetQuality": 1,
-//     "trailClockDecayRate": 0.05,
-//     "trailClockDiffuseRate": 5,
-//     "trailBackgroundDecayRate": 0.41,
-//     "trailBackgroundDiffuseRate": 12.9
-//   }
-// }
-// {
-//   "name": "Slimy 02",
-//   "simulationSettings": {
-//     "speed": 3.3,
-//     "boundaryBehavior": 0,
-//     "agentDensity": 0.25,
-//     "agentStartType": 5,
-//     "agentClockAttraction": 0.03,
-//     "agentClockDepositRate": 14.5,
-//     "agentBackgroundDepositRate": 5.9,
-//     "agentSensorDegrees": 47,
-//     "agentRotationRate": 1.5,
-//     "agentSensorOffset": 2.22,
-//     "agentSensorWidth": 0.41,
-//     "agentStepSize": 1.33,
-//     "agentCrowdAvoidance": 0.33,
-//     "agentWanderStrength": 0.4,
-//     "displayTextureAspectRatio": "Window",
-//     "displayTextureTargetQuality": 1,
-//     "trailClockDecayRate": 0.01,
-//     "trailClockDiffuseRate": 4.5,
-//     "trailBackgroundDecayRate": 0.21,
-//     "trailBackgroundDiffuseRate": 5.2
-//   }
-// }
-// {
-//   "name": "Slimy 03",
-//   "simulationSettings": {
-//     "speed": 3.3,
-//     "boundaryBehavior": 0,
-//     "agentDensity": 0.25,
-//     "agentStartType": 5,
-//     "agentClockAttraction": 0.07,
-//     "agentClockDepositRate": 9.3,
-//     "agentBackgroundDepositRate": 12.7,
-//     "agentSensorDegrees": 72,
-//     "agentRotationRate": 2.4,
-//     "agentSensorOffset": 1.66,
-//     "agentSensorWidth": 0.25,
-//     "agentStepSize": 1.76,
-//     "agentCrowdAvoidance": 0.17,
-//     "agentWanderStrength": 1.1,
-//     "displayTextureAspectRatio": "Window",
-//     "displayTextureTargetQuality": 1,
-//     "trailClockDecayRate": 0.06,
-//     "trailClockDiffuseRate": 4.3,
-//     "trailBackgroundDecayRate": 0.43,
-//     "trailBackgroundDiffuseRate": 2
-//   }
-// }

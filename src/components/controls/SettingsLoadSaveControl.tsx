@@ -5,6 +5,10 @@ import { Label } from "radix-ui";
 import { useEffect, useState, type ReactNode } from "react";
 import { LuClipboardCopy } from "react-icons/lu";
 import { PiCheck, PiPalette } from "react-icons/pi";
+import {
+  MULTIPLE_PRESET_TYPES,
+  SINGLE_PRESET_TYPES,
+} from "../../constants/constants";
 import useSlimeStore from "../../stores/useSlimeStore";
 import type { LoadableSlimeStoreSettings } from "../../types/types";
 import LoadOrSaveSettingsPopoverButton from "./LoadOrSaveSettingsPopoverButton";
@@ -23,6 +27,9 @@ export default function SettingsLoadSaveControl({
 }) {
   const [deletePresetText, setDeletePresetText] = useState<string>("Delete");
   const [copyState, setCopyState] = useState<string>("ready");
+  const [presetIndicationIcons, setPresetIndicationIcons] = useState<
+    ReactNode[]
+  >([]);
 
   function handlePointerOver() {
     if (labelHoverTabContentDisplay) {
@@ -37,6 +44,52 @@ export default function SettingsLoadSaveControl({
       );
     }
   }
+
+  function loadSettings() {
+    const storeState = useSlimeStore.getState();
+    useSlimeStore.setState(
+      produce((state) => {
+        if (settings.clockSettings) {
+          state.clockSettings = {
+            ...storeState.clockSettings,
+            ...settings.clockSettings,
+          };
+        }
+        if (settings.simulationSettings) {
+          state.simulationSettings = {
+            ...storeState.simulationSettings,
+            ...settings.simulationSettings,
+          };
+        }
+        if (settings.colorSettings) {
+          state.colorSettings = {
+            ...storeState.colorSettings,
+            ...settings.colorSettings,
+            slimeColorChangedAt: Date.now(),
+          };
+        }
+        state.presetLoadedAt = Date.now();
+      }),
+    );
+  }
+
+  useEffect(() => {
+    if (controlType !== "presets") return;
+    const icons: ReactNode[] = [];
+    if (settings.clockSettings) {
+      icons.push(<ClockIcon key="clock-icon" className="h-3 w-3" />);
+    }
+    if (settings.simulationSettings) {
+      icons.push(
+        <MixerHorizontalIcon key="simulation-icon" className="h-3 w-3" />,
+      );
+    }
+    if (settings.colorSettings) {
+      icons.push(<PiPalette key="color-icon" className="h-3 w-3" />);
+    }
+    setPresetIndicationIcons(icons);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (copyState === "copied") {
@@ -76,17 +129,21 @@ export default function SettingsLoadSaveControl({
       className={`flex w-full gap-1 py-2`}
     >
       {label && (
-        <div className="flex flex-col items-center p-1">
+        <div className="flex items-center p-1">
           <Label.Root className="w-24 flex-none p-0.5 text-xs leading-none font-medium">
             {label}
           </Label.Root>
           {controlType === "presets" && (
-            <div className="flex w-18 flex-none items-center justify-center gap-1">
-              {settings.clockSettings && <ClockIcon className="h-3 w-3" />}
-              {settings.simulationSettings && (
-                <MixerHorizontalIcon className="h-3 w-3" />
+            <div className="flex w-6 flex-none flex-col items-center justify-center gap-1">
+              <div className="flex items-center justify-center gap-1">
+                {presetIndicationIcons[0]}
+              </div>
+              {presetIndicationIcons.length > 1 && (
+                <div className="flex items-center justify-center gap-1">
+                  {presetIndicationIcons[1]}
+                  {presetIndicationIcons[2] || null}
+                </div>
               )}
-              {settings.colorSettings && <PiPalette className="h-3 w-3" />}
             </div>
           )}
         </div>
@@ -98,10 +155,22 @@ export default function SettingsLoadSaveControl({
           paddingLeft: label ? undefined : "calc(var(--spacing) * 2)",
         }}
       >
-        <LoadOrSaveSettingsPopoverButton
-          settings={settings}
-          buttonType="load"
-        />
+        {SINGLE_PRESET_TYPES.some((type) => type === settings.presetType) && (
+          <motion.button
+            className="flex cursor-pointer border border-sky-800 px-2 py-1"
+            style={{ backgroundColor: "#18181b" }}
+            whileHover={{ backgroundColor: "#27272a" }}
+            onClick={loadSettings}
+          >
+            Load
+          </motion.button>
+        )}
+        {MULTIPLE_PRESET_TYPES.some((type) => type === settings.presetType) && (
+          <LoadOrSaveSettingsPopoverButton
+            settings={settings}
+            buttonType="load"
+          />
+        )}
         {controlType === "history" && (
           <LoadOrSaveSettingsPopoverButton
             settings={settings}
