@@ -54,7 +54,11 @@ export default function ColorControls() {
       <TabContentScrollArea title="Color">
         <AccordionControlsWrapper
           type="multiple"
-          defaultValue={["quick-controls"]}
+          defaultValue={[
+            "quick-controls",
+            "procedural-color-palette",
+            "palette-offsets-and-tweaks",
+          ]}
         >
           <AccordionControlsItem
             value="quick-controls"
@@ -138,11 +142,308 @@ export default function ColorControls() {
               storePath={["colorSettings", "backgroundColor"]}
             />
           </AccordionControlsItem>
+
           <AccordionControlsItem
             value="procedural-color-palette"
             label="Procedural Color Palette"
+          >
+            <ButtonControlGroup
+              buttonConfigs={[
+                {
+                  label: "Randomize Color Palette",
+                  baseId: "procedural-color-palette-randomize",
+                  onClick: () => {
+                    useSlimeStore.setState(
+                      produce((state) => {
+                        state.colorSettings.proceduralColorPaletteNeedsRandomization =
+                          true;
+                        state.colorSettings.slimeColorChangedAt = Date.now();
+                        state.controlsState.displayAreaContentName =
+                          "procedural-color-palette";
+                        state.controlsState.displayAreaContentType = "three";
+                        state.controlsState.displayAreaHtmlContent = null;
+                        state.controlsState.displayAreaContentUpdatedAt =
+                          Date.now();
+                      }),
+                    );
+                  },
+                },
+              ]}
+            />
+            <div className="flex flex-col gap-1 bg-red-500/5 p-2">
+              <div className="h-full w-(--footer-left-label-width) flex-none place-content-center p-0.5 text-left text-lg leading-none font-medium">
+                Red
+              </div>
+              <SlimeStoreSliderControl
+                label="Red Y-Offset"
+                baseInputId="procedural-color-palette-r-y-offset"
+                min={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.yOffset!.min}
+                max={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.yOffset!.max}
+                step={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.yOffset!.step}
+                storePath={[
+                  "colorSettings",
+                  "proceduralColorPalette",
+                  "r",
+                  "yOffset",
+                ]}
+                onValueChange={(value) =>
+                  handleOnValueChange(value, [
+                    "colorSettings",
+                    "proceduralColorPalette",
+                    "r",
+                    "yOffset",
+                  ])
+                }
+              />
+              <SlimeStoreSliderControl
+                label="Red Amplitude"
+                baseInputId="procedural-color-palette-r-amplitude"
+                min={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.amplitude!.min}
+                max={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.amplitude!.max}
+                step={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.amplitude!.step}
+                storePath={[
+                  "colorSettings",
+                  "proceduralColorPalette",
+                  "r",
+                  "amplitude",
+                ]}
+                onValueChange={(value) =>
+                  handleOnValueChange(value, [
+                    "colorSettings",
+                    "proceduralColorPalette",
+                    "r",
+                    "amplitude",
+                  ])
+                }
+              />
+              <SlimeStoreSliderControl
+                label="Red Frequency"
+                baseInputId="procedural-color-palette-r-frequency"
+                min={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.frequency!.min}
+                max={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.frequency!.max}
+                step={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.frequency!.step}
+                storePath={[
+                  "colorSettings",
+                  "proceduralColorPalette",
+                  "r",
+                  "frequency",
+                ]}
+                onValueChange={(value) =>
+                  handleOnValueChange(value, [
+                    "colorSettings",
+                    "proceduralColorPalette",
+                    "r",
+                    "frequency",
+                  ])
+                }
+              />
+              <SlimeStoreSliderControl
+                label="Red Phase"
+                baseInputId="procedural-color-palette-r-phase"
+                min={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.phase!.min}
+                max={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.phase!.max}
+                step={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.phase!.step}
+                storePath={[
+                  "colorSettings",
+                  "proceduralColorPalette",
+                  "r",
+                  "phase",
+                ]}
+                onValueChange={(value) =>
+                  handleOnValueChange(value, [
+                    "colorSettings",
+                    "proceduralColorPalette",
+                    "r",
+                    "phase",
+                  ])
+                }
+              />
+            </div>
+
+            <SlimeStoreSliderControl
+              label="Green Y-Offset"
+              baseInputId="procedural-color-palette-g-y-offset"
+              min={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.yOffset!.min}
+              max={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.yOffset!.max}
+              step={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.yOffset!.step}
+              storePath={[
+                "colorSettings",
+                "proceduralColorPalette",
+                "g",
+                "yOffset",
+              ]}
+              onValueChange={(value) =>
+                handleOnValueChange(value, [
+                  "colorSettings",
+                  "proceduralColorPalette",
+                  "g",
+                  "yOffset",
+                ])
+              }
+            />
+            <SlimeStoreSliderControl
+              label="Green Amplitude"
+              baseInputId="procedural-color-palette-g-amplitude"
+              min={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.amplitude!.min}
+              max={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.amplitude!.max}
+              step={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.amplitude!.step}
+              storePath={[
+                "colorSettings",
+                "proceduralColorPalette",
+                "g",
+                "amplitude",
+              ]}
+              onValueChange={(value) =>
+                handleOnValueChange(value, [
+                  "colorSettings",
+                  "proceduralColorPalette",
+                  "g",
+                  "amplitude",
+                ])
+              }
+            />
+            <SlimeStoreSliderControl
+              label="Green Frequency"
+              baseInputId="procedural-color-palette-g-frequency"
+              min={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.frequency!.min}
+              max={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.frequency!.max}
+              step={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.frequency!.step}
+              storePath={[
+                "colorSettings",
+                "proceduralColorPalette",
+                "g",
+                "frequency",
+              ]}
+              onValueChange={(value) =>
+                handleOnValueChange(value, [
+                  "colorSettings",
+                  "proceduralColorPalette",
+                  "g",
+                  "frequency",
+                ])
+              }
+            />
+            <SlimeStoreSliderControl
+              label="Green Phase"
+              baseInputId="procedural-color-palette-g-phase"
+              min={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.phase!.min}
+              max={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.phase!.max}
+              step={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.phase!.step}
+              storePath={[
+                "colorSettings",
+                "proceduralColorPalette",
+                "g",
+                "phase",
+              ]}
+              onValueChange={(value) =>
+                handleOnValueChange(value, [
+                  "colorSettings",
+                  "proceduralColorPalette",
+                  "g",
+                  "phase",
+                ])
+              }
+            />
+
+            <SlimeStoreSliderControl
+              label="Blue Y-Offset"
+              baseInputId="procedural-color-palette-b-y-offset"
+              min={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.yOffset!.min}
+              max={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.yOffset!.max}
+              step={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.yOffset!.step}
+              storePath={[
+                "colorSettings",
+                "proceduralColorPalette",
+                "b",
+                "yOffset",
+              ]}
+              onValueChange={(value) =>
+                handleOnValueChange(value, [
+                  "colorSettings",
+                  "proceduralColorPalette",
+                  "b",
+                  "yOffset",
+                ])
+              }
+            />
+            <SlimeStoreSliderControl
+              label="Blue Amplitude"
+              baseInputId="procedural-color-palette-b-amplitude"
+              min={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.amplitude!.min}
+              max={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.amplitude!.max}
+              step={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.amplitude!.step}
+              storePath={[
+                "colorSettings",
+                "proceduralColorPalette",
+                "b",
+                "amplitude",
+              ]}
+              onValueChange={(value) =>
+                handleOnValueChange(value, [
+                  "colorSettings",
+                  "proceduralColorPalette",
+                  "b",
+                  "amplitude",
+                ])
+              }
+            />
+            <SlimeStoreSliderControl
+              label="Blue Frequency"
+              baseInputId="procedural-color-palette-b-frequency"
+              min={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.frequency!.min}
+              max={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.frequency!.max}
+              step={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.frequency!.step}
+              storePath={[
+                "colorSettings",
+                "proceduralColorPalette",
+                "b",
+                "frequency",
+              ]}
+              onValueChange={(value) =>
+                handleOnValueChange(value, [
+                  "colorSettings",
+                  "proceduralColorPalette",
+                  "b",
+                  "frequency",
+                ])
+              }
+            />
+            <SlimeStoreSliderControl
+              label="Blue Phase"
+              baseInputId="procedural-color-palette-b-phase"
+              min={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.phase!.min}
+              max={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.phase!.max}
+              step={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.phase!.step}
+              storePath={[
+                "colorSettings",
+                "proceduralColorPalette",
+                "b",
+                "phase",
+              ]}
+              onValueChange={(value) =>
+                handleOnValueChange(value, [
+                  "colorSettings",
+                  "proceduralColorPalette",
+                  "b",
+                  "phase",
+                ])
+              }
+            />
+          </AccordionControlsItem>
+
+          <AccordionControlsItem
+            value="palette-offsets-and-tweaks"
+            label="Palette Offsets & Tweaks"
             padContent={false}
           >
+            <SlimeStoreSelectControl
+              label="Palette Cycle Type"
+              baseInputId="procedural-color-palette-cycle-type-select"
+              placeholder="Palette Cycle Type"
+              storePath={["colorSettings", "paletteCycleType"]}
+              options={PALETTE_CYCLE_TYPE_OPTIONS}
+              valueType="number"
+            />
             <SlimeStoreSliderControl
               label="Intensity Smoothing"
               baseInputId="intensity-smoothing"
@@ -212,312 +513,6 @@ export default function ColorControls() {
               storePath={["colorSettings", "paletteCycleScale"]}
               labelHoverTabContentDisplay={["Palette Cycle Scale"]}
             />
-            <SlimeStoreSelectControl
-              label="Palette Cycle Type"
-              baseInputId="procedural-color-palette-cycle-type-select"
-              placeholder="Palette Cycle Type"
-              storePath={["colorSettings", "paletteCycleType"]}
-              options={PALETTE_CYCLE_TYPE_OPTIONS}
-              valueType="number"
-            />
-            <ButtonControlGroup
-              buttonConfigs={[
-                {
-                  label: "Randomize Color Palette",
-                  baseId: "procedural-color-palette-randomize",
-                  onClick: () => {
-                    useSlimeStore.setState(
-                      produce((state) => {
-                        state.colorSettings.proceduralColorPaletteNeedsRandomization =
-                          true;
-                        state.colorSettings.slimeColorChangedAt = Date.now();
-                        state.controlsState.displayAreaContentName =
-                          "procedural-color-palette";
-                        state.controlsState.displayAreaContentType = "three";
-                        state.controlsState.displayAreaHtmlContent = null;
-                        state.controlsState.displayAreaContentUpdatedAt =
-                          Date.now();
-                      }),
-                    );
-                  },
-                },
-              ]}
-            />
-            <AccordionControlsWrapper
-              type="multiple"
-              defaultValue={["red", "green", "blue"]}
-            >
-              <AccordionControlsItem value="red" label="Red">
-                <SlimeStoreSliderControl
-                  label="Y-Offset"
-                  baseInputId="procedural-color-palette-r-y-offset"
-                  min={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.yOffset!.min}
-                  max={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.yOffset!.max}
-                  step={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.yOffset!.step}
-                  storePath={[
-                    "colorSettings",
-                    "proceduralColorPalette",
-                    "r",
-                    "yOffset",
-                  ]}
-                  onValueChange={(value) =>
-                    handleOnValueChange(value, [
-                      "colorSettings",
-                      "proceduralColorPalette",
-                      "r",
-                      "yOffset",
-                    ])
-                  }
-                />
-                <SlimeStoreSliderControl
-                  label="Amplitude"
-                  baseInputId="procedural-color-palette-r-amplitude"
-                  min={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.amplitude!.min}
-                  max={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.amplitude!.max}
-                  step={
-                    PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.amplitude!.step
-                  }
-                  storePath={[
-                    "colorSettings",
-                    "proceduralColorPalette",
-                    "r",
-                    "amplitude",
-                  ]}
-                  onValueChange={(value) =>
-                    handleOnValueChange(value, [
-                      "colorSettings",
-                      "proceduralColorPalette",
-                      "r",
-                      "amplitude",
-                    ])
-                  }
-                />
-                <SlimeStoreSliderControl
-                  label="Frequency"
-                  baseInputId="procedural-color-palette-r-frequency"
-                  min={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.frequency!.min}
-                  max={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.frequency!.max}
-                  step={
-                    PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.frequency!.step
-                  }
-                  storePath={[
-                    "colorSettings",
-                    "proceduralColorPalette",
-                    "r",
-                    "frequency",
-                  ]}
-                  onValueChange={(value) =>
-                    handleOnValueChange(value, [
-                      "colorSettings",
-                      "proceduralColorPalette",
-                      "r",
-                      "frequency",
-                    ])
-                  }
-                />
-                <SlimeStoreSliderControl
-                  label="Phase"
-                  baseInputId="procedural-color-palette-r-phase"
-                  min={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.phase!.min}
-                  max={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.phase!.max}
-                  step={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.phase!.step}
-                  storePath={[
-                    "colorSettings",
-                    "proceduralColorPalette",
-                    "r",
-                    "phase",
-                  ]}
-                  onValueChange={(value) =>
-                    handleOnValueChange(value, [
-                      "colorSettings",
-                      "proceduralColorPalette",
-                      "r",
-                      "phase",
-                    ])
-                  }
-                />
-              </AccordionControlsItem>
-              <AccordionControlsItem value="green" label="Green">
-                <SlimeStoreSliderControl
-                  label="Y-Offset"
-                  baseInputId="procedural-color-palette-g-y-offset"
-                  min={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.yOffset!.min}
-                  max={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.yOffset!.max}
-                  step={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.yOffset!.step}
-                  storePath={[
-                    "colorSettings",
-                    "proceduralColorPalette",
-                    "g",
-                    "yOffset",
-                  ]}
-                  onValueChange={(value) =>
-                    handleOnValueChange(value, [
-                      "colorSettings",
-                      "proceduralColorPalette",
-                      "g",
-                      "yOffset",
-                    ])
-                  }
-                />
-                <SlimeStoreSliderControl
-                  label="Amplitude"
-                  baseInputId="procedural-color-palette-g-amplitude"
-                  min={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.amplitude!.min}
-                  max={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.amplitude!.max}
-                  step={
-                    PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.amplitude!.step
-                  }
-                  storePath={[
-                    "colorSettings",
-                    "proceduralColorPalette",
-                    "g",
-                    "amplitude",
-                  ]}
-                  onValueChange={(value) =>
-                    handleOnValueChange(value, [
-                      "colorSettings",
-                      "proceduralColorPalette",
-                      "g",
-                      "amplitude",
-                    ])
-                  }
-                />
-                <SlimeStoreSliderControl
-                  label="Frequency"
-                  baseInputId="procedural-color-palette-g-frequency"
-                  min={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.frequency!.min}
-                  max={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.frequency!.max}
-                  step={
-                    PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.frequency!.step
-                  }
-                  storePath={[
-                    "colorSettings",
-                    "proceduralColorPalette",
-                    "g",
-                    "frequency",
-                  ]}
-                  onValueChange={(value) =>
-                    handleOnValueChange(value, [
-                      "colorSettings",
-                      "proceduralColorPalette",
-                      "g",
-                      "frequency",
-                    ])
-                  }
-                />
-                <SlimeStoreSliderControl
-                  label="Phase"
-                  baseInputId="procedural-color-palette-g-phase"
-                  min={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.phase!.min}
-                  max={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.phase!.max}
-                  step={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.phase!.step}
-                  storePath={[
-                    "colorSettings",
-                    "proceduralColorPalette",
-                    "g",
-                    "phase",
-                  ]}
-                  onValueChange={(value) =>
-                    handleOnValueChange(value, [
-                      "colorSettings",
-                      "proceduralColorPalette",
-                      "g",
-                      "phase",
-                    ])
-                  }
-                />
-              </AccordionControlsItem>
-              <AccordionControlsItem value="blue" label="Blue">
-                <SlimeStoreSliderControl
-                  label="Y-Offset"
-                  baseInputId="procedural-color-palette-b-y-offset"
-                  min={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.yOffset!.min}
-                  max={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.yOffset!.max}
-                  step={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.yOffset!.step}
-                  storePath={[
-                    "colorSettings",
-                    "proceduralColorPalette",
-                    "b",
-                    "yOffset",
-                  ]}
-                  onValueChange={(value) =>
-                    handleOnValueChange(value, [
-                      "colorSettings",
-                      "proceduralColorPalette",
-                      "b",
-                      "yOffset",
-                    ])
-                  }
-                />
-                <SlimeStoreSliderControl
-                  label="Amplitude"
-                  baseInputId="procedural-color-palette-b-amplitude"
-                  min={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.amplitude!.min}
-                  max={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.amplitude!.max}
-                  step={
-                    PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.amplitude!.step
-                  }
-                  storePath={[
-                    "colorSettings",
-                    "proceduralColorPalette",
-                    "b",
-                    "amplitude",
-                  ]}
-                  onValueChange={(value) =>
-                    handleOnValueChange(value, [
-                      "colorSettings",
-                      "proceduralColorPalette",
-                      "b",
-                      "amplitude",
-                    ])
-                  }
-                />
-                <SlimeStoreSliderControl
-                  label="Frequency"
-                  baseInputId="procedural-color-palette-b-frequency"
-                  min={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.frequency!.min}
-                  max={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.frequency!.max}
-                  step={
-                    PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.frequency!.step
-                  }
-                  storePath={[
-                    "colorSettings",
-                    "proceduralColorPalette",
-                    "b",
-                    "frequency",
-                  ]}
-                  onValueChange={(value) =>
-                    handleOnValueChange(value, [
-                      "colorSettings",
-                      "proceduralColorPalette",
-                      "b",
-                      "frequency",
-                    ])
-                  }
-                />
-                <SlimeStoreSliderControl
-                  label="Phase"
-                  baseInputId="procedural-color-palette-b-phase"
-                  min={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.phase!.min}
-                  max={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.phase!.max}
-                  step={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.phase!.step}
-                  storePath={[
-                    "colorSettings",
-                    "proceduralColorPalette",
-                    "b",
-                    "phase",
-                  ]}
-                  onValueChange={(value) =>
-                    handleOnValueChange(value, [
-                      "colorSettings",
-                      "proceduralColorPalette",
-                      "b",
-                      "phase",
-                    ])
-                  }
-                />
-              </AccordionControlsItem>
-            </AccordionControlsWrapper>
           </AccordionControlsItem>
         </AccordionControlsWrapper>
       </TabContentScrollArea>

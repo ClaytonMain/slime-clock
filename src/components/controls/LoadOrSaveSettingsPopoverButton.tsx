@@ -22,14 +22,6 @@ export default function LoadOrSaveSettingsPopoverButton({
     simulationSettings: !!settings.simulationSettings,
     colorSettings: !!settings.colorSettings,
   });
-  // const [includeClockSettings, setIncludeClockSettings] = useState<boolean>(
-  //   settings.clockSettings ? true : false,
-  // );
-  // const [includeSimulationSettings, setIncludeSimulationSettings] =
-  //   useState<boolean>(settings.simulationSettings ? true : false);
-  // const [includeColorSettings, setIncludeColorSettings] = useState<boolean>(
-  //   settings.colorSettings ? true : false,
-  // );
   const portalContainer = useSlimeStore((state) => state.portalContainer);
   const [presetName, setPresetName] = useState<string>(settings.name);
   const [displayMessage, setDisplayMessage] = useState<string | null>(null);
@@ -99,7 +91,7 @@ export default function LoadOrSaveSettingsPopoverButton({
         preset.presetType === presetType
       ) {
         setDisplayMessage(
-          "Unable to save: custom preset with this name already exists!",
+          `Unable to save: a "${presetType}" preset with this name already exists!`,
         );
         return true;
       }

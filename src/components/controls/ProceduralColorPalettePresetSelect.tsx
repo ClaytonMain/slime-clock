@@ -12,20 +12,25 @@ export default function ProceduralColorPalettePresetSelect() {
   const [options, setOptions] = useState<{ value: string; label: string }[]>(
     [],
   );
-  const slimeColorChangedAt = useSlimeStore(
-    (state) => state.colorSettings.slimeColorChangedAt,
-  );
+  const colorSettings = useSlimeStore((state) => state.colorSettings);
 
   useEffect(() => {
     const presetLoadedAt = useSlimeStore.getState().presetLoadedAt;
-    if (Date.now() - presetLoadedAt < 1500) {
+    if (Date.now() - presetLoadedAt > 1500) {
+      setOptions([
+        ...presets.map((preset) => ({
+          value: preset.name,
+          label: preset.name,
+        })),
+        { value: "Custom", label: "Custom" },
+      ]);
       useSlimeStore.setState(
         produce((state) => {
           state.colorSettings.currentProceduralColorPalettePreset = "Custom";
         }),
       );
     }
-  }, [slimeColorChangedAt]);
+  }, [colorSettings]);
 
   useEffect(() => {
     const newPresetColorSettings = presets.filter(
@@ -51,6 +56,7 @@ export default function ProceduralColorPalettePresetSelect() {
           ...state.colorSettings,
           ...selectedPreset.colorSettings,
           slimeColorChangedAt: Date.now(),
+          currentProceduralColorPalettePreset: value,
         };
         state.controlsState.displayAreaContentName = "procedural-color-palette";
         state.controlsState.displayAreaContentType = "three";
