@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { FullScreen, useFullScreenHandle } from "react-full-screen";
 import Controls from "./components/controls/Controls";
 import SlimeClockScene from "./components/slime-clock/SlimeClockScene";
+import ToastProvider from "./ToastProvider";
 
 function App() {
   const handle = useFullScreenHandle();
@@ -28,6 +29,7 @@ function App() {
         <div className="top-0 left-0 m-0 h-full w-full overflow-hidden p-0">
           <SlimeClockScene />
           <Controls />
+          <ToastProvider />
         </div>
       </FullScreen>
     </>

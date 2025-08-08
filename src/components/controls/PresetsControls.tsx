@@ -1,5 +1,5 @@
 import { produce } from "immer";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import {
   LOADABLE_CLOCK_SETTINGS_KEYS,
   LOADABLE_COLOR_SETTINGS_KEYS,
@@ -10,8 +10,6 @@ import type {
   LoadableClockSettings,
   LoadableColorSettings,
   LoadableSimulationSettings,
-  LoadableSlimeStoreSettings,
-  PresetType,
 } from "../../types/types.tsx";
 import AccordionControlsItem from "./AccordionControlsItem";
 import AccordionControlsWrapper from "./AccordionControlsWrapper";
@@ -20,35 +18,10 @@ import SettingsLoadSaveControl from "./SettingsLoadSaveControl.tsx";
 import TabContentContainer from "./TabContentContainer";
 import TabContentScrollArea from "./TabContentScrollArea";
 
-function presetSortFunction(
-  a: LoadableSlimeStoreSettings,
-  b: LoadableSlimeStoreSettings,
-) {
-  const presetTypeOrder: Record<PresetType, number> = {
-    "Clock Only": 1,
-    "Simulation Only": 2,
-    "Color Only": 3,
-    Combination: 4,
-  };
-  const typeOrderA = presetTypeOrder[a.presetType];
-  const typeOrderB = presetTypeOrder[b.presetType];
-  if (typeOrderA !== typeOrderB) {
-    return typeOrderA - typeOrderB;
-  }
-  return a.name.localeCompare(b.name);
-}
-
 export default function PresetsControls() {
   const selectedTab = useSlimeStore((state) => state.controlsState.selectedTab);
   const history = useSlimeStore((state) => state.history);
-  const presets = useSlimeStore((state) => state.presets);
-  const [sortedPresets, setSortedPresets] =
-    useState<LoadableSlimeStoreSettings[]>(presets);
-
-  useEffect(() => {
-    const sorted = [...presets].sort(presetSortFunction);
-    setSortedPresets(sorted);
-  }, [presets]);
+  const sortedPresets = useSlimeStore((state) => state.sortedPresets);
 
   const presetsControlsLabelHoverTabContentDisplay = [
     "Presets Controls",
@@ -75,8 +48,15 @@ export default function PresetsControls() {
         const parsedData = JSON.parse(data);
 
         if (!parsedData || typeof parsedData !== "object") {
-          // TODO: Alert the user.
-          console.error("Invalid data format from clipboard");
+          useSlimeStore.setState(
+            produce((state) => {
+              state.toast.title = "Error";
+              state.toast.description =
+                "Invalid data format! Double-check your clipboard data.";
+              state.toast.type = "error";
+              state.toast.lastTriggeredAt = Date.now();
+            }),
+          );
           return;
         }
         const expectedKeys = [
@@ -85,8 +65,15 @@ export default function PresetsControls() {
           "colorSettings",
         ];
         if (!expectedKeys.some((key) => key in parsedData)) {
-          // TODO: Alert the user.
-          console.error("Missing expected keys in clipboard data");
+          useSlimeStore.setState(
+            produce((state) => {
+              state.toast.title = "Error";
+              state.toast.description =
+                "No expected settings found! Double-check your clipboard data.";
+              state.toast.type = "error";
+              state.toast.lastTriggeredAt = Date.now();
+            }),
+          );
           return;
         }
         if ("clockSettings" in parsedData) {
@@ -167,6 +154,15 @@ export default function PresetsControls() {
         }
       })
       .catch((error) => {
+        useSlimeStore.setState(
+          produce((state) => {
+            state.toast.title = "Error";
+            state.toast.description =
+              "Failed to load from clipboard! Please try again.";
+            state.toast.type = "error";
+            state.toast.lastTriggeredAt = Date.now();
+          }),
+        );
         console.error("Failed to load from clipboard:", error);
       });
   }
@@ -175,8 +171,17 @@ export default function PresetsControls() {
     <TabContentContainer tabsValue="presets-controls">
       <TabContentScrollArea title="Presets">
         <AccordionControlsWrapper
+          accordionId="presets-controls-accordion"
           type="multiple"
-          defaultValue={["import-export", "presets", "history"]}
+          defaultValue={[
+            "import-export",
+            "presets",
+            "presets-clock-only",
+            "presets-simulation-only",
+            "presets-color-only",
+            "presets-combination",
+            "history",
+          ]}
         >
           <AccordionControlsItem
             value="import-export"
@@ -200,20 +205,90 @@ export default function PresetsControls() {
             label="Presets"
             labelHoverTabContentDisplay={[]}
           >
-            {sortedPresets.map((preset) => (
-              <SettingsLoadSaveControl
-                key={preset.name}
-                label={preset.name}
-                labelHoverTabContentDisplay={[
-                  preset.name,
-                  <pre className="px-2 py-1 text-[0.6rem] whitespace-pre-wrap">
-                    {JSON.stringify(preset, null, 1)}
-                  </pre>,
-                ]}
-                settings={preset}
-                controlType="presets"
-              />
-            ))}
+            {sortedPresets["Clock Only"] && (
+              <AccordionControlsItem
+                value="presets-clock-only"
+                label="Clock Only"
+              >
+                {sortedPresets["Clock Only"].map((preset) => (
+                  <SettingsLoadSaveControl
+                    key={preset.name}
+                    label={preset.name}
+                    labelHoverTabContentDisplay={[
+                      preset.name,
+                      <pre className="px-2 py-1 text-[0.6rem] whitespace-pre-wrap">
+                        {JSON.stringify(preset, null, 1)}
+                      </pre>,
+                    ]}
+                    settings={preset}
+                    controlType="presets"
+                  />
+                ))}
+              </AccordionControlsItem>
+            )}
+            {sortedPresets["Simulation Only"] && (
+              <AccordionControlsItem
+                value="presets-simulation-only"
+                label="Simulation Only"
+              >
+                {sortedPresets["Simulation Only"].map((preset) => (
+                  <SettingsLoadSaveControl
+                    key={preset.name}
+                    label={preset.name}
+                    labelHoverTabContentDisplay={[
+                      preset.name,
+                      <pre className="px-2 py-1 text-[0.6rem] whitespace-pre-wrap">
+                        {JSON.stringify(preset, null, 1)}
+                      </pre>,
+                    ]}
+                    settings={preset}
+                    controlType="presets"
+                  />
+                ))}
+              </AccordionControlsItem>
+            )}
+            {sortedPresets["Color Only"] && (
+              <AccordionControlsItem
+                value="presets-color-only"
+                label="Color Only"
+              >
+                {sortedPresets["Color Only"].map((preset) => (
+                  <SettingsLoadSaveControl
+                    key={preset.name}
+                    label={preset.name}
+                    labelHoverTabContentDisplay={[
+                      preset.name,
+                      <pre className="px-2 py-1 text-[0.6rem] whitespace-pre-wrap">
+                        {JSON.stringify(preset, null, 1)}
+                      </pre>,
+                    ]}
+                    settings={preset}
+                    controlType="presets"
+                  />
+                ))}
+              </AccordionControlsItem>
+            )}
+            {sortedPresets["Combination"] && (
+              <AccordionControlsItem
+                value="presets-combination"
+                label="Combination Only"
+              >
+                {sortedPresets["Combination"].map((preset) => (
+                  <SettingsLoadSaveControl
+                    key={preset.name}
+                    label={preset.name}
+                    labelHoverTabContentDisplay={[
+                      preset.name,
+                      <pre className="px-2 py-1 text-[0.6rem] whitespace-pre-wrap">
+                        {JSON.stringify(preset, null, 1)}
+                      </pre>,
+                    ]}
+                    settings={preset}
+                    controlType="presets"
+                  />
+                ))}
+              </AccordionControlsItem>
+            )}
           </AccordionControlsItem>
 
           <AccordionControlsItem

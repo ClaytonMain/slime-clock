@@ -3,6 +3,7 @@ import { Canvas } from "@react-three/fiber";
 import { Suspense, useEffect, useRef } from "react";
 
 import InteractionListener from "../../InteractionListener";
+import PresetsChangeListener from "../../PresetsChangeListener";
 import useSlimeStore from "../../stores/useSlimeStore";
 import SlimeClock from "./SlimeClock";
 
@@ -54,6 +55,7 @@ export default function SlimeClockScene() {
           <Stats />
           <SlimeClock />
           <InteractionListener />
+          <PresetsChangeListener />
         </Suspense>
       </Canvas>
       <Loader />

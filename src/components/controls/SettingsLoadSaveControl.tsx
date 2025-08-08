@@ -69,6 +69,12 @@ export default function SettingsLoadSaveControl({
           };
         }
         state.presetLoadedAt = Date.now();
+        state.toast = {
+          title: "Settings Loaded",
+          description: `Preset "${settings.name}" loaded successfully.`,
+          type: "success",
+          lastTriggeredAt: Date.now(),
+        };
       }),
     );
   }

@@ -61,6 +61,7 @@ export default function RandomizationControls() {
     <TabContentContainer tabsValue="randomization-controls">
       <TabContentScrollArea title="Randomization">
         <AccordionControlsWrapper
+          accordionId="randomization-controls-accordion"
           type="multiple"
           defaultValue={["quick-controls"]}
         >

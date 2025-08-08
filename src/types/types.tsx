@@ -243,3 +243,12 @@ export type LoadableSlimeStoreSettings = {
   simulationSettings?: LoadableSimulationSettings;
   colorSettings?: LoadableColorSettings;
 };
+
+export type ToastState = {
+  title: string | null;
+  description: string | null;
+  type: "success" | "error" | "info" | null;
+  lastTriggeredAt: number;
+};
+
+export type SortedPresets = Record<PresetType, LoadableSlimeStoreSettings[]>;

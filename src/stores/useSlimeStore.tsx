@@ -19,6 +19,8 @@ import type {
   LoadableSlimeStoreSettings,
   SimulationRandomizationSettings,
   SimulationSettings,
+  SortedPresets,
+  ToastState,
 } from "../types/types";
 
 interface ControlsState {
@@ -33,6 +35,7 @@ interface ControlsState {
   selectedTabButtonClientRect: DOMRect | null;
   showSelectedTabCornerIcons: boolean;
   controlsEditStoppedAt: number;
+  accordionValues: Record<string, string | string[]>;
 }
 
 interface SlimeStore {
@@ -47,9 +50,11 @@ interface SlimeStore {
   controlsState: ControlsState;
   history: LoadableSlimeStoreSettings[];
   presets: LoadableSlimeStoreSettings[];
+  sortedPresets: SortedPresets;
   presetLoadedAt: number;
   lastInteractionAt: number;
   interactionState: "active" | "inactive";
+  toast: ToastState;
 }
 
 const persistOmit: (keyof SlimeStore)[] = [
@@ -60,6 +65,7 @@ const persistOmit: (keyof SlimeStore)[] = [
   "presetLoadedAt",
   "lastInteractionAt",
   "interactionState",
+  "toast",
 ];
 
 const useSlimeStore = create<SlimeStore>()(
@@ -97,12 +103,25 @@ const useSlimeStore = create<SlimeStore>()(
           selectedTabButtonClientRect: null,
           showSelectedTabCornerIcons: false,
           controlsEditStoppedAt: Date.now(),
+          accordionValues: {},
         },
         history: [],
         presets: DEFAULT_PRESETS,
+        sortedPresets: {
+          "Clock Only": [],
+          "Simulation Only": [],
+          "Color Only": [],
+          Combination: [],
+        },
         presetLoadedAt: Date.now(),
         lastInteractionAt: Date.now(),
         interactionState: "active",
+        toast: {
+          title: null,
+          description: null,
+          type: null,
+          lastTriggeredAt: 0,
+        },
       }),
       {
         name: "slime-storage",

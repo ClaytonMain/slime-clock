@@ -9,6 +9,7 @@ import type {
 import CodeBlock from "../code-block/CodeBlock";
 import AccordionControlsItem from "./AccordionControlsItem";
 import AccordionControlsWrapper from "./AccordionControlsWrapper";
+import SettingsLoadSaveControl from "./SettingsLoadSaveControl";
 import SlimeStoreColorPickerControl from "./SlimeStoreColorPickerControl";
 import SlimeStoreSelectControl from "./SlimeStoreSelectControl";
 import SlimeStoreSliderControl from "./SlimeStoreSliderControl";
@@ -54,6 +55,7 @@ const clockFormatOptions: ClockHourFormatOption[] = [
 ] as const;
 
 export default function ClockControls() {
+  const sortedPresets = useSlimeStore((state) => state.sortedPresets);
   const selectedTab = useSlimeStore((state) => state.controlsState.selectedTab);
 
   const clockControlsLabelHoverTabContentDisplay = [
@@ -78,9 +80,46 @@ export default function ClockControls() {
     <TabContentContainer tabsValue="clock-controls">
       <TabContentScrollArea title="Clock">
         <AccordionControlsWrapper
+          accordionId="clock-controls-accordion"
           type="multiple"
-          defaultValue={["clock-settings"]}
+          defaultValue={["clock-settings", "clock-controls-presets"]}
         >
+          <AccordionControlsItem
+            value="clock-controls-presets"
+            label="Presets"
+            labelHoverTabContentDisplay={["Presets"]}
+          >
+            {sortedPresets["Clock Only"] &&
+              sortedPresets["Clock Only"].map((preset) => (
+                <SettingsLoadSaveControl
+                  key={preset.name}
+                  label={preset.name}
+                  labelHoverTabContentDisplay={[
+                    preset.name,
+                    <pre className="px-2 py-1 text-[0.6rem] whitespace-pre-wrap">
+                      {JSON.stringify(preset, null, 1)}
+                    </pre>,
+                  ]}
+                  settings={preset}
+                  controlType="presets"
+                />
+              ))}
+            {sortedPresets["Combination"] &&
+              sortedPresets["Combination"].map((preset) => (
+                <SettingsLoadSaveControl
+                  key={preset.name}
+                  label={preset.name}
+                  labelHoverTabContentDisplay={[
+                    preset.name,
+                    <pre className="px-2 py-1 text-[0.6rem] whitespace-pre-wrap">
+                      {JSON.stringify(preset, null, 1)}
+                    </pre>,
+                  ]}
+                  settings={preset}
+                  controlType="presets"
+                />
+              ))}
+          </AccordionControlsItem>
           <AccordionControlsItem
             value="clock-settings"
             label="Clock Settings"

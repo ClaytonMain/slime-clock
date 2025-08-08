@@ -4,37 +4,24 @@ import {
   AGENT_START_TYPE_DROPDOWN_OPTIONS,
   DISPLAY_TEXTURE_ASPECT_RATIO_OPTIONS,
   SIMULATION_CONTROLS_CONFIGS,
-  SIMULATION_PRESETS,
 } from "../../constants/constants";
 import useSlimeStore from "../../stores/useSlimeStore";
-import type { DisplayTextureAspectRatio } from "../../types/types";
+import { type DisplayTextureAspectRatio } from "../../types/types";
 import * as UTILS from "../../utils/utils.tsx";
 import CodeBlock from "../code-block/CodeBlock";
 import AccordionControlsItem from "./AccordionControlsItem";
 import AccordionControlsWrapper from "./AccordionControlsWrapper";
 import ButtonControlGroup from "./ButtonControlGroup.tsx";
 import HeightScaledPixelValueDisplay from "./HeightScaledPixelValueDisplay";
+import SettingsLoadSaveControl from "./SettingsLoadSaveControl.tsx";
 import SlimeStoreSelectControl from "./SlimeStoreSelectControl";
 import SlimeStoreSliderControl from "./SlimeStoreSliderControl";
 import SlimeStoreSwitchControl from "./SlimeStoreSwitchControl";
 import TabContentContainer from "./TabContentContainer";
 import TabContentScrollArea from "./TabContentScrollArea";
 
-function handleSimulationPresetChange(value: string) {
-  const preset = SIMULATION_PRESETS[value];
-  if (!preset) return;
-
-  useSlimeStore.setState(
-    produce((state) => {
-      state.simulationSettings.preset = value;
-      Object.entries(preset).forEach(([key, val]) => {
-        state.simulationSettings[key] = val;
-      });
-    }),
-  );
-}
-
 export default function SimulationControls() {
+  const sortedPresets = useSlimeStore((state) => state.sortedPresets);
   const selectedTab = useSlimeStore((state) => state.controlsState.selectedTab);
 
   const simulationControlsLabelHoverTabContentDisplay = [
@@ -112,8 +99,9 @@ export default function SimulationControls() {
     <TabContentContainer tabsValue="simulation-controls">
       <TabContentScrollArea title="Simulation">
         <AccordionControlsWrapper
+          accordionId="simulation-controls-accordion"
           type="multiple"
-          defaultValue={["quick-settings"]}
+          defaultValue={["quick-settings", "simulation-controls-presets"]}
         >
           <AccordionControlsItem
             value="quick-settings"
@@ -129,20 +117,6 @@ export default function SimulationControls() {
               </div>,
             ]}
           >
-            <SlimeStoreSelectControl
-              label="Simulation Presets"
-              labelHoverTabContentDisplay={[
-                "Simulation Presets",
-                "Select a preset to quickly apply a set of simulation settings.",
-              ]}
-              baseInputId="simulation-presets-select"
-              storePath={["simulationSettings", "preset"]}
-              options={Object.keys(SIMULATION_PRESETS).map((key) => ({
-                value: key,
-                label: key,
-              }))}
-              onValueChange={handleSimulationPresetChange}
-            />
             <ButtonControlGroup
               label="Quick Rand."
               labelHoverTabContentDisplay={[
@@ -186,6 +160,43 @@ export default function SimulationControls() {
                 },
               ]}
             />
+          </AccordionControlsItem>
+
+          <AccordionControlsItem
+            value="simulation-controls-presets"
+            label="Presets"
+            labelHoverTabContentDisplay={["Presets"]}
+          >
+            {sortedPresets["Simulation Only"] &&
+              sortedPresets["Simulation Only"].map((preset) => (
+                <SettingsLoadSaveControl
+                  key={preset.name}
+                  label={preset.name}
+                  labelHoverTabContentDisplay={[
+                    preset.name,
+                    <pre className="px-2 py-1 text-[0.6rem] whitespace-pre-wrap">
+                      {JSON.stringify(preset, null, 1)}
+                    </pre>,
+                  ]}
+                  settings={preset}
+                  controlType="presets"
+                />
+              ))}
+            {sortedPresets["Combination"] &&
+              sortedPresets["Combination"].map((preset) => (
+                <SettingsLoadSaveControl
+                  key={preset.name}
+                  label={preset.name}
+                  labelHoverTabContentDisplay={[
+                    preset.name,
+                    <pre className="px-2 py-1 text-[0.6rem] whitespace-pre-wrap">
+                      {JSON.stringify(preset, null, 1)}
+                    </pre>,
+                  ]}
+                  settings={preset}
+                  controlType="presets"
+                />
+              ))}
           </AccordionControlsItem>
 
           <AccordionControlsItem
