@@ -1,5 +1,6 @@
-import { Toast } from "radix-ui";
+import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
+import { ANIMATION_CONFIGS } from "./constants/constants";
 import useSlimeStore from "./stores/useSlimeStore";
 
 export default function ToastProvider() {
@@ -20,24 +21,33 @@ export default function ToastProvider() {
     }, 100);
   }, [toastState.lastTriggeredAt]);
 
+  useEffect(() => {
+    if (!open) return;
+    const timeoutId = setTimeout(() => {
+      setOpen(false);
+    }, 3000);
+    return () => clearTimeout(timeoutId);
+  }, [open]);
+
   return (
-    <Toast.Provider swipeDirection="right">
-      <Toast.Root
-        className="data-[state=closed]:animate-hide data-[state=open]:animate-slideIn data-[swipe=end]:animate-swipeOut grid grid-cols-[auto_max-content] items-center gap-x-[15px] bg-zinc-800/45 p-[15px] shadow-[hsl(206_22%_7%_/_35%)_0px_10px_38px_-10px,_hsl(206_22%_7%_/_20%)_0px_10px_20px_-15px] [grid-template-areas:_'title_action'_'description_action'] data-[swipe=cancel]:translate-x-0 data-[swipe=cancel]:transition-[transform_200ms_ease-out] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)]"
-        open={open}
-        onOpenChange={setOpen}
-      >
-        <Toast.Title className="text-slate12 mb-[5px] text-[15px] font-medium [grid-area:_title]">
-          {/* TODO: Add icon based on toastState.type */}
-          {toastState.title}
-        </Toast.Title>
-        <Toast.Description asChild>
-          <p className="text-slate11 text-[13px] leading-normal [grid-area:_description]">
-            {toastState.description}
-          </p>
-        </Toast.Description>
-      </Toast.Root>
-      <Toast.Viewport className="fixed right-0 bottom-0 z-[2147483647] m-0 flex w-[390px] max-w-[100vw] list-none flex-col gap-2.5 p-[var(--viewport-padding)] outline-none [--viewport-padding:_25px]" />
-    </Toast.Provider>
+    <AnimatePresence>
+      {open && (
+        <motion.div
+          className="fixed right-0 bottom-0 z-[2147483647] m-0 flex w-[390px] max-w-[100vw] list-none flex-col gap-2.5 p-[var(--viewport-padding)] outline-none [--viewport-padding:_25px]"
+          initial={{ opacity: 0 }}
+          animate={{
+            ...ANIMATION_CONFIGS.flickerIn,
+          }}
+          exit={{ ...ANIMATION_CONFIGS.flickerOut }}
+        >
+          <div className="flex items-center justify-between border border-dashed border-sky-50 bg-zinc-950/60 p-4 text-white shadow-lg">
+            <div>
+              <div className="font-semibold">{toastState.title}</div>
+              <div className="text-sm">{toastState.description}</div>
+            </div>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
