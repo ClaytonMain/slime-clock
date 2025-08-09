@@ -470,6 +470,7 @@ export const DEFAULT_PRESETS: LoadableSlimeStoreSettings[] = [
   {
     name: "Extra Gooey 02",
     presetType: "Simulation Only",
+    isBasePreset: true,
     simulationSettings: {
       speed: 3.3,
       boundaryBehavior: 0,
@@ -685,6 +686,7 @@ export const DEFAULT_PRESETS: LoadableSlimeStoreSettings[] = [
   {
     name: "Slimy 06",
     presetType: "Simulation Only",
+    isBasePreset: true,
     simulationSettings: {
       speed: 3.3,
       boundaryBehavior: 0,

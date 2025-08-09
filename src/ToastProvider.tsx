@@ -1,5 +1,7 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
+import { BiErrorCircle, BiInfoCircle } from "react-icons/bi";
+import { PiCheck } from "react-icons/pi";
 import { ANIMATION_CONFIGS } from "./constants/constants";
 import useSlimeStore from "./stores/useSlimeStore";
 
@@ -25,7 +27,7 @@ export default function ToastProvider() {
     if (!open) return;
     const timeoutId = setTimeout(() => {
       setOpen(false);
-    }, 3000);
+    }, 2000);
     return () => clearTimeout(timeoutId);
   }, [open]);
 
@@ -40,10 +42,30 @@ export default function ToastProvider() {
           }}
           exit={{ ...ANIMATION_CONFIGS.flickerOut }}
         >
-          <div className="flex items-center justify-between border border-dashed border-sky-50 bg-zinc-950/60 p-4 text-white shadow-lg">
-            <div>
+          <div className="flex flex-col items-center justify-between border border-dashed border-sky-50 bg-zinc-950/90 p-4 text-white shadow-lg">
+            <div className="justify-left mb-2 flex w-full items-center gap-2">
+              {toastState.type === "error" && (
+                <BiErrorCircle
+                  className="h-6 w-6 text-red-500"
+                  aria-label="Error"
+                />
+              )}
+              {toastState.type === "success" && (
+                <PiCheck
+                  className="h-6 w-6 text-green-500"
+                  aria-label="Success"
+                />
+              )}
+              {toastState.type === "info" && (
+                <BiInfoCircle
+                  className="h-6 w-6 text-blue-500"
+                  aria-label="Info"
+                />
+              )}
               <div className="font-semibold">{toastState.title}</div>
-              <div className="text-sm">{toastState.description}</div>
+            </div>
+            <div className="justify-left w-full text-sm">
+              {toastState.description}
             </div>
           </div>
         </motion.div>

@@ -204,6 +204,16 @@ export default function SettingsLoadSaveControl({
               whileTap={{ scale: 0.95 }}
               onClick={() => {
                 setCopyState("copied");
+                useSlimeStore.setState(
+                  produce((state) => {
+                    state.toast = {
+                      title: "Settings Copied",
+                      description: `Preset "${settings.name}" copied to clipboard.`,
+                      type: "success",
+                      lastTriggeredAt: Date.now(),
+                    };
+                  }),
+                );
                 navigator.clipboard.writeText(
                   JSON.stringify(settings, null, 2),
                 );
