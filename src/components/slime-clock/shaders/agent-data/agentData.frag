@@ -16,7 +16,7 @@ uniform float uTime;
 
 varying vec2 vUv;
 
-#define PI2 6.28318530718
+#define PI2 6.283185
 #include ../../../../shaders/random.glsl
 
 // // Offsets for the 8 neighboring pixels in a 2D grid.

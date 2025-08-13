@@ -160,6 +160,15 @@ export default function SimulationControls() {
                 },
               ]}
             />
+            <SlimeStoreSwitchControl
+              label="Show FPS"
+              labelHoverTabContentDisplay={[
+                "Show FPS Counter",
+                "Enables a small FPS (and other stats) counter at the top-left of the screen. Hidden after a few moments of inaction.",
+              ]}
+              baseId="simulation-controls-show-fps-switch"
+              storePath={["showFPS"]}
+            />
           </AccordionControlsItem>
 
           <AccordionControlsItem

@@ -56,15 +56,11 @@ export interface SimulationSettings extends LoadableSimulationSettings {
   // TODO: Move these randomization settings somewhere else.
   allowAgentsRandomization: boolean;
   allowTrailRandomization: boolean;
-  agentsNeedRandomization: boolean;
-  trailNeedsRandomization: boolean;
 
   autoRandomizationEnabled: boolean;
   autoRandomizationInterval: number;
   autoRestartEnabled: boolean;
   autoRestartInterval: number;
-
-  simulationNeedsRestart: boolean;
 
   gpuTextureWidth: number;
   gpuTextureHeight: number;
@@ -73,9 +69,14 @@ export interface SimulationSettings extends LoadableSimulationSettings {
   displayTextureHeight: number;
 }
 
+export type RandomizationSettingMode = "flat" | "gaussian";
+
 export interface RandomizationSetting {
   enabled: boolean;
-  range: [number, number];
+  flatRange: [number, number];
+  mu: number;
+  sigma: number;
+  mode: RandomizationSettingMode;
 }
 
 export interface SimulationRandomizationSettings {

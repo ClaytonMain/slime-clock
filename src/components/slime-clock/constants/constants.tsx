@@ -66,21 +66,15 @@ export const RANDOMIZE_FUNCTION_KEYS = [
 ];
 
 export function getGaussRandomInControlBounds(
-  key: keyof typeof CONTROL_BOUNDS,
-  mu?: number,
-  sigma?: number,
+  min: number,
+  max: number,
+  mu: number,
+  sigma: number,
 ) {
   const u = 1 - Math.random();
   const v = Math.random();
   const z = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
-  const min = CONTROL_BOUNDS[key].min;
-  const max = CONTROL_BOUNDS[key].max;
-  // @ts-expect-error Don't worry about it.
-  const muValue = mu !== undefined ? mu : (gaussValues[key].mu ?? 0.5);
-  const sigmaValue =
-    // @ts-expect-error Don't worry about it.
-    sigma !== undefined ? sigma : (gaussValues[key].sigma ?? 0.05);
-  return Math.max(min, Math.min(max, muValue + z * sigmaValue));
+  return Math.max(min, Math.min(max, mu + z * sigma));
 }
 
 export const DEFAULT_AGENT_DATA_UNIFORMS = {

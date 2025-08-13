@@ -10,6 +10,7 @@ import type {
   LoadableClockSettings,
   LoadableColorSettings,
   LoadableSimulationSettings,
+  LoadableSlimeStoreSettings,
 } from "../../types/types.tsx";
 import AccordionControlsItem from "./AccordionControlsItem";
 import AccordionControlsWrapper from "./AccordionControlsWrapper";
@@ -164,7 +165,63 @@ export default function PresetsControls() {
           }),
         );
         console.error("Failed to load from clipboard:", error);
+      })
+      .finally(() => {
+        // TODO: Stop this from showing up if failed.
+        useSlimeStore.setState(
+          produce((state) => {
+            state.toast = {
+              title: "Success!",
+              description: "Copied current settings to clipboard!",
+              type: "success",
+              lastTriggeredAt: Date.now(),
+            };
+          }),
+        );
       });
+  }
+
+  function handleCopyCurrentToClipboard() {
+    const currentState = useSlimeStore.getState();
+    const currentLoadableSettings: Partial<LoadableSlimeStoreSettings> = {
+      // @ts-expect-error Don't look at me.
+      clockSettings: {},
+      // @ts-expect-error Ignore me.
+      simulationSettings: {},
+      // @ts-expect-error Shhhhhhhhhhh.
+      colorSettings: {},
+    };
+    LOADABLE_CLOCK_SETTINGS_KEYS.forEach((key) => {
+      const typedKey = key as keyof LoadableClockSettings;
+      // @ts-expect-error This is fine.
+      currentLoadableSettings.clockSettings[typedKey] =
+        currentState.clockSettings[typedKey];
+    });
+    LOADABLE_SIMULATION_SETTINGS_KEYS.forEach((key) => {
+      const typedKey = key as keyof LoadableSimulationSettings;
+      // @ts-expect-error This if also fine.
+      currentLoadableSettings.simulationSettings[typedKey] =
+        currentState.simulationSettings[typedKey];
+    });
+    LOADABLE_COLOR_SETTINGS_KEYS.forEach((key) => {
+      const typedKey = key as keyof LoadableColorSettings;
+      // @ts-expect-error Hey, guess what this is.
+      currentLoadableSettings.colorSettings[typedKey] =
+        currentState.colorSettings[typedKey];
+    });
+    navigator.clipboard.writeText(
+      JSON.stringify(currentLoadableSettings, null, 2),
+    );
+    useSlimeStore.setState(
+      produce((state) => {
+        state.toast = {
+          title: "Success!",
+          description: "Copied current settings to clipboard!",
+          type: "success",
+          lastTriggeredAt: Date.now(),
+        };
+      }),
+    );
   }
 
   return (
@@ -195,6 +252,11 @@ export default function PresetsControls() {
                   label: "Load From Clipboard",
                   baseId: "load-from-clipboard",
                   onClick: handleLoadFromClipboard,
+                },
+                {
+                  label: "Copy Current to Clipboard",
+                  baseId: "copy-current-to-clipboard",
+                  onClick: handleCopyCurrentToClipboard,
                 },
               ]}
             />
@@ -271,7 +333,7 @@ export default function PresetsControls() {
             {sortedPresets["Combination"] && (
               <AccordionControlsItem
                 value="presets-combination"
-                label="Combination Only"
+                label="Combination"
               >
                 {sortedPresets["Combination"].map((preset) => (
                   <SettingsLoadSaveControl

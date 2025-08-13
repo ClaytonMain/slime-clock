@@ -1,11 +1,13 @@
-import { Loader, Stats } from "@react-three/drei";
+import { Loader } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Suspense, useEffect, useRef } from "react";
 
+import { produce } from "immer";
 import InteractionListener from "../../InteractionListener";
 import PresetsChangeListener from "../../PresetsChangeListener";
 import useSlimeStore from "../../stores/useSlimeStore";
 import SlimeClock from "./SlimeClock";
+import StatsComponent from "./StatsComponent";
 
 export default function SlimeClockScene() {
   const canvasRef = useRef<HTMLCanvasElement>(null!);
@@ -20,6 +22,29 @@ export default function SlimeClockScene() {
       },
     );
     return () => unsub();
+  }, []);
+
+  function handleKeydown(e: KeyboardEvent) {
+    const controlsAreOpen = useSlimeStore.getState().controlsState.isOpen;
+    if (controlsAreOpen) return;
+    if (e.code === "Space") {
+      useSlimeStore.setState(
+        produce((state) => {
+          state.colorSettings.backgroundColorNeedsRandomization = true;
+          state.colorSettings.proceduralColorPaletteNeedsRandomization = true;
+          state.simulationSettings.trailNeedsRandomization = true;
+          state.simulationSettings.agentsNeedRandomization = true;
+        }),
+      );
+    }
+    console.log(e);
+  }
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeydown);
+    return () => {
+      window.removeEventListener("keydown", handleKeydown);
+    };
   }, []);
 
   return (
@@ -52,7 +77,7 @@ export default function SlimeClockScene() {
         }}
       >
         <Suspense fallback={null}>
-          <Stats />
+          <StatsComponent />
           <SlimeClock />
           <InteractionListener />
           <PresetsChangeListener />

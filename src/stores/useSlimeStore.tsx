@@ -39,10 +39,37 @@ interface ControlsState {
 }
 
 interface SlimeStore {
+  initialization: {
+    lastUpdatedAt: number;
+    slimeClockDisplayStatus: "initializing" | "ready";
+    all: {
+      initialized: boolean;
+      requestedAt: number;
+      completedAt: number;
+    };
+    uniforms: {
+      initialized: boolean;
+      requestedAt: number;
+      completedAt: number;
+    };
+    resolutions: {
+      initialized: boolean;
+      requestedAt: number;
+      completedAt: number;
+    };
+  };
+
   placeholderSetFunction: () => void;
   portalContainer: HTMLDivElement | null;
   resolutionsSet: boolean;
+  resolutionsRequestedSetAt: number;
+  resolutionsSetAt: number;
   initialized: boolean;
+  initializationRequestedAt: number;
+  initializedAt: number;
+  agentsNeedRandomization: boolean;
+  trailNeedsRandomization: boolean;
+  simulationNeedsRestart: boolean;
   clockSettings: ClockSettings;
   simulationSettings: SimulationSettings;
   simulationRandomizationSettings: SimulationRandomizationSettings;
@@ -55,23 +82,57 @@ interface SlimeStore {
   lastInteractionAt: number;
   interactionState: "active" | "inactive";
   toast: ToastState;
+  showFPS: boolean;
+  settingsLastChangedAt: number;
 }
 
 const persistOmit: (keyof SlimeStore)[] = [
+  "initialization",
+
   "portalContainer",
   "resolutionsSet",
+  "resolutionsRequestedSetAt",
+  "resolutionsSetAt",
   "initialized",
+  "initializationRequestedAt",
+  "initializedAt",
   "controlsState",
   "presetLoadedAt",
   "lastInteractionAt",
   "interactionState",
   "toast",
+  "settingsLastChangedAt",
 ];
 
 const useSlimeStore = create<SlimeStore>()(
   subscribeWithSelector(
     persist(
       (set) => ({
+        initialization: {
+          lastUpdatedAt: Date.now(),
+          slimeClockDisplayStatus: "initializing",
+          all: {
+            initialized: false,
+            requestedAt: Date.now(),
+            completedAt: 0,
+          },
+          resolutions: {
+            initialized: false,
+            requestedAt: Date.now(),
+            completedAt: 0,
+          },
+          uniforms: {
+            initialized: false,
+            requestedAt: Date.now(),
+            completedAt: 0,
+          },
+          store: {
+            initialized: false,
+            requestedAt: Date.now(),
+            completedAt: 0,
+          },
+        },
+
         placeholderSetFunction: () => {
           set({});
         },
@@ -79,8 +140,16 @@ const useSlimeStore = create<SlimeStore>()(
         portalContainer: null,
 
         resolutionsSet: false,
+        resolutionsRequestedSetAt: Date.now(),
+        resolutionsSetAt: 0,
 
         initialized: false,
+        initializationRequestedAt: Date.now(),
+        initializedAt: 0,
+
+        agentsNeedRandomization: false,
+        trailNeedsRandomization: false,
+        simulationNeedsRestart: false,
 
         clockSettings: DEFAULT_CLOCK_SETTINGS,
 
@@ -122,6 +191,8 @@ const useSlimeStore = create<SlimeStore>()(
           type: null,
           lastTriggeredAt: 0,
         },
+        showFPS: true,
+        settingsLastChangedAt: Date.now(),
       }),
       {
         name: "slime-storage",

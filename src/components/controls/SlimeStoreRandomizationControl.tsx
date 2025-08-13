@@ -1,9 +1,12 @@
 import { produce } from "immer";
 import { motion } from "motion/react";
 import { Label } from "radix-ui";
-import { type ReactNode } from "react";
+import * as R from "ramda";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { SIMULATION_CONTROLS_CONFIGS } from "../../constants/constants";
 import useSlimeStore from "../../stores/useSlimeStore";
+import type { RandomizationSettingMode } from "../../types/types";
+import SlimeStoreSelect from "./SlimeStoreSelect";
 import SlimeStoreSlider from "./SlimeStoreSlider";
 import SlimeStoreSwitch from "./SlimeStoreSwitch";
 
@@ -25,6 +28,27 @@ export default function SlimeStoreRandomizationControl({
   listen?: boolean;
 }) {
   const controlConfig = SIMULATION_CONTROLS_CONFIGS[controlName];
+  const randomizationModeStorePath = useMemo(
+    () => ["simulationRandomizationSettings", controlName, "mode"],
+    [controlName],
+  );
+  const [randomizationMode, setRandomizationMode] =
+    useState<RandomizationSettingMode>(
+      R.view(R.lensPath(randomizationModeStorePath), useSlimeStore.getState()),
+    );
+
+  useEffect(() => {
+    const unsubRandomizationMode = useSlimeStore.subscribe(
+      (state) => R.view(R.lensPath(randomizationModeStorePath), state),
+      (newValue) => {
+        setRandomizationMode(newValue);
+      },
+    );
+    return () => {
+      unsubRandomizationMode();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   function handlePointerOver() {
     if (labelHoverTabContentDisplay) {
@@ -57,28 +81,109 @@ export default function SlimeStoreRandomizationControl({
         )}
       </div>
       <div className="flex w-full items-center gap-1">
-        <div className="flex w-18 flex-none items-center justify-center border border-transparent px-2 py-1">
-          <SlimeStoreSwitch
-            baseId={`${baseId}-switch`}
+        <div className="flex flex-none flex-col">
+          <div className="flex flex-none items-center justify-center gap-2 p-1">
+            <Label.Root
+              className="w-11 flex-none py-0.5 text-right text-xs"
+              htmlFor={`${baseId}-enabled-switch`}
+            >
+              Enabled
+            </Label.Root>
+            <div className="flex w-24 flex-none items-center justify-center">
+              <SlimeStoreSwitch
+                baseId={`${baseId}-enabled-switch`}
+                storePath={[
+                  "simulationRandomizationSettings",
+                  controlName,
+                  "enabled",
+                ]}
+                onCheckedChange={onCheckedChange}
+                listen={listen}
+              />
+            </div>
+          </div>
+          <div className="flex flex-none items-center justify-center gap-2 p-1">
+            <Label.Root
+              className="w-11 flex-none py-0.5 text-right text-xs"
+              htmlFor={`${baseId}-randomization-mode-select`}
+            >
+              Mode
+            </Label.Root>
+            <div className="flex w-24 flex-none items-center justify-center">
+              <SlimeStoreSelect
+                baseInputId={`${baseId}-randomization-mode-select`}
+                storePath={[
+                  "simulationRandomizationSettings",
+                  controlName,
+                  "mode",
+                ]}
+                options={[
+                  { label: "Flat", value: "flat" },
+                  { label: "Gaussian", value: "gaussian" },
+                ]}
+              />
+            </div>
+          </div>
+        </div>
+        {randomizationMode === "flat" && (
+          <SlimeStoreSlider
+            baseInputId={`${baseId}-flat-range-slider`}
+            min={controlConfig!.min as number}
+            max={controlConfig!.max as number}
+            step={controlConfig!.step as number}
             storePath={[
               "simulationRandomizationSettings",
               controlName,
-              "enabled",
+              "flatRange",
             ]}
-            onCheckedChange={onCheckedChange}
+            onValueChange={onRangeChange}
             listen={listen}
+            type="range"
           />
-        </div>
-        <SlimeStoreSlider
-          baseInputId={`${baseId}-slider`}
-          min={controlConfig!.min as number}
-          max={controlConfig!.max as number}
-          step={controlConfig!.step as number}
-          storePath={["simulationRandomizationSettings", controlName, "range"]}
-          onValueChange={onRangeChange}
-          listen={listen}
-          type="range"
-        />
+        )}
+        {randomizationMode === "gaussian" && (
+          <div className="flex w-full flex-col gap-1">
+            <div className="flex h-full gap-1">
+              <Label.Root className="flex w-7 flex-none items-center justify-end text-right text-xs">
+                mu
+              </Label.Root>
+              <SlimeStoreSlider
+                baseInputId={`${baseId}-gaussian-mu-range-slider`}
+                min={0}
+                max={
+                  (controlConfig!.max as number) -
+                  (controlConfig!.min as number)
+                }
+                step={controlConfig!.step as number}
+                storePath={[
+                  "simulationRandomizationSettings",
+                  controlName,
+                  "mu",
+                ]}
+                listen={listen}
+                type="slider"
+              />
+            </div>
+            <div className="flex gap-1">
+              <Label.Root className="flex w-7 flex-none items-center justify-end text-right text-xs">
+                sigma
+              </Label.Root>
+              <SlimeStoreSlider
+                baseInputId={`${baseId}-gaussian-sigma-range-slider`}
+                min={controlConfig!.min as number}
+                max={controlConfig!.max as number}
+                step={controlConfig!.step as number}
+                storePath={[
+                  "simulationRandomizationSettings",
+                  controlName,
+                  "sigma",
+                ]}
+                listen={listen}
+                type="slider"
+              />
+            </div>
+          </div>
+        )}
       </div>
     </motion.div>
   );

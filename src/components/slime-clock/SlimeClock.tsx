@@ -22,6 +22,7 @@ import AgentDataMaterial from "./AgentDataMaterial";
 import AgentPositionsMaterial from "./AgentPositionsMaterial";
 import ClockDisplay from "./ClockDisplay";
 import TrailMaterial from "./TrailMaterial";
+import { getGaussRandomInControlBounds } from "./constants/constants.tsx";
 import displayFragmentShader from "./shaders/display/display.frag";
 import displayVertexShader from "./shaders/display/display.vert";
 import * as SC_UTILS from "./utils/utils"; // "Slime Clock Utils"
@@ -183,6 +184,8 @@ function UniformSetter() {
   const simulationSettings = useSlimeStore((state) => state.simulationSettings);
   const colorSettings = useSlimeStore((state) => state.colorSettings);
   const clockSettings = useSlimeStore((state) => state.clockSettings);
+  const initialized = useSlimeStore((state) => state.initialized);
+  const resolutionsSet = useSlimeStore((state) => state.resolutionsSet);
 
   // du - "directly updatable"
   const duAgentDataUniforms: [
@@ -225,6 +228,7 @@ function UniformSetter() {
     (keyof typeof clockSettings)[],
   ][] = [["uClockShadowOpacity", ["clockShadowOpacity"]]];
   useEffect(() => {
+    if (!initialized || !resolutionsSet) return;
     duAgentDataUniforms.forEach(([uniformName, settingsKeys]) => {
       const storePath = ["simulationSettings", ...settingsKeys];
       const storeValue = R.view(
@@ -248,8 +252,9 @@ function UniformSetter() {
       }
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [simulationSettings]);
+  }, [simulationSettings, initialized, resolutionsSet]);
   useEffect(() => {
+    if (!initialized || !resolutionsSet) return;
     duSlimeMoldDisplayPlaneColorUniforms.forEach(
       ([uniformName, settingsKeys]) => {
         const storePath = ["colorSettings", ...settingsKeys];
@@ -264,8 +269,9 @@ function UniformSetter() {
       },
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [colorSettings]);
+  }, [colorSettings, initialized, resolutionsSet]);
   useEffect(() => {
+    if (!initialized || !resolutionsSet) return;
     duSlimeMoldDisplayPlaneClockUniforms.forEach(
       ([uniformName, settingsKeys]) => {
         const storePath = ["clockSettings", ...settingsKeys];
@@ -280,7 +286,7 @@ function UniformSetter() {
       },
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [clockSettings]);
+  }, [clockSettings, initialized, resolutionsSet]);
 
   // hs - "height-scaled"
   const hsAgentDataUniforms: [
@@ -296,6 +302,7 @@ function UniformSetter() {
     (keyof typeof simulationSettings)[],
   ][] = [];
   useEffect(() => {
+    if (!initialized || !resolutionsSet) return;
     const textureHeight =
       useSlimeStore.getState().simulationSettings.displayTextureHeight;
     hsAgentDataUniforms.forEach(([uniformName, settingsKeys]) => {
@@ -321,24 +328,26 @@ function UniformSetter() {
       );
       const uniformValue = trailUniforms[uniformName];
       const scaledValue = roundToFixed(
-        (storeValue as number) * textureHeight,
-        0,
+        ((storeValue as number) / 100) * textureHeight,
+        4,
       );
       if (uniformValue.value !== scaledValue) {
         uniformValue.value = scaledValue;
       }
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [simulationSettings]);
+  }, [simulationSettings, initialized, resolutionsSet]);
 
   // Individual subscriptions.
   useEffect(() => {
     const unsubDisplayTextureWidth = useSlimeStore.subscribe(
       (state) => state.simulationSettings.displayTextureWidth,
       (newValue) => {
+        const currentSimulationSettings =
+          useSlimeStore.getState().simulationSettings;
         const newResolution = new THREE.Vector2(
           newValue,
-          useSlimeStore.getState().simulationSettings.displayTextureHeight,
+          currentSimulationSettings.displayTextureHeight,
         );
         slimeMoldDisplayPlaneUniforms.uDisplayTextureResolution.value =
           newResolution;
@@ -349,16 +358,18 @@ function UniformSetter() {
           SC_UTILS.getWindowResolutionVector();
         slimeMoldDisplayPlaneUniforms.uDisplayScale.value =
           SC_UTILS.getDisplayScaleVector(
-            simulationSettings.displayTextureWidth,
-            simulationSettings.displayTextureHeight,
+            currentSimulationSettings.displayTextureWidth,
+            currentSimulationSettings.displayTextureHeight,
           );
       },
     );
     const unsubDisplayTextureHeight = useSlimeStore.subscribe(
       (state) => state.simulationSettings.displayTextureHeight,
       (newValue) => {
+        const currentSimulationSettings =
+          useSlimeStore.getState().simulationSettings;
         const newResolution = new THREE.Vector2(
-          useSlimeStore.getState().simulationSettings.displayTextureWidth,
+          currentSimulationSettings.displayTextureWidth,
           newValue,
         );
         slimeMoldDisplayPlaneUniforms.uDisplayTextureResolution.value =
@@ -370,8 +381,8 @@ function UniformSetter() {
           SC_UTILS.getWindowResolutionVector();
         slimeMoldDisplayPlaneUniforms.uDisplayScale.value =
           SC_UTILS.getDisplayScaleVector(
-            simulationSettings.displayTextureWidth,
-            simulationSettings.displayTextureHeight,
+            currentSimulationSettings.displayTextureWidth,
+            currentSimulationSettings.displayTextureHeight,
           );
       },
     );
@@ -421,7 +432,6 @@ function UniformSetter() {
       unsubShowClockShadow();
       unsubClockShadowColor();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return null;
@@ -433,6 +443,15 @@ function SlimeClock() {
   const resolutionsSet = useSlimeStore((state) => state.resolutionsSet);
   const initialized = useSlimeStore((state) => state.initialized);
   const controlsAreOpen = useSlimeStore((state) => state.controlsState.isOpen);
+  const simulationNeedsRestart = useSlimeStore(
+    (state) => state.simulationNeedsRestart,
+  );
+  const agentsNeedRandomization = useSlimeStore(
+    (state) => state.agentsNeedRandomization,
+  );
+  const trailNeedsRandomization = useSlimeStore(
+    (state) => state.trailNeedsRandomization,
+  );
 
   const prevMinutesRef = useRef(0);
   const lastRandomizedAtMinutesRef = useRef(Math.floor(Date.now() / 60000));
@@ -578,6 +597,7 @@ function SlimeClock() {
         simulationSettings.displayTextureHeight;
       attributes[i3 + 2] = 0;
     }
+    console.log("agentPositionsAttribute useMemo", useSlimeStore.getState());
     return attributes;
   }, [
     simulationSettings.displayTextureWidth,
@@ -587,11 +607,10 @@ function SlimeClock() {
 
   // Anything that should trigger the resolutions to reset.
   useEffect(() => {
-    if (!resolutionsSet) return;
     useSlimeStore.setState(
       produce((state) => {
         state.resolutionsSet = false;
-        state.initialized = false;
+        state.resolutionsRequestedSetAt = Date.now();
       }),
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -604,18 +623,13 @@ function SlimeClock() {
 
   // Anything that should trigger a re-initialization of the simulation.
   useEffect(() => {
-    if (!initialized) return;
     useSlimeStore.setState(
       produce((state) => {
         state.initialized = false;
-        state.simulationSettings.simulationNeedsRestart = false;
+        state.simulationNeedsRestart = false;
       }),
     );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    simulationSettings.simulationNeedsRestart,
-    simulationSettings.agentDensity,
-  ]);
+  }, [simulationNeedsRestart, simulationSettings.agentDensity]);
 
   function setInitialResolutions() {
     const simulationSettings = useSlimeStore.getState().simulationSettings;
@@ -647,6 +661,8 @@ function SlimeClock() {
         state.simulationSettings.displayTextureHeight = resolution.height;
 
         state.resolutionsSet = true;
+
+        state.initialized = false;
       }),
     );
   }
@@ -742,22 +758,32 @@ function SlimeClock() {
 
   // Randomize agent settings.
   useEffect(() => {
-    if (!simulationSettings.agentsNeedRandomization) return;
+    if (!agentsNeedRandomization) return;
     const simulationRandomizationSettings =
       useSlimeStore.getState().simulationRandomizationSettings;
     useSlimeStore.setState(
       produce((state) => {
-        state.simulationSettings.agentsNeedRandomization = false;
+        state.agentsNeedRandomization = false;
         if (!simulationSettings.allowAgentsRandomization) return;
         Object.entries(simulationRandomizationSettings).forEach(
           ([key, value]) => {
             const settingKey = key as keyof SimulationSettings;
             const randConfig = value as RandomizationSetting;
             if (!settingKey.startsWith("agent") || !randConfig.enabled) return;
-            let randValue = randBetween(
-              randConfig.range[0],
-              randConfig.range[1],
-            );
+            let randValue: number = -999.0;
+            if (randConfig.mode === "flat") {
+              randValue = randBetween(
+                randConfig.flatRange[0],
+                randConfig.flatRange[1],
+              );
+            } else if (randConfig.mode === "gaussian") {
+              randValue = getGaussRandomInControlBounds(
+                SIMULATION_CONTROLS_CONFIGS[settingKey]!.min as number,
+                SIMULATION_CONTROLS_CONFIGS[settingKey]!.max as number,
+                randConfig.mu,
+                randConfig.sigma,
+              );
+            }
             const step = SIMULATION_CONTROLS_CONFIGS[settingKey]!.step;
             if (step) {
               randValue = roundToFixed(Math.round(randValue / step) * step, 4);
@@ -767,27 +793,38 @@ function SlimeClock() {
         );
       }),
     );
+    console.log("Randomize agent settings useEffect", useSlimeStore.getState());
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [simulationSettings.agentsNeedRandomization]);
+  }, [agentsNeedRandomization]);
 
   // Randomize trail settings.
   useEffect(() => {
-    if (!simulationSettings.trailNeedsRandomization) return;
+    if (!trailNeedsRandomization) return;
     const simulationRandomizationSettings =
       useSlimeStore.getState().simulationRandomizationSettings;
     useSlimeStore.setState(
       produce((state) => {
-        state.simulationSettings.trailNeedsRandomization = false;
+        state.trailNeedsRandomization = false;
         if (!simulationSettings.allowTrailRandomization) return;
         Object.entries(simulationRandomizationSettings).forEach(
           ([key, value]) => {
             const settingKey = key as keyof SimulationSettings;
             const randConfig = value as RandomizationSetting;
             if (!settingKey.startsWith("trail") || !randConfig.enabled) return;
-            let randValue = randBetween(
-              randConfig.range[0],
-              randConfig.range[1],
-            );
+            let randValue: number = -999.0;
+            if (randConfig.mode === "flat") {
+              randValue = randBetween(
+                randConfig.flatRange[0],
+                randConfig.flatRange[1],
+              );
+            } else if (randConfig.mode === "gaussian") {
+              randValue = getGaussRandomInControlBounds(
+                SIMULATION_CONTROLS_CONFIGS[settingKey]!.min as number,
+                SIMULATION_CONTROLS_CONFIGS[settingKey]!.max as number,
+                randConfig.mu,
+                randConfig.sigma,
+              );
+            }
             const step = SIMULATION_CONTROLS_CONFIGS[settingKey]!.step;
             if (step) {
               randValue = roundToFixed(Math.round(randValue / step) * step, 4);
@@ -797,8 +834,9 @@ function SlimeClock() {
         );
       }),
     );
+    console.log("Randomize trail useEffect", useSlimeStore.getState());
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [simulationSettings.trailNeedsRandomization]);
+  }, [trailNeedsRandomization]);
 
   // Randomize color palette.
   useEffect(() => {
@@ -832,6 +870,7 @@ function SlimeClock() {
         state.colorSettings.slimeColorChangedAt = Date.now();
       }),
     );
+    console.log("Randomize color palette useEffect", useSlimeStore.getState());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [colorSettings.proceduralColorPaletteNeedsRandomization]);
 
@@ -844,6 +883,10 @@ function SlimeClock() {
         if (!colorSettings.allowBackgroundColorRandomization) return;
         state.colorSettings.backgroundColor = UTILS.generateRandomColor();
       }),
+    );
+    console.log(
+      "Randomize background color useEffect",
+      useSlimeStore.getState(),
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [colorSettings.backgroundColorNeedsRandomization]);
@@ -876,12 +919,12 @@ function SlimeClock() {
       lastRestartedAtMinutesRef.current = currentMinutes;
       useSlimeStore.setState(
         produce((state) => {
-          state.simulationSettings.simulationNeedsRestart = true;
+          state.simulationNeedsRestart = true;
           state.initialized = false;
           if (simulationSettings.autoRandomizationEnabled) {
             lastRandomizedAtMinutesRef.current = currentMinutes;
-            state.simulationSettings.agentsNeedRandomization = true;
-            state.simulationSettings.trailNeedsRandomization = true;
+            state.agentsNeedRandomization = true;
+            state.trailNeedsRandomization = true;
             state.colorSettings.proceduralColorPaletteNeedsRandomization = true;
             state.colorSettings.backgroundColorNeedsRandomization = true;
           }
@@ -899,8 +942,8 @@ function SlimeClock() {
       lastRandomizedAtMinutesRef.current = currentMinutes;
       useSlimeStore.setState(
         produce((state) => {
-          state.simulationSettings.agentsNeedRandomization = true;
-          state.simulationSettings.trailNeedsRandomization = true;
+          state.agentsNeedRandomization = true;
+          state.trailNeedsRandomization = true;
           state.colorSettings.proceduralColorPaletteNeedsRandomization = true;
           state.colorSettings.backgroundColorNeedsRandomization = true;
         }),
@@ -1037,7 +1080,6 @@ function SlimeClock() {
     <>
       <UniformSetter />
       <SettingsHistoryListener />
-
       {createPortal(
         <mesh>
           <agentDataMaterial
