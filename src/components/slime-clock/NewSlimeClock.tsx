@@ -181,7 +181,130 @@ const trailUniforms = {
 };
 
 function InitializationHandler() {
+  const debugConsoleLogger = useSlimeStore.getState().debugConsoleLogger;
+  debugConsoleLogger("InitializationHandler component mounted");
   const initializationStates = useSlimeStore((state) => state.initialization);
+
+  /**
+   * General listener.
+   *
+   * Updates the "initialization > [...]DisplayStatus" values. Also sets
+   * the "all > initialized" value to true when all initialization
+   * steps are complete.
+   */
+  useEffect(() => {
+    debugConsoleLogger("NewSlimeClock > DisplayStatus useEffect triggered");
+    useSlimeStore.setState(
+      produce((state) => {
+        if (
+          initializationStates.storeSettings.initialized &&
+          initializationStates.controlsDisplayStatus !== "ready"
+        ) {
+          state.initialization.lastUpdatedAt = Date.now();
+          state.initialization.controlsDisplayStatus = "ready";
+        }
+        if (
+          !initializationStates.all.initialized &&
+          initializationStates.storeSettings.initialized &&
+          initializationStates.resolutions.initialized &&
+          initializationStates.uniforms.initialized
+        ) {
+          state.initialization.lastUpdatedAt = Date.now();
+          state.initialization.slimeClockDisplayStatus = "ready";
+
+          state.initialization.all.initialized = true;
+          state.initialization.all.completedAt = Date.now();
+        } else if (
+          initializationStates.all.initialized &&
+          (!initializationStates.storeSettings.initialized ||
+            !initializationStates.resolutions.initialized ||
+            !initializationStates.uniforms.initialized)
+        ) {
+          state.initialization.lastUpdatedAt = Date.now();
+          state.initialization.all.initialized = false;
+        }
+      }),
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initializationStates.lastUpdatedAt]);
+
+  /**
+   * All.
+   *
+   * Updating the "requestedAt" date for "all" should trigger a complete re-initialization.
+   */
+  useEffect(() => {
+    debugConsoleLogger(
+      'NewSlimeClock > "all" initialization useEffect triggered',
+    );
+    if (
+      initializationStates.all.requestedAt >
+      initializationStates.all.completedAt
+    ) {
+      debugConsoleLogger('NewSlimeClock > "all" initialization triggered');
+      useSlimeStore.setState(
+        produce((state) => {
+          // Since we're re-initializing "all", we need to update several initialization states.
+          state.initialization.lastUpdatedAt = Date.now();
+          state.initialization.slimeClockDisplayStatus = "initializing";
+
+          state.initialization.all.initialized = false;
+
+          // Update "store > initialized" and "store > requestedAt" values.
+          state.initialization.storeSettings.initialized = false;
+          state.initialization.storeSettings.requestedAt = Date.now();
+
+          // Update "resolutions > initialized" value.
+          state.initialization.resolutions.initialized = false;
+
+          // Update uniforms "initialized" value.
+          state.initialization.uniforms.initialized = false;
+        }),
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initializationStates.all.requestedAt]);
+
+  /**
+   * Store Settings.
+   *
+   * Should always initialize before resolutions and uniforms.
+   * Just a bit of a sanity check to ensure all our values are set to
+   * what we're expecting prior to trying to initialize or render anything.
+   * Ensures that the clockSettings simulationSettings, and colorSettings
+   * are set. Checks for selected presets first to ensure the settings
+   * we're using are what we expect.
+   */
+  function initializeStore() {
+    debugConsoleLogger(
+      "NewSlimeClock > InitializationHandler > initializeStore called",
+    );
+  }
+  useEffect(() => {
+    if (
+      initializationStates.store.requestedAt >
+      initializationStates.store.completedAt
+    ) {
+      debugConsoleLogger(
+        "NewSlimeClock > InitializationHandler > initializeStore triggered",
+      );
+      useSlimeStore.setState(
+        produce((state) => {
+          // Update global initialization variables.
+          state.initialization.lastUpdatedAt = Date.now();
+          state.initialization.slimeClockDisplayStatus = "initializing";
+
+          // Update all "initialized" value.
+          state.initialization.all.initialized = false;
+
+          // Update store "initialized" value.
+          state.initialization.storeSettings.initialized = false;
+        }),
+      );
+      initializeStore();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initializationStates.store.requestedAt]);
 
   /**
    * Resolutions.
@@ -189,6 +312,9 @@ function InitializationHandler() {
    * Should always initialize before uniforms.
    */
   function initializeResolutions() {
+    debugConsoleLogger(
+      "NewSlimeClock > InitializationHandler > initializeResolutions called",
+    );
     const simulationSettings = useSlimeStore.getState().simulationSettings;
 
     const displayTextureResolution = UTILS.getDisplayTextureResolution(
@@ -202,10 +328,36 @@ function InitializationHandler() {
           simulationSettings.agentDensity,
       ),
     );
+
+    debugConsoleLogger(
+      "NewSlimeClock > InitializationHandler > initializeResolutions",
+      "displayTextureResolution:",
+      displayTextureResolution,
+      "gpuTextureSize:",
+      gpuTextureSize,
+    );
+    useSlimeStore.setState(
+      produce((state) => {
+        state.simulationSettings.gpuTextureWidth = gpuTextureSize;
+        state.simulationSettings.gpuTextureHeight = gpuTextureSize;
+
+        state.simulationSettings.displayTextureWidth =
+          displayTextureResolution.width;
+        state.simulationSettings.displayTextureHeight =
+          displayTextureResolution.height;
+
+        state.initialization.lastUpdatedAt = Date.now();
+
+        state.initialization.resolutions.initialized = true;
+        state.initialization.resolutions.completedAt = Date.now();
+
+        state.initialization.storeSettings.requestedAt = Date.now();
+      }),
+    );
   }
   useEffect(() => {
     if (
-      initializationStates.resolutions.requestedAt <
+      initializationStates.resolutions.requestedAt >
       initializationStates.resolutions.completedAt
     ) {
       useSlimeStore.setState(
@@ -214,42 +366,29 @@ function InitializationHandler() {
           state.initialization.lastUpdatedAt = Date.now();
           state.initialization.slimeClockDisplayStatus = "initializing";
 
-          // Update "all" initialization variables.
+          // Update all "initialized" value.
           state.initialization.all.initialized = false;
-          state.initialization.all.requestedAt = Date.now();
 
           // Update resolutions "initialized" value.
           state.initialization.resolutions.initialized = false;
 
-          // Update uniforms "initialized" and "requestedAt" values.
+          // Update store "initialized" value.
+          // TODO: Revisit this to see if we always want to do this.
+          state.initialization.storeSettings.initialized = false;
+
+          // Update uniforms "initialized" value.
           // TODO: Revisit this to see if we always want to do this.
           state.initialization.uniforms.initialized = false;
-          state.initialization.uniforms.requestedAt = Date.now();
-
-          // Update store "initialized" and "requestedAt" values.
-          state.initialization.store.initialized = false;
-          state.initialization.store.requestedAt = Date.now();
         }),
       );
       initializeResolutions();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initializationStates.resolutions.requestedAt]);
+
+  return null;
 }
 
 export default function NewSlimeClock() {
-  /**
-   * Alright, let's talk initialization.
-   *
-   * Things that should be initialized / set prior to attempting to render anything:
-   * -- Uniforms.
-   * -- Resolutions.
-   * -- Any other values in the store that we're relying on.
-   */
-
-  /**
-   * Initialization
-   */
-
-  return null;
+  return <InitializationHandler />;
 }

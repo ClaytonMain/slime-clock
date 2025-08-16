@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import * as THREE from "three";
 import { create } from "zustand";
 import {
   createJSONStorage,
@@ -13,14 +14,19 @@ import {
   DEFAULT_SIMULATION_SETTINGS,
 } from "../constants/constants";
 import type {
+  AgentDataUniforms,
+  AgentPositionsUniforms,
   ClockSettings,
   ColorSettings,
   ControlsTabName,
   LoadableSlimeStoreSettings,
   SimulationRandomizationSettings,
   SimulationSettings,
+  SlimeMoldDisplayPlaneUniforms,
   SortedPresets,
+  TexturePlaneUniforms,
   ToastState,
+  TrailUniforms,
 } from "../types/types";
 
 interface ControlsState {
@@ -39,15 +45,18 @@ interface ControlsState {
 }
 
 interface SlimeStore {
+  debug: boolean;
+  debugConsoleLogger: (...data: unknown[]) => void;
   initialization: {
     lastUpdatedAt: number;
+    controlsDisplayStatus: "initializing" | "ready";
     slimeClockDisplayStatus: "initializing" | "ready";
     all: {
       initialized: boolean;
       requestedAt: number;
       completedAt: number;
     };
-    uniforms: {
+    storeSettings: {
       initialized: boolean;
       requestedAt: number;
       completedAt: number;
@@ -57,9 +66,20 @@ interface SlimeStore {
       requestedAt: number;
       completedAt: number;
     };
+    uniforms: {
+      initialized: boolean;
+      requestedAt: number;
+      completedAt: number;
+    };
+  };
+  uniforms: {
+    texturePlane: TexturePlaneUniforms;
+    slimeMoldDisplayPlane: SlimeMoldDisplayPlaneUniforms;
+    agentData: AgentDataUniforms;
+    agentPositions: AgentPositionsUniforms;
+    trail: TrailUniforms;
   };
 
-  placeholderSetFunction: () => void;
   portalContainer: HTMLDivElement | null;
   resolutionsSet: boolean;
   resolutionsRequestedSetAt: number;
@@ -87,7 +107,10 @@ interface SlimeStore {
 }
 
 const persistOmit: (keyof SlimeStore)[] = [
+  "debug",
+  "debugConsoleLogger",
   "initialization",
+  "uniforms",
 
   "portalContainer",
   "resolutionsSet",
@@ -107,34 +130,104 @@ const persistOmit: (keyof SlimeStore)[] = [
 const useSlimeStore = create<SlimeStore>()(
   subscribeWithSelector(
     persist(
-      (set) => ({
+      (_, get) => ({
+        debug: true,
+        debugConsoleLogger: (...data: unknown[]) => {
+          if (get().debug) {
+            console.log(...data);
+          }
+        },
         initialization: {
           lastUpdatedAt: Date.now(),
+          controlsDisplayStatus: "initializing",
           slimeClockDisplayStatus: "initializing",
+          // Updating "all" requestedAt should trigger a complete re-initialization.
           all: {
             initialized: false,
-            requestedAt: Date.now(),
+            requestedAt: Date.now(), // Setting to Date.now() to trigger initialization on load.
+            completedAt: 0,
+          },
+          storeSettings: {
+            initialized: false,
+            requestedAt: 0, // Setting to 0 for better control over initialization timing.
             completedAt: 0,
           },
           resolutions: {
             initialized: false,
-            requestedAt: Date.now(),
+            requestedAt: 0,
             completedAt: 0,
           },
           uniforms: {
             initialized: false,
-            requestedAt: Date.now(),
-            completedAt: 0,
-          },
-          store: {
-            initialized: false,
-            requestedAt: Date.now(),
+            requestedAt: 0,
             completedAt: 0,
           },
         },
-
-        placeholderSetFunction: () => {
-          set({});
+        uniforms: {
+          texturePlane: {
+            uWindowResolution: new THREE.Uniform(null),
+            uShowTexture: new THREE.Uniform(null),
+          },
+          slimeMoldDisplayPlane: {
+            uTrailTexture: new THREE.Uniform(null),
+            uClockTexture: new THREE.Uniform(null),
+            uDisplayTextureResolution: new THREE.Uniform(null),
+            uDisplayScale: new THREE.Uniform(null),
+            uTime: new THREE.Uniform(null),
+            uDelta: new THREE.Uniform(null),
+            uPaletteA: new THREE.Uniform(null),
+            uPaletteB: new THREE.Uniform(null),
+            uPaletteC: new THREE.Uniform(null),
+            uPaletteD: new THREE.Uniform(null),
+            uShowClockShadow: new THREE.Uniform(null),
+            uClockShadowOpacity: new THREE.Uniform(null),
+            uClockShadowColor: new THREE.Uniform(null),
+            uIntensitySmoothing: new THREE.Uniform(null),
+            uAgentDirectionSmoothing: new THREE.Uniform(null),
+            uAgentDirectionColorOffset: new THREE.Uniform(null),
+            uClockColorOffset: new THREE.Uniform(null),
+            uXColorOffset: new THREE.Uniform(null),
+            uYColorOffset: new THREE.Uniform(null),
+            uPaletteCycleTime: new THREE.Uniform(null),
+            uPaletteCycleScale: new THREE.Uniform(null),
+            uPaletteCycleType: new THREE.Uniform(null),
+          },
+          agentData: {
+            uAgentDataTexture: new THREE.Uniform(null),
+            uClockTexture: new THREE.Uniform(null),
+            uTrailTexture: new THREE.Uniform(null),
+            uDisplayTextureResolution: new THREE.Uniform(null),
+            uClockAttraction: new THREE.Uniform(null),
+            uSensorAngle: new THREE.Uniform(null),
+            uRotationRate: new THREE.Uniform(null),
+            uSensorOffset: new THREE.Uniform(null),
+            uSensorWidth: new THREE.Uniform(null),
+            uStepSize: new THREE.Uniform(null),
+            uCrowdAvoidance: new THREE.Uniform(null),
+            uWanderStrength: new THREE.Uniform(null),
+            uBoundaryBehavior: new THREE.Uniform(null),
+            uTime: new THREE.Uniform(null),
+            uDelta: new THREE.Uniform(null),
+          },
+          agentPositions: {
+            uAgentDataTexture: new THREE.Uniform(null),
+            uDisplayTextureResolution: new THREE.Uniform(null),
+          },
+          trail: {
+            uAgentPositionsTexture: new THREE.Uniform(null),
+            uClockTexture: new THREE.Uniform(null),
+            uTrailTexture: new THREE.Uniform(null),
+            uDisplayTextureResolution: new THREE.Uniform(null),
+            uClockDepositRate: new THREE.Uniform(null),
+            uBackgroundDepositRate: new THREE.Uniform(null),
+            uClockDecayRate: new THREE.Uniform(null),
+            uClockDiffuseRate: new THREE.Uniform(null),
+            uBackgroundDecayRate: new THREE.Uniform(null),
+            uBackgroundDiffuseRate: new THREE.Uniform(null),
+            uBoundaryBehavior: new THREE.Uniform(null),
+            uDelta: new THREE.Uniform(null),
+            uTime: new THREE.Uniform(null),
+          },
         },
 
         portalContainer: null,

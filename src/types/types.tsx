@@ -1,3 +1,5 @@
+import * as THREE from "three";
+
 export type ControlsTabName =
   | "randomization-controls"
   | "clock-controls"
@@ -253,3 +255,79 @@ export type ToastState = {
 };
 
 export type SortedPresets = Record<PresetType, LoadableSlimeStoreSettings[]>;
+
+export type TexturePlaneUniformsKey = "uWindowResolution" | "uShowTexture";
+export type TexturePlaneUniforms = Record<
+  TexturePlaneUniformsKey,
+  THREE.Uniform
+>;
+
+export type SlimeMoldDisplayPlaneUniformsKey =
+  | "uTrailTexture"
+  | "uClockTexture"
+  | "uDisplayTextureResolution"
+  | "uDisplayScale"
+  | "uTime"
+  | "uDelta"
+  | "uPaletteA"
+  | "uPaletteB"
+  | "uPaletteC"
+  | "uPaletteD"
+  | "uShowClockShadow"
+  | "uClockShadowOpacity"
+  | "uClockShadowColor"
+  | "uIntensitySmoothing"
+  | "uAgentDirectionSmoothing"
+  | "uAgentDirectionColorOffset"
+  | "uClockColorOffset"
+  | "uXColorOffset"
+  | "uYColorOffset"
+  | "uPaletteCycleTime"
+  | "uPaletteCycleScale"
+  | "uPaletteCycleType";
+export type SlimeMoldDisplayPlaneUniforms = Record<
+  SlimeMoldDisplayPlaneUniformsKey,
+  THREE.Uniform
+>;
+
+export type AgentDataUniformsKey =
+  | "uAgentDataTexture"
+  | "uClockTexture"
+  | "uTrailTexture"
+  | "uDisplayTextureResolution"
+  | "uClockAttraction"
+  | "uSensorAngle"
+  | "uRotationRate"
+  | "uSensorOffset"
+  | "uSensorWidth"
+  | "uStepSize"
+  | "uCrowdAvoidance"
+  | "uWanderStrength"
+  | "uBoundaryBehavior"
+  | "uTime"
+  | "uDelta";
+export type AgentDataUniforms = Record<AgentDataUniformsKey, THREE.Uniform>;
+
+export type AgentPositionsUniformsKey =
+  | "uAgentDataTexture"
+  | "uDisplayTextureResolution";
+export type AgentPositionsUniforms = Record<
+  AgentPositionsUniformsKey,
+  THREE.Uniform
+>;
+
+export type TrailUniformsKey =
+  | "uAgentPositionsTexture"
+  | "uClockTexture"
+  | "uTrailTexture"
+  | "uDisplayTextureResolution"
+  | "uClockDepositRate"
+  | "uBackgroundDepositRate"
+  | "uClockDecayRate"
+  | "uClockDiffuseRate"
+  | "uBackgroundDecayRate"
+  | "uBackgroundDiffuseRate"
+  | "uBoundaryBehavior"
+  | "uDelta"
+  | "uTime";
+export type TrailUniforms = Record<TrailUniformsKey, THREE.Uniform>;
