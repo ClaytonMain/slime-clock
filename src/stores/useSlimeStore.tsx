@@ -8,6 +8,7 @@ import {
 } from "zustand/middleware";
 import {
   DEFAULT_CLOCK_SETTINGS,
+  DEFAULT_COLOR_RANDOMIZATION_SETTINGS,
   DEFAULT_COLOR_SETTINGS,
   DEFAULT_PRESETS,
   DEFAULT_SIMULATION_RANDOMIZATION_SETTINGS,
@@ -17,6 +18,7 @@ import type {
   AgentDataUniforms,
   AgentPositionsUniforms,
   ClockSettings,
+  ColorRandomizationSettings,
   ColorSettings,
   ControlsTabName,
   LoadableSlimeStoreSettings,
@@ -42,9 +44,10 @@ interface ControlsState {
   showSelectedTabCornerIcons: boolean;
   controlsEditStoppedAt: number;
   accordionValues: Record<string, string | string[]>;
+  controlsClosedAt: number;
 }
 
-interface SlimeStore {
+export interface SlimeStore {
   debug: boolean;
   debugConsoleLogger: (...data: unknown[]) => void;
   initialization: {
@@ -73,27 +76,42 @@ interface SlimeStore {
     };
   };
   uniforms: {
-    texturePlane: TexturePlaneUniforms;
-    slimeMoldDisplayPlane: SlimeMoldDisplayPlaneUniforms;
     agentData: AgentDataUniforms;
     agentPositions: AgentPositionsUniforms;
     trail: TrailUniforms;
+    slimeMoldDisplayPlane: SlimeMoldDisplayPlaneUniforms;
+    texturePlane: TexturePlaneUniforms;
   };
 
   portalContainer: HTMLDivElement | null;
-  resolutionsSet: boolean;
-  resolutionsRequestedSetAt: number;
-  resolutionsSetAt: number;
-  initialized: boolean;
-  initializationRequestedAt: number;
-  initializedAt: number;
-  agentsNeedRandomization: boolean;
-  trailNeedsRandomization: boolean;
-  simulationNeedsRestart: boolean;
+
   clockSettings: ClockSettings;
   simulationSettings: SimulationSettings;
-  simulationRandomizationSettings: SimulationRandomizationSettings;
   colorSettings: ColorSettings;
+
+  randomizationState: {
+    agentRandomizationRequestedAt: number;
+    agentRandomizationCompletedAt: number;
+    trailRandomizationRequestedAt: number;
+    trailRandomizationCompletedAt: number;
+    proceduralColorPaletteRandomizationRequestedAt: number;
+    proceduralColorPaletteRandomizationCompletedAt: number;
+    backgroundColorRandomizationRequestedAt: number;
+    backgroundColorRandomizationCompletedAt: number;
+  };
+  randomizationSettings: {
+    autoRandomizationEnabled: boolean;
+    autoRandomizationInterval: number;
+    autoRestartEnabled: boolean;
+    autoRestartInterval: number;
+    allowAgentRandomization: boolean;
+    allowTrailRandomization: boolean;
+    allowProceduralColorPaletteRandomization: boolean;
+    allowBackgroundColorRandomization: boolean;
+    simulation: SimulationRandomizationSettings;
+    color: ColorRandomizationSettings;
+  };
+
   controlsState: ControlsState;
   history: LoadableSlimeStoreSettings[];
   presets: LoadableSlimeStoreSettings[];
@@ -113,12 +131,9 @@ const persistOmit: (keyof SlimeStore)[] = [
   "uniforms",
 
   "portalContainer",
-  "resolutionsSet",
-  "resolutionsRequestedSetAt",
-  "resolutionsSetAt",
-  "initialized",
-  "initializationRequestedAt",
-  "initializedAt",
+
+  "randomizationState",
+
   "controlsState",
   "presetLoadedAt",
   "lastInteractionAt",
@@ -149,7 +164,9 @@ const useSlimeStore = create<SlimeStore>()(
           },
           storeSettings: {
             initialized: false,
-            requestedAt: 0, // Setting to 0 for better control over initialization timing.
+            // The rest of the "requestedAt" values will be set at the appropriate time.
+            // Handled in the "InitializationHandler" component.
+            requestedAt: 0,
             completedAt: 0,
           },
           resolutions: {
@@ -164,34 +181,6 @@ const useSlimeStore = create<SlimeStore>()(
           },
         },
         uniforms: {
-          texturePlane: {
-            uWindowResolution: new THREE.Uniform(null),
-            uShowTexture: new THREE.Uniform(null),
-          },
-          slimeMoldDisplayPlane: {
-            uTrailTexture: new THREE.Uniform(null),
-            uClockTexture: new THREE.Uniform(null),
-            uDisplayTextureResolution: new THREE.Uniform(null),
-            uDisplayScale: new THREE.Uniform(null),
-            uTime: new THREE.Uniform(null),
-            uDelta: new THREE.Uniform(null),
-            uPaletteA: new THREE.Uniform(null),
-            uPaletteB: new THREE.Uniform(null),
-            uPaletteC: new THREE.Uniform(null),
-            uPaletteD: new THREE.Uniform(null),
-            uShowClockShadow: new THREE.Uniform(null),
-            uClockShadowOpacity: new THREE.Uniform(null),
-            uClockShadowColor: new THREE.Uniform(null),
-            uIntensitySmoothing: new THREE.Uniform(null),
-            uAgentDirectionSmoothing: new THREE.Uniform(null),
-            uAgentDirectionColorOffset: new THREE.Uniform(null),
-            uClockColorOffset: new THREE.Uniform(null),
-            uXColorOffset: new THREE.Uniform(null),
-            uYColorOffset: new THREE.Uniform(null),
-            uPaletteCycleTime: new THREE.Uniform(null),
-            uPaletteCycleScale: new THREE.Uniform(null),
-            uPaletteCycleType: new THREE.Uniform(null),
-          },
           agentData: {
             uAgentDataTexture: new THREE.Uniform(null),
             uClockTexture: new THREE.Uniform(null),
@@ -228,30 +217,127 @@ const useSlimeStore = create<SlimeStore>()(
             uDelta: new THREE.Uniform(null),
             uTime: new THREE.Uniform(null),
           },
+          slimeMoldDisplayPlane: {
+            uTrailTexture: new THREE.Uniform(null),
+            uClockTexture: new THREE.Uniform(null),
+            uDisplayTextureResolution: new THREE.Uniform(null),
+            uDisplayScale: new THREE.Uniform(null),
+            uTime: new THREE.Uniform(null),
+            uDelta: new THREE.Uniform(null),
+            uPaletteA: new THREE.Uniform(null),
+            uPaletteB: new THREE.Uniform(null),
+            uPaletteC: new THREE.Uniform(null),
+            uPaletteD: new THREE.Uniform(null),
+            uShowClockShadow: new THREE.Uniform(null),
+            uClockShadowOpacity: new THREE.Uniform(null),
+            uClockShadowColor: new THREE.Uniform(null),
+            uIntensitySmoothing: new THREE.Uniform(null),
+            uAgentDirectionSmoothing: new THREE.Uniform(null),
+            uAgentDirectionColorOffset: new THREE.Uniform(null),
+            uClockColorOffset: new THREE.Uniform(null),
+            uXColorOffset: new THREE.Uniform(null),
+            uYColorOffset: new THREE.Uniform(null),
+            uPaletteCycleTime: new THREE.Uniform(null),
+            uPaletteCycleScale: new THREE.Uniform(null),
+            uPaletteCycleType: new THREE.Uniform(null),
+          },
+          texturePlane: {
+            uWindowResolution: new THREE.Uniform(null),
+            uShowTexture: new THREE.Uniform(null),
+          },
         },
 
         portalContainer: null,
 
-        resolutionsSet: false,
-        resolutionsRequestedSetAt: Date.now(),
-        resolutionsSetAt: 0,
+        // I'm declaring the default values for each of the settings objects
+        // spread out like this to make it easier to see what's included in each
+        // settings object. Some of the default values are overridden inside
+        // the "InitializationHandler" component.
+        clockSettings: {
+          show: DEFAULT_CLOCK_SETTINGS.show,
+          // Size is overridden in the "InitializationHandler" component if
+          // "digitLayout" is set to "not set".
+          size: DEFAULT_CLOCK_SETTINGS.size,
+          // Default digitLayout is "not set", which will trigger the
+          // "InitializationHandler" to set it to a valid value.
+          digitLayout: DEFAULT_CLOCK_SETTINGS.digitLayout,
+          hourFormat: DEFAULT_CLOCK_SETTINGS.hourFormat,
+          digitStyle: DEFAULT_CLOCK_SETTINGS.digitStyle,
+          padHours: DEFAULT_CLOCK_SETTINGS.padHours,
+          showClockShadow: DEFAULT_CLOCK_SETTINGS.showClockShadow,
+          clockShadowOpacity: DEFAULT_CLOCK_SETTINGS.clockShadowOpacity,
+          clockShadowColor: DEFAULT_CLOCK_SETTINGS.clockShadowColor,
+        },
+        simulationSettings: {
+          // Nearly all of these values will be overridden in the
+          // "InitializationHandler" component based on the default preset,
+          // if they have not been set previously.
+          settingsSetPreviously:
+            DEFAULT_SIMULATION_SETTINGS.settingsSetPreviously,
 
-        initialized: false,
-        initializationRequestedAt: Date.now(),
-        initializedAt: 0,
+          speed: DEFAULT_SIMULATION_SETTINGS.speed,
 
-        agentsNeedRandomization: false,
-        trailNeedsRandomization: false,
-        simulationNeedsRestart: false,
+          boundaryBehavior: DEFAULT_SIMULATION_SETTINGS.boundaryBehavior,
 
-        clockSettings: DEFAULT_CLOCK_SETTINGS,
+          agentDensity: DEFAULT_SIMULATION_SETTINGS.agentDensity,
+          gpuTextureWidth: DEFAULT_SIMULATION_SETTINGS.gpuTextureWidth,
+          gpuTextureHeight: DEFAULT_SIMULATION_SETTINGS.gpuTextureHeight,
+          agentStartType: DEFAULT_SIMULATION_SETTINGS.agentStartType,
+          agentClockAttraction:
+            DEFAULT_SIMULATION_SETTINGS.agentClockAttraction,
+          agentClockDepositRate:
+            DEFAULT_SIMULATION_SETTINGS.agentClockDepositRate,
+          agentBackgroundDepositRate:
+            DEFAULT_SIMULATION_SETTINGS.agentBackgroundDepositRate,
+          agentSensorDegrees: DEFAULT_SIMULATION_SETTINGS.agentSensorDegrees,
+          agentRotationRate: DEFAULT_SIMULATION_SETTINGS.agentRotationRate,
+          agentSensorOffset: DEFAULT_SIMULATION_SETTINGS.agentSensorOffset,
+          agentSensorWidth: DEFAULT_SIMULATION_SETTINGS.agentSensorWidth,
+          agentStepSize: DEFAULT_SIMULATION_SETTINGS.agentStepSize,
+          agentCrowdAvoidance: DEFAULT_SIMULATION_SETTINGS.agentCrowdAvoidance,
+          agentWanderStrength: DEFAULT_SIMULATION_SETTINGS.agentWanderStrength,
 
-        simulationSettings: DEFAULT_SIMULATION_SETTINGS,
+          displayTextureAspectRatio:
+            DEFAULT_SIMULATION_SETTINGS.displayTextureAspectRatio,
+          displayTextureTargetQuality:
+            DEFAULT_SIMULATION_SETTINGS.displayTextureTargetQuality,
+          displayTextureWidth: DEFAULT_SIMULATION_SETTINGS.displayTextureWidth,
+          displayTextureHeight:
+            DEFAULT_SIMULATION_SETTINGS.displayTextureHeight,
+          trailClockDecayRate: DEFAULT_SIMULATION_SETTINGS.trailClockDecayRate,
+          trailClockDiffuseRate:
+            DEFAULT_SIMULATION_SETTINGS.trailClockDiffuseRate,
+          trailBackgroundDecayRate:
+            DEFAULT_SIMULATION_SETTINGS.trailBackgroundDecayRate,
+          trailBackgroundDiffuseRate:
+            DEFAULT_SIMULATION_SETTINGS.trailBackgroundDiffuseRate,
 
-        simulationRandomizationSettings:
-          DEFAULT_SIMULATION_RANDOMIZATION_SETTINGS,
-
+          showTextureDisplayPlanes: false,
+        },
         colorSettings: DEFAULT_COLOR_SETTINGS,
+
+        randomizationState: {
+          agentRandomizationRequestedAt: 0,
+          agentRandomizationCompletedAt: 0,
+          trailRandomizationRequestedAt: 0,
+          trailRandomizationCompletedAt: 0,
+          proceduralColorPaletteRandomizationRequestedAt: 0,
+          proceduralColorPaletteRandomizationCompletedAt: 0,
+          backgroundColorRandomizationRequestedAt: 0,
+          backgroundColorRandomizationCompletedAt: 0,
+        },
+        randomizationSettings: {
+          autoRandomizationEnabled: true,
+          autoRandomizationInterval: 1,
+          autoRestartEnabled: true,
+          autoRestartInterval: 15,
+          allowAgentRandomization: true,
+          allowTrailRandomization: true,
+          allowProceduralColorPaletteRandomization: true,
+          allowBackgroundColorRandomization: true,
+          simulation: DEFAULT_SIMULATION_RANDOMIZATION_SETTINGS,
+          color: DEFAULT_COLOR_RANDOMIZATION_SETTINGS,
+        },
 
         controlsState: {
           selectedTab: "randomization-controls",
@@ -266,6 +352,7 @@ const useSlimeStore = create<SlimeStore>()(
           showSelectedTabCornerIcons: false,
           controlsEditStoppedAt: Date.now(),
           accordionValues: {},
+          controlsClosedAt: Date.now(),
         },
         history: [],
         presets: DEFAULT_PRESETS,

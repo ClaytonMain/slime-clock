@@ -65,18 +65,6 @@ export const RANDOMIZE_FUNCTION_KEYS = [
   "uBorderRoundness",
 ];
 
-export function getGaussRandomInControlBounds(
-  min: number,
-  max: number,
-  mu: number,
-  sigma: number,
-) {
-  const u = 1 - Math.random();
-  const v = Math.random();
-  const z = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
-  return Math.max(min, Math.min(max, mu + z * sigma));
-}
-
 export const DEFAULT_AGENT_DATA_UNIFORMS = {
   uAgentDataTexture: { value: null },
   uAgentPositionsTexture: { value: null },

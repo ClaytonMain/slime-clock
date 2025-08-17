@@ -15,7 +15,7 @@ export type SelectOption<T> = {
 export interface LoadableClockSettings {
   show: boolean;
   size: number;
-  digitLayout: "vertical" | "horizontal";
+  digitLayout: "vertical" | "horizontal" | "not set";
   hourFormat: ClockHourFormatValue;
   digitStyle: ClockDigitStyleValue;
   padHours: boolean;
@@ -53,22 +53,15 @@ export interface LoadableSimulationSettings {
 }
 
 export interface SimulationSettings extends LoadableSimulationSettings {
-  preset: string;
-
-  // TODO: Move these randomization settings somewhere else.
-  allowAgentsRandomization: boolean;
-  allowTrailRandomization: boolean;
-
-  autoRandomizationEnabled: boolean;
-  autoRandomizationInterval: number;
-  autoRestartEnabled: boolean;
-  autoRestartInterval: number;
+  settingsSetPreviously: boolean;
 
   gpuTextureWidth: number;
   gpuTextureHeight: number;
 
   displayTextureWidth: number;
   displayTextureHeight: number;
+
+  showTextureDisplayPlanes: boolean;
 }
 
 export type RandomizationSettingMode = "flat" | "gaussian";
@@ -97,6 +90,19 @@ export interface SimulationRandomizationSettings {
   trailClockDiffuseRate: RandomizationSetting;
   trailBackgroundDecayRate: RandomizationSetting;
   trailBackgroundDiffuseRate: RandomizationSetting;
+}
+export interface ProceduralColorPaletteChannelRandomizationSettings {
+  yOffset: RandomizationSetting;
+  amplitude: RandomizationSetting;
+  frequency: RandomizationSetting;
+  phase: RandomizationSetting;
+}
+export interface ColorRandomizationSettings {
+  proceduralColorPalette: {
+    r: ProceduralColorPaletteChannelRandomizationSettings;
+    g: ProceduralColorPaletteChannelRandomizationSettings;
+    b: ProceduralColorPaletteChannelRandomizationSettings;
+  };
 }
 
 export interface ProceduralColorPaletteChannel {
@@ -129,12 +135,8 @@ export interface LoadableColorSettings {
   paletteCycleType: number;
 }
 export interface ColorSettings extends LoadableColorSettings {
+  settingsSetPreviously: boolean;
   slimeColorChangedAt: number;
-  currentProceduralColorPalettePreset: string;
-  proceduralColorPaletteNeedsRandomization: boolean;
-  backgroundColorNeedsRandomization: boolean;
-  allowProceduralColorPaletteRandomization: boolean;
-  allowBackgroundColorRandomization: boolean;
 }
 
 /**

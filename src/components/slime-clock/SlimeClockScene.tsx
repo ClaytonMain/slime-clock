@@ -6,7 +6,7 @@ import { produce } from "immer";
 import InteractionListener from "../../InteractionListener";
 import PresetsChangeListener from "../../PresetsChangeListener";
 import useSlimeStore from "../../stores/useSlimeStore";
-import SlimeClock from "./SlimeClock";
+import NewSlimeClock from "./NewSlimeClock";
 import StatsComponent from "./StatsComponent";
 
 export default function SlimeClockScene() {
@@ -30,10 +30,12 @@ export default function SlimeClockScene() {
     if (e.code === "Space") {
       useSlimeStore.setState(
         produce((state) => {
-          state.colorSettings.backgroundColorNeedsRandomization = true;
-          state.colorSettings.proceduralColorPaletteNeedsRandomization = true;
-          state.simulationSettings.trailNeedsRandomization = true;
-          state.simulationSettings.agentsNeedRandomization = true;
+          state.randomizationState.agentRandomizationRequestedAt = Date.now();
+          state.randomizationState.backgroundColorRandomizationRequestedAt =
+            Date.now();
+          state.randomizationState.proceduralColorPaletteRandomizationRequestedAt =
+            Date.now();
+          state.randomizationState.trailRandomizationRequestedAt = Date.now();
         }),
       );
     }
@@ -78,7 +80,8 @@ export default function SlimeClockScene() {
       >
         <Suspense fallback={null}>
           <StatsComponent />
-          <SlimeClock />
+          {/* <SlimeClock /> */}
+          <NewSlimeClock />
           <InteractionListener />
           <PresetsChangeListener />
         </Suspense>

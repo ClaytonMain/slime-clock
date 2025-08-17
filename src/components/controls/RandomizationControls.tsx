@@ -1,6 +1,5 @@
 import { produce } from "immer";
 import { useEffect } from "react";
-import { SIMULATION_CONTROLS_CONFIGS } from "../../constants/constants";
 import useSlimeStore from "../../stores/useSlimeStore";
 import AccordionControlsItem from "./AccordionControlsItem";
 import AccordionControlsWrapper from "./AccordionControlsWrapper";
@@ -39,17 +38,20 @@ export default function RandomizationControls() {
         settings.forEach((setting) => {
           switch (setting) {
             case "agents":
-              state.simulationSettings.agentsNeedRandomization = true;
+              state.randomizationState.agentRandomizationRequestedAt =
+                Date.now();
               break;
             case "trail":
-              state.simulationSettings.trailNeedsRandomization = true;
+              state.randomizationState.trailRandomizationRequestedAt =
+                Date.now();
               break;
             case "palette":
-              state.colorSettings.proceduralColorPaletteNeedsRandomization =
-                true;
+              state.randomizationState.proceduralColorPaletteRandomizationRequestedAt =
+                Date.now();
               break;
             case "background":
-              state.colorSettings.backgroundColorNeedsRandomization = true;
+              state.randomizationState.backgroundColorRandomizationRequestedAt =
+                Date.now();
               break;
           }
         });
@@ -80,31 +82,31 @@ export default function RandomizationControls() {
                 'Allows the simulation to randomize certain parameters at set intervals. The randomization interval is set using the \'Randomization Interval\' slider. Control over which parameters are randomized can be found in the "Agent Randomization Settings" and "Trail Randomization Settings" accordions below. Auto randomization is disabled when the controls are open.',
               ]}
               baseId="auto-randomization-enabled-switch"
-              storePath={["simulationSettings", "autoRandomizationEnabled"]}
+              storePath={["randomizationSettings", "autoRandomizationEnabled"]}
             />
             <SlimeStoreSliderControl
               label="Auto Rand. Interval"
               labelHoverTabContentDisplay={[]}
               baseInputId="auto-randomization-interval-slider"
-              min={SIMULATION_CONTROLS_CONFIGS.autoRandomizationInterval!.min}
-              max={SIMULATION_CONTROLS_CONFIGS.autoRandomizationInterval!.max}
-              step={SIMULATION_CONTROLS_CONFIGS.autoRandomizationInterval!.step}
-              storePath={["simulationSettings", "autoRandomizationInterval"]}
+              min={1}
+              max={60}
+              step={1}
+              storePath={["randomizationSettings", "autoRandomizationInterval"]}
             />
             <SlimeStoreSwitchControl
               label="Auto Restart Enabled"
               labelHoverTabContentDisplay={[]}
               baseId="auto-restart-enabled-switch"
-              storePath={["simulationSettings", "autoRestartEnabled"]}
+              storePath={["randomizationSettings", "autoRestartEnabled"]}
             />
             <SlimeStoreSliderControl
               label="Auto Restart Interval"
               labelHoverTabContentDisplay={[]}
               baseInputId="auto-restart-interval-slider"
-              min={SIMULATION_CONTROLS_CONFIGS.autoRestartInterval!.min}
-              max={SIMULATION_CONTROLS_CONFIGS.autoRestartInterval!.max}
-              step={SIMULATION_CONTROLS_CONFIGS.autoRestartInterval!.step}
-              storePath={["simulationSettings", "autoRestartInterval"]}
+              min={1}
+              max={60}
+              step={1}
+              storePath={["randomizationSettings", "autoRestartInterval"]}
             />
             <SwitchControlGroup
               label="Enabled Rands."
@@ -116,18 +118,24 @@ export default function RandomizationControls() {
                 {
                   label: "Agents",
                   baseId: "agents-randomization-switch",
-                  storePath: ["simulationSettings", "allowAgentsRandomization"],
+                  storePath: [
+                    "randomizationSettings",
+                    "allowAgentsRandomization",
+                  ],
                 },
                 {
                   label: "Trail",
                   baseId: "trail-randomization-switch",
-                  storePath: ["simulationSettings", "allowTrailRandomization"],
+                  storePath: [
+                    "randomizationSettings",
+                    "allowTrailRandomization",
+                  ],
                 },
                 {
                   label: "Color Palette",
                   baseId: "color-palette-randomization-switch",
                   storePath: [
-                    "colorSettings",
+                    "randomizationSettings",
                     "allowProceduralColorPaletteRandomization",
                   ],
                 },
@@ -135,7 +143,7 @@ export default function RandomizationControls() {
                   label: "Background Color",
                   baseId: "background-color-randomization-switch",
                   storePath: [
-                    "colorSettings",
+                    "randomizationSettings",
                     "allowBackgroundColorRandomization",
                   ],
                 },

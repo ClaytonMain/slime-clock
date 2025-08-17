@@ -1,6 +1,7 @@
 import type {
   AgentStartTypeDropdownOption,
   ClockSettings,
+  ColorRandomizationSettings,
   ColorSettings,
   DisplayTextureAspectRatioDropdownOption,
   LoadableClockSettings,
@@ -12,6 +13,7 @@ import type {
   PresetType,
   ProceduralColorPaletteChannel,
   ProceduralColorPalettePresets,
+  RandomizationSetting,
   SimulationRandomizationSettings,
   SimulationSettings,
   SinglePresetType,
@@ -25,30 +27,28 @@ type ControlsConfigs<T> = {
 export const DEFAULT_CLOCK_SETTINGS: ClockSettings = {
   show: true,
   size: 50,
-  digitLayout: "horizontal",
+  digitLayout: "not set",
   hourFormat: "24h",
   digitStyle: "14segment",
   padHours: true,
   showClockShadow: true,
-  clockShadowOpacity: 0.1,
-  clockShadowColor: "#000000",
+  clockShadowOpacity: 0.25,
+  clockShadowColor: "#6f6f6f",
 };
 export const CLOCK_CONTROLS_CONFIGS: ControlsConfigs<ClockSettings> = {
   size: { min: 1, max: 100, step: 1 },
   clockShadowOpacity: { min: 0, max: 1, step: 0.01 },
 };
 
+export const DEFAULT_SIMULATION_SETTINGS_PRESET_NAME = "Slimy 01";
+// TODO: Replace the values in DEFAULT_SIMULATION_SETTINGS that get set
+// by the `InitializationHandler` component with some sort of easily-identifiable
+// placeholder values (like -1 or -999 or something). Consider commenting on these
+// values too so you don't have to keep looking them up.
 export const DEFAULT_SIMULATION_SETTINGS: SimulationSettings = {
-  preset: "Default",
-
-  allowAgentsRandomization: true,
-  allowTrailRandomization: true,
+  settingsSetPreviously: false,
 
   speed: 3.3,
-  autoRandomizationEnabled: true,
-  autoRandomizationInterval: 1,
-  autoRestartEnabled: true,
-  autoRestartInterval: 15,
 
   boundaryBehavior: 0, // 0: Wrap, 1: Bounce
 
@@ -75,13 +75,13 @@ export const DEFAULT_SIMULATION_SETTINGS: SimulationSettings = {
   trailClockDiffuseRate: 4.5,
   trailBackgroundDecayRate: 0.39,
   trailBackgroundDiffuseRate: 11.7,
+
+  showTextureDisplayPlanes: false,
 };
 
 export const SIMULATION_CONTROLS_CONFIGS: ControlsConfigs<SimulationSettings> =
   {
     speed: { min: 0.1, max: 10, step: 0.1 },
-    autoRandomizationInterval: { min: 1, max: 60, step: 1 },
-    autoRestartInterval: { min: 1, max: 60, step: 1 },
 
     agentClockAttraction: { min: 0.0, max: 1.0, step: 0.01 },
     agentClockDepositRate: { min: 0.0, max: 30.0, step: 0.1 },
@@ -203,6 +203,49 @@ export const DEFAULT_SIMULATION_RANDOMIZATION_SETTINGS: SimulationRandomizationS
       mode: "gaussian",
     },
   };
+const DEFAULT_PROCEDURAL_COLOR_PALETTE_RANDOMIZATION_SETTINGS: {
+  yOffset: RandomizationSetting;
+  amplitude: RandomizationSetting;
+  frequency: RandomizationSetting;
+  phase: RandomizationSetting;
+} = {
+  yOffset: {
+    enabled: true,
+    flatRange: [0.0, 1.0],
+    mu: 0.5,
+    sigma: 0.3,
+    mode: "gaussian",
+  },
+  amplitude: {
+    enabled: true,
+    flatRange: [0.05, 0.95],
+    mu: 0.5,
+    sigma: 0.3,
+    mode: "gaussian",
+  },
+  frequency: {
+    enabled: true,
+    flatRange: [0.1, 3.0],
+    mu: 1.0,
+    sigma: 0.75,
+    mode: "gaussian",
+  },
+  phase: {
+    enabled: true,
+    flatRange: [0.0, 3.14],
+    mu: 1.57,
+    sigma: 0.7,
+    mode: "gaussian",
+  },
+};
+export const DEFAULT_COLOR_RANDOMIZATION_SETTINGS: ColorRandomizationSettings =
+  {
+    proceduralColorPalette: {
+      r: DEFAULT_PROCEDURAL_COLOR_PALETTE_RANDOMIZATION_SETTINGS,
+      g: DEFAULT_PROCEDURAL_COLOR_PALETTE_RANDOMIZATION_SETTINGS,
+      b: DEFAULT_PROCEDURAL_COLOR_PALETTE_RANDOMIZATION_SETTINGS,
+    },
+  };
 
 export const SLIME_COLOR_MODES: SlimeColorMode[] = ["Procedural", "Single"];
 
@@ -241,16 +284,18 @@ export const PROCEDURAL_COLOR_PALETTE_PRESETS: ProceduralColorPalettePresets = {
   },
 };
 
+export const DEFAULT_COLOR_SETTINGS_PRESET_NAME = "Rainbow";
 export const DEFAULT_COLOR_SETTINGS: ColorSettings = {
+  settingsSetPreviously: false,
+  slimeColorChangedAt: 0,
+
   backgroundColor: "#70f3eb",
   slimeColorMode: "Procedural",
-  slimeColorChangedAt: Date.now(),
-  currentProceduralColorPalettePreset: "Rainbow",
-  proceduralColorPalette: PROCEDURAL_COLOR_PALETTE_PRESETS.Rainbow,
-  proceduralColorPaletteNeedsRandomization: false,
-  backgroundColorNeedsRandomization: false,
-  allowProceduralColorPaletteRandomization: true,
-  allowBackgroundColorRandomization: true,
+  proceduralColorPalette: {
+    r: { yOffset: 0.5, amplitude: 0.5, frequency: 1.0, phase: 0.0 },
+    g: { yOffset: 0.5, amplitude: 0.5, frequency: 1.0, phase: 0.33 },
+    b: { yOffset: 0.5, amplitude: 0.5, frequency: 1.0, phase: 0.66 },
+  },
   intensitySmoothing: 0.59,
   agentDirectionSmoothing: 0.68,
   agentDirectionColorOffset: 0.42,
@@ -336,7 +381,6 @@ export const AGENT_START_TYPE_DROPDOWN_OPTIONS: AgentStartTypeDropdownOption[] =
 export const SIMULATION_PRESETS: Record<string, Partial<SimulationSettings>> = {
   Default: {
     speed: 3.3,
-    autoRandomizationEnabled: false,
     agentDensity: 0.25,
     agentStartType: -1,
     agentClockAttraction: 0.35,
@@ -356,7 +400,6 @@ export const SIMULATION_PRESETS: Record<string, Partial<SimulationSettings>> = {
   },
   "Inverted Gooey": {
     speed: 3.3,
-    autoRandomizationEnabled: false,
     agentDensity: 0.25,
     agentStartType: 5,
     agentClockAttraction: 0.09,
@@ -458,7 +501,7 @@ export const DEFAULT_PRESETS: LoadableSlimeStoreSettings[] = [
       digitStyle: "14segment",
       padHours: true,
       showClockShadow: true,
-      clockShadowOpacity: 0.1,
+      clockShadowOpacity: 0.25,
       clockShadowColor: "#6f6f6f",
     },
   },
@@ -474,7 +517,7 @@ export const DEFAULT_PRESETS: LoadableSlimeStoreSettings[] = [
       digitStyle: "14segment",
       padHours: true,
       showClockShadow: true,
-      clockShadowOpacity: 0.1,
+      clockShadowOpacity: 0.25,
       clockShadowColor: "#6f6f6f",
     },
   },

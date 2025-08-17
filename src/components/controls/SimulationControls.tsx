@@ -130,8 +130,10 @@ export default function SimulationControls() {
                   onClick: () => {
                     useSlimeStore.setState(
                       produce((state) => {
-                        state.simulationSettings.agentsNeedRandomization = true;
-                        state.simulationSettings.trailNeedsRandomization = true;
+                        state.randomizationState.simulationRandomizationRequestedAt =
+                          Date.now();
+                        state.randomizationState.trailRandomizationRequestedAt =
+                          Date.now();
                       }),
                     );
                   },
@@ -142,7 +144,8 @@ export default function SimulationControls() {
                   onClick: () => {
                     useSlimeStore.setState(
                       produce((state) => {
-                        state.simulationSettings.agentsNeedRandomization = true;
+                        state.randomizationState.agentRandomizationRequestedAt =
+                          Date.now();
                       }),
                     );
                   },
@@ -153,7 +156,8 @@ export default function SimulationControls() {
                   onClick: () => {
                     useSlimeStore.setState(
                       produce((state) => {
-                        state.simulationSettings.trailNeedsRandomization = true;
+                        state.randomizationState.trailRandomizationRequestedAt =
+                          Date.now();
                       }),
                     );
                   },
@@ -241,7 +245,7 @@ export default function SimulationControls() {
                 'Allows the simulation to randomize certain parameters at set intervals. The randomization interval is set using the "Randomization Interval" slider. Control over which parameters are randomized can be found in the "Randomization Controls" tab. Auto randomization is disabled when the controls are open.',
               ]}
               baseId="auto-randomization-enabled-switch"
-              storePath={["simulationSettings", "autoRandomizationEnabled"]}
+              storePath={["randomizationSettings", "autoRandomizationEnabled"]}
             />
             <SlimeStoreSliderControl
               label="Auto Randomization Interval"
@@ -250,10 +254,10 @@ export default function SimulationControls() {
                 'Controls how often (in minutes) the simulation randomizes its parameters. Control over which parameters are randomized can be found in the "Randomization Controls" tab. Has no effect when auto randomization is disabled. Auto randomization is disabled when the controls are open.',
               ]}
               baseInputId="auto-randomization-interval-slider"
-              min={SIMULATION_CONTROLS_CONFIGS.autoRandomizationInterval!.min}
-              max={SIMULATION_CONTROLS_CONFIGS.autoRandomizationInterval!.max}
-              step={SIMULATION_CONTROLS_CONFIGS.autoRandomizationInterval!.step}
-              storePath={["simulationSettings", "autoRandomizationInterval"]}
+              min={1}
+              max={60}
+              step={1}
+              storePath={["randomizationSettings", "autoRandomizationInterval"]}
             />
             <SlimeStoreSwitchControl
               label="Auto Restart Enabled"
@@ -262,7 +266,7 @@ export default function SimulationControls() {
                 "Allows the simulation to automatically restart at set intervals. Interval is set using the 'Auto Restart Interval' slider.",
               ]}
               baseId="auto-restart-enabled-switch"
-              storePath={["simulationSettings", "autoRestartEnabled"]}
+              storePath={["randomizationSettings", "autoRestartEnabled"]}
             />
             <SlimeStoreSliderControl
               label="Auto Restart Interval"
@@ -271,10 +275,10 @@ export default function SimulationControls() {
                 "Controls how often the simulation restarts. Interval is in minutes.",
               ]}
               baseInputId="auto-restart-interval-slider"
-              min={SIMULATION_CONTROLS_CONFIGS.autoRestartInterval!.min}
-              max={SIMULATION_CONTROLS_CONFIGS.autoRestartInterval!.max}
-              step={SIMULATION_CONTROLS_CONFIGS.autoRestartInterval!.step}
-              storePath={["simulationSettings", "autoRestartInterval"]}
+              min={1}
+              max={60}
+              step={1}
+              storePath={["randomizationSettings", "autoRestartInterval"]}
             />
           </AccordionControlsItem>
 
