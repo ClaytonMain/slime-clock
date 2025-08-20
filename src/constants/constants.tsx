@@ -76,7 +76,7 @@ export const DEFAULT_SIMULATION_SETTINGS: SimulationSettings = {
   trailBackgroundDecayRate: 0.39,
   trailBackgroundDiffuseRate: 11.7,
 
-  showTextureDisplayPlanes: false,
+  showTextureDisplayPlanes: true,
 };
 
 export const SIMULATION_CONTROLS_CONFIGS: ControlsConfigs<SimulationSettings> =

@@ -21,8 +21,8 @@ function initializeClockSettings() {
   const debugConsoleLogger = useSlimeStore.getState().debugConsoleLogger;
 
   // We're keeping most of the default clock settings, or whatever settings
-  // have been saved in the store. We do need to initialize the "digitLayout"
-  // and "size" values if the "digitLayout" is not set.
+  // have been saved in the store. We do need to initialize the `digitLayout`
+  // and `size` values if the `digitLayout` is not set.
 
   const clockSettings = useSlimeStore.getState().clockSettings;
   if (clockSettings.digitLayout === "not set") {
@@ -31,7 +31,7 @@ function initializeClockSettings() {
     );
     const windowAspectRatio = window.innerWidth / window.innerHeight;
     const digitLayout = windowAspectRatio > 1 ? "horizontal" : "vertical";
-    const size = digitLayout === "horizontal" ? 50 : 25;
+    const size = digitLayout === "horizontal" ? 50 : 30;
     useSlimeStore.setState(
       produce((state) => {
         state.clockSettings.digitLayout = digitLayout;
@@ -189,7 +189,6 @@ function initializeColorSettings() {
 // TODO: Learn how to make promises...
 export default function InitializationHandler() {
   const debugConsoleLogger = useSlimeStore.getState().debugConsoleLogger;
-  debugConsoleLogger("InitializationHandler component mounted");
   const initializationStates = useSlimeStore((state) => state.initialization);
 
   /**
@@ -204,6 +203,7 @@ export default function InitializationHandler() {
     useSlimeStore.setState(
       produce((state) => {
         // Update the controlsDisplayStatus once the storeSettings are initialized.
+        // This allows the controls to render, but only after the values are ready.
         if (
           initializationStates.storeSettings.initialized &&
           initializationStates.controlsDisplayStatus !== "ready"
@@ -212,10 +212,15 @@ export default function InitializationHandler() {
           state.initialization.controlsDisplayStatus = "ready";
         }
 
-        // Check if all initialization steps are complete, then update
-        // the appropriate values if necessary.
+        // If `all.initialized` is `false` or `slimeClockDisplayStatus` is
+        // `initializing`, but everything else is initialized, then we need
+        // to update those statuses. This should be the only place where
+        // `all.initialized` can be set to `true`, and the only place where
+        // `slimeClockDisplayStatus` can be set to `ready`.
+        // TODO: Double-check that this is the case.
         if (
-          !initializationStates.all.initialized &&
+          (!initializationStates.all.initialized ||
+            initializationStates.slimeClockDisplayStatus === "initializing") &&
           initializationStates.storeSettings.initialized &&
           initializationStates.resolutions.initialized &&
           initializationStates.uniforms.initialized
@@ -226,17 +231,24 @@ export default function InitializationHandler() {
           state.initialization.all.initialized = true;
           state.initialization.all.completedAt = Date.now();
         }
-        // Or if the initialization steps are not complete, update the
-        // "all > initialized" value to false if it's set to true.
+        // Conversely, if `all.initialized` is `true`, or `slimeClockDisplayStatus`
+        // is `ready`, but not everything else is initialized, then we need to mark
+        // it as not ready.
+        // I think I'll just have the `InitializationHandler` run once on the
+        // initial load, then use different handlers for other situations
+        // (e.g. re-initializing some of the GPU textures when the window is
+        // resized, or whenever a restart is needed). Though, if that's the case,
+        // then we really don't need to check this here... /shrug
         else if (
-          initializationStates.all.initialized &&
+          (initializationStates.all.initialized ||
+            initializationStates.slimeClockDisplayStatus === "ready") &&
           (!initializationStates.storeSettings.initialized ||
             !initializationStates.resolutions.initialized ||
             !initializationStates.uniforms.initialized)
         ) {
           state.initialization.lastUpdatedAt = Date.now();
-          // TODO: Check if we should set the "slimeClockDisplayStatus"
-          // to "initializing" here.
+          state.initialization.slimeClockDisplayStatus = "initializing";
+
           state.initialization.all.initialized = false;
         }
       }),
@@ -247,24 +259,24 @@ export default function InitializationHandler() {
   /**
    * All.
    *
-   * Updating the "requestedAt" date for "all" should trigger a complete re-initialization.
+   * Updating `all.requestedAt` should trigger a complete re-initialization.
+   * Although, I'm not sure if I'll ever update the `all.requestedAt` value
+   * outside of the initial load.
    */
   useEffect(() => {
-    debugConsoleLogger(
-      'NewSlimeClock > "all" initialization useEffect triggered',
-    );
+    debugConsoleLogger('"all" initialization useEffect triggered');
     if (
       initializationStates.all.requestedAt >
       initializationStates.all.completedAt
     ) {
-      debugConsoleLogger('NewSlimeClock > "all" initialization triggered');
+      debugConsoleLogger('"all" initialization triggered');
       useSlimeStore.setState(
         produce((state) => {
-          // Since we're re-initializing "all", we need to update several
+          // Since we're re-initializing `all`, we need to update several
           // initialization states.
           state.initialization.lastUpdatedAt = Date.now();
 
-          // Updating the "[...]DisplayStatus" values to "initializing" since
+          // Updating the `[...]DisplayStatus` values to `initializing` since
           // we don't want to run the simulation or render the controls until
           // all initialization steps are complete.
           state.initialization.controlsDisplayStatus = "initializing";
@@ -273,14 +285,14 @@ export default function InitializationHandler() {
           state.initialization.all.initialized = false;
 
           // We always want to initialize the store settings prior to initializing
-          // the resolutions and uniforms, so we're setting the "requestedAt"
-          // value here, which will trigger the "storeSettings" initialization
+          // the resolutions and uniforms, so we're setting the `requestedAt`
+          // value here, which will trigger the `storeSettings` initialization
           // useEffect to run.
           state.initialization.storeSettings.initialized = false;
           state.initialization.storeSettings.requestedAt = Date.now();
 
           // The resolutions and uniforms should indicate that they're not initialized,
-          // but we're not updating the "requestedAt" values here since we don't want
+          // but we're not updating the `requestedAt` values here since we don't want
           // to trigger their initialization just yet.
           state.initialization.resolutions.initialized = false;
           state.initialization.uniforms.initialized = false;
@@ -296,7 +308,7 @@ export default function InitializationHandler() {
    * Should always initialize before resolutions and uniforms.
    * Just a bit of a sanity check to ensure all our values are set to
    * what we're expecting prior to trying to initialize or render anything.
-   * Ensures that the clockSettings simulationSettings, and colorSettings
+   * Ensures that the `clockSettings`, `simulationSettings`, and `colorSettings`
    * are set. Checks for selected presets first to ensure the settings
    * we're using are what we expect.
    */
@@ -413,7 +425,6 @@ export default function InitializationHandler() {
           state.initialization.all.initialized = false;
           state.initialization.resolutions.initialized = false;
 
-          // TODO: Revisit this to see if we always want to do this.
           state.initialization.uniforms.initialized = false;
         }),
       );

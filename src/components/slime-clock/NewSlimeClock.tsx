@@ -1,7 +1,7 @@
 import { Plane, useFBO } from "@react-three/drei";
 import { createPortal, extend, useFrame } from "@react-three/fiber";
 import { produce } from "immer";
-import { useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import useSlimeStore from "../../stores/useSlimeStore.tsx";
 import SettingsHistoryListener from "../controls/SettingsHistoryListener.tsx";
@@ -171,9 +171,6 @@ function SlimeClockRenderer() {
     simulationSettings.agentDensity,
   ]);
 
-  /**
-   * Uniforms
-   */
   const agentDataUniforms = useSlimeStore((state) => state.uniforms.agentData);
   const agentPositionsUniforms = useSlimeStore(
     (state) => state.uniforms.agentPositions,
@@ -276,7 +273,7 @@ function SlimeClockRenderer() {
      * Agent data.
      */
     if (pingPongRef.current) {
-      // Update agent data A time uniforms.
+      // Update agent data A uniforms.
       agentDataMaterialRefA.current.uniforms.uDelta.value = uDeltaRef.current;
       agentDataMaterialRefA.current.uniforms.uTime.value = uTimeRef.current;
       agentDataMaterialRefA.current.uniforms.uClockTexture.value =
@@ -633,15 +630,30 @@ function SlimeClockRenderer() {
 }
 
 export default function NewSlimeClock() {
-  const initializationSlimeClockDisplayStatus = useSlimeStore(
-    (state) => state.initialization.slimeClockDisplayStatus,
-  );
+  const [displaySlimeClock, setDisplaySlimeClock] = useState(false);
+
+  useEffect(() => {
+    const unsub = useSlimeStore.subscribe(
+      (state) => state.initialization.slimeClockDisplayStatus,
+      (displayStatus) => {
+        if (displayStatus === "ready" && !displaySlimeClock) {
+          setDisplaySlimeClock(true);
+        } else if (displayStatus === "initializing" && displaySlimeClock) {
+          setDisplaySlimeClock(false);
+        }
+      },
+    );
+    return () => {
+      unsub();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <>
       <InitializationHandler />
       <SettingsHistoryListener />
-      {initializationSlimeClockDisplayStatus === "ready" && (
+      {displaySlimeClock && (
         <>
           <SlimeClockRenderer />
           <RandomizationListener />
