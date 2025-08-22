@@ -79,21 +79,21 @@ export default function SimulationControls() {
     );
   }
 
-  function handleDisplayTextureTargetQualityChange(value: number[]) {
-    const displayTextureAspectRatio =
-      useSlimeStore.getState().simulationSettings.displayTextureAspectRatio;
-    const resolution = UTILS.getDisplayTextureResolution(
-      displayTextureAspectRatio,
-      value[0],
-    );
-    useSlimeStore.setState(
-      produce((state) => {
-        state.simulationSettings.displayTextureTargetQuality = value[0];
-        state.simulationSettings.displayTextureWidth = resolution.width;
-        state.simulationSettings.displayTextureHeight = resolution.height;
-      }),
-    );
-  }
+  // function handleDisplayTextureTargetQualityChange(value: number[]) {
+  //   const displayTextureAspectRatio =
+  //     useSlimeStore.getState().simulationSettings.displayTextureAspectRatio;
+  //   const resolution = UTILS.getDisplayTextureResolution(
+  //     displayTextureAspectRatio,
+  //     value[0],
+  //   );
+  //   useSlimeStore.setState(
+  //     produce((state) => {
+  //       state.simulationSettings.displayTextureTargetQuality = value[0];
+  //       state.simulationSettings.displayTextureWidth = resolution.width;
+  //       state.simulationSettings.displayTextureHeight = resolution.height;
+  //     }),
+  //   );
+  // }
 
   return (
     <TabContentContainer tabsValue="simulation-controls">
@@ -529,7 +529,7 @@ export default function SimulationControls() {
                 SIMULATION_CONTROLS_CONFIGS.displayTextureTargetQuality!.step
               }
               storePath={["simulationSettings", "displayTextureTargetQuality"]}
-              onValueChange={handleDisplayTextureTargetQualityChange}
+              // onValueChange={handleDisplayTextureTargetQualityChange}
             />
             <SlimeStoreSliderControl
               label="Clock Decay Rate"

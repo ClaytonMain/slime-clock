@@ -90,6 +90,7 @@ export interface SlimeStore {
   colorSettings: ColorSettings;
 
   randomizationState: {
+    simulationRestartRequestedAt: number;
     agentRandomizationRequestedAt: number;
     agentRandomizationCompletedAt: number;
     trailRandomizationRequestedAt: number;
@@ -317,6 +318,7 @@ const useSlimeStore = create<SlimeStore>()(
         colorSettings: DEFAULT_COLOR_SETTINGS,
 
         randomizationState: {
+          simulationRestartRequestedAt: 0,
           agentRandomizationRequestedAt: 0,
           agentRandomizationCompletedAt: 0,
           trailRandomizationRequestedAt: 0,

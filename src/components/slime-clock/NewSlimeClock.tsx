@@ -183,6 +183,8 @@ function SlimeClockRenderer() {
     (state) => state.uniforms.texturePlane,
   );
 
+  const debugConsoleLogger = useSlimeStore((state) => state.debugConsoleLogger);
+
   const pingPongRef = useRef(true);
   const uDeltaRef = useRef(0.0);
   const uTimeRef = useRef(0.0);
@@ -199,6 +201,7 @@ function SlimeClockRenderer() {
 
   useFrame(({ gl }, delta) => {
     const currentMinutes = Math.floor(Date.now() / 1000 / 60);
+    const controlsClosedAtMinutes = Math.floor(controlsClosedAt / 1000 / 60);
     if (currentMinutes !== prevMinutesRef.current) {
       prevMinutesRef.current = currentMinutes;
     }
@@ -208,8 +211,8 @@ function SlimeClockRenderer() {
       lastRandomizedAtMinutesRef.current = currentMinutes;
     } else if (
       !controlsAreOpen &&
-      (lastRestartedAtMinutesRef.current < controlsClosedAt ||
-        lastRandomizedAtMinutesRef.current < controlsClosedAt)
+      (lastRestartedAtMinutesRef.current < controlsClosedAtMinutes ||
+        lastRandomizedAtMinutesRef.current < controlsClosedAtMinutes)
     ) {
       lastRandomizedAtMinutesRef.current = currentMinutes;
       lastRestartedAtMinutesRef.current = currentMinutes;
@@ -224,7 +227,7 @@ function SlimeClockRenderer() {
       lastRestartedAtMinutesRef.current = currentMinutes;
       useSlimeStore.setState(
         produce((state) => {
-          // TODO: Trigger a restart.
+          state.randomizationState.simulationRestartRequestedAt = Date.now();
           if (randomizationSettings.autoRandomizationEnabled) {
             lastRandomizedAtMinutesRef.current = currentMinutes;
             state.randomizationState.agentRandomizationRequestedAt = Date.now();
@@ -245,6 +248,11 @@ function SlimeClockRenderer() {
       currentMinutes % randomizationSettings.autoRandomizationInterval === 0 &&
       currentMinutes !== lastRandomizedAtMinutesRef.current
     ) {
+      debugConsoleLogger(
+        "Randomization triggered",
+        lastRandomizedAtMinutesRef.current,
+        currentMinutes,
+      );
       lastRandomizedAtMinutesRef.current = currentMinutes;
       useSlimeStore.setState(
         produce((state) => {
@@ -630,6 +638,7 @@ function SlimeClockRenderer() {
 }
 
 export default function NewSlimeClock() {
+  // const debugConsoleLogger = useSlimeStore((state) => state.debugConsoleLogger);
   const [displaySlimeClock, setDisplaySlimeClock] = useState(false);
 
   useEffect(() => {

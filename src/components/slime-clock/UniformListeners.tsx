@@ -1,6 +1,6 @@
 import { produce } from "immer";
 import * as R from "ramda";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import * as THREE from "three";
 import useSlimeStore from "../../stores/useSlimeStore";
 import type {
@@ -80,13 +80,30 @@ function SimpleUniformListener({
           case "boolean":
             newValue = newValue ? 1 : 0;
             break;
+          case "color":
+            newValue = new THREE.Color(newValue);
+            break;
           default:
             break;
         }
+        debugConsoleLogger(
+          "Attempting to update uniform:",
+          ["uniforms", ...uniformStorePath],
+          "new value:",
+          newValue,
+          "old value:",
+          R.view(
+            R.lensPath(["uniforms", ...uniformStorePath]),
+            useSlimeStore.getState(),
+          ),
+        );
         useSlimeStore.setState(
           R.over(
             R.lensPath(["uniforms", ...uniformStorePath]),
-            () => new THREE.Uniform(newValue),
+            (uniform: THREE.Uniform) => {
+              uniform.value = newValue;
+              return uniform;
+            },
           ),
         );
         debugConsoleLogger(
@@ -205,6 +222,11 @@ const SIMPLE_UNIFORM_LISTENER_CONFIGS: Array<{
     uniformStorePath: ["slimeMoldDisplayPlane", "uClockShadowOpacity"],
   },
   {
+    valueStorePath: ["clockSettings", "clockShadowColor"],
+    uniformStorePath: ["slimeMoldDisplayPlane", "uClockShadowColor"],
+    valueType: "color",
+  },
+  {
     valueStorePath: ["colorSettings", "intensitySmoothing"],
     uniformStorePath: ["slimeMoldDisplayPlane", "uIntensitySmoothing"],
   },
@@ -248,32 +270,39 @@ const SIMPLE_UNIFORM_LISTENER_CONFIGS: Array<{
 ];
 
 function UniformSubscriptionListeners() {
-  /**
-   * I'm thinking that we should mimic the order in which things are
-   * initialized in the `InitializationHandler` component, so:
-   *  - storeSettings
-   *  - resolutions
-   *  - uniforms
-   *
-   * Contrary to how I was doing this in the original `SlimeClock` component,
-   * I think I want to avoid chaining listeners, if practical.
-   * For example, if something happens that changes the `gpuTextureWidth`,
-   * then any store values depending on that should be updated, the resolutions
-   * should be recalculated, and the relevant uniforms should be updated, all
-   * within the same update to the store.
-   *
-   * I'm really just looking to avoid having to jump all over the place to see
-   * where things are being updated / triggered.
-   */
-  // const debugConsoleLogger = useSlimeStore((state) => state.debugConsoleLogger);
+  const debugConsoleLogger = useSlimeStore((state) => state.debugConsoleLogger);
   const initializationStates = useSlimeStore((state) => state.initialization);
-  // const clockSettings = useSlimeStore((state) => state.clockSettings);
   const simulationSettings = useSlimeStore((state) => state.simulationSettings);
-  // const colorSettings = useSlimeStore((state) => state.colorSettings);
+  const colorSettings = useSlimeStore((state) => state.colorSettings);
+  const simulationRestartRequestedAt = useSlimeStore(
+    (state) => state.randomizationState.simulationRestartRequestedAt,
+  );
+  const [windowResizedAt, setWindowResizedAt] = useState(Date.now());
+
+  function handleWindowResize() {
+    setWindowResizedAt(Date.now());
+  }
+
+  useEffect(() => {
+    window.addEventListener("resize", handleWindowResize);
+    return () => {
+      window.removeEventListener("resize", handleWindowResize);
+    };
+  }, []);
 
   // Any changes that should trigger both the resolutions and uniforms to be
   // re-initialized.
   useEffect(() => {
+    debugConsoleLogger(
+      "UniformSubscriptionListeners re-initialization useEffect",
+    );
+    if (!initializationStates.all.initialized) return;
+    debugConsoleLogger(
+      "Time since all initialization complete",
+      Date.now() - initializationStates.all.completedAt,
+    );
+    if (Date.now() - initializationStates.all.completedAt < 1000) return;
+
     const displayTextureResolution = UTILS.getDisplayTextureResolution(
       simulationSettings.displayTextureAspectRatio,
       simulationSettings.displayTextureTargetQuality,
@@ -364,46 +393,65 @@ function UniformSubscriptionListeners() {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    window.innerWidth,
-    window.innerHeight,
+    windowResizedAt,
     simulationSettings.displayTextureAspectRatio,
     simulationSettings.displayTextureTargetQuality,
     simulationSettings.agentDensity,
+    simulationRestartRequestedAt,
   ]);
 
-  // // agentData
-  // "uAgentDataTexture";
-  // "uClockTexture";
-  // "uTrailTexture";
-  // "uDisplayTextureResolution";
+  // Update height-scaled values whenever displayTextureHeight changes.
+  useEffect(() => {
+    debugConsoleLogger(
+      "SimulationSettings.displayTextureHeight useEffect triggered",
+    );
+    if (!initializationStates.all.initialized) return;
+    if (Date.now() - initializationStates.all.completedAt < 1000) return;
 
-  // // agentPositions
-  // "uAgentDataTexture";
-  // "uDisplayTextureResolution";
+    useSlimeStore.setState(
+      produce((state) => {
+        state.uniforms.agentData.uSensorOffset.value =
+          UTILS.getHeightScaledPixelValue(simulationSettings.agentSensorOffset);
+        state.uniforms.agentData.uSensorWidth.value =
+          UTILS.getHeightScaledPixelValue(simulationSettings.agentSensorWidth);
+        state.uniforms.agentData.uStepSize.value =
+          UTILS.getHeightScaledPixelValue(simulationSettings.agentStepSize);
+      }),
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [simulationSettings.displayTextureHeight]);
 
-  // // trail
-  // "uAgentPositionsTexture";
-  // "uClockTexture";
-  // "uTrailTexture";
-  // "uDisplayTextureResolution";
-  // "uDelta";
-  // "uTime";
+  useEffect(() => {
+    debugConsoleLogger("ColorSettings.slimeColorChangedAt useEffect triggered");
+    if (!initializationStates.all.initialized) return;
+    if (Date.now() - initializationStates.all.completedAt < 1000) return;
 
-  // // slimeMoldDisplayPlane
-  // "uTrailTexture";
-  // "uClockTexture";
-  // "uDisplayTextureResolution";
-  // "uDisplayScale";
-  // "uTime";
-  // "uDelta";
-  // "uPaletteA";
-  // "uPaletteB";
-  // "uPaletteC";
-  // "uPaletteD";
-  // "uClockShadowColor";
-
-  // // texturePlane
-  // "uWindowResolution";
+    useSlimeStore.setState(
+      produce((state) => {
+        state.uniforms.slimeMoldDisplayPlane.uPaletteA.value.set(
+          colorSettings.proceduralColorPalette.r.yOffset,
+          colorSettings.proceduralColorPalette.g.yOffset,
+          colorSettings.proceduralColorPalette.b.yOffset,
+        );
+        state.uniforms.slimeMoldDisplayPlane.uPaletteB.value.set(
+          colorSettings.proceduralColorPalette.r.amplitude,
+          colorSettings.proceduralColorPalette.g.amplitude,
+          colorSettings.proceduralColorPalette.b.amplitude,
+        );
+        state.uniforms.slimeMoldDisplayPlane.uPaletteC.value.set(
+          colorSettings.proceduralColorPalette.r.frequency,
+          colorSettings.proceduralColorPalette.g.frequency,
+          colorSettings.proceduralColorPalette.b.frequency,
+        );
+        state.uniforms.slimeMoldDisplayPlane.uPaletteD.value.set(
+          colorSettings.proceduralColorPalette.r.phase,
+          colorSettings.proceduralColorPalette.g.phase,
+          colorSettings.proceduralColorPalette.b.phase,
+        );
+      }),
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [colorSettings.slimeColorChangedAt]);
 
   return null;
 }

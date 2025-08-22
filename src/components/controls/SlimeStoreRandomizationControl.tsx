@@ -3,7 +3,10 @@ import { motion } from "motion/react";
 import { Label } from "radix-ui";
 import * as R from "ramda";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
-import { SIMULATION_CONTROLS_CONFIGS } from "../../constants/constants";
+import {
+  PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS,
+  SIMULATION_CONTROLS_CONFIGS,
+} from "../../constants/constants";
 import useSlimeStore from "../../stores/useSlimeStore";
 import type { RandomizationSettingMode } from "../../types/types";
 import SlimeStoreSelect from "./SlimeStoreSelect";
@@ -15,6 +18,7 @@ export default function SlimeStoreRandomizationControl({
   labelHoverTabContentDisplay,
   baseId,
   controlName,
+  settingType,
   onCheckedChange,
   onRangeChange,
   listen,
@@ -22,15 +26,29 @@ export default function SlimeStoreRandomizationControl({
   label?: string;
   labelHoverTabContentDisplay?: string | [string, string] | ReactNode;
   baseId?: string;
-  controlName: keyof typeof SIMULATION_CONTROLS_CONFIGS;
+  controlName:
+    | keyof typeof SIMULATION_CONTROLS_CONFIGS
+    | keyof typeof PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS;
+  settingType: "simulation" | "color";
   onCheckedChange?: (value: boolean) => void;
   onRangeChange?: (value: [number] | [number, number]) => void;
   listen?: boolean;
 }) {
-  const controlConfig = SIMULATION_CONTROLS_CONFIGS[controlName];
+  const controlConfig = useMemo(() => {
+    if (settingType === settingType) {
+      return SIMULATION_CONTROLS_CONFIGS[
+        controlName as keyof typeof SIMULATION_CONTROLS_CONFIGS
+      ];
+    } else if (settingType === "color") {
+      return PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS[
+        controlName as keyof typeof PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS
+      ];
+    }
+    return null;
+  }, [controlName, settingType]);
   const randomizationModeStorePath = useMemo(
-    () => ["simulationRandomizationSettings", controlName, "mode"],
-    [controlName],
+    () => ["randomizationSettings", settingType, controlName, "mode"],
+    [controlName, settingType],
   );
   const [randomizationMode, setRandomizationMode] =
     useState<RandomizationSettingMode>(
@@ -93,7 +111,8 @@ export default function SlimeStoreRandomizationControl({
               <SlimeStoreSwitch
                 baseId={`${baseId}-enabled-switch`}
                 storePath={[
-                  "simulationRandomizationSettings",
+                  "randomizationSettings",
+                  settingType,
                   controlName,
                   "enabled",
                 ]}
@@ -113,7 +132,8 @@ export default function SlimeStoreRandomizationControl({
               <SlimeStoreSelect
                 baseInputId={`${baseId}-randomization-mode-select`}
                 storePath={[
-                  "simulationRandomizationSettings",
+                  "randomizationSettings",
+                  settingType,
                   controlName,
                   "mode",
                 ]}
@@ -132,7 +152,8 @@ export default function SlimeStoreRandomizationControl({
             max={controlConfig!.max as number}
             step={controlConfig!.step as number}
             storePath={[
-              "simulationRandomizationSettings",
+              "randomizationSettings",
+              settingType,
               controlName,
               "flatRange",
             ]}
@@ -144,8 +165,8 @@ export default function SlimeStoreRandomizationControl({
         {randomizationMode === "gaussian" && (
           <div className="flex w-full flex-col gap-1">
             <div className="flex h-full gap-1">
-              <Label.Root className="flex w-7 flex-none items-center justify-end text-right text-xs">
-                mu
+              <Label.Root className="flex w-4 flex-none items-center justify-end text-right text-xs">
+                μ
               </Label.Root>
               <SlimeStoreSlider
                 baseInputId={`${baseId}-gaussian-mu-range-slider`}
@@ -156,7 +177,8 @@ export default function SlimeStoreRandomizationControl({
                 }
                 step={controlConfig!.step as number}
                 storePath={[
-                  "simulationRandomizationSettings",
+                  "randomizationSettings",
+                  settingType,
                   controlName,
                   "mu",
                 ]}
@@ -165,8 +187,8 @@ export default function SlimeStoreRandomizationControl({
               />
             </div>
             <div className="flex gap-1">
-              <Label.Root className="flex w-7 flex-none items-center justify-end text-right text-xs">
-                sigma
+              <Label.Root className="flex w-4 flex-none items-center justify-end text-right text-xs">
+                σ
               </Label.Root>
               <SlimeStoreSlider
                 baseInputId={`${baseId}-gaussian-sigma-range-slider`}
@@ -174,7 +196,8 @@ export default function SlimeStoreRandomizationControl({
                 max={controlConfig!.max as number}
                 step={controlConfig!.step as number}
                 storePath={[
-                  "simulationRandomizationSettings",
+                  "randomizationSettings",
+                  settingType,
                   controlName,
                   "sigma",
                 ]}

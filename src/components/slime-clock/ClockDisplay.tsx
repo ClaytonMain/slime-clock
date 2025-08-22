@@ -59,9 +59,18 @@ function getFormattedDigitTime({
 export default function ClockDisplay() {
   const clockSettings = useSlimeStore((state) => state.clockSettings);
   const [displayText1, setDisplayText1] = useState<string>(
-    Math.random() > 0.99 && clockSettings.digitStyle === "14segment"
+    Math.random() > 0.99 &&
+      clockSettings.digitStyle === "14segment" &&
+      clockSettings.digitLayout === "horizontal"
       ? "ME:OW"
-      : "00:00",
+      : getFormattedDigitTime({
+          hourFormat: clockSettings.hourFormat,
+          // @ts-expect-error Should always be valid.
+          digitLayout: clockSettings.digitLayout,
+          showSeconds: false,
+          showAmPm: false,
+          padHours: clockSettings.padHours,
+        }),
   );
   const [displayText2, setDisplayText2] = useState<string>(displayText1);
   const [fontUrl, setFontUrl] = useState(
@@ -77,38 +86,56 @@ export default function ClockDisplay() {
   const material1Ref = useRef<THREE.ShaderMaterial>(null!);
   const material2Ref = useRef<THREE.ShaderMaterial>(null!);
   const opacityRef = useRef(0.0);
-
-  // PLASMODIMETER
+  const minutePingPongRef = useRef(Math.floor(Date.now() / 1000 / 60) % 2);
 
   useFrame((_, delta) => {
     const formattedTime = getFormattedDigitTime({
       hourFormat: clockSettings.hourFormat,
+      // @ts-expect-error Should always be valid.
       digitLayout: clockSettings.digitLayout,
       showSeconds: false,
       showAmPm: false,
       padHours: clockSettings.padHours,
     });
 
-    // TODO: ping pong between displayText1 and displayText2 to make the fade effect smoother.
-    if (opacityRef.current < 1.0) {
-      opacityRef.current += delta * 0.1;
-    } else if (opacityRef.current > 1.0) {
-      opacityRef.current = 1.0;
+    const currentMinutes = Math.floor(Date.now() / 1000 / 60);
+    if (currentMinutes % 2 !== minutePingPongRef.current) {
+      minutePingPongRef.current = currentMinutes % 2;
     }
+    // TODO: Condense this.
+    if (minutePingPongRef.current === 0) {
+      if (opacityRef.current < 1.0) {
+        opacityRef.current += delta * 0.1;
+      } else if (opacityRef.current > 1.0) {
+        opacityRef.current = 1.0;
+      }
 
-    if (material1Ref.current) {
-      material1Ref.current.opacity = opacityRef.current;
+      if (material1Ref.current) {
+        material1Ref.current.opacity = opacityRef.current;
+      }
+      if (material2Ref.current) {
+        material2Ref.current.opacity = 1.0 - opacityRef.current;
+      }
+
+      if (displayText1 === formattedTime) return;
+      setDisplayText1(formattedTime);
+    } else if (minutePingPongRef.current === 1) {
+      if (opacityRef.current > 0.0) {
+        opacityRef.current -= delta * 0.1;
+      } else if (opacityRef.current < 0.0) {
+        opacityRef.current = 0.0;
+      }
+
+      if (material1Ref.current) {
+        material1Ref.current.opacity = opacityRef.current;
+      }
+      if (material2Ref.current) {
+        material2Ref.current.opacity = 1.0 - opacityRef.current;
+      }
+
+      if (displayText2 === formattedTime) return;
+      setDisplayText2(formattedTime);
     }
-    if (material2Ref.current) {
-      material2Ref.current.opacity = 1.0 - opacityRef.current;
-    }
-
-    if (displayText1 === formattedTime) return;
-
-    opacityRef.current = 0.0;
-
-    setDisplayText2(displayText1);
-    setDisplayText1(formattedTime);
   });
 
   useEffect(() => {

@@ -124,8 +124,8 @@ export default function RandomizationListener() {
       produce((state) => {
         state.randomizationState.proceduralColorPaletteRandomizationCompletedAt =
           Date.now();
-        state.colorSettings.slimeColorChangedAt = Date.now();
         if (randomizationSettings.allowProceduralColorPaletteRandomization) {
+          state.colorSettings.slimeColorChangedAt = Date.now();
           const paletteRandomizationSettings =
             randomizationSettings.color.proceduralColorPalette;
           Object.entries(paletteRandomizationSettings).forEach(

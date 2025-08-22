@@ -875,3 +875,141 @@ export const PRESET_TYPES: PresetType[] = [
   ...SINGLE_PRESET_TYPES,
   ...MULTIPLE_PRESET_TYPES,
 ];
+
+// {
+//   "clockSettings": {
+//     "show": true,
+//     "size": 20,
+//     "digitLayout": "vertical",
+//     "hourFormat": "24h",
+//     "digitStyle": "14segment",
+//     "padHours": true,
+//     "showClockShadow": true,
+//     "clockShadowOpacity": 0.25,
+//     "clockShadowColor": "#6f6f6f"
+//   },
+//   "simulationSettings": {
+//     "speed": 3.3,
+//     "boundaryBehavior": 0,
+//     "agentDensity": 0.25,
+//     "agentStartType": -1,
+//     "agentClockAttraction": 0.13,
+//     "agentClockDepositRate": 7.9,
+//     "agentBackgroundDepositRate": 5.6,
+//     "agentSensorDegrees": 59,
+//     "agentRotationRate": 3,
+//     "agentSensorOffset": 1.02,
+//     "agentSensorWidth": 0.14,
+//     "agentStepSize": 1.05,
+//     "agentCrowdAvoidance": 0.33,
+//     "agentWanderStrength": 6.4,
+//     "displayTextureAspectRatio": "Window",
+//     "displayTextureTargetQuality": 2.1,
+//     "trailClockDecayRate": 0.12,
+//     "trailClockDiffuseRate": 5.1,
+//     "trailBackgroundDecayRate": 0.39,
+//     "trailBackgroundDiffuseRate": 11.2
+//   },
+//   "colorSettings": {
+//     "backgroundColor": "#93e0d3",
+//     "slimeColorMode": "Procedural",
+//     "proceduralColorPalette": {
+//       "r": {
+//         "yOffset": 1,
+//         "amplitude": 0.02,
+//         "frequency": 0.09,
+//         "phase": 1.07
+//       },
+//       "g": {
+//         "yOffset": 0.08,
+//         "amplitude": 0.71,
+//         "frequency": 0.11,
+//         "phase": 0.8
+//       },
+//       "b": {
+//         "yOffset": 0.16,
+//         "amplitude": 0.25,
+//         "frequency": 2.1,
+//         "phase": 1.43
+//       }
+//     },
+//     "intensitySmoothing": 0.59,
+//     "agentDirectionSmoothing": 0.68,
+//     "agentDirectionColorOffset": 0.42,
+//     "clockColorOffset": 0.64,
+//     "xColorOffset": 0.65,
+//     "yColorOffset": 0.8,
+//     "paletteCycleSpeed": 0.54,
+//     "paletteCycleScale": 0.1,
+//     "paletteCycleType": 1
+//   }
+// }
+
+// {
+//   "clockSettings": {
+//     "show": true,
+//     "size": 20,
+//     "digitLayout": "vertical",
+//     "hourFormat": "24h",
+//     "digitStyle": "14segment",
+//     "padHours": true,
+//     "showClockShadow": true,
+//     "clockShadowOpacity": 0.25,
+//     "clockShadowColor": "#6f6f6f"
+//   },
+//   "simulationSettings": {
+//     "speed": 3.3,
+//     "boundaryBehavior": 0,
+//     "agentDensity": 0.25,
+//     "agentStartType": -1,
+//     "agentClockAttraction": 0.12,
+//     "agentClockDepositRate": 8.2,
+//     "agentBackgroundDepositRate": 5.7,
+//     "agentSensorDegrees": 37,
+//     "agentRotationRate": 2.3,
+//     "agentSensorOffset": 0.51,
+//     "agentSensorWidth": 0.26,
+//     "agentStepSize": 2.04,
+//     "agentCrowdAvoidance": 0.52,
+//     "agentWanderStrength": 3,
+//     "displayTextureAspectRatio": "Window",
+//     "displayTextureTargetQuality": 2.1,
+//     "trailClockDecayRate": 0.24,
+//     "trailClockDiffuseRate": 3.4,
+//     "trailBackgroundDecayRate": 0.21,
+//     "trailBackgroundDiffuseRate": 9
+//   },
+//   "colorSettings": {
+//     "backgroundColor": "#e45526",
+//     "slimeColorMode": "Procedural",
+//     "proceduralColorPalette": {
+//       "r": {
+//         "yOffset": 0.46,
+//         "amplitude": 0.84,
+//         "frequency": 1.2,
+//         "phase": 0.89
+//       },
+//       "g": {
+//         "yOffset": 0.39,
+//         "amplitude": 0.25,
+//         "frequency": 1.42,
+//         "phase": 1.04
+//       },
+//       "b": {
+//         "yOffset": 0.41,
+//         "amplitude": 1.34,
+//         "frequency": 1.22,
+//         "phase": 1.55
+//       }
+//     },
+//     "intensitySmoothing": 0.59,
+//     "agentDirectionSmoothing": 0.68,
+//     "agentDirectionColorOffset": 0.42,
+//     "clockColorOffset": 0.64,
+//     "xColorOffset": 0.65,
+//     "yColorOffset": 0.8,
+//     "paletteCycleSpeed": 0.54,
+//     "paletteCycleScale": 0.1,
+//     "paletteCycleType": 1
+//   }
+// }
