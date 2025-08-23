@@ -13,12 +13,20 @@ import SlimeStoreSelect from "./SlimeStoreSelect";
 import SlimeStoreSlider from "./SlimeStoreSlider";
 import SlimeStoreSwitch from "./SlimeStoreSwitch";
 
+type RandomizationSettingsStorePath = [
+  "simulation" | "color",
+  ...string[],
+  (
+    | keyof typeof SIMULATION_CONTROLS_CONFIGS
+    | keyof typeof PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS
+  ),
+];
+
 export default function SlimeStoreRandomizationControl({
   label,
   labelHoverTabContentDisplay,
   baseId,
-  controlName,
-  settingType,
+  randomizationSettingsStorePath,
   onCheckedChange,
   onRangeChange,
   listen,
@@ -26,16 +34,16 @@ export default function SlimeStoreRandomizationControl({
   label?: string;
   labelHoverTabContentDisplay?: string | [string, string] | ReactNode;
   baseId?: string;
-  controlName:
-    | keyof typeof SIMULATION_CONTROLS_CONFIGS
-    | keyof typeof PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS;
-  settingType: "simulation" | "color";
+  randomizationSettingsStorePath: RandomizationSettingsStorePath;
   onCheckedChange?: (value: boolean) => void;
   onRangeChange?: (value: [number] | [number, number]) => void;
   listen?: boolean;
 }) {
+  const settingType = randomizationSettingsStorePath[0];
+  const controlName =
+    randomizationSettingsStorePath[randomizationSettingsStorePath.length - 1];
   const controlConfig = useMemo(() => {
-    if (settingType === settingType) {
+    if (settingType === "simulation") {
       return SIMULATION_CONTROLS_CONFIGS[
         controlName as keyof typeof SIMULATION_CONTROLS_CONFIGS
       ];
@@ -47,8 +55,8 @@ export default function SlimeStoreRandomizationControl({
     return null;
   }, [controlName, settingType]);
   const randomizationModeStorePath = useMemo(
-    () => ["randomizationSettings", settingType, controlName, "mode"],
-    [controlName, settingType],
+    () => ["randomizationSettings", ...randomizationSettingsStorePath, "mode"],
+    [randomizationSettingsStorePath],
   );
   const [randomizationMode, setRandomizationMode] =
     useState<RandomizationSettingMode>(
@@ -112,8 +120,7 @@ export default function SlimeStoreRandomizationControl({
                 baseId={`${baseId}-enabled-switch`}
                 storePath={[
                   "randomizationSettings",
-                  settingType,
-                  controlName,
+                  ...randomizationSettingsStorePath,
                   "enabled",
                 ]}
                 onCheckedChange={onCheckedChange}
@@ -133,8 +140,7 @@ export default function SlimeStoreRandomizationControl({
                 baseInputId={`${baseId}-randomization-mode-select`}
                 storePath={[
                   "randomizationSettings",
-                  settingType,
-                  controlName,
+                  ...randomizationSettingsStorePath,
                   "mode",
                 ]}
                 options={[
@@ -153,8 +159,7 @@ export default function SlimeStoreRandomizationControl({
             step={controlConfig!.step as number}
             storePath={[
               "randomizationSettings",
-              settingType,
-              controlName,
+              ...randomizationSettingsStorePath,
               "flatRange",
             ]}
             onValueChange={onRangeChange}
@@ -178,8 +183,7 @@ export default function SlimeStoreRandomizationControl({
                 step={controlConfig!.step as number}
                 storePath={[
                   "randomizationSettings",
-                  settingType,
-                  controlName,
+                  ...randomizationSettingsStorePath,
                   "mu",
                 ]}
                 listen={listen}
@@ -197,8 +201,7 @@ export default function SlimeStoreRandomizationControl({
                 step={controlConfig!.step as number}
                 storePath={[
                   "randomizationSettings",
-                  settingType,
-                  controlName,
+                  ...randomizationSettingsStorePath,
                   "sigma",
                 ]}
                 listen={listen}

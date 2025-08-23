@@ -19,6 +19,21 @@ varying vec2 vUv;
 #define PI2 6.283185
 #include ../../../../shaders/random.glsl
 
+// Credit to Iñigo Quilez for the sdRoundBox function.
+// https://iquilezles.org/articles/distfunctions2d/
+// b.x = half width
+// b.y = half height
+// r.x = roundness top-right  
+// r.y = roundness boottom-right
+// r.z = roundness top-left
+// r.w = roundness bottom-left
+float sdRoundBox(in vec2 p, in vec2 b, in vec4 r) {
+    r.xy = (p.x > 0.0) ? r.xy : r.zw;
+    r.x = (p.y > 0.0) ? r.x : r.y;
+    vec2 q = abs(p) - b + r.x;
+    return min(max(q.x, q.y), 0.0) + length(max(q, 0.0)) - r.x;
+}
+
 // // Offsets for the 8 neighboring pixels in a 2D grid.
 // float neighborOffsets[8] = float[](1.0, 1.0, 0.0, -1.0, -1.0, -1.0, 0.0, 1.0);
 // float getTrailIntensity(vec2 position) {
@@ -161,10 +176,11 @@ void main() {
             agentDepositAmount += uDelta * 0.1;
         }
     }
-    // Otherwise, randomize the direction.
+    // Otherwise, set deposit amount to zero and move to a random position.
     else {
-        agentDirectionAngle += rotationWeight * positiveOrNegative;
-        agentDepositAmount -= uDelta * 0.1;
+        agentDepositAmount = 0.0;
+        agentPosition = vec2(random(vUv + uTime), random(vUv - uTime)) * uDisplayTextureResolution;
+        agentTrailUv = agentPosition / uDisplayTextureResolution;
     }
 
     // Sensory stage.
@@ -193,12 +209,22 @@ void main() {
     } else if ((frontIntensity < frontLeftIntensity) && (frontIntensity < frontRightIntensity)) {
         agentDirectionAngle += rotationWeight * positiveOrNegative;
         chosenIntensity = positiveOrNegative < 0.0 ? frontRightIntensity : frontLeftIntensity;
-    } else if (frontLeftIntensity < frontRightIntensity) {
-        agentDirectionAngle -= rotationWeight;
-        chosenIntensity = frontRightIntensity;
-    } else if (frontRightIntensity < frontLeftIntensity) {
-        agentDirectionAngle += rotationWeight;
-        chosenIntensity = frontLeftIntensity;
+    } else if (positiveOrNegative < 0.0) {
+        if (frontLeftIntensity < frontRightIntensity) {
+            agentDirectionAngle -= rotationWeight;
+            chosenIntensity = frontRightIntensity;
+        } else if (frontRightIntensity < frontLeftIntensity) {
+            agentDirectionAngle += rotationWeight;
+            chosenIntensity = frontLeftIntensity;
+        }
+    } else if (positiveOrNegative > 0.0) {
+        if (frontRightIntensity < frontLeftIntensity) {
+            agentDirectionAngle += rotationWeight;
+            chosenIntensity = frontLeftIntensity;
+        } else if (frontLeftIntensity < frontRightIntensity) {
+            agentDirectionAngle -= rotationWeight;
+            chosenIntensity = frontRightIntensity;
+        }
     }
 
     agentDepositAmount += sign(chosenIntensity) * uDelta * 0.5;

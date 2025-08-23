@@ -337,21 +337,16 @@ function UniformSubscriptionListeners() {
       ),
     );
 
-    const displayTextureResolutionVectorUniform = new THREE.Uniform(
+    const displayTextureResolutionVector =
       UTILS.getDisplayTextureResolutionVector(
         displayTextureResolution.width,
         displayTextureResolution.height,
-      ),
+      );
+    const displayScaleVector = UTILS.getDisplayScaleVector(
+      displayTextureResolution.width,
+      displayTextureResolution.height,
     );
-    const displayScaleVectorUniform = new THREE.Uniform(
-      UTILS.getDisplayScaleVector(
-        displayTextureResolution.width,
-        displayTextureResolution.height,
-      ),
-    );
-    const windowResolutionVectorUniform = new THREE.Uniform(
-      UTILS.getWindowResolutionVector(),
-    );
+    const windowResolutionVector = UTILS.getWindowResolutionVector();
 
     useSlimeStore.setState(
       produce((state) => {
@@ -365,29 +360,41 @@ function UniformSubscriptionListeners() {
 
         state.uniforms.agentData.uAgentDataTexture = agentDataTextureUniform;
         state.uniforms.agentData.uTrailTexture = trailTextureUniform;
-        state.uniforms.agentData.uDisplayTextureResolution =
-          displayTextureResolutionVectorUniform;
+        state.uniforms.agentData.uDisplayTextureResolution.value.set(
+          displayTextureResolutionVector.x,
+          displayTextureResolutionVector.y,
+        );
 
         state.uniforms.agentPositions.uAgentDataTexture =
           agentDataTextureUniform;
-        state.uniforms.agentPositions.uDisplayTextureResolution =
-          displayTextureResolutionVectorUniform;
+        state.uniforms.agentPositions.uDisplayTextureResolution.value.set(
+          displayTextureResolutionVector.x,
+          displayTextureResolutionVector.y,
+        );
 
         state.uniforms.trail.uAgentPositionsTexture =
           agentPositionsTextureUniform;
         state.uniforms.trail.uTrailTexture = trailTextureUniform;
-        state.uniforms.trail.uDisplayTextureResolution =
-          displayTextureResolutionVectorUniform;
+        state.uniforms.trail.uDisplayTextureResolution.value.set(
+          displayTextureResolutionVector.x,
+          displayTextureResolutionVector.y,
+        );
 
         state.uniforms.slimeMoldDisplayPlane.uTrailTexture =
           trailTextureUniform;
-        state.uniforms.slimeMoldDisplayPlane.uDisplayTextureResolution =
-          displayTextureResolutionVectorUniform;
-        state.uniforms.slimeMoldDisplayPlane.uDisplayScale =
-          displayScaleVectorUniform;
+        state.uniforms.slimeMoldDisplayPlane.uDisplayTextureResolution.value.set(
+          displayTextureResolutionVector.x,
+          displayTextureResolutionVector.y,
+        );
+        state.uniforms.slimeMoldDisplayPlane.uDisplayScale.value.set(
+          displayScaleVector.x,
+          displayScaleVector.y,
+        );
 
-        state.uniforms.texturePlane.uWindowResolution =
-          windowResolutionVectorUniform;
+        state.uniforms.texturePlane.uWindowResolution.value.set(
+          windowResolutionVector.x,
+          windowResolutionVector.y,
+        );
       }),
     );
 

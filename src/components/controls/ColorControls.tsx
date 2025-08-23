@@ -84,11 +84,10 @@ export default function ColorControls() {
                   onClick: () => {
                     useSlimeStore.setState(
                       produce((state) => {
-                        state.colorSettings.backgroundColorNeedsRandomization =
-                          true;
-                        state.colorSettings.proceduralColorPaletteNeedsRandomization =
-                          true;
-                        state.colorSettings.slimeColorChangedAt = Date.now();
+                        state.randomizationState.proceduralColorPaletteRandomizationRequestedAt =
+                          Date.now();
+                        state.randomizationState.backgroundColorRandomizationRequestedAt =
+                          Date.now();
                         state.controlsState.displayAreaContentName =
                           "procedural-color-palette";
                         state.controlsState.displayAreaContentType = "three";
@@ -101,25 +100,24 @@ export default function ColorControls() {
                 },
                 {
                   label: "Randomize Background Color",
-                  baseId: "randomize-background-color-button",
+                  baseId: "randomize-background-color-button-01",
                   onClick: () => {
                     useSlimeStore.setState(
                       produce((state) => {
-                        state.colorSettings.backgroundColorNeedsRandomization =
-                          true;
+                        state.randomizationState.backgroundColorRandomizationRequestedAt =
+                          Date.now();
                       }),
                     );
                   },
                 },
                 {
                   label: "Randomize Color Palette",
-                  baseId: "randomize-procedural-color-palette-button",
+                  baseId: "randomize-procedural-color-palette-button-01",
                   onClick: () => {
                     useSlimeStore.setState(
                       produce((state) => {
-                        state.colorSettings.proceduralColorPaletteNeedsRandomization =
-                          true;
-                        state.colorSettings.slimeColorChangedAt = Date.now();
+                        state.randomizationState.proceduralColorPaletteRandomizationRequestedAt =
+                          Date.now();
                         state.controlsState.displayAreaContentName =
                           "procedural-color-palette";
                         state.controlsState.displayAreaContentType = "three";
@@ -175,6 +173,22 @@ export default function ColorControls() {
             value="background-color"
             label="Background Color"
           >
+            <ButtonControlGroup
+              buttonConfigs={[
+                {
+                  label: "Randomize Background Color",
+                  baseId: "randomize-background-color-button-02",
+                  onClick: () => {
+                    useSlimeStore.setState(
+                      produce((state) => {
+                        state.randomizationState.backgroundColorRandomizationRequestedAt =
+                          Date.now();
+                      }),
+                    );
+                  },
+                },
+              ]}
+            />
             <SlimeStoreColorPickerControl
               label="Background Color"
               labelHoverTabContentDisplay={[
@@ -194,13 +208,12 @@ export default function ColorControls() {
               buttonConfigs={[
                 {
                   label: "Randomize Color Palette",
-                  baseId: "procedural-color-palette-randomize",
+                  baseId: "randomize-procedural-color-palette-button-01",
                   onClick: () => {
                     useSlimeStore.setState(
                       produce((state) => {
-                        state.colorSettings.proceduralColorPaletteNeedsRandomization =
-                          true;
-                        state.colorSettings.slimeColorChangedAt = Date.now();
+                        state.randomizationState.proceduralColorPaletteRandomizationRequestedAt =
+                          Date.now();
                         state.controlsState.displayAreaContentName =
                           "procedural-color-palette";
                         state.controlsState.displayAreaContentType = "three";

@@ -7,6 +7,7 @@ import { ANIMATION_CONFIGS } from "../../constants/constants";
 import useSlimeStore from "../../stores/useSlimeStore";
 import ClockControls from "./ClockControls";
 import ColorControls from "./ColorControls";
+import DebugControls from "./DebugControls";
 import PresetsControls from "./PresetsControls";
 import RandomizationControls from "./RandomizationControls";
 import SelectedTabCornerIcons from "./SelectedTabCornerIcons";
@@ -260,6 +261,9 @@ export default function Controls() {
                             <SimulationControls key="simulation-controls" />
                             <ColorControls key="color-controls" />
                             <PresetsControls key="presets-controls" />
+                            {window.location.hash === "#debug" && (
+                              <DebugControls key="debug-controls" />
+                            )}
                           </motion.div>
                           <Separator.Root
                             key="tab-content-separator"
@@ -319,6 +323,19 @@ export default function Controls() {
                               tabName="presets-controls"
                               tooltipText="Presets"
                             />
+                            {window.location.hash === "#debug" && (
+                              <>
+                                <Separator.Root
+                                  key="tab-button-separator-05"
+                                  className="flex h-2/3 w-px border-l border-sky-50"
+                                />
+                                <TabButton
+                                  key="tab-button-debug-controls"
+                                  tabName="debug-controls"
+                                  tooltipText="Debug Controls"
+                                />
+                              </>
+                            )}
                             <SelectedTabCornerIcons />
                           </div>
                         </Tabs.List>

@@ -315,7 +315,25 @@ const useSlimeStore = create<SlimeStore>()(
 
           showTextureDisplayPlanes: false,
         },
-        colorSettings: DEFAULT_COLOR_SETTINGS,
+        colorSettings: {
+          settingsSetPreviously: DEFAULT_COLOR_SETTINGS.settingsSetPreviously,
+          slimeColorChangedAt: DEFAULT_COLOR_SETTINGS.slimeColorChangedAt,
+
+          backgroundColor: DEFAULT_COLOR_SETTINGS.backgroundColor,
+          slimeColorMode: DEFAULT_COLOR_SETTINGS.slimeColorMode,
+          proceduralColorPalette: DEFAULT_COLOR_SETTINGS.proceduralColorPalette,
+          intensitySmoothing: DEFAULT_COLOR_SETTINGS.intensitySmoothing,
+          agentDirectionSmoothing:
+            DEFAULT_COLOR_SETTINGS.agentDirectionSmoothing,
+          agentDirectionColorOffset:
+            DEFAULT_COLOR_SETTINGS.agentDirectionColorOffset,
+          clockColorOffset: DEFAULT_COLOR_SETTINGS.clockColorOffset,
+          xColorOffset: DEFAULT_COLOR_SETTINGS.xColorOffset,
+          yColorOffset: DEFAULT_COLOR_SETTINGS.yColorOffset,
+          paletteCycleSpeed: DEFAULT_COLOR_SETTINGS.paletteCycleSpeed,
+          paletteCycleScale: DEFAULT_COLOR_SETTINGS.paletteCycleScale,
+          paletteCycleType: DEFAULT_COLOR_SETTINGS.paletteCycleType,
+        },
 
         randomizationState: {
           simulationRestartRequestedAt: 0,

@@ -5,7 +5,8 @@ export type ControlsTabName =
   | "clock-controls"
   | "simulation-controls"
   | "color-controls"
-  | "presets-controls";
+  | "presets-controls"
+  | "debug-controls";
 
 export type SelectOption<T> = {
   value: T;
@@ -44,8 +45,6 @@ export interface LoadableSimulationSettings {
   agentCrowdAvoidance: number;
   agentWanderStrength: number;
 
-  displayTextureAspectRatio: DisplayTextureAspectRatio;
-  displayTextureTargetQuality: number;
   trailClockDecayRate: number;
   trailClockDiffuseRate: number;
   trailBackgroundDecayRate: number;
@@ -62,6 +61,9 @@ export interface SimulationSettings extends LoadableSimulationSettings {
   displayTextureHeight: number;
 
   showTextureDisplayPlanes: boolean;
+
+  displayTextureAspectRatio: DisplayTextureAspectRatio;
+  displayTextureTargetQuality: number;
 }
 
 export type RandomizationSettingMode = "flat" | "gaussian";

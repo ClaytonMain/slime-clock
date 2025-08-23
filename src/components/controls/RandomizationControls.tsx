@@ -211,71 +211,88 @@ export default function RandomizationControls() {
               label="Clock Attraction"
               labelHoverTabContentDisplay={["Clock Attraction"]}
               baseId="clock-attraction-randomization-control"
-              controlName={"agentClockAttraction"}
-              settingType="simulation"
+              randomizationSettingsStorePath={[
+                "simulation",
+                "agentClockAttraction",
+              ]}
             />
             <SlimeStoreRandomizationControl
               label="Clock Deposit Rate"
               labelHoverTabContentDisplay={["Clock Deposit Rate"]}
               baseId="clock-deposit-rate-randomization-control"
-              controlName={"agentClockDepositRate"}
-              settingType="simulation"
+              randomizationSettingsStorePath={[
+                "simulation",
+                "agentClockDepositRate",
+              ]}
             />
             <SlimeStoreRandomizationControl
               label="Background Deposit Rate"
               labelHoverTabContentDisplay={["Background Deposit Rate"]}
               baseId="background-deposit-rate-randomization-control"
-              controlName={"agentBackgroundDepositRate"}
-              settingType="simulation"
+              randomizationSettingsStorePath={[
+                "simulation",
+                "agentBackgroundDepositRate",
+              ]}
             />
             <SlimeStoreRandomizationControl
               label="Sensor Degrees"
               labelHoverTabContentDisplay={["Sensor Degrees"]}
               baseId="sensor-degrees-randomization-control"
-              controlName={"agentSensorDegrees"}
-              settingType="simulation"
+              randomizationSettingsStorePath={[
+                "simulation",
+                "agentSensorDegrees",
+              ]}
             />
             <SlimeStoreRandomizationControl
               label="Rotation Rate"
               labelHoverTabContentDisplay={["Rotation Rate"]}
               baseId="rotation-rate-randomization-control"
-              controlName={"agentRotationRate"}
-              settingType="simulation"
+              randomizationSettingsStorePath={[
+                "simulation",
+                "agentRotationRate",
+              ]}
             />
             <SlimeStoreRandomizationControl
               label="Sensor Offset"
               labelHoverTabContentDisplay={["Sensor Offset"]}
               baseId="sensor-offset-randomization-control"
-              controlName={"agentSensorOffset"}
-              settingType="simulation"
+              randomizationSettingsStorePath={[
+                "simulation",
+                "agentSensorOffset",
+              ]}
             />
             <SlimeStoreRandomizationControl
               label="Sensor Width"
               labelHoverTabContentDisplay={["Sensor Width"]}
               baseId="sensor-width-randomization-control"
-              controlName={"agentSensorWidth"}
-              settingType="simulation"
+              randomizationSettingsStorePath={[
+                "simulation",
+                "agentSensorWidth",
+              ]}
             />
             <SlimeStoreRandomizationControl
               label="Step Size"
               labelHoverTabContentDisplay={["Step Size"]}
               baseId="step-size-randomization-control"
-              controlName={"agentStepSize"}
-              settingType="simulation"
+              randomizationSettingsStorePath={["simulation", "agentStepSize"]}
             />
             <SlimeStoreRandomizationControl
               label="Crowd Avoidance"
               labelHoverTabContentDisplay={["Crowd Avoidance"]}
               baseId="crowd-avoidance-randomization-control"
-              controlName={"agentCrowdAvoidance"}
-              settingType="simulation"
+              randomizationSettingsStorePath={[
+                "simulation",
+                "agentCrowdAvoidance",
+              ]}
             />
             <SlimeStoreRandomizationControl
               label="Wander Strength"
               labelHoverTabContentDisplay={["Wander Strength"]}
               baseId="wander-strength-randomization-control"
-              controlName={"agentWanderStrength"}
-              settingType="simulation"
+              randomizationSettingsStorePath={[
+                "simulation",
+                "agentWanderStrength",
+              ]}
             />
           </AccordionControlsItem>
           <AccordionControlsItem
@@ -290,29 +307,37 @@ export default function RandomizationControls() {
               label="Clock Decay Rate"
               labelHoverTabContentDisplay={["Clock Decay Rate"]}
               baseId="clock-decay-rate-randomization-control"
-              controlName={"trailClockDecayRate"}
-              settingType="simulation"
+              randomizationSettingsStorePath={[
+                "simulation",
+                "trailClockDecayRate",
+              ]}
             />
             <SlimeStoreRandomizationControl
               label="Clock Diffuse Rate"
               labelHoverTabContentDisplay={["Clock Diffuse Rate"]}
               baseId="clock-diffuse-rate-randomization-control"
-              controlName={"trailClockDiffuseRate"}
-              settingType="simulation"
+              randomizationSettingsStorePath={[
+                "simulation",
+                "trailClockDiffuseRate",
+              ]}
             />
             <SlimeStoreRandomizationControl
               label="Background Decay Rate"
               labelHoverTabContentDisplay={["Background Decay Rate"]}
               baseId="background-decay-rate-randomization-control"
-              controlName={"trailBackgroundDecayRate"}
-              settingType="simulation"
+              randomizationSettingsStorePath={[
+                "simulation",
+                "trailBackgroundDecayRate",
+              ]}
             />
             <SlimeStoreRandomizationControl
               label="Background Diffuse Rate"
               labelHoverTabContentDisplay={["Background Diffuse Rate"]}
               baseId="background-diffuse-rate-randomization-control"
-              controlName={"trailBackgroundDiffuseRate"}
-              settingType="simulation"
+              randomizationSettingsStorePath={[
+                "simulation",
+                "trailBackgroundDiffuseRate",
+              ]}
             />
           </AccordionControlsItem>
           <AccordionControlsItem
@@ -323,32 +348,138 @@ export default function RandomizationControls() {
               "Controls the randomization settings for colors.",
             ]}
           >
-            asdf
-            {/* <SlimeStoreRandomizationControl
+            <SlimeStoreRandomizationControl
               label="Red Y-Offset"
               labelHoverTabContentDisplay={["Red Y-Offset"]}
               baseId="red-y-offset-randomization-control"
-              controlName={"trailRedYOffset"}
-              settingType="color"
+              randomizationSettingsStorePath={[
+                "color",
+                "proceduralColorPalette",
+                "r",
+                "yOffset",
+              ]}
             />
             <SlimeStoreRandomizationControl
-              label="Clock Diffuse Rate"
-              labelHoverTabContentDisplay={["Clock Diffuse Rate"]}
-              baseId="clock-diffuse-rate-randomization-control"
-              controlName={"trailClockDiffuseRate"}
+              label="Red Amplitude"
+              labelHoverTabContentDisplay={["Red Amplitude"]}
+              baseId="red-amplitude-randomization-control"
+              randomizationSettingsStorePath={[
+                "color",
+                "proceduralColorPalette",
+                "r",
+                "amplitude",
+              ]}
             />
             <SlimeStoreRandomizationControl
-              label="Background Decay Rate"
-              labelHoverTabContentDisplay={["Background Decay Rate"]}
-              baseId="background-decay-rate-randomization-control"
-              controlName={"trailBackgroundDecayRate"}
+              label="Red Frequency"
+              labelHoverTabContentDisplay={["Red Frequency"]}
+              baseId="red-frequency-randomization-control"
+              randomizationSettingsStorePath={[
+                "color",
+                "proceduralColorPalette",
+                "r",
+                "frequency",
+              ]}
             />
             <SlimeStoreRandomizationControl
-              label="Background Diffuse Rate"
-              labelHoverTabContentDisplay={["Background Diffuse Rate"]}
-              baseId="background-diffuse-rate-randomization-control"
-              controlName={"trailBackgroundDiffuseRate"}
-            /> */}
+              label="Red Phase"
+              labelHoverTabContentDisplay={["Red Phase"]}
+              baseId="red-phase-randomization-control"
+              randomizationSettingsStorePath={[
+                "color",
+                "proceduralColorPalette",
+                "r",
+                "phase",
+              ]}
+            />
+            <SlimeStoreRandomizationControl
+              label="Green Y-Offset"
+              labelHoverTabContentDisplay={["Green Y-Offset"]}
+              baseId="green-y-offset-randomization-control"
+              randomizationSettingsStorePath={[
+                "color",
+                "proceduralColorPalette",
+                "g",
+                "yOffset",
+              ]}
+            />
+            <SlimeStoreRandomizationControl
+              label="Green Amplitude"
+              labelHoverTabContentDisplay={["Green Amplitude"]}
+              baseId="green-amplitude-randomization-control"
+              randomizationSettingsStorePath={[
+                "color",
+                "proceduralColorPalette",
+                "g",
+                "amplitude",
+              ]}
+            />
+            <SlimeStoreRandomizationControl
+              label="Green Frequency"
+              labelHoverTabContentDisplay={["Green Frequency"]}
+              baseId="green-frequency-randomization-control"
+              randomizationSettingsStorePath={[
+                "color",
+                "proceduralColorPalette",
+                "g",
+                "frequency",
+              ]}
+            />
+            <SlimeStoreRandomizationControl
+              label="Green Phase"
+              labelHoverTabContentDisplay={["Green Phase"]}
+              baseId="green-phase-randomization-control"
+              randomizationSettingsStorePath={[
+                "color",
+                "proceduralColorPalette",
+                "g",
+                "phase",
+              ]}
+            />
+            <SlimeStoreRandomizationControl
+              label="Blue Y-Offset"
+              labelHoverTabContentDisplay={["Blue Y-Offset"]}
+              baseId="blue-y-offset-randomization-control"
+              randomizationSettingsStorePath={[
+                "color",
+                "proceduralColorPalette",
+                "b",
+                "yOffset",
+              ]}
+            />
+            <SlimeStoreRandomizationControl
+              label="Blue Amplitude"
+              labelHoverTabContentDisplay={["Blue Amplitude"]}
+              baseId="blue-amplitude-randomization-control"
+              randomizationSettingsStorePath={[
+                "color",
+                "proceduralColorPalette",
+                "b",
+                "amplitude",
+              ]}
+            />
+            <SlimeStoreRandomizationControl
+              label="Blue Frequency"
+              labelHoverTabContentDisplay={["Blue Frequency"]}
+              baseId="blue-frequency-randomization-control"
+              randomizationSettingsStorePath={[
+                "color",
+                "proceduralColorPalette",
+                "b",
+                "frequency",
+              ]}
+            />
+            <SlimeStoreRandomizationControl
+              label="Blue Phase"
+              labelHoverTabContentDisplay={["Blue Phase"]}
+              baseId="blue-phase-randomization-control"
+              randomizationSettingsStorePath={[
+                "color",
+                "proceduralColorPalette",
+                "b",
+                "phase",
+              ]}
+            />
           </AccordionControlsItem>
         </AccordionControlsWrapper>
       </TabContentScrollArea>

@@ -23,6 +23,7 @@ export default function ButtonControlGroup({
     label: string;
     baseId?: string;
     onClick: () => void;
+    color?: "danger";
   }[];
 }) {
   function handlePointerOver() {
@@ -62,15 +63,26 @@ export default function ButtonControlGroup({
         {buttonConfigs.map((buttonConfig, index) => (
           <motion.button
             key={index}
-            className="flex cursor-pointer border border-sky-800 px-2 py-1"
+            className={[
+              "flex cursor-pointer border px-2 py-1",
+              buttonConfig.color === "danger"
+                ? "border-red-800"
+                : "border-sky-800",
+            ].join(" ")}
             id={
               (buttonConfig.baseId ?? label)
                 ? `${label}-${index}`
                 : `button-${index}`
             }
             onClick={buttonConfig.onClick}
-            style={{ backgroundColor: "#18181b" }}
-            whileHover={{ backgroundColor: "#27272a" }}
+            style={{
+              backgroundColor:
+                buttonConfig.color === "danger" ? "#3b0a0a" : "#18181b",
+            }}
+            whileHover={{
+              backgroundColor:
+                buttonConfig.color === "danger" ? "#5c0d0d" : "#27272a",
+            }}
           >
             {buttonConfig.label}
           </motion.button>

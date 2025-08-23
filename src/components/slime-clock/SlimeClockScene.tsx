@@ -6,7 +6,7 @@ import { produce } from "immer";
 import InteractionListener from "../../InteractionListener";
 import PresetsChangeListener from "../../PresetsChangeListener";
 import useSlimeStore from "../../stores/useSlimeStore";
-import NewSlimeClock from "./NewSlimeClock";
+import SlimeClock from "./SlimeClock";
 import StatsComponent from "./StatsComponent";
 
 export default function SlimeClockScene() {
@@ -81,7 +81,7 @@ export default function SlimeClockScene() {
         <Suspense fallback={null}>
           <StatsComponent />
           {/* <SlimeClock /> */}
-          <NewSlimeClock />
+          <SlimeClock />
           <InteractionListener />
           <PresetsChangeListener />
         </Suspense>

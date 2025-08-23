@@ -130,7 +130,7 @@ export default function SimulationControls() {
                   onClick: () => {
                     useSlimeStore.setState(
                       produce((state) => {
-                        state.randomizationState.simulationRandomizationRequestedAt =
+                        state.randomizationState.agentRandomizationRequestedAt =
                           Date.now();
                         state.randomizationState.trailRandomizationRequestedAt =
                           Date.now();
@@ -237,6 +237,16 @@ export default function SimulationControls() {
                 "Simulation Speed",
                 "Controls the speed of the entire simulation.",
               ]}
+            />
+            <SlimeStoreSelectControl
+              label="Boundary Behavior"
+              baseInputId="boundary-behavior-select"
+              storePath={["simulationSettings", "boundaryBehavior"]}
+              options={[
+                { label: "Wrap", value: "0" },
+                { label: "Bounce", value: "1" },
+              ]}
+              valueType="number"
             />
             <SlimeStoreSwitchControl
               label="Auto Rand. Enabled"

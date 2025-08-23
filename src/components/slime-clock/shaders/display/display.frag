@@ -21,7 +21,7 @@ uniform int uPaletteCycleType; // 0: Oscilating, 1: Repeating, 2: Continuous
 
 varying vec2 vUv;
 
-#define PI2 6.28318
+#define PI2 6.283185
 
 vec3 palette(float t) {
     return uPaletteA + uPaletteB * cos(PI2 * (uPaletteC * t + uPaletteD));

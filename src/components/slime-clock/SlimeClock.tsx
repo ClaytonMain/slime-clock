@@ -1,457 +1,25 @@
 import { Plane, useFBO } from "@react-three/drei";
 import { createPortal, extend, useFrame } from "@react-three/fiber";
 import { produce } from "immer";
-import * as R from "ramda";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
-import {
-  PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS,
-  SIMULATION_CONTROLS_CONFIGS,
-} from "../../constants/constants";
-import useSlimeStore from "../../stores/useSlimeStore";
-import type {
-  ProceduralColorPaletteChannel,
-  RandomizationSetting,
-  SimulationSettings,
-} from "../../types/types";
-import { randBetween, roundToFixed } from "../../utils/utils";
-import * as UTILS from "../../utils/utils.tsx";
+import useSlimeStore from "../../stores/useSlimeStore.tsx";
 import SettingsHistoryListener from "../controls/SettingsHistoryListener.tsx";
-import ThreeControlDisplay from "../three-control-display/ThreeControlDisplay";
-import AgentDataMaterial from "./AgentDataMaterial";
-import AgentPositionsMaterial from "./AgentPositionsMaterial";
-import ClockDisplay from "./ClockDisplay";
-import TrailMaterial from "./TrailMaterial";
-import { getGaussRandomInControlBounds } from "./constants/constants.tsx";
+import ThreeControlDisplay from "../three-control-display/ThreeControlDisplay.tsx";
+import AgentDataMaterial from "./AgentDataMaterial.tsx";
+import AgentPositionsMaterial from "./AgentPositionsMaterial.tsx";
+import ClockDisplay from "./ClockDisplay.tsx";
+import InitializationHandler from "./InitializationHandler.tsx";
+import RandomizationListener from "./RandomizationListener.tsx";
 import displayFragmentShader from "./shaders/display/display.frag";
 import displayVertexShader from "./shaders/display/display.vert";
-import * as SC_UTILS from "./utils/utils"; // "Slime Clock Utils"
+import TrailMaterial from "./TrailMaterial.tsx";
+import UniformListeners from "./UniformListeners.tsx";
 
 extend({ AgentDataMaterial, AgentPositionsMaterial, TrailMaterial });
 
-const texturePlaneUniforms = {
-  uWindowResolution: new THREE.Uniform(new THREE.Vector2()),
-  uShowTexture: new THREE.Uniform(0),
-};
-const slimeMoldDisplayPlaneUniforms = {
-  uTrailTexture: new THREE.Uniform(new THREE.Texture()),
-  uClockTexture: new THREE.Uniform(new THREE.Texture()),
-  uDisplayTextureResolution: new THREE.Uniform(new THREE.Vector2()),
-  uDisplayScale: new THREE.Uniform(new THREE.Vector2()),
-  uTime: new THREE.Uniform(0.0),
-  uDelta: new THREE.Uniform(0.0),
-  uPaletteA: new THREE.Uniform(
-    new THREE.Vector3(
-      useSlimeStore.getState().colorSettings.proceduralColorPalette.r.yOffset,
-      useSlimeStore.getState().colorSettings.proceduralColorPalette.g.yOffset,
-      useSlimeStore.getState().colorSettings.proceduralColorPalette.b.yOffset,
-    ),
-  ),
-  uPaletteB: new THREE.Uniform(
-    new THREE.Vector3(
-      useSlimeStore.getState().colorSettings.proceduralColorPalette.r.amplitude,
-      useSlimeStore.getState().colorSettings.proceduralColorPalette.g.amplitude,
-      useSlimeStore.getState().colorSettings.proceduralColorPalette.b.amplitude,
-    ),
-  ),
-  uPaletteC: new THREE.Uniform(
-    new THREE.Vector3(
-      useSlimeStore.getState().colorSettings.proceduralColorPalette.r.frequency,
-      useSlimeStore.getState().colorSettings.proceduralColorPalette.g.frequency,
-      useSlimeStore.getState().colorSettings.proceduralColorPalette.b.frequency,
-    ),
-  ),
-  uPaletteD: new THREE.Uniform(
-    new THREE.Vector3(
-      useSlimeStore.getState().colorSettings.proceduralColorPalette.r.phase,
-      useSlimeStore.getState().colorSettings.proceduralColorPalette.g.phase,
-      useSlimeStore.getState().colorSettings.proceduralColorPalette.b.phase,
-    ),
-  ),
-  uShowClockShadow: new THREE.Uniform(
-    useSlimeStore.getState().clockSettings.showClockShadow ? 1 : 0,
-  ),
-  uClockShadowOpacity: new THREE.Uniform(
-    useSlimeStore.getState().clockSettings.clockShadowOpacity,
-  ),
-  uClockShadowColor: new THREE.Uniform(
-    new THREE.Color(useSlimeStore.getState().clockSettings.clockShadowColor),
-  ),
-  uIntensitySmoothing: new THREE.Uniform(
-    useSlimeStore.getState().colorSettings.intensitySmoothing,
-  ),
-  uAgentDirectionSmoothing: new THREE.Uniform(
-    useSlimeStore.getState().colorSettings.agentDirectionSmoothing,
-  ),
-  uAgentDirectionColorOffset: new THREE.Uniform(
-    useSlimeStore.getState().colorSettings.agentDirectionColorOffset,
-  ),
-  uClockColorOffset: new THREE.Uniform(
-    useSlimeStore.getState().colorSettings.clockColorOffset,
-  ),
-  uXColorOffset: new THREE.Uniform(
-    useSlimeStore.getState().colorSettings.xColorOffset,
-  ),
-  uYColorOffset: new THREE.Uniform(
-    useSlimeStore.getState().colorSettings.yColorOffset,
-  ),
-  uPaletteCycleTime: new THREE.Uniform(0.0),
-  uPaletteCycleScale: new THREE.Uniform(
-    useSlimeStore.getState().colorSettings.paletteCycleScale,
-  ),
-  uPaletteCycleType: new THREE.Uniform(0),
-};
-const agentDataUniforms = {
-  uAgentDataTexture: { value: new THREE.Texture() },
-  uClockTexture: { value: new THREE.Texture() },
-  uTrailTexture: { value: new THREE.Texture() },
-  uDisplayTextureResolution: {
-    value: new THREE.Vector2(),
-  },
-  uClockAttraction: {
-    value: useSlimeStore.getState().simulationSettings.agentClockAttraction,
-  },
-  uSensorAngle: {
-    value:
-      useSlimeStore.getState().simulationSettings.agentSensorDegrees *
-      (Math.PI / 180),
-  },
-  uRotationRate: {
-    value: useSlimeStore.getState().simulationSettings.agentRotationRate,
-  },
-  uSensorOffset: {
-    value: useSlimeStore.getState().simulationSettings.agentSensorOffset,
-  },
-  uSensorWidth: {
-    value: useSlimeStore.getState().simulationSettings.agentSensorWidth,
-  },
-  uStepSize: {
-    value: useSlimeStore.getState().simulationSettings.agentStepSize,
-  },
-  uCrowdAvoidance: {
-    value: useSlimeStore.getState().simulationSettings.agentCrowdAvoidance,
-  },
-  uWanderStrength: {
-    value: useSlimeStore.getState().simulationSettings.agentWanderStrength,
-  },
-  uBoundaryBehavior: {
-    value: useSlimeStore.getState().simulationSettings.boundaryBehavior,
-  },
-  uTime: { value: 0.0 },
-  uDelta: { value: 0.0 },
-};
-const agentPositionsUniforms = {
-  uAgentDataTexture: { value: new THREE.Texture() },
-  uDisplayTextureResolution: {
-    value: new THREE.Vector2(),
-  },
-};
-const trailUniforms = {
-  uAgentPositionsTexture: { value: new THREE.Texture() },
-  uClockTexture: { value: new THREE.Texture() },
-  uTrailTexture: { value: new THREE.Texture() },
-  uDisplayTextureResolution: {
-    value: new THREE.Vector2(),
-  },
-  uClockDepositRate: {
-    value: useSlimeStore.getState().simulationSettings.agentClockDepositRate,
-  },
-  uBackgroundDepositRate: {
-    value:
-      useSlimeStore.getState().simulationSettings.agentBackgroundDepositRate,
-  },
-  uClockDecayRate: {
-    value: useSlimeStore.getState().simulationSettings.trailClockDecayRate,
-  },
-  uClockDiffuseRate: {
-    value: useSlimeStore.getState().simulationSettings.trailClockDiffuseRate,
-  },
-  uBackgroundDecayRate: {
-    value: useSlimeStore.getState().simulationSettings.trailBackgroundDecayRate,
-  },
-  uBackgroundDiffuseRate: {
-    value:
-      useSlimeStore.getState().simulationSettings.trailBackgroundDiffuseRate,
-  },
-  uBoundaryBehavior: {
-    value: useSlimeStore.getState().simulationSettings.boundaryBehavior,
-  },
-  uDelta: { value: 0.0 },
-  uTime: { value: 0.0 },
-};
-
-function UniformSetter() {
+function SlimeClockRenderer() {
   const simulationSettings = useSlimeStore((state) => state.simulationSettings);
-  const colorSettings = useSlimeStore((state) => state.colorSettings);
-  const clockSettings = useSlimeStore((state) => state.clockSettings);
-  const initialized = useSlimeStore((state) => state.initialized);
-  const resolutionsSet = useSlimeStore((state) => state.resolutionsSet);
-
-  // du - "directly updatable"
-  const duAgentDataUniforms: [
-    keyof typeof agentDataUniforms,
-    (keyof typeof simulationSettings)[],
-  ][] = [
-    ["uClockAttraction", ["agentClockAttraction"]],
-    ["uRotationRate", ["agentRotationRate"]],
-    ["uCrowdAvoidance", ["agentCrowdAvoidance"]],
-    ["uWanderStrength", ["agentWanderStrength"]],
-    ["uBoundaryBehavior", ["boundaryBehavior"]],
-  ];
-  const duTrailUniforms: [
-    keyof typeof trailUniforms,
-    (keyof typeof simulationSettings)[],
-  ][] = [
-    ["uClockDepositRate", ["agentClockDepositRate"]],
-    ["uBackgroundDepositRate", ["agentBackgroundDepositRate"]],
-    ["uClockDecayRate", ["trailClockDecayRate"]],
-    ["uClockDiffuseRate", ["trailClockDiffuseRate"]],
-    ["uBackgroundDecayRate", ["trailBackgroundDecayRate"]],
-    ["uBackgroundDiffuseRate", ["trailBackgroundDiffuseRate"]],
-    ["uBoundaryBehavior", ["boundaryBehavior"]],
-  ];
-  const duSlimeMoldDisplayPlaneColorUniforms: [
-    keyof typeof slimeMoldDisplayPlaneUniforms,
-    (keyof typeof colorSettings)[],
-  ][] = [
-    ["uPaletteCycleScale", ["paletteCycleScale"]],
-    ["uIntensitySmoothing", ["intensitySmoothing"]],
-    ["uAgentDirectionSmoothing", ["agentDirectionSmoothing"]],
-    ["uAgentDirectionColorOffset", ["agentDirectionColorOffset"]],
-    ["uClockColorOffset", ["clockColorOffset"]],
-    ["uXColorOffset", ["xColorOffset"]],
-    ["uYColorOffset", ["yColorOffset"]],
-    ["uPaletteCycleType", ["paletteCycleType"]],
-  ];
-  const duSlimeMoldDisplayPlaneClockUniforms: [
-    keyof typeof slimeMoldDisplayPlaneUniforms,
-    (keyof typeof clockSettings)[],
-  ][] = [["uClockShadowOpacity", ["clockShadowOpacity"]]];
-  useEffect(() => {
-    if (!initialized || !resolutionsSet) return;
-    duAgentDataUniforms.forEach(([uniformName, settingsKeys]) => {
-      const storePath = ["simulationSettings", ...settingsKeys];
-      const storeValue = R.view(
-        R.lensPath(storePath),
-        useSlimeStore.getState(),
-      );
-      const uniformValue = agentDataUniforms[uniformName];
-      if (uniformValue.value !== storeValue) {
-        uniformValue.value = storeValue;
-      }
-    });
-    duTrailUniforms.forEach(([uniformName, settingsKeys]) => {
-      const storePath = ["simulationSettings", ...settingsKeys];
-      const storeValue = R.view(
-        R.lensPath(storePath),
-        useSlimeStore.getState(),
-      );
-      const uniformValue = trailUniforms[uniformName];
-      if (uniformValue !== storeValue) {
-        uniformValue.value = storeValue;
-      }
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [simulationSettings, initialized, resolutionsSet]);
-  useEffect(() => {
-    if (!initialized || !resolutionsSet) return;
-    duSlimeMoldDisplayPlaneColorUniforms.forEach(
-      ([uniformName, settingsKeys]) => {
-        const storePath = ["colorSettings", ...settingsKeys];
-        const storeValue = R.view(
-          R.lensPath(storePath),
-          useSlimeStore.getState(),
-        );
-        const uniformValue = slimeMoldDisplayPlaneUniforms[uniformName];
-        if (uniformValue.value !== storeValue) {
-          uniformValue.value = storeValue;
-        }
-      },
-    );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [colorSettings, initialized, resolutionsSet]);
-  useEffect(() => {
-    if (!initialized || !resolutionsSet) return;
-    duSlimeMoldDisplayPlaneClockUniforms.forEach(
-      ([uniformName, settingsKeys]) => {
-        const storePath = ["clockSettings", ...settingsKeys];
-        const storeValue = R.view(
-          R.lensPath(storePath),
-          useSlimeStore.getState(),
-        );
-        const uniformValue = slimeMoldDisplayPlaneUniforms[uniformName];
-        if (uniformValue.value !== storeValue) {
-          uniformValue.value = storeValue;
-        }
-      },
-    );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [clockSettings, initialized, resolutionsSet]);
-
-  // hs - "height-scaled"
-  const hsAgentDataUniforms: [
-    keyof typeof agentDataUniforms,
-    (keyof typeof simulationSettings)[],
-  ][] = [
-    ["uSensorOffset", ["agentSensorOffset"]],
-    ["uSensorWidth", ["agentSensorWidth"]],
-    ["uStepSize", ["agentStepSize"]],
-  ];
-  const hsTrailUniforms: [
-    keyof typeof trailUniforms,
-    (keyof typeof simulationSettings)[],
-  ][] = [];
-  useEffect(() => {
-    if (!initialized || !resolutionsSet) return;
-    const textureHeight =
-      useSlimeStore.getState().simulationSettings.displayTextureHeight;
-    hsAgentDataUniforms.forEach(([uniformName, settingsKeys]) => {
-      const storePath = ["simulationSettings", ...settingsKeys];
-      const storeValue = R.view(
-        R.lensPath(storePath),
-        useSlimeStore.getState(),
-      );
-      const uniformValue = agentDataUniforms[uniformName];
-      const scaledValue = roundToFixed(
-        ((storeValue as number) / 100) * textureHeight,
-        4,
-      );
-      if (uniformValue.value !== scaledValue) {
-        uniformValue.value = scaledValue;
-      }
-    });
-    hsTrailUniforms.forEach(([uniformName, settingsKeys]) => {
-      const storePath = ["simulationSettings", ...settingsKeys];
-      const storeValue = R.view(
-        R.lensPath(storePath),
-        useSlimeStore.getState(),
-      );
-      const uniformValue = trailUniforms[uniformName];
-      const scaledValue = roundToFixed(
-        ((storeValue as number) / 100) * textureHeight,
-        4,
-      );
-      if (uniformValue.value !== scaledValue) {
-        uniformValue.value = scaledValue;
-      }
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [simulationSettings, initialized, resolutionsSet]);
-
-  // Individual subscriptions.
-  useEffect(() => {
-    const unsubDisplayTextureWidth = useSlimeStore.subscribe(
-      (state) => state.simulationSettings.displayTextureWidth,
-      (newValue) => {
-        const currentSimulationSettings =
-          useSlimeStore.getState().simulationSettings;
-        const newResolution = new THREE.Vector2(
-          newValue,
-          currentSimulationSettings.displayTextureHeight,
-        );
-        slimeMoldDisplayPlaneUniforms.uDisplayTextureResolution.value =
-          newResolution;
-        agentDataUniforms.uDisplayTextureResolution.value = newResolution;
-        agentPositionsUniforms.uDisplayTextureResolution.value = newResolution;
-        trailUniforms.uDisplayTextureResolution.value = newResolution;
-        texturePlaneUniforms.uWindowResolution.value =
-          SC_UTILS.getWindowResolutionVector();
-        slimeMoldDisplayPlaneUniforms.uDisplayScale.value =
-          SC_UTILS.getDisplayScaleVector(
-            currentSimulationSettings.displayTextureWidth,
-            currentSimulationSettings.displayTextureHeight,
-          );
-      },
-    );
-    const unsubDisplayTextureHeight = useSlimeStore.subscribe(
-      (state) => state.simulationSettings.displayTextureHeight,
-      (newValue) => {
-        const currentSimulationSettings =
-          useSlimeStore.getState().simulationSettings;
-        const newResolution = new THREE.Vector2(
-          currentSimulationSettings.displayTextureWidth,
-          newValue,
-        );
-        slimeMoldDisplayPlaneUniforms.uDisplayTextureResolution.value =
-          newResolution;
-        agentDataUniforms.uDisplayTextureResolution.value = newResolution;
-        agentPositionsUniforms.uDisplayTextureResolution.value = newResolution;
-        trailUniforms.uDisplayTextureResolution.value = newResolution;
-        texturePlaneUniforms.uWindowResolution.value =
-          SC_UTILS.getWindowResolutionVector();
-        slimeMoldDisplayPlaneUniforms.uDisplayScale.value =
-          SC_UTILS.getDisplayScaleVector(
-            currentSimulationSettings.displayTextureWidth,
-            currentSimulationSettings.displayTextureHeight,
-          );
-      },
-    );
-    const unsubSlimeColorChangedAt = useSlimeStore.subscribe(
-      (state) => state.colorSettings.slimeColorChangedAt,
-      () => {
-        const palette =
-          useSlimeStore.getState().colorSettings.proceduralColorPalette;
-        slimeMoldDisplayPlaneUniforms.uPaletteA.value.set(
-          palette.r.yOffset,
-          palette.g.yOffset,
-          palette.b.yOffset,
-        );
-        slimeMoldDisplayPlaneUniforms.uPaletteB.value.set(
-          palette.r.amplitude,
-          palette.g.amplitude,
-          palette.b.amplitude,
-        );
-        slimeMoldDisplayPlaneUniforms.uPaletteC.value.set(
-          palette.r.frequency,
-          palette.g.frequency,
-          palette.b.frequency,
-        );
-        slimeMoldDisplayPlaneUniforms.uPaletteD.value.set(
-          palette.r.phase,
-          palette.g.phase,
-          palette.b.phase,
-        );
-      },
-    );
-    const unsubShowClockShadow = useSlimeStore.subscribe(
-      (state) => state.clockSettings.showClockShadow,
-      (newValue) => {
-        slimeMoldDisplayPlaneUniforms.uShowClockShadow.value = newValue ? 1 : 0;
-      },
-    );
-    const unsubClockShadowColor = useSlimeStore.subscribe(
-      (state) => state.clockSettings.clockShadowColor,
-      (newValue) => {
-        slimeMoldDisplayPlaneUniforms.uClockShadowColor.value.set(newValue);
-      },
-    );
-    return () => {
-      unsubDisplayTextureWidth();
-      unsubDisplayTextureHeight();
-      unsubSlimeColorChangedAt();
-      unsubShowClockShadow();
-      unsubClockShadowColor();
-    };
-  }, []);
-
-  return null;
-}
-
-function SlimeClock() {
-  const simulationSettings = useSlimeStore((state) => state.simulationSettings);
-  const colorSettings = useSlimeStore((state) => state.colorSettings);
-  const resolutionsSet = useSlimeStore((state) => state.resolutionsSet);
-  const initialized = useSlimeStore((state) => state.initialized);
-  const controlsAreOpen = useSlimeStore((state) => state.controlsState.isOpen);
-  const simulationNeedsRestart = useSlimeStore(
-    (state) => state.simulationNeedsRestart,
-  );
-  const agentsNeedRandomization = useSlimeStore(
-    (state) => state.agentsNeedRandomization,
-  );
-  const trailNeedsRandomization = useSlimeStore(
-    (state) => state.trailNeedsRandomization,
-  );
 
   const prevMinutesRef = useRef(0);
   const lastRandomizedAtMinutesRef = useRef(Math.floor(Date.now() / 60000));
@@ -533,7 +101,6 @@ function SlimeClock() {
       type: THREE.FloatType,
     },
   );
-
   const agentPositionsRenderTarget = useFBO(
     simulationSettings.displayTextureWidth,
     simulationSettings.displayTextureHeight,
@@ -597,7 +164,6 @@ function SlimeClock() {
         simulationSettings.displayTextureHeight;
       attributes[i3 + 2] = 0;
     }
-    console.log("agentPositionsAttribute useMemo", useSlimeStore.getState());
     return attributes;
   }, [
     simulationSettings.displayTextureWidth,
@@ -605,302 +171,37 @@ function SlimeClock() {
     simulationSettings.agentDensity,
   ]);
 
-  // Anything that should trigger the resolutions to reset.
-  useEffect(() => {
-    useSlimeStore.setState(
-      produce((state) => {
-        state.resolutionsSet = false;
-        state.resolutionsRequestedSetAt = Date.now();
-      }),
-    );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    simulationSettings.displayTextureTargetQuality,
-    simulationSettings.displayTextureAspectRatio,
-    window.innerWidth,
-    window.innerHeight,
-  ]);
+  const agentDataUniforms = useSlimeStore((state) => state.uniforms.agentData);
+  const agentPositionsUniforms = useSlimeStore(
+    (state) => state.uniforms.agentPositions,
+  );
+  const trailUniforms = useSlimeStore((state) => state.uniforms.trail);
+  const slimeMoldDisplayPlaneUniforms = useSlimeStore(
+    (state) => state.uniforms.slimeMoldDisplayPlane,
+  );
+  const texturePlaneUniforms = useSlimeStore(
+    (state) => state.uniforms.texturePlane,
+  );
 
-  // Anything that should trigger a re-initialization of the simulation.
-  useEffect(() => {
-    useSlimeStore.setState(
-      produce((state) => {
-        state.initialized = false;
-        state.simulationNeedsRestart = false;
-      }),
-    );
-  }, [simulationNeedsRestart, simulationSettings.agentDensity]);
-
-  function setInitialResolutions() {
-    const simulationSettings = useSlimeStore.getState().simulationSettings;
-
-    const resolution = UTILS.getDisplayTextureResolution(
-      simulationSettings.displayTextureAspectRatio,
-      simulationSettings.displayTextureTargetQuality,
-    );
-
-    const gpuTextureSize = Math.floor(
-      Math.sqrt(
-        simulationSettings.displayTextureTargetQuality *
-          1000000 *
-          simulationSettings.agentDensity,
-      ),
-    );
-
-    texturePlaneUniforms.uWindowResolution.value =
-      SC_UTILS.getWindowResolutionVector();
-    slimeMoldDisplayPlaneUniforms.uDisplayScale.value =
-      SC_UTILS.getDisplayScaleVector(resolution.width, resolution.height);
-
-    useSlimeStore.setState(
-      produce((state) => {
-        state.simulationSettings.gpuTextureWidth = gpuTextureSize;
-        state.simulationSettings.gpuTextureHeight = gpuTextureSize;
-
-        state.simulationSettings.displayTextureWidth = resolution.width;
-        state.simulationSettings.displayTextureHeight = resolution.height;
-
-        state.resolutionsSet = true;
-
-        state.initialized = false;
-      }),
-    );
-  }
-
-  function initializeUniforms() {
-    const simulationSettings = useSlimeStore.getState().simulationSettings;
-
-    // Get data textures.
-    const agentDataTexture = SC_UTILS.getAgentDataTexture(
-      simulationSettings.gpuTextureWidth,
-      simulationSettings.gpuTextureHeight,
-      simulationSettings.displayTextureWidth,
-      simulationSettings.displayTextureHeight,
-      simulationSettings.agentStartType,
-    );
-    const agentPositionsTexture = SC_UTILS.getAgentPositionsTexture(
-      simulationSettings.displayTextureWidth,
-      simulationSettings.displayTextureHeight,
-    );
-    const trailTexture = SC_UTILS.getTrailTexture(
-      simulationSettings.displayTextureWidth,
-      simulationSettings.displayTextureHeight,
-    );
-
-    // Get shared uniforms.
-    const displayTextureResolutionVector =
-      SC_UTILS.getDisplayTextureResolutionVector(
-        simulationSettings.displayTextureWidth,
-        simulationSettings.displayTextureHeight,
-      );
-    const displayScaleVector = SC_UTILS.getDisplayScaleVector(
-      simulationSettings.displayTextureWidth,
-      simulationSettings.displayTextureHeight,
-    );
-    const windowResolutionVector = SC_UTILS.getWindowResolutionVector();
-
-    // TODO: See if we need to initialize more uniforms here.
-
-    // Get uniforms updates.
-    const texturePlaneUniformsUpdates = {
-      uWindowResolution: new THREE.Uniform(windowResolutionVector),
-    };
-    const slimeMoldDisplayPlaneUniformsUpdates = {
-      uTrailTexture: new THREE.Uniform(trailTexture),
-      uDisplayTextureResolution: new THREE.Uniform(
-        displayTextureResolutionVector,
-      ),
-      uDisplayScale: new THREE.Uniform(displayScaleVector),
-    };
-    const agentDataUniformsUpdates = {
-      uAgentDataTexture: new THREE.Uniform(agentDataTexture),
-      uTrailTexture: new THREE.Uniform(trailTexture),
-      uDisplayTextureResolution: new THREE.Uniform(
-        displayTextureResolutionVector,
-      ),
-    };
-    const agentPositionsUniformsUpdates = {
-      uAgentDataTexture: new THREE.Uniform(agentDataTexture),
-      uDisplayTextureResolution: new THREE.Uniform(
-        displayTextureResolutionVector,
-      ),
-    };
-    const trailUniformsUpdates = {
-      uAgentPositionsTexture: new THREE.Uniform(agentPositionsTexture),
-      uTrailTexture: new THREE.Uniform(trailTexture),
-      uDisplayTextureResolution: new THREE.Uniform(
-        displayTextureResolutionVector,
-      ),
-    };
-
-    // Apply updates to uniforms.
-    Object.assign(texturePlaneUniforms, texturePlaneUniformsUpdates);
-    Object.assign(
-      slimeMoldDisplayPlaneUniforms,
-      slimeMoldDisplayPlaneUniformsUpdates,
-    );
-    Object.assign(agentDataUniforms, agentDataUniformsUpdates);
-    Object.assign(agentPositionsUniforms, agentPositionsUniformsUpdates);
-    Object.assign(trailUniforms, trailUniformsUpdates);
-  }
-
-  // Initialize everything.
-  useEffect(() => {
-    if (initialized && resolutionsSet) return;
-    setInitialResolutions();
-    initializeUniforms();
-    useSlimeStore.setState(
-      produce((state) => {
-        state.initialized = true;
-      }),
-    );
-  }, [initialized, resolutionsSet]);
-
-  // Randomize agent settings.
-  useEffect(() => {
-    if (!agentsNeedRandomization) return;
-    const simulationRandomizationSettings =
-      useSlimeStore.getState().simulationRandomizationSettings;
-    useSlimeStore.setState(
-      produce((state) => {
-        state.agentsNeedRandomization = false;
-        if (!simulationSettings.allowAgentsRandomization) return;
-        Object.entries(simulationRandomizationSettings).forEach(
-          ([key, value]) => {
-            const settingKey = key as keyof SimulationSettings;
-            const randConfig = value as RandomizationSetting;
-            if (!settingKey.startsWith("agent") || !randConfig.enabled) return;
-            let randValue: number = -999.0;
-            if (randConfig.mode === "flat") {
-              randValue = randBetween(
-                randConfig.flatRange[0],
-                randConfig.flatRange[1],
-              );
-            } else if (randConfig.mode === "gaussian") {
-              randValue = getGaussRandomInControlBounds(
-                SIMULATION_CONTROLS_CONFIGS[settingKey]!.min as number,
-                SIMULATION_CONTROLS_CONFIGS[settingKey]!.max as number,
-                randConfig.mu,
-                randConfig.sigma,
-              );
-            }
-            const step = SIMULATION_CONTROLS_CONFIGS[settingKey]!.step;
-            if (step) {
-              randValue = roundToFixed(Math.round(randValue / step) * step, 4);
-            }
-            state.simulationSettings[settingKey] = randValue;
-          },
-        );
-      }),
-    );
-    console.log("Randomize agent settings useEffect", useSlimeStore.getState());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [agentsNeedRandomization]);
-
-  // Randomize trail settings.
-  useEffect(() => {
-    if (!trailNeedsRandomization) return;
-    const simulationRandomizationSettings =
-      useSlimeStore.getState().simulationRandomizationSettings;
-    useSlimeStore.setState(
-      produce((state) => {
-        state.trailNeedsRandomization = false;
-        if (!simulationSettings.allowTrailRandomization) return;
-        Object.entries(simulationRandomizationSettings).forEach(
-          ([key, value]) => {
-            const settingKey = key as keyof SimulationSettings;
-            const randConfig = value as RandomizationSetting;
-            if (!settingKey.startsWith("trail") || !randConfig.enabled) return;
-            let randValue: number = -999.0;
-            if (randConfig.mode === "flat") {
-              randValue = randBetween(
-                randConfig.flatRange[0],
-                randConfig.flatRange[1],
-              );
-            } else if (randConfig.mode === "gaussian") {
-              randValue = getGaussRandomInControlBounds(
-                SIMULATION_CONTROLS_CONFIGS[settingKey]!.min as number,
-                SIMULATION_CONTROLS_CONFIGS[settingKey]!.max as number,
-                randConfig.mu,
-                randConfig.sigma,
-              );
-            }
-            const step = SIMULATION_CONTROLS_CONFIGS[settingKey]!.step;
-            if (step) {
-              randValue = roundToFixed(Math.round(randValue / step) * step, 4);
-            }
-            state.simulationSettings[settingKey] = randValue;
-          },
-        );
-      }),
-    );
-    console.log("Randomize trail useEffect", useSlimeStore.getState());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [trailNeedsRandomization]);
-
-  // Randomize color palette.
-  useEffect(() => {
-    if (!colorSettings.proceduralColorPaletteNeedsRandomization) return;
-    useSlimeStore.setState(
-      produce((state) => {
-        state.colorSettings.proceduralColorPaletteNeedsRandomization = false;
-        if (!colorSettings.allowProceduralColorPaletteRandomization) return;
-        Object.entries(colorSettings.proceduralColorPalette).forEach(
-          ([key, value]) => {
-            const colorKey =
-              key as keyof typeof colorSettings.proceduralColorPalette;
-            Object.keys(value as ProceduralColorPaletteChannel).forEach(
-              (channelKey) => {
-                const controlConfig =
-                  PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS[
-                    channelKey as keyof typeof PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS
-                  ];
-                const randValue = randBetween(
-                  controlConfig!.min / 3.0,
-                  controlConfig!.max / 3.0,
-                  2.0,
-                );
-                state.colorSettings.proceduralColorPalette[colorKey][
-                  channelKey
-                ] = randValue;
-              },
-            );
-          },
-        );
-        state.colorSettings.slimeColorChangedAt = Date.now();
-      }),
-    );
-    console.log("Randomize color palette useEffect", useSlimeStore.getState());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [colorSettings.proceduralColorPaletteNeedsRandomization]);
-
-  // Randomize background color.
-  useEffect(() => {
-    if (!colorSettings.backgroundColorNeedsRandomization) return;
-    useSlimeStore.setState(
-      produce((state) => {
-        state.colorSettings.backgroundColorNeedsRandomization = false;
-        if (!colorSettings.allowBackgroundColorRandomization) return;
-        state.colorSettings.backgroundColor = UTILS.generateRandomColor();
-      }),
-    );
-    console.log(
-      "Randomize background color useEffect",
-      useSlimeStore.getState(),
-    );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [colorSettings.backgroundColorNeedsRandomization]);
+  const debugConsoleLogger = useSlimeStore((state) => state.debugConsoleLogger);
 
   const pingPongRef = useRef(true);
   const uDeltaRef = useRef(0.0);
   const uTimeRef = useRef(0.0);
   const uPaletteCycleTimeRef = useRef(0.0);
 
-  useFrame(({ gl }, delta) => {
-    // Hoo boy, this is a doozy.
-    if (!initialized || !resolutionsSet) return;
+  const controlsAreOpen = useSlimeStore((state) => state.controlsState.isOpen);
+  const controlsClosedAt = useSlimeStore(
+    (state) => state.controlsState.controlsClosedAt,
+  );
+  const colorSettings = useSlimeStore((state) => state.colorSettings);
+  const randomizationSettings = useSlimeStore(
+    (state) => state.randomizationSettings,
+  );
 
+  useFrame(({ gl }, delta) => {
     const currentMinutes = Math.floor(Date.now() / 1000 / 60);
+    const controlsClosedAtMinutes = Math.floor(controlsClosedAt / 1000 / 60);
     if (currentMinutes !== prevMinutesRef.current) {
       prevMinutesRef.current = currentMinutes;
     }
@@ -908,25 +209,33 @@ function SlimeClock() {
     if (controlsAreOpen) {
       lastRestartedAtMinutesRef.current = currentMinutes;
       lastRandomizedAtMinutesRef.current = currentMinutes;
+    } else if (
+      !controlsAreOpen &&
+      (lastRestartedAtMinutesRef.current < controlsClosedAtMinutes ||
+        lastRandomizedAtMinutesRef.current < controlsClosedAtMinutes)
+    ) {
+      lastRandomizedAtMinutesRef.current = currentMinutes;
+      lastRestartedAtMinutesRef.current = currentMinutes;
     }
 
     if (
       !controlsAreOpen &&
-      simulationSettings.autoRestartEnabled &&
-      currentMinutes % simulationSettings.autoRestartInterval === 0 &&
+      randomizationSettings.autoRestartEnabled &&
+      currentMinutes % randomizationSettings.autoRestartInterval === 0 &&
       currentMinutes !== lastRestartedAtMinutesRef.current
     ) {
       lastRestartedAtMinutesRef.current = currentMinutes;
       useSlimeStore.setState(
         produce((state) => {
-          state.simulationNeedsRestart = true;
-          state.initialized = false;
-          if (simulationSettings.autoRandomizationEnabled) {
+          state.randomizationState.simulationRestartRequestedAt = Date.now();
+          if (randomizationSettings.autoRandomizationEnabled) {
             lastRandomizedAtMinutesRef.current = currentMinutes;
-            state.agentsNeedRandomization = true;
-            state.trailNeedsRandomization = true;
-            state.colorSettings.proceduralColorPaletteNeedsRandomization = true;
-            state.colorSettings.backgroundColorNeedsRandomization = true;
+            state.randomizationState.agentRandomizationRequestedAt = Date.now();
+            state.randomizationState.trailRandomizationRequestedAt = Date.now();
+            state.randomizationState.proceduralColorPaletteRandomizationRequestedAt =
+              Date.now();
+            state.randomizationState.backgroundColorRandomizationRequestedAt =
+              Date.now();
           }
         }),
       );
@@ -935,17 +244,24 @@ function SlimeClock() {
 
     if (
       !controlsAreOpen &&
-      simulationSettings.autoRandomizationEnabled &&
-      currentMinutes % simulationSettings.autoRandomizationInterval === 0 &&
+      randomizationSettings.autoRandomizationEnabled &&
+      currentMinutes % randomizationSettings.autoRandomizationInterval === 0 &&
       currentMinutes !== lastRandomizedAtMinutesRef.current
     ) {
+      debugConsoleLogger(
+        "Randomization triggered",
+        lastRandomizedAtMinutesRef.current,
+        currentMinutes,
+      );
       lastRandomizedAtMinutesRef.current = currentMinutes;
       useSlimeStore.setState(
         produce((state) => {
-          state.agentsNeedRandomization = true;
-          state.trailNeedsRandomization = true;
-          state.colorSettings.proceduralColorPaletteNeedsRandomization = true;
-          state.colorSettings.backgroundColorNeedsRandomization = true;
+          state.randomizationState.agentRandomizationRequestedAt = Date.now();
+          state.randomizationState.trailRandomizationRequestedAt = Date.now();
+          state.randomizationState.proceduralColorPaletteRandomizationRequestedAt =
+            Date.now();
+          state.randomizationState.backgroundColorRandomizationRequestedAt =
+            Date.now();
         }),
       );
     }
@@ -965,7 +281,7 @@ function SlimeClock() {
      * Agent data.
      */
     if (pingPongRef.current) {
-      // Update agent data A time uniforms.
+      // Update agent data A uniforms.
       agentDataMaterialRefA.current.uniforms.uDelta.value = uDeltaRef.current;
       agentDataMaterialRefA.current.uniforms.uTime.value = uTimeRef.current;
       agentDataMaterialRefA.current.uniforms.uClockTexture.value =
@@ -1078,8 +394,6 @@ function SlimeClock() {
 
   return (
     <>
-      <UniformSetter />
-      <SettingsHistoryListener />
       {createPortal(
         <mesh>
           <agentDataMaterial
@@ -1323,4 +637,38 @@ function SlimeClock() {
   );
 }
 
-export default SlimeClock;
+export default function SlimeClock() {
+  // const debugConsoleLogger = useSlimeStore((state) => state.debugConsoleLogger);
+  const [displaySlimeClock, setDisplaySlimeClock] = useState(false);
+
+  useEffect(() => {
+    const unsub = useSlimeStore.subscribe(
+      (state) => state.initialization.slimeClockDisplayStatus,
+      (displayStatus) => {
+        if (displayStatus === "ready" && !displaySlimeClock) {
+          setDisplaySlimeClock(true);
+        } else if (displayStatus === "initializing" && displaySlimeClock) {
+          setDisplaySlimeClock(false);
+        }
+      },
+    );
+    return () => {
+      unsub();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return (
+    <>
+      <InitializationHandler />
+      <SettingsHistoryListener />
+      {displaySlimeClock && (
+        <>
+          <SlimeClockRenderer />
+          <RandomizationListener />
+          <UniformListeners />
+        </>
+      )}
+    </>
+  );
+}

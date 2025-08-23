@@ -10,7 +10,7 @@ export default function StatsComponent() {
   return (
     <>
       <AnimatePresence>
-        {((showFPS && interactionState === "active") || isOpen) && <Stats />}
+        {showFPS && (interactionState === "active" || isOpen) && <Stats />}
       </AnimatePresence>
     </>
   );

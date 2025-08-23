@@ -99,10 +99,8 @@ function initializeSimulationSettings() {
     agentCrowdAvoidance: defaultLoadableSimulationSettings.agentCrowdAvoidance,
     agentWanderStrength: defaultLoadableSimulationSettings.agentWanderStrength,
 
-    displayTextureAspectRatio:
-      defaultLoadableSimulationSettings.displayTextureAspectRatio,
-    displayTextureTargetQuality:
-      defaultLoadableSimulationSettings.displayTextureTargetQuality,
+    displayTextureAspectRatio: simulationSettings.displayTextureAspectRatio,
+    displayTextureTargetQuality: simulationSettings.displayTextureTargetQuality,
     // Similar to the gpuTextureWidth and gpuTextureHeight, these
     // will be set later when we initialize the resolutions.
     displayTextureWidth: simulationSettings.displayTextureWidth,

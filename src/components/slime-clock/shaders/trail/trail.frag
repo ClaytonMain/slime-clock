@@ -18,7 +18,7 @@ uniform float uTime;
 
 varying vec2 vUv;
 
-#define PI2 6.283185307179586
+#define PI2 6.283185
 
 // Offsets for the 8 neighboring pixels in a 2D grid.
 float neighborOffsets[8] = float[](1.0, 1.0, 0.0, -1.0, -1.0, -1.0, 0.0, 1.0);
