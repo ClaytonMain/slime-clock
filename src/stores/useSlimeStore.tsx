@@ -47,7 +47,7 @@ interface ControlsState {
   controlsClosedAt: number;
 }
 
-export interface SlimeStore {
+interface SlimeStore {
   debug: boolean;
   debugConsoleLogger: (...data: unknown[]) => void;
   initialization: {
@@ -147,7 +147,7 @@ const useSlimeStore = create<SlimeStore>()(
   subscribeWithSelector(
     persist(
       (_, get) => ({
-        debug: true,
+        debug: false,
         debugConsoleLogger: (...data: unknown[]) => {
           if (get().debug) {
             console.log(...data);

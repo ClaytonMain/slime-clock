@@ -10,14 +10,11 @@ import type {
   LoadableSlimeStoreSettings,
   MultiplePresetType,
   PaletteCycleTypeOption,
-  PresetType,
   ProceduralColorPaletteChannel,
-  ProceduralColorPalettePresets,
   RandomizationSetting,
   SimulationRandomizationSettings,
   SimulationSettings,
   SinglePresetType,
-  SlimeColorMode,
 } from "../types/types";
 
 type ControlsConfigs<T> = {
@@ -247,43 +244,6 @@ export const DEFAULT_COLOR_RANDOMIZATION_SETTINGS: ColorRandomizationSettings =
     },
   };
 
-export const SLIME_COLOR_MODES: SlimeColorMode[] = ["Procedural", "Single"];
-
-export const DEFAULT_FOOTER_HEIGHT = 300;
-
-export const PROCEDURAL_COLOR_PALETTE_PRESETS: ProceduralColorPalettePresets = {
-  Rainbow: {
-    r: { yOffset: 0.5, amplitude: 0.5, frequency: 1.0, phase: 0.0 },
-    g: { yOffset: 0.5, amplitude: 0.5, frequency: 1.0, phase: 0.33 },
-    b: { yOffset: 0.5, amplitude: 0.5, frequency: 1.0, phase: 0.66 },
-  },
-  Red: {
-    r: { yOffset: 0.5, amplitude: 0.5, frequency: 0.5, phase: 0.5 },
-    g: { yOffset: 0.0, amplitude: 0.0, frequency: 0.0, phase: 0.0 },
-    b: { yOffset: 0.0, amplitude: 0.0, frequency: 0.0, phase: 0.0 },
-  },
-  B: {
-    r: { yOffset: 0.5, amplitude: 0.5, frequency: 1.0, phase: 0.0 },
-    g: { yOffset: 0.5, amplitude: 0.5, frequency: 1.0, phase: 0.1 },
-    b: { yOffset: 0.5, amplitude: 0.5, frequency: 1.0, phase: 0.2 },
-  },
-  C: {
-    r: { yOffset: 0.5, amplitude: 0.5, frequency: 1.0, phase: 0.0 },
-    g: { yOffset: 0.2, amplitude: 0.85, frequency: 0.5, phase: 0.5 },
-    b: { yOffset: 0.5, amplitude: 0.5, frequency: 1.0, phase: 0.4 },
-  },
-  D: {
-    r: { yOffset: 0.5, amplitude: 0.5, frequency: 3.0, phase: 0.0 },
-    g: { yOffset: 0.5, amplitude: 0.5, frequency: 6.0, phase: 0.0 },
-    b: { yOffset: 0.5, amplitude: 0.5, frequency: 9.0, phase: 0.0 },
-  },
-  E: {
-    r: { yOffset: 0.43, amplitude: 0.59, frequency: 1.87, phase: 0.04 },
-    g: { yOffset: 0.18, amplitude: 1.24, frequency: 0.35, phase: 0.43 },
-    b: { yOffset: 0.44, amplitude: 0.69, frequency: 1.71, phase: 0.78 },
-  },
-};
-
 export const DEFAULT_COLOR_SETTINGS_PRESET_NAME = "Rainbow";
 export const DEFAULT_COLOR_SETTINGS: ColorSettings = {
   settingsSetPreviously: false,
@@ -360,13 +320,6 @@ export const ANIMATION_CONFIGS = {
   },
 };
 
-export const ANIMATABLE_COLORS = {
-  footer: {
-    backgroundOpen: "#060709aa",
-    backgroundClosed: "#06070900",
-  },
-};
-
 export const AGENT_START_TYPE_DROPDOWN_OPTIONS: AgentStartTypeDropdownOption[] =
   [
     { value: "-1", label: "Random" },
@@ -377,47 +330,6 @@ export const AGENT_START_TYPE_DROPDOWN_OPTIONS: AgentStartTypeDropdownOption[] =
     { value: "4", label: "Spiral" },
     { value: "5", label: "Fill" },
   ] as const;
-
-export const SIMULATION_PRESETS: Record<string, Partial<SimulationSettings>> = {
-  Default: {
-    speed: 3.3,
-    agentDensity: 0.25,
-    agentStartType: -1,
-    agentClockAttraction: 0.35,
-    agentClockDepositRate: 17.7,
-    agentBackgroundDepositRate: 17.2,
-    agentSensorDegrees: 59,
-    agentRotationRate: 3.7,
-    agentSensorOffset: 0.86,
-    agentSensorWidth: 0.23,
-    agentStepSize: 1.55,
-    agentCrowdAvoidance: 0.37,
-    agentWanderStrength: 5.5,
-    trailClockDecayRate: 0.15,
-    trailClockDiffuseRate: 3.0,
-    trailBackgroundDecayRate: 0.66,
-    trailBackgroundDiffuseRate: 2.3,
-  },
-  "Inverted Gooey": {
-    speed: 3.3,
-    agentDensity: 0.25,
-    agentStartType: 5,
-    agentClockAttraction: 0.09,
-    agentClockDepositRate: 5.6,
-    agentBackgroundDepositRate: 2.5,
-    agentSensorDegrees: 19,
-    agentRotationRate: 2.3,
-    agentSensorOffset: 1.77,
-    agentSensorWidth: 0.52,
-    agentStepSize: 2.34,
-    agentCrowdAvoidance: 0.22,
-    agentWanderStrength: 2.9,
-    trailClockDecayRate: 0.28,
-    trailClockDiffuseRate: 6.4,
-    trailBackgroundDecayRate: 0.07,
-    trailBackgroundDiffuseRate: 2.9,
-  },
-};
 
 export const DISPLAY_TEXTURE_ASPECT_RATIO_OPTIONS: DisplayTextureAspectRatioDropdownOption[] =
   [
@@ -847,10 +759,6 @@ export const SINGLE_PRESET_TYPES: SinglePresetType[] = [
   "Color Only",
 ];
 export const MULTIPLE_PRESET_TYPES: MultiplePresetType[] = ["Combination"];
-export const PRESET_TYPES: PresetType[] = [
-  ...SINGLE_PRESET_TYPES,
-  ...MULTIPLE_PRESET_TYPES,
-];
 
 // {
 //   "clockSettings": {

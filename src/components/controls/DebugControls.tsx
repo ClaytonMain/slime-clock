@@ -51,6 +51,15 @@ export default function DebugControls() {
             }
           >
             <SlimeStoreSwitchControl
+              label="Enable 'debug' in Store"
+              baseId="debug-controls-enable-debug-switch"
+              storePath={["enableDebug"]}
+              labelHoverTabContentDisplay={[
+                "Enable 'debug' in Store",
+                "Toggle the 'debug' flag in the global store. Currently only affects logging.",
+              ]}
+            />
+            <SlimeStoreSwitchControl
               label="Show GPU Textures"
               baseId="debug-controls-show-gpu-textures-switch"
               storePath={["simulationSettings", "showTextureDisplayPlanes"]}

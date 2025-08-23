@@ -114,7 +114,7 @@ export interface ProceduralColorPaletteChannel {
   phase: number;
 }
 
-export interface ProceduralColorPalette {
+interface ProceduralColorPalette {
   r: ProceduralColorPaletteChannel;
   g: ProceduralColorPaletteChannel;
   b: ProceduralColorPaletteChannel;
@@ -151,17 +151,7 @@ export type ClockDigitStyleValue =
   | "opticbot";
 export type ClockHourFormatValue = "12h" | "24h";
 
-/**
- * Simulation Settings Types
- */
-export type SimulationQuality =
-  | "Very Low"
-  | "Low"
-  | "Medium"
-  | "High"
-  | "Very High"
-  | "Custom";
-export type AgentStartType =
+type AgentStartType =
   | "Random"
   | "Center"
   | "Ring"
@@ -169,14 +159,7 @@ export type AgentStartType =
   | "Circle"
   | "Spiral"
   | "Fill";
-export type TrailDisplayTextureResolution =
-  | "426 x 240"
-  | "640 x 360"
-  | "854 x 480"
-  | "1280 x 720"
-  | "1920 x 1080"
-  | "2560 x 1440"
-  | "3840 x 2160";
+
 export type DisplayTextureAspectRatio =
   | "Window"
   | "16:10"
@@ -188,19 +171,6 @@ export type DisplayTextureAspectRatio =
   | "3:4"
   | "9:16"
   | "10:16";
-
-export type ProceduralColorPaletteName =
-  | "Rainbow"
-  | "Red"
-  | "B"
-  | "C"
-  | "D"
-  | "E";
-
-export type ProceduralColorPalettePresets = Record<
-  ProceduralColorPaletteName,
-  ProceduralColorPalette
->;
 
 export type AgentStartTypeDropdownOption = {
   value: string;
@@ -233,7 +203,7 @@ export type TailwindJustifyContentOption =
   | "baseline"
   | "normal";
 
-export type PaletteCycleType = "Oscillating" | "Repeating" | "Continuous";
+type PaletteCycleType = "Oscillating" | "Repeating" | "Continuous";
 export type PaletteCycleTypeOption = {
   value: string;
   label: PaletteCycleType;
@@ -260,13 +230,13 @@ export type ToastState = {
 
 export type SortedPresets = Record<PresetType, LoadableSlimeStoreSettings[]>;
 
-export type TexturePlaneUniformsKey = "uWindowResolution" | "uShowTexture";
+type TexturePlaneUniformsKey = "uWindowResolution" | "uShowTexture";
 export type TexturePlaneUniforms = Record<
   TexturePlaneUniformsKey,
   THREE.Uniform
 >;
 
-export type SlimeMoldDisplayPlaneUniformsKey =
+type SlimeMoldDisplayPlaneUniformsKey =
   | "uTrailTexture"
   | "uClockTexture"
   | "uDisplayTextureResolution"
@@ -294,7 +264,7 @@ export type SlimeMoldDisplayPlaneUniforms = Record<
   THREE.Uniform
 >;
 
-export type AgentDataUniformsKey =
+type AgentDataUniformsKey =
   | "uAgentDataTexture"
   | "uClockTexture"
   | "uTrailTexture"
@@ -320,7 +290,7 @@ export type AgentPositionsUniforms = Record<
   THREE.Uniform
 >;
 
-export type TrailUniformsKey =
+type TrailUniformsKey =
   | "uAgentPositionsTexture"
   | "uClockTexture"
   | "uTrailTexture"
