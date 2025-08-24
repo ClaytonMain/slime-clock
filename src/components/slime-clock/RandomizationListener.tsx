@@ -7,11 +7,46 @@ import {
 import useSlimeStore from "../../stores/useSlimeStore.tsx";
 import type {
   ColorRandomizationSettings,
+  NumericRangeRandomizationSetting,
+  OptionListRandomizationSetting,
   ProceduralColorPaletteChannelRandomizationSettings,
-  RandomizationSetting,
   SimulationSettings,
 } from "../../types/types.tsx";
 import * as UTILS from "../../utils/utils.tsx";
+
+function getNumericRangeRandomValue(
+  numericRangeRandConfig: NumericRangeRandomizationSetting,
+  min: number,
+  max: number,
+  step?: number,
+): number {
+  let randValue: number = -999.0;
+  if (numericRangeRandConfig.mode === "flat") {
+    randValue = UTILS.randBetween(...numericRangeRandConfig.flatRange);
+  } else if (numericRangeRandConfig.mode === "gaussian") {
+    randValue = UTILS.getGaussRandomInControlBounds(
+      min,
+      max,
+      numericRangeRandConfig.mu,
+      numericRangeRandConfig.sigma,
+    );
+  }
+  if (step) {
+    randValue = UTILS.roundToFixed(Math.round(randValue / step) * step, 4);
+  }
+  return randValue;
+}
+
+function getOptionListRandomValue(
+  optionListRandConfig: OptionListRandomizationSetting,
+): string | null {
+  const enabledOptions = optionListRandConfig.options.filter(
+    (opt) => opt.enabled,
+  );
+  if (enabledOptions.length === 0) return null;
+  const randomIndex = Math.floor(Math.random() * enabledOptions.length);
+  return enabledOptions[randomIndex].value;
+}
 
 export default function RandomizationListener() {
   const randomizationState = useSlimeStore((state) => state.randomizationState);
@@ -32,6 +67,7 @@ export default function RandomizationListener() {
       randomizationState.agentRandomizationCompletedAt
     )
       return;
+
     useSlimeStore.setState(
       produce((state) => {
         state.randomizationState.agentRandomizationCompletedAt = Date.now();
@@ -39,28 +75,25 @@ export default function RandomizationListener() {
           Object.entries(randomizationSettings.simulation).forEach(
             ([key, value]) => {
               const settingKey = key as keyof SimulationSettings;
-              const randConfig = value as RandomizationSetting;
+              const randConfig = value as
+                | NumericRangeRandomizationSetting
+                | OptionListRandomizationSetting;
               if (!settingKey.startsWith("agent") || !randConfig.enabled)
                 return;
-              let randValue: number = -999.0;
-              if (randConfig.mode === "flat") {
-                randValue = UTILS.randBetween(...randConfig.flatRange);
-              } else if (randConfig.mode === "gaussian") {
-                randValue = UTILS.getGaussRandomInControlBounds(
-                  SIMULATION_CONTROLS_CONFIGS[settingKey]!.min as number,
-                  SIMULATION_CONTROLS_CONFIGS[settingKey]!.max as number,
-                  randConfig.mu,
-                  randConfig.sigma,
-                );
+              if (randConfig.type === "numericRange") {
+                state.simulationSettings[settingKey] =
+                  getNumericRangeRandomValue(
+                    randConfig,
+                    SIMULATION_CONTROLS_CONFIGS[settingKey]!.min as number,
+                    SIMULATION_CONTROLS_CONFIGS[settingKey]!.max as number,
+                    SIMULATION_CONTROLS_CONFIGS[settingKey]!.step,
+                  );
+              } else if (randConfig.type === "optionList") {
+                const randomValue = getOptionListRandomValue(randConfig);
+                if (randomValue !== null) {
+                  state.simulationSettings[settingKey] = randomValue;
+                }
               }
-              const step = SIMULATION_CONTROLS_CONFIGS[settingKey]!.step;
-              if (step) {
-                randValue = UTILS.roundToFixed(
-                  Math.round(randValue / step) * step,
-                  4,
-                );
-              }
-              state.simulationSettings[settingKey] = randValue;
             },
           );
         }
@@ -83,28 +116,25 @@ export default function RandomizationListener() {
           Object.entries(randomizationSettings.simulation).forEach(
             ([key, value]) => {
               const settingKey = key as keyof SimulationSettings;
-              const randConfig = value as RandomizationSetting;
+              const randConfig = value as
+                | NumericRangeRandomizationSetting
+                | OptionListRandomizationSetting;
               if (!settingKey.startsWith("trail") || !randConfig.enabled)
                 return;
-              let randValue: number = -999.0;
-              if (randConfig.mode === "flat") {
-                randValue = UTILS.randBetween(...randConfig.flatRange);
-              } else if (randConfig.mode === "gaussian") {
-                randValue = UTILS.getGaussRandomInControlBounds(
-                  SIMULATION_CONTROLS_CONFIGS[settingKey]!.min as number,
-                  SIMULATION_CONTROLS_CONFIGS[settingKey]!.max as number,
-                  randConfig.mu,
-                  randConfig.sigma,
-                );
+              if (randConfig.type === "numericRange") {
+                state.simulationSettings[settingKey] =
+                  getNumericRangeRandomValue(
+                    randConfig,
+                    SIMULATION_CONTROLS_CONFIGS[settingKey]!.min as number,
+                    SIMULATION_CONTROLS_CONFIGS[settingKey]!.max as number,
+                    SIMULATION_CONTROLS_CONFIGS[settingKey]!.step,
+                  );
+              } else if (randConfig.type === "optionList") {
+                const randomValue = getOptionListRandomValue(randConfig);
+                if (randomValue !== null) {
+                  state.simulationSettings[settingKey] = randomValue;
+                }
               }
-              const step = SIMULATION_CONTROLS_CONFIGS[settingKey]!.step;
-              if (step) {
-                randValue = UTILS.roundToFixed(
-                  Math.round(randValue / step) * step,
-                  4,
-                );
-              }
-              state.simulationSettings[settingKey] = randValue;
             },
           );
         }
@@ -137,7 +167,7 @@ export default function RandomizationListener() {
               Object.entries(channelConfig).forEach(([subKey, subValue]) => {
                 const settingKey =
                   subKey as keyof ProceduralColorPaletteChannelRandomizationSettings;
-                const randConfig = subValue as RandomizationSetting;
+                const randConfig = subValue as NumericRangeRandomizationSetting;
                 let randValue: number = -999.0;
                 if (randConfig.mode === "flat") {
                   randValue = UTILS.randBetween(...randConfig.flatRange);

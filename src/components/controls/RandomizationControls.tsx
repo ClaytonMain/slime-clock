@@ -13,6 +13,9 @@ import TabContentScrollArea from "./TabContentScrollArea";
 
 export default function RandomizationControls() {
   const selectedTab = useSlimeStore((state) => state.controlsState.selectedTab);
+  const agentStartTypeRandomizationSettings = useSlimeStore(
+    (state) => state.randomizationSettings.simulation.agentStartType,
+  );
 
   const randomizationControlsLabelHoverTabContentDisplay = [
     "Randomization Controls",
@@ -207,6 +210,37 @@ export default function RandomizationControls() {
               "Controls the randomization settings for agents.",
             ]}
           >
+            <SwitchControlGroup
+              label="Enabled Start Types"
+              labelHoverTabContentDisplay={[
+                "Enabled Start Types",
+                "Toggles to enable or disable randomization for various start types.",
+              ]}
+              switchConfigs={[
+                {
+                  label: "Enabled",
+                  baseId: "start-type-randomization-enabled-switch",
+                  storePath: [
+                    "randomizationSettings",
+                    "agentStartType",
+                    "enabled",
+                  ],
+                },
+                ...agentStartTypeRandomizationSettings.options.map(
+                  (option) => ({
+                    label: option.label,
+                    baseId: `start-type-${option.value}-randomization-switch`,
+                    storePath: [
+                      "randomizationSettings",
+                      "agentStartType",
+                      "options",
+                      option.value,
+                      "enabled",
+                    ],
+                  }),
+                ),
+              ]}
+            />
             <SlimeStoreRandomizationControl
               label="Clock Attraction"
               labelHoverTabContentDisplay={["Clock Attraction"]}

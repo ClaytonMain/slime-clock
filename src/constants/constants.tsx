@@ -9,9 +9,9 @@ import type {
   LoadableSimulationSettings,
   LoadableSlimeStoreSettings,
   MultiplePresetType,
+  NumericRangeRandomizationSetting,
   PaletteCycleTypeOption,
   ProceduralColorPaletteChannel,
-  RandomizationSetting,
   SimulationRandomizationSettings,
   SimulationSettings,
   SinglePresetType,
@@ -98,140 +98,177 @@ export const SIMULATION_CONTROLS_CONFIGS: ControlsConfigs<SimulationSettings> =
     trailBackgroundDiffuseRate: { min: 0.0, max: 30.0, step: 0.1 },
   };
 
+export const AGENT_START_TYPE_DROPDOWN_OPTIONS: AgentStartTypeDropdownOption[] =
+  [
+    { value: "-1", label: "Random" },
+    { value: "0", label: "Center" },
+    { value: "1", label: "Ring" },
+    { value: "2", label: "9 Rings" },
+    { value: "3", label: "Circle" },
+    { value: "4", label: "Spiral" },
+    { value: "5", label: "Fill" },
+  ] as const;
+
 export const DEFAULT_SIMULATION_RANDOMIZATION_SETTINGS: SimulationRandomizationSettings =
   {
-    agentClockAttraction: {
+    agentStartType: {
+      type: "optionList",
       enabled: true,
-      flatRange: [0.01, 0.3],
-      mu: 0.15,
-      sigma: 0.05,
+      options: [...AGENT_START_TYPE_DROPDOWN_OPTIONS].map((option) => ({
+        ...option,
+        enabled: true,
+      })),
+    },
+    agentClockAttraction: {
+      type: "numericRange",
+      enabled: true,
+      flatRange: [0.03, 0.06],
+      mu: 0.05,
+      sigma: 0.02,
       mode: "gaussian",
     },
     agentClockDepositRate: {
+      type: "numericRange",
       enabled: true,
       flatRange: [2.0, 15.0],
-      mu: 8.5,
-      sigma: 2,
+      mu: 8.0,
+      sigma: 1.5,
       mode: "gaussian",
     },
     agentBackgroundDepositRate: {
+      type: "numericRange",
       enabled: true,
       flatRange: [2.0, 15.0],
-      mu: 8.5,
-      sigma: 2,
+      mu: 8.0,
+      sigma: 1.5,
       mode: "gaussian",
     },
     agentSensorDegrees: {
+      type: "numericRange",
       enabled: true,
       flatRange: [15, 75],
-      mu: 45,
-      sigma: 20,
+      mu: 25,
+      sigma: 3,
       mode: "gaussian",
     },
     agentRotationRate: {
+      type: "numericRange",
       enabled: true,
       flatRange: [1.0, 5.0],
       mu: 3,
-      sigma: 1,
+      sigma: 0.75,
       mode: "gaussian",
     },
     agentSensorOffset: {
+      type: "numericRange",
       enabled: true,
       flatRange: [0.5, 2.5],
-      mu: 1.5,
-      sigma: 0.5,
-      mode: "gaussian",
-    },
-    agentSensorWidth: {
-      enabled: true,
-      flatRange: [0.2, 0.8],
-      mu: 0.5,
+      mu: 1.0,
       sigma: 0.2,
       mode: "gaussian",
     },
+    agentSensorWidth: {
+      type: "numericRange",
+      enabled: true,
+      flatRange: [0.2, 0.8],
+      mu: 0.3,
+      sigma: 0.05,
+      mode: "gaussian",
+    },
     agentStepSize: {
+      type: "numericRange",
       enabled: true,
       flatRange: [0.5, 2.5],
-      mu: 1.5,
-      sigma: 0.5,
+      mu: 1.0,
+      sigma: 0.2,
       mode: "gaussian",
     },
     agentCrowdAvoidance: {
+      type: "numericRange",
       enabled: true,
       flatRange: [0.05, 0.5],
-      mu: 0.3,
-      sigma: 0.1,
+      mu: 0.22,
+      sigma: 0.08,
       mode: "gaussian",
     },
     agentWanderStrength: {
+      type: "numericRange",
       enabled: true,
       flatRange: [0.1, 10.0],
-      mu: 5.5,
-      sigma: 2.0,
+      mu: 6.5,
+      sigma: 1.3,
       mode: "gaussian",
     },
 
     trailClockDecayRate: {
+      type: "numericRange",
       enabled: true,
       flatRange: [0.01, 0.5],
-      mu: 0.25,
+      mu: 0.1,
       sigma: 0.1,
       mode: "gaussian",
     },
     trailClockDiffuseRate: {
+      type: "numericRange",
       enabled: true,
       flatRange: [2.0, 10.0],
-      mu: 6,
-      sigma: 2,
+      mu: 8,
+      sigma: 1.3,
       mode: "gaussian",
     },
     trailBackgroundDecayRate: {
+      type: "numericRange",
       enabled: true,
       flatRange: [0.01, 0.5],
-      mu: 0.25,
+      mu: 0.45,
       sigma: 0.1,
       mode: "gaussian",
     },
     trailBackgroundDiffuseRate: {
+      type: "numericRange",
       enabled: true,
       flatRange: [2.0, 15.0],
-      mu: 8.5,
-      sigma: 2,
+      mu: 10.5,
+      sigma: 1.5,
       mode: "gaussian",
     },
   };
 const DEFAULT_PROCEDURAL_COLOR_PALETTE_RANDOMIZATION_SETTINGS: {
-  yOffset: RandomizationSetting;
-  amplitude: RandomizationSetting;
-  frequency: RandomizationSetting;
-  phase: RandomizationSetting;
+  yOffset: NumericRangeRandomizationSetting;
+  amplitude: NumericRangeRandomizationSetting;
+  frequency: NumericRangeRandomizationSetting;
+  phase: NumericRangeRandomizationSetting;
 } = {
   yOffset: {
+    type: "numericRange",
     enabled: true,
     flatRange: [0.0, 1.0],
     mu: 0.5,
-    sigma: 0.3,
+    sigma: 0.15,
     mode: "gaussian",
   },
   amplitude: {
+    type: "numericRange",
     enabled: true,
     flatRange: [0.05, 0.95],
     mu: 0.5,
-    sigma: 0.3,
+    sigma: 0.15,
     mode: "gaussian",
   },
   frequency: {
+    type: "numericRange",
     enabled: true,
     flatRange: [0.1, 3.0],
     mu: 1.0,
-    sigma: 0.75,
+    sigma: 0.3,
     mode: "gaussian",
   },
   phase: {
+    type: "numericRange",
     enabled: true,
     flatRange: [0.0, 3.14],
     mu: 1.57,
-    sigma: 0.7,
+    sigma: 0.5,
     mode: "gaussian",
   },
 };
@@ -319,17 +356,6 @@ export const ANIMATION_CONFIGS = {
     },
   },
 };
-
-export const AGENT_START_TYPE_DROPDOWN_OPTIONS: AgentStartTypeDropdownOption[] =
-  [
-    { value: "-1", label: "Random" },
-    { value: "0", label: "Center" },
-    { value: "1", label: "Ring" },
-    { value: "2", label: "9 Rings" },
-    { value: "3", label: "Circle" },
-    { value: "4", label: "Spiral" },
-    { value: "5", label: "Fill" },
-  ] as const;
 
 export const DISPLAY_TEXTURE_ASPECT_RATIO_OPTIONS: DisplayTextureAspectRatioDropdownOption[] =
   [

@@ -66,38 +66,47 @@ export interface SimulationSettings extends LoadableSimulationSettings {
   displayTextureTargetQuality: number;
 }
 
-export type RandomizationSettingMode = "flat" | "gaussian";
+export type NumericRangeRandomizationSettingMode = "flat" | "gaussian";
 
-export interface RandomizationSetting {
+export interface NumericRangeRandomizationSetting {
+  type: "numericRange";
   enabled: boolean;
   flatRange: [number, number];
   mu: number;
   sigma: number;
-  mode: RandomizationSettingMode;
+  mode: NumericRangeRandomizationSettingMode;
 }
+
+export type OptionListRandomizationSetting = {
+  type: "optionList";
+  enabled: boolean;
+  options: { enabled: boolean; value: string; label: string }[];
+};
 
 export interface SimulationRandomizationSettings {
-  agentClockAttraction: RandomizationSetting;
-  agentClockDepositRate: RandomizationSetting;
-  agentBackgroundDepositRate: RandomizationSetting;
-  agentSensorDegrees: RandomizationSetting;
-  agentRotationRate: RandomizationSetting;
-  agentSensorOffset: RandomizationSetting;
-  agentSensorWidth: RandomizationSetting;
-  agentStepSize: RandomizationSetting;
-  agentCrowdAvoidance: RandomizationSetting;
-  agentWanderStrength: RandomizationSetting;
+  agentStartType: OptionListRandomizationSetting;
 
-  trailClockDecayRate: RandomizationSetting;
-  trailClockDiffuseRate: RandomizationSetting;
-  trailBackgroundDecayRate: RandomizationSetting;
-  trailBackgroundDiffuseRate: RandomizationSetting;
+  agentClockAttraction: NumericRangeRandomizationSetting;
+  agentClockDepositRate: NumericRangeRandomizationSetting;
+  agentBackgroundDepositRate: NumericRangeRandomizationSetting;
+  agentSensorDegrees: NumericRangeRandomizationSetting;
+  agentRotationRate: NumericRangeRandomizationSetting;
+  agentSensorOffset: NumericRangeRandomizationSetting;
+  agentSensorWidth: NumericRangeRandomizationSetting;
+  agentStepSize: NumericRangeRandomizationSetting;
+  agentCrowdAvoidance: NumericRangeRandomizationSetting;
+  agentWanderStrength: NumericRangeRandomizationSetting;
+
+  trailClockDecayRate: NumericRangeRandomizationSetting;
+  trailClockDiffuseRate: NumericRangeRandomizationSetting;
+  trailBackgroundDecayRate: NumericRangeRandomizationSetting;
+  trailBackgroundDiffuseRate: NumericRangeRandomizationSetting;
 }
 export interface ProceduralColorPaletteChannelRandomizationSettings {
-  yOffset: RandomizationSetting;
-  amplitude: RandomizationSetting;
-  frequency: RandomizationSetting;
-  phase: RandomizationSetting;
+  yOffset: NumericRangeRandomizationSetting;
+  amplitude: NumericRangeRandomizationSetting;
+  frequency: NumericRangeRandomizationSetting;
+  phase: NumericRangeRandomizationSetting;
 }
 export interface ColorRandomizationSettings {
   proceduralColorPalette: {
@@ -148,7 +157,8 @@ export type ClockDigitStyleValue =
   | "7segment"
   | "14segment"
   | "dotmatrix"
-  | "opticbot";
+  | "syne"
+  | "roboto";
 export type ClockHourFormatValue = "12h" | "24h";
 
 type AgentStartType =

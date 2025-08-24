@@ -38,7 +38,8 @@ const clockStyleOptions: ClockDigitStyleOption[] = [
   { value: "7segment", label: "7 Segment" },
   { value: "14segment", label: "14 Segment" },
   { value: "dotmatrix", label: "Dot Matrix" },
-  { value: "opticbot", label: "Optic Bot" },
+  { value: "syne", label: "Syne Mono" },
+  { value: "roboto", label: "Roboto Mono" },
 ] as const;
 
 /**

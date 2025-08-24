@@ -8,6 +8,14 @@ import type {
   ClockHourFormatValue,
 } from "../../types/types";
 
+const SCALE_FACTORS: Record<ClockDigitStyleValue, number> = {
+  "7segment": 1.0,
+  "14segment": 1.0,
+  dotmatrix: 1.42,
+  syne: 1.5,
+  roboto: 1.3,
+};
+
 function getDigitFontUrl(style: ClockDigitStyleValue): string {
   switch (style) {
     case "7segment":
@@ -16,8 +24,10 @@ function getDigitFontUrl(style: ClockDigitStyleValue): string {
       return "../../fonts/DSEG14Modern-Regular.woff";
     case "dotmatrix":
       return "../../fonts/5by7/5by7.ttf";
-    case "opticbot":
-      return "../../fonts/optic-bot/opticbot.ttf";
+    case "syne":
+      return "../../fonts/Syne_Mono/SyneMono-Regular.ttf";
+    case "roboto":
+      return "../../fonts/Roboto_Mono/RobotoMono-VariableFont_wght.ttf";
     default:
       return "../../fonts/DSEG14Modern-Regular.woff";
   }
@@ -146,7 +156,10 @@ export default function ClockDisplay() {
     <>
       <Text
         position={[displayTextureWidth / 2, displayTextureHeight / 2, 0.0]}
-        scale={(displayTextureHeight * clockSettings.size) / 100}
+        scale={
+          ((displayTextureHeight * clockSettings.size) / 100) *
+          SCALE_FACTORS[clockSettings.digitStyle]
+        }
         font={fontUrl}
       >
         <meshBasicMaterial ref={material1Ref} transparent />
@@ -154,7 +167,10 @@ export default function ClockDisplay() {
       </Text>
       <Text
         position={[displayTextureWidth / 2, displayTextureHeight / 2, -0.1]}
-        scale={(displayTextureHeight * clockSettings.size) / 100}
+        scale={
+          ((displayTextureHeight * clockSettings.size) / 100) *
+          SCALE_FACTORS[clockSettings.digitStyle]
+        }
         font={fontUrl}
       >
         <meshBasicMaterial ref={material2Ref} transparent />
