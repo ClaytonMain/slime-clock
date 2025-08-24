@@ -37,17 +37,6 @@ function getNumericRangeRandomValue(
   return randValue;
 }
 
-function getOptionListRandomValue(
-  optionListRandConfig: OptionListRandomizationSetting,
-): string | null {
-  const enabledOptions = optionListRandConfig.options.filter(
-    (opt) => opt.enabled,
-  );
-  if (enabledOptions.length === 0) return null;
-  const randomIndex = Math.floor(Math.random() * enabledOptions.length);
-  return enabledOptions[randomIndex].value;
-}
-
 export default function RandomizationListener() {
   const randomizationState = useSlimeStore((state) => state.randomizationState);
   const randomizationSettings = useSlimeStore(
@@ -74,6 +63,7 @@ export default function RandomizationListener() {
         if (randomizationSettings.allowAgentRandomization) {
           Object.entries(randomizationSettings.simulation).forEach(
             ([key, value]) => {
+              if (key === "name" || key === "isBasePreset") return;
               const settingKey = key as keyof SimulationSettings;
               const randConfig = value as
                 | NumericRangeRandomizationSetting
@@ -88,11 +78,6 @@ export default function RandomizationListener() {
                     SIMULATION_CONTROLS_CONFIGS[settingKey]!.max as number,
                     SIMULATION_CONTROLS_CONFIGS[settingKey]!.step,
                   );
-              } else if (randConfig.type === "optionList") {
-                const randomValue = getOptionListRandomValue(randConfig);
-                if (randomValue !== null) {
-                  state.simulationSettings[settingKey] = randomValue;
-                }
               }
             },
           );
@@ -115,6 +100,7 @@ export default function RandomizationListener() {
         if (randomizationSettings.allowTrailRandomization) {
           Object.entries(randomizationSettings.simulation).forEach(
             ([key, value]) => {
+              if (key === "name" || key === "isBasePreset") return;
               const settingKey = key as keyof SimulationSettings;
               const randConfig = value as
                 | NumericRangeRandomizationSetting
@@ -129,11 +115,6 @@ export default function RandomizationListener() {
                     SIMULATION_CONTROLS_CONFIGS[settingKey]!.max as number,
                     SIMULATION_CONTROLS_CONFIGS[settingKey]!.step,
                   );
-              } else if (randConfig.type === "optionList") {
-                const randomValue = getOptionListRandomValue(randConfig);
-                if (randomValue !== null) {
-                  state.simulationSettings[settingKey] = randomValue;
-                }
               }
             },
           );

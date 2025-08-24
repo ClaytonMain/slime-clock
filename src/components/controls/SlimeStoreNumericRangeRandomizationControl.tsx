@@ -8,7 +8,7 @@ import {
   SIMULATION_CONTROLS_CONFIGS,
 } from "../../constants/constants";
 import useSlimeStore from "../../stores/useSlimeStore";
-import type { RandomizationSettingMode } from "../../types/types";
+import type { NumericRangeRandomizationSettingMode } from "../../types/types";
 import SlimeStoreSelect from "./SlimeStoreSelect";
 import SlimeStoreSlider from "./SlimeStoreSlider";
 import SlimeStoreSwitch from "./SlimeStoreSwitch";
@@ -22,7 +22,7 @@ type RandomizationSettingsStorePath = [
   ),
 ];
 
-export default function SlimeStoreRandomizationControl({
+export default function SlimeStoreNumericRangeRandomizationControl({
   label,
   labelHoverTabContentDisplay,
   baseId,
@@ -59,7 +59,7 @@ export default function SlimeStoreRandomizationControl({
     [randomizationSettingsStorePath],
   );
   const [randomizationMode, setRandomizationMode] =
-    useState<RandomizationSettingMode>(
+    useState<NumericRangeRandomizationSettingMode>(
       R.view(R.lensPath(randomizationModeStorePath), useSlimeStore.getState()),
     );
 

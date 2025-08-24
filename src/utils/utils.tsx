@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { AGENT_START_TYPE_DROPDOWN_OPTIONS } from "../constants/constants";
 import useSlimeStore from "../stores/useSlimeStore";
 import type {
   DisplayTextureAspectRatio,
@@ -136,6 +137,15 @@ function getAgentData(
   }
   return data;
 }
+function getRandomAllowedStartType(): number | null {
+  const enabledOptions = Object.values(
+    useSlimeStore.getState().randomizationSettings.simulation.agentStartType
+      .options,
+  ).filter((opt) => opt.enabled);
+  if (enabledOptions.length === 0) return null;
+  const randomIndex = Math.floor(Math.random() * enabledOptions.length);
+  return Number(enabledOptions[randomIndex].value);
+}
 export function getAgentDataTexture(
   gpuTextureWidth: number,
   gpuTextureHeight: number,
@@ -144,12 +154,32 @@ export function getAgentDataTexture(
   startType: number = -1,
 ) {
   console.log("getAgentDataTexture called with startType:", startType);
+  let effectiveStartType = startType;
+  const agentStartTypeIndexOfRandom =
+    AGENT_START_TYPE_DROPDOWN_OPTIONS.findIndex(
+      (option) => option.label === "Random",
+    );
+  console.log("agentStartTypeIndexOfRandom:", agentStartTypeIndexOfRandom);
+  console.log(AGENT_START_TYPE_DROPDOWN_OPTIONS[agentStartTypeIndexOfRandom]);
+  console.log(
+    AGENT_START_TYPE_DROPDOWN_OPTIONS[agentStartTypeIndexOfRandom].value,
+  );
+  if (
+    AGENT_START_TYPE_DROPDOWN_OPTIONS[agentStartTypeIndexOfRandom].value ===
+    String(startType)
+  ) {
+    console.log("Getting random allowed start type");
+    const randomStartType = getRandomAllowedStartType();
+    if (randomStartType !== null) {
+      effectiveStartType = randomStartType;
+    }
+  }
   const data = getAgentData(
     gpuTextureWidth,
     gpuTextureHeight,
     displayTextureWidth,
     displayTextureHeight,
-    startType,
+    effectiveStartType,
   );
   const agentDataTexture = new THREE.DataTexture(
     data,

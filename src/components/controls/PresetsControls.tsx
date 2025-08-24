@@ -78,17 +78,18 @@ export default function PresetsControls() {
           return;
         }
         if ("clockSettings" in parsedData) {
-          // TODO: Add control bounding logic.
+          // TODO: Add control validation logic.
           const newClockSettings: Partial<LoadableClockSettings> = {};
           LOADABLE_CLOCK_SETTINGS_KEYS.forEach((key) => {
             if (key in parsedData.clockSettings) {
               const currentValue = parsedData.clockSettings[key];
               if (
-                typeof currentValue ===
+                typeof currentValue !==
                 typeof useSlimeStore.getState().clockSettings[key]
               ) {
-                newClockSettings[key] = currentValue;
+                return;
               }
+              newClockSettings[key] = currentValue;
             }
           });
           if (Object.keys(newClockSettings).length > 0) {
@@ -103,7 +104,7 @@ export default function PresetsControls() {
           }
         }
         if ("simulationSettings" in parsedData) {
-          // TODO: Add control bounding logic.
+          // TODO: Add control validation logic.
           const newSimulationSettings: Partial<LoadableSimulationSettings> = {};
           LOADABLE_SIMULATION_SETTINGS_KEYS.forEach((key) => {
             if (key in parsedData.simulationSettings) {
@@ -128,7 +129,7 @@ export default function PresetsControls() {
           }
         }
         if ("colorSettings" in parsedData) {
-          // TODO: Add control bounding logic.
+          // TODO: Add control validation logic.
           const newColorSettings: Partial<LoadableColorSettings> = {};
           LOADABLE_COLOR_SETTINGS_KEYS.forEach((key) => {
             if (key in parsedData.colorSettings) {
@@ -149,35 +150,40 @@ export default function PresetsControls() {
                   ...newColorSettings,
                   slimeColorChangedAt: Date.now(),
                 };
+                state.toast = {
+                  title: "Success!",
+                  description: "Loaded color settings from clipboard!",
+                  type: "success",
+                  lastTriggeredAt: Date.now(),
+                };
               }),
             );
           }
         }
       })
-      .catch((error) => {
-        useSlimeStore.setState(
-          produce((state) => {
-            state.toast.title = "Error";
-            state.toast.description =
-              "Failed to load from clipboard! Please try again.";
-            state.toast.type = "error";
-            state.toast.lastTriggeredAt = Date.now();
-          }),
-        );
-        console.error("Failed to load from clipboard:", error);
-      })
-      .finally(() => {
-        // TODO: Stop this from showing up if failed.
-        useSlimeStore.setState(
-          produce((state) => {
-            state.toast = {
-              title: "Success!",
-              description: "Copied current settings to clipboard!",
-              type: "success",
-              lastTriggeredAt: Date.now(),
-            };
-          }),
-        );
+      .catch((e) => {
+        if (e instanceof SyntaxError) {
+          useSlimeStore.setState(
+            produce((state) => {
+              state.toast.title = "Error";
+              state.toast.description =
+                "Invalid syntax! Double-check your clipboard data, then try again.";
+              state.toast.type = "error";
+              state.toast.lastTriggeredAt = Date.now();
+            }),
+          );
+        } else {
+          useSlimeStore.setState(
+            produce((state) => {
+              state.toast.title = "Error";
+              state.toast.description =
+                "Unknown error! Double-check your clipboard data and try again.";
+              state.toast.type = "error";
+              state.toast.lastTriggeredAt = Date.now();
+            }),
+          );
+        }
+        console.error("Failed to load from clipboard:", e);
       });
   }
 

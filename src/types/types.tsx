@@ -80,10 +80,13 @@ export interface NumericRangeRandomizationSetting {
 export type OptionListRandomizationSetting = {
   type: "optionList";
   enabled: boolean;
-  options: { enabled: boolean; value: string; label: string }[];
+  options: Record<string, { enabled: boolean; value: string; label: string }>;
 };
 
 export interface SimulationRandomizationSettings {
+  name: string;
+  isBasePreset?: boolean;
+
   agentStartType: OptionListRandomizationSetting;
 
   agentClockAttraction: NumericRangeRandomizationSetting;

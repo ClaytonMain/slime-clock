@@ -4,7 +4,7 @@ import useSlimeStore from "../../stores/useSlimeStore";
 import AccordionControlsItem from "./AccordionControlsItem";
 import AccordionControlsWrapper from "./AccordionControlsWrapper";
 import ButtonControlGroup from "./ButtonControlGroup";
-import SlimeStoreRandomizationControl from "./SlimeStoreRandomizationControl";
+import SlimeStoreNumericRangeRandomizationControl from "./SlimeStoreNumericRangeRandomizationControl";
 import SlimeStoreSliderControl from "./SlimeStoreSliderControl";
 import SlimeStoreSwitchControl from "./SlimeStoreSwitchControl";
 import SwitchControlGroup from "./SwitchControlGroup";
@@ -13,9 +13,6 @@ import TabContentScrollArea from "./TabContentScrollArea";
 
 export default function RandomizationControls() {
   const selectedTab = useSlimeStore((state) => state.controlsState.selectedTab);
-  const agentStartTypeRandomizationSettings = useSlimeStore(
-    (state) => state.randomizationSettings.simulation.agentStartType,
-  );
 
   const randomizationControlsLabelHoverTabContentDisplay = [
     "Randomization Controls",
@@ -160,6 +157,18 @@ export default function RandomizationControls() {
               ]}
               buttonConfigs={[
                 {
+                  label: "Restart Simulation",
+                  baseId: "restart-simulation-button",
+                  onClick: () => {
+                    useSlimeStore.setState(
+                      produce((state) => {
+                        state.randomizationState.simulationRestartRequestedAt =
+                          Date.now();
+                      }),
+                    );
+                  },
+                },
+                {
                   label: "Randomize All",
                   baseId: "randomize-all-button",
                   onClick: () => {
@@ -203,6 +212,16 @@ export default function RandomizationControls() {
             />
           </AccordionControlsItem>
           <AccordionControlsItem
+            value="simulation-randomization-setting-presets"
+            label="Simulation Randomization Presets"
+            labelHoverTabContentDisplay={[
+              "Simulation Randomization Presets",
+              "Manage and apply presets for simulation randomization settings.",
+            ]}
+          >
+            glarb
+          </AccordionControlsItem>
+          <AccordionControlsItem
             value="agent-randomization-settings"
             label="Agent Randomization Settings"
             labelHoverTabContentDisplay={[
@@ -214,34 +233,84 @@ export default function RandomizationControls() {
               label="Enabled Start Types"
               labelHoverTabContentDisplay={[
                 "Enabled Start Types",
-                "Toggles to enable or disable randomization for various start types.",
+                "Toggles to enable or disable randomization for various start types. Please note: this is only effective when `Simulation > Agent Settings > Start Type` is set to `Random`.",
               ]}
               switchConfigs={[
                 {
-                  label: "Enabled",
-                  baseId: "start-type-randomization-enabled-switch",
+                  label: "Center",
+                  baseId: "start-type-randomization-center-switch",
                   storePath: [
                     "randomizationSettings",
+                    "simulation",
                     "agentStartType",
+                    "options",
+                    "Center",
                     "enabled",
                   ],
                 },
-                ...agentStartTypeRandomizationSettings.options.map(
-                  (option) => ({
-                    label: option.label,
-                    baseId: `start-type-${option.value}-randomization-switch`,
-                    storePath: [
-                      "randomizationSettings",
-                      "agentStartType",
-                      "options",
-                      option.value,
-                      "enabled",
-                    ],
-                  }),
-                ),
+                {
+                  label: "Ring",
+                  baseId: "start-type-randomization-ring-switch",
+                  storePath: [
+                    "randomizationSettings",
+                    "simulation",
+                    "agentStartType",
+                    "options",
+                    "Ring",
+                    "enabled",
+                  ],
+                },
+                {
+                  label: "9 Rings",
+                  baseId: "start-type-randomization-9-rings-switch",
+                  storePath: [
+                    "randomizationSettings",
+                    "simulation",
+                    "agentStartType",
+                    "options",
+                    "9 Rings",
+                    "enabled",
+                  ],
+                },
+                {
+                  label: "Circle",
+                  baseId: "start-type-randomization-circle-switch",
+                  storePath: [
+                    "randomizationSettings",
+                    "simulation",
+                    "agentStartType",
+                    "options",
+                    "Circle",
+                    "enabled",
+                  ],
+                },
+                {
+                  label: "Spiral",
+                  baseId: "start-type-randomization-spiral-switch",
+                  storePath: [
+                    "randomizationSettings",
+                    "simulation",
+                    "agentStartType",
+                    "options",
+                    "Spiral",
+                    "enabled",
+                  ],
+                },
+                {
+                  label: "Fill",
+                  baseId: "start-type-randomization-fill-switch",
+                  storePath: [
+                    "randomizationSettings",
+                    "simulation",
+                    "agentStartType",
+                    "options",
+                    "Fill",
+                    "enabled",
+                  ],
+                },
               ]}
             />
-            <SlimeStoreRandomizationControl
+            <SlimeStoreNumericRangeRandomizationControl
               label="Clock Attraction"
               labelHoverTabContentDisplay={["Clock Attraction"]}
               baseId="clock-attraction-randomization-control"
@@ -250,7 +319,7 @@ export default function RandomizationControls() {
                 "agentClockAttraction",
               ]}
             />
-            <SlimeStoreRandomizationControl
+            <SlimeStoreNumericRangeRandomizationControl
               label="Clock Deposit Rate"
               labelHoverTabContentDisplay={["Clock Deposit Rate"]}
               baseId="clock-deposit-rate-randomization-control"
@@ -259,7 +328,7 @@ export default function RandomizationControls() {
                 "agentClockDepositRate",
               ]}
             />
-            <SlimeStoreRandomizationControl
+            <SlimeStoreNumericRangeRandomizationControl
               label="Background Deposit Rate"
               labelHoverTabContentDisplay={["Background Deposit Rate"]}
               baseId="background-deposit-rate-randomization-control"
@@ -268,7 +337,7 @@ export default function RandomizationControls() {
                 "agentBackgroundDepositRate",
               ]}
             />
-            <SlimeStoreRandomizationControl
+            <SlimeStoreNumericRangeRandomizationControl
               label="Sensor Degrees"
               labelHoverTabContentDisplay={["Sensor Degrees"]}
               baseId="sensor-degrees-randomization-control"
@@ -277,7 +346,7 @@ export default function RandomizationControls() {
                 "agentSensorDegrees",
               ]}
             />
-            <SlimeStoreRandomizationControl
+            <SlimeStoreNumericRangeRandomizationControl
               label="Rotation Rate"
               labelHoverTabContentDisplay={["Rotation Rate"]}
               baseId="rotation-rate-randomization-control"
@@ -286,7 +355,7 @@ export default function RandomizationControls() {
                 "agentRotationRate",
               ]}
             />
-            <SlimeStoreRandomizationControl
+            <SlimeStoreNumericRangeRandomizationControl
               label="Sensor Offset"
               labelHoverTabContentDisplay={["Sensor Offset"]}
               baseId="sensor-offset-randomization-control"
@@ -295,7 +364,7 @@ export default function RandomizationControls() {
                 "agentSensorOffset",
               ]}
             />
-            <SlimeStoreRandomizationControl
+            <SlimeStoreNumericRangeRandomizationControl
               label="Sensor Width"
               labelHoverTabContentDisplay={["Sensor Width"]}
               baseId="sensor-width-randomization-control"
@@ -304,13 +373,13 @@ export default function RandomizationControls() {
                 "agentSensorWidth",
               ]}
             />
-            <SlimeStoreRandomizationControl
+            <SlimeStoreNumericRangeRandomizationControl
               label="Step Size"
               labelHoverTabContentDisplay={["Step Size"]}
               baseId="step-size-randomization-control"
               randomizationSettingsStorePath={["simulation", "agentStepSize"]}
             />
-            <SlimeStoreRandomizationControl
+            <SlimeStoreNumericRangeRandomizationControl
               label="Crowd Avoidance"
               labelHoverTabContentDisplay={["Crowd Avoidance"]}
               baseId="crowd-avoidance-randomization-control"
@@ -319,7 +388,7 @@ export default function RandomizationControls() {
                 "agentCrowdAvoidance",
               ]}
             />
-            <SlimeStoreRandomizationControl
+            <SlimeStoreNumericRangeRandomizationControl
               label="Wander Strength"
               labelHoverTabContentDisplay={["Wander Strength"]}
               baseId="wander-strength-randomization-control"
@@ -337,7 +406,7 @@ export default function RandomizationControls() {
               "Controls the randomization settings for trails.",
             ]}
           >
-            <SlimeStoreRandomizationControl
+            <SlimeStoreNumericRangeRandomizationControl
               label="Clock Decay Rate"
               labelHoverTabContentDisplay={["Clock Decay Rate"]}
               baseId="clock-decay-rate-randomization-control"
@@ -346,7 +415,7 @@ export default function RandomizationControls() {
                 "trailClockDecayRate",
               ]}
             />
-            <SlimeStoreRandomizationControl
+            <SlimeStoreNumericRangeRandomizationControl
               label="Clock Diffuse Rate"
               labelHoverTabContentDisplay={["Clock Diffuse Rate"]}
               baseId="clock-diffuse-rate-randomization-control"
@@ -355,7 +424,7 @@ export default function RandomizationControls() {
                 "trailClockDiffuseRate",
               ]}
             />
-            <SlimeStoreRandomizationControl
+            <SlimeStoreNumericRangeRandomizationControl
               label="Background Decay Rate"
               labelHoverTabContentDisplay={["Background Decay Rate"]}
               baseId="background-decay-rate-randomization-control"
@@ -364,7 +433,7 @@ export default function RandomizationControls() {
                 "trailBackgroundDecayRate",
               ]}
             />
-            <SlimeStoreRandomizationControl
+            <SlimeStoreNumericRangeRandomizationControl
               label="Background Diffuse Rate"
               labelHoverTabContentDisplay={["Background Diffuse Rate"]}
               baseId="background-diffuse-rate-randomization-control"
@@ -382,7 +451,7 @@ export default function RandomizationControls() {
               "Controls the randomization settings for colors.",
             ]}
           >
-            <SlimeStoreRandomizationControl
+            <SlimeStoreNumericRangeRandomizationControl
               label="Red Y-Offset"
               labelHoverTabContentDisplay={["Red Y-Offset"]}
               baseId="red-y-offset-randomization-control"
@@ -393,7 +462,7 @@ export default function RandomizationControls() {
                 "yOffset",
               ]}
             />
-            <SlimeStoreRandomizationControl
+            <SlimeStoreNumericRangeRandomizationControl
               label="Red Amplitude"
               labelHoverTabContentDisplay={["Red Amplitude"]}
               baseId="red-amplitude-randomization-control"
@@ -404,7 +473,7 @@ export default function RandomizationControls() {
                 "amplitude",
               ]}
             />
-            <SlimeStoreRandomizationControl
+            <SlimeStoreNumericRangeRandomizationControl
               label="Red Frequency"
               labelHoverTabContentDisplay={["Red Frequency"]}
               baseId="red-frequency-randomization-control"
@@ -415,7 +484,7 @@ export default function RandomizationControls() {
                 "frequency",
               ]}
             />
-            <SlimeStoreRandomizationControl
+            <SlimeStoreNumericRangeRandomizationControl
               label="Red Phase"
               labelHoverTabContentDisplay={["Red Phase"]}
               baseId="red-phase-randomization-control"
@@ -426,7 +495,7 @@ export default function RandomizationControls() {
                 "phase",
               ]}
             />
-            <SlimeStoreRandomizationControl
+            <SlimeStoreNumericRangeRandomizationControl
               label="Green Y-Offset"
               labelHoverTabContentDisplay={["Green Y-Offset"]}
               baseId="green-y-offset-randomization-control"
@@ -437,7 +506,7 @@ export default function RandomizationControls() {
                 "yOffset",
               ]}
             />
-            <SlimeStoreRandomizationControl
+            <SlimeStoreNumericRangeRandomizationControl
               label="Green Amplitude"
               labelHoverTabContentDisplay={["Green Amplitude"]}
               baseId="green-amplitude-randomization-control"
@@ -448,7 +517,7 @@ export default function RandomizationControls() {
                 "amplitude",
               ]}
             />
-            <SlimeStoreRandomizationControl
+            <SlimeStoreNumericRangeRandomizationControl
               label="Green Frequency"
               labelHoverTabContentDisplay={["Green Frequency"]}
               baseId="green-frequency-randomization-control"
@@ -459,7 +528,7 @@ export default function RandomizationControls() {
                 "frequency",
               ]}
             />
-            <SlimeStoreRandomizationControl
+            <SlimeStoreNumericRangeRandomizationControl
               label="Green Phase"
               labelHoverTabContentDisplay={["Green Phase"]}
               baseId="green-phase-randomization-control"
@@ -470,7 +539,7 @@ export default function RandomizationControls() {
                 "phase",
               ]}
             />
-            <SlimeStoreRandomizationControl
+            <SlimeStoreNumericRangeRandomizationControl
               label="Blue Y-Offset"
               labelHoverTabContentDisplay={["Blue Y-Offset"]}
               baseId="blue-y-offset-randomization-control"
@@ -481,7 +550,7 @@ export default function RandomizationControls() {
                 "yOffset",
               ]}
             />
-            <SlimeStoreRandomizationControl
+            <SlimeStoreNumericRangeRandomizationControl
               label="Blue Amplitude"
               labelHoverTabContentDisplay={["Blue Amplitude"]}
               baseId="blue-amplitude-randomization-control"
@@ -492,7 +561,7 @@ export default function RandomizationControls() {
                 "amplitude",
               ]}
             />
-            <SlimeStoreRandomizationControl
+            <SlimeStoreNumericRangeRandomizationControl
               label="Blue Frequency"
               labelHoverTabContentDisplay={["Blue Frequency"]}
               baseId="blue-frequency-randomization-control"
@@ -503,7 +572,7 @@ export default function RandomizationControls() {
                 "frequency",
               ]}
             />
-            <SlimeStoreRandomizationControl
+            <SlimeStoreNumericRangeRandomizationControl
               label="Blue Phase"
               labelHoverTabContentDisplay={["Blue Phase"]}
               baseId="blue-phase-randomization-control"

@@ -11,8 +11,9 @@ import {
   DEFAULT_COLOR_RANDOMIZATION_SETTINGS,
   DEFAULT_COLOR_SETTINGS,
   DEFAULT_PRESETS,
-  DEFAULT_SIMULATION_RANDOMIZATION_SETTINGS,
+  DEFAULT_SIMULATION_RANDOMIZATION_SETTINGS_PRESET_NAME,
   DEFAULT_SIMULATION_SETTINGS,
+  SIMULATION_RANDOMIZATION_SETTINGS,
 } from "../constants/constants";
 import type {
   AgentDataUniforms,
@@ -355,7 +356,11 @@ const useSlimeStore = create<SlimeStore>()(
           allowTrailRandomization: true,
           allowProceduralColorPaletteRandomization: true,
           allowBackgroundColorRandomization: true,
-          simulation: DEFAULT_SIMULATION_RANDOMIZATION_SETTINGS,
+          simulation: SIMULATION_RANDOMIZATION_SETTINGS.filter(
+            (setting) =>
+              setting.name ===
+              DEFAULT_SIMULATION_RANDOMIZATION_SETTINGS_PRESET_NAME,
+          )![0],
           color: DEFAULT_COLOR_RANDOMIZATION_SETTINGS,
         },
 
