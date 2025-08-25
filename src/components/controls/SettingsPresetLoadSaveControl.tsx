@@ -10,25 +10,20 @@ import {
   SINGLE_PRESET_TYPES,
 } from "../../constants/constants";
 import useSlimeStore from "../../stores/useSlimeStore";
-import type {
-  LoadableSlimeStoreSettings,
-  SimulationRandomizationSettings,
-} from "../../types/types";
+import type { LoadableSlimeStoreSettings } from "../../types/types";
 import LoadOrSaveSettingsPopoverButton from "./LoadOrSaveSettingsPopoverButton";
 import TooltipWrapper from "./TooltipWrapper";
 
-export default function SettingsLoadSaveControl({
+export default function SettingsPresetLoadSaveControl({
   label,
   labelHoverTabContentDisplay,
   settings,
   controlType,
-  settingsType = "slime-store",
 }: {
   label?: string;
   labelHoverTabContentDisplay?: string | [string, string] | ReactNode;
-  settings: LoadableSlimeStoreSettings | SimulationRandomizationSettings;
+  settings: LoadableSlimeStoreSettings;
   controlType: "history" | "presets";
-  settingsType?: "slime-store" | "randomization";
 }) {
   const [deletePresetText, setDeletePresetText] = useState<string>("Delete");
   const [copyState, setCopyState] = useState<string>("ready");
@@ -54,48 +49,42 @@ export default function SettingsLoadSaveControl({
     const storeState = useSlimeStore.getState();
     useSlimeStore.setState(
       produce((state) => {
-        if (settingsType === "randomization") {
-          // Do something about this.
-        } else if (settingsType === "slime-store") {
-          state.clockSettings = {
-            ...storeState.clockSettings,
-            ...((settings as LoadableSlimeStoreSettings).clockSettings || {}),
-          };
-          state.simulationSettings = {
-            ...storeState.simulationSettings,
-            ...((settings as LoadableSlimeStoreSettings).simulationSettings ||
-              {}),
-          };
-          state.colorSettings = {
-            ...storeState.colorSettings,
-            ...((settings as LoadableSlimeStoreSettings).colorSettings || {}),
-            slimeColorChangedAt: Date.now(),
-          };
-          state.presetLoadedAt = Date.now();
-          state.toast = {
-            title: "Settings Loaded",
-            description: `Preset "${settings.name}" loaded successfully.`,
-            type: "success",
-            lastTriggeredAt: Date.now(),
-          };
-        }
+        state.clockSettings = {
+          ...storeState.clockSettings,
+          ...(settings.clockSettings || {}),
+        };
+        state.simulationSettings = {
+          ...storeState.simulationSettings,
+          ...(settings.simulationSettings || {}),
+        };
+        state.colorSettings = {
+          ...storeState.colorSettings,
+          ...(settings.colorSettings || {}),
+          slimeColorChangedAt: Date.now(),
+        };
+        state.presetLoadedAt = Date.now();
+        state.toast = {
+          title: "Settings Loaded",
+          description: `Preset "${settings.name}" loaded successfully.`,
+          type: "success",
+          lastTriggeredAt: Date.now(),
+        };
       }),
     );
   }
 
   useEffect(() => {
     if (controlType !== "presets") return;
-    if (settingsType !== "slime-store") return;
     const icons: ReactNode[] = [];
-    if ((settings as LoadableSlimeStoreSettings).clockSettings) {
+    if (settings.clockSettings) {
       icons.push(<ClockIcon key="clock-icon" className="h-3 w-3" />);
     }
-    if ((settings as LoadableSlimeStoreSettings).simulationSettings) {
+    if (settings.simulationSettings) {
       icons.push(
         <MixerHorizontalIcon key="simulation-icon" className="h-3 w-3" />,
       );
     }
-    if ((settings as LoadableSlimeStoreSettings).colorSettings) {
+    if (settings.colorSettings) {
       icons.push(<PiPalette key="color-icon" className="h-3 w-3" />);
     }
     setPresetIndicationIcons(icons);

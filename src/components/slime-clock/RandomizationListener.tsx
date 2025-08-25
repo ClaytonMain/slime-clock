@@ -63,7 +63,6 @@ export default function RandomizationListener() {
         if (randomizationSettings.allowAgentRandomization) {
           Object.entries(randomizationSettings.simulation).forEach(
             ([key, value]) => {
-              if (key === "name" || key === "isBasePreset") return;
               const settingKey = key as keyof SimulationSettings;
               const randConfig = value as
                 | NumericRangeRandomizationSetting
@@ -100,7 +99,6 @@ export default function RandomizationListener() {
         if (randomizationSettings.allowTrailRandomization) {
           Object.entries(randomizationSettings.simulation).forEach(
             ([key, value]) => {
-              if (key === "name" || key === "isBasePreset") return;
               const settingKey = key as keyof SimulationSettings;
               const randConfig = value as
                 | NumericRangeRandomizationSetting

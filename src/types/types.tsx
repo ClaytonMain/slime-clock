@@ -84,9 +84,6 @@ export type OptionListRandomizationSetting = {
 };
 
 export interface SimulationRandomizationSettings {
-  name: string;
-  isBasePreset?: boolean;
-
   agentStartType: OptionListRandomizationSetting;
 
   agentClockAttraction: NumericRangeRandomizationSetting;
@@ -105,6 +102,11 @@ export interface SimulationRandomizationSettings {
   trailBackgroundDecayRate: NumericRangeRandomizationSetting;
   trailBackgroundDiffuseRate: NumericRangeRandomizationSetting;
 }
+export type SimulationRandomizationPreset = {
+  name: string;
+  isBasePreset?: boolean;
+  settings: SimulationRandomizationSettings;
+};
 export interface ProceduralColorPaletteChannelRandomizationSettings {
   yOffset: NumericRangeRandomizationSetting;
   amplitude: NumericRangeRandomizationSetting;

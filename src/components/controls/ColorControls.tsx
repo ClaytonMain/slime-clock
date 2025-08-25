@@ -10,7 +10,7 @@ import useSlimeStore from "../../stores/useSlimeStore";
 import AccordionControlsItem from "./AccordionControlsItem";
 import AccordionControlsWrapper from "./AccordionControlsWrapper";
 import ButtonControlGroup from "./ButtonControlGroup";
-import SettingsLoadSaveControl from "./SettingsLoadSaveControl";
+import SettingsPresetLoadSaveControl from "./SettingsPresetLoadSaveControl";
 import SlimeStoreColorPickerControl from "./SlimeStoreColorPickerControl";
 import SlimeStoreSelectControl from "./SlimeStoreSelectControl";
 import SlimeStoreSliderControl from "./SlimeStoreSliderControl";
@@ -139,7 +139,7 @@ export default function ColorControls() {
           >
             {sortedPresets["Color Only"] &&
               sortedPresets["Color Only"].map((preset) => (
-                <SettingsLoadSaveControl
+                <SettingsPresetLoadSaveControl
                   key={preset.name}
                   label={preset.name}
                   labelHoverTabContentDisplay={[
@@ -154,7 +154,7 @@ export default function ColorControls() {
               ))}
             {sortedPresets["Combination"] &&
               sortedPresets["Combination"].map((preset) => (
-                <SettingsLoadSaveControl
+                <SettingsPresetLoadSaveControl
                   key={preset.name}
                   label={preset.name}
                   labelHoverTabContentDisplay={[

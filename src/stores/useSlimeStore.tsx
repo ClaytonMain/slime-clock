@@ -13,7 +13,7 @@ import {
   DEFAULT_PRESETS,
   DEFAULT_SIMULATION_RANDOMIZATION_SETTINGS_PRESET_NAME,
   DEFAULT_SIMULATION_SETTINGS,
-  SIMULATION_RANDOMIZATION_SETTINGS,
+  SIMULATION_RANDOMIZATION_PRESETS,
 } from "../constants/constants";
 import type {
   AgentDataUniforms,
@@ -23,6 +23,7 @@ import type {
   ColorSettings,
   ControlsTabName,
   LoadableSlimeStoreSettings,
+  SimulationRandomizationPreset,
   SimulationRandomizationSettings,
   SimulationSettings,
   SlimeMoldDisplayPlaneUniforms,
@@ -113,6 +114,8 @@ interface SlimeStore {
     simulation: SimulationRandomizationSettings;
     color: ColorRandomizationSettings;
   };
+
+  simulationRandomizationPresets: SimulationRandomizationPreset[];
 
   controlsState: ControlsState;
   history: LoadableSlimeStoreSettings[];
@@ -356,13 +359,15 @@ const useSlimeStore = create<SlimeStore>()(
           allowTrailRandomization: true,
           allowProceduralColorPaletteRandomization: true,
           allowBackgroundColorRandomization: true,
-          simulation: SIMULATION_RANDOMIZATION_SETTINGS.filter(
+          simulation: SIMULATION_RANDOMIZATION_PRESETS.filter(
             (setting) =>
               setting.name ===
               DEFAULT_SIMULATION_RANDOMIZATION_SETTINGS_PRESET_NAME,
-          )![0],
+          )![0].settings,
           color: DEFAULT_COLOR_RANDOMIZATION_SETTINGS,
         },
+
+        simulationRandomizationPresets: SIMULATION_RANDOMIZATION_PRESETS,
 
         controlsState: {
           selectedTab: "randomization-controls",

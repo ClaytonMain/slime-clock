@@ -15,7 +15,10 @@ import type {
 import AccordionControlsItem from "./AccordionControlsItem";
 import AccordionControlsWrapper from "./AccordionControlsWrapper";
 import ButtonControlGroup from "./ButtonControlGroup.tsx";
-import SettingsLoadSaveControl from "./SettingsLoadSaveControl.tsx";
+import {
+  default as SettingsLoadSaveControl,
+  default as SettingsPresetLoadSaveControl,
+} from "./SettingsPresetLoadSaveControl.tsx";
 import TabContentContainer from "./TabContentContainer";
 import TabContentScrollArea from "./TabContentScrollArea";
 
@@ -300,7 +303,7 @@ export default function PresetsControls() {
                 label="Simulation Only"
               >
                 {sortedPresets["Simulation Only"].map((preset) => (
-                  <SettingsLoadSaveControl
+                  <SettingsPresetLoadSaveControl
                     key={preset.name}
                     label={preset.name}
                     labelHoverTabContentDisplay={[

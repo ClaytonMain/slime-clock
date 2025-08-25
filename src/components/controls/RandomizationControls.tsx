@@ -4,6 +4,7 @@ import useSlimeStore from "../../stores/useSlimeStore";
 import AccordionControlsItem from "./AccordionControlsItem";
 import AccordionControlsWrapper from "./AccordionControlsWrapper";
 import ButtonControlGroup from "./ButtonControlGroup";
+import RandomizationPresetLoadSaveControl from "./RandomizationPresetLoadSaveControl";
 import SlimeStoreNumericRangeRandomizationControl from "./SlimeStoreNumericRangeRandomizationControl";
 import SlimeStoreSliderControl from "./SlimeStoreSliderControl";
 import SlimeStoreSwitchControl from "./SlimeStoreSwitchControl";
@@ -13,6 +14,9 @@ import TabContentScrollArea from "./TabContentScrollArea";
 
 export default function RandomizationControls() {
   const selectedTab = useSlimeStore((state) => state.controlsState.selectedTab);
+  const simulationRandomizationPresets = useSlimeStore(
+    (state) => state.simulationRandomizationPresets,
+  );
 
   const randomizationControlsLabelHoverTabContentDisplay = [
     "Randomization Controls",
@@ -219,7 +223,19 @@ export default function RandomizationControls() {
               "Manage and apply presets for simulation randomization settings.",
             ]}
           >
-            glarb
+            {simulationRandomizationPresets.map((preset) => (
+              <RandomizationPresetLoadSaveControl
+                key={preset.name}
+                label={preset.name}
+                labelHoverTabContentDisplay={[
+                  preset.name,
+                  <pre className="px-2 py-1 text-[0.6rem] whitespace-pre-wrap">
+                    {JSON.stringify(preset, null, 1)}
+                  </pre>,
+                ]}
+                preset={preset}
+              />
+            ))}
           </AccordionControlsItem>
           <AccordionControlsItem
             value="agent-randomization-settings"

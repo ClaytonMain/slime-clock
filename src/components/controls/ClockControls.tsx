@@ -9,7 +9,7 @@ import type {
 import CodeBlock from "../code-block/CodeBlock";
 import AccordionControlsItem from "./AccordionControlsItem";
 import AccordionControlsWrapper from "./AccordionControlsWrapper";
-import SettingsLoadSaveControl from "./SettingsLoadSaveControl";
+import SettingsPresetLoadSaveControl from "./SettingsPresetLoadSaveControl";
 import SlimeStoreColorPickerControl from "./SlimeStoreColorPickerControl";
 import SlimeStoreSelectControl from "./SlimeStoreSelectControl";
 import SlimeStoreSliderControl from "./SlimeStoreSliderControl";
@@ -92,7 +92,7 @@ export default function ClockControls() {
           >
             {sortedPresets["Clock Only"] &&
               sortedPresets["Clock Only"].map((preset) => (
-                <SettingsLoadSaveControl
+                <SettingsPresetLoadSaveControl
                   key={preset.name}
                   label={preset.name}
                   labelHoverTabContentDisplay={[
@@ -107,7 +107,7 @@ export default function ClockControls() {
               ))}
             {sortedPresets["Combination"] &&
               sortedPresets["Combination"].map((preset) => (
-                <SettingsLoadSaveControl
+                <SettingsPresetLoadSaveControl
                   key={preset.name}
                   label={preset.name}
                   labelHoverTabContentDisplay={[

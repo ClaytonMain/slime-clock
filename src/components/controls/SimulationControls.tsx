@@ -13,7 +13,7 @@ import AccordionControlsItem from "./AccordionControlsItem";
 import AccordionControlsWrapper from "./AccordionControlsWrapper";
 import ButtonControlGroup from "./ButtonControlGroup.tsx";
 import HeightScaledPixelValueDisplay from "./HeightScaledPixelValueDisplay";
-import SettingsLoadSaveControl from "./SettingsLoadSaveControl.tsx";
+import SettingsLoadSaveControl from "./SettingsPresetLoadSaveControl.tsx";
 import SlimeStoreSelectControl from "./SlimeStoreSelectControl";
 import SlimeStoreSliderControl from "./SlimeStoreSliderControl";
 import SlimeStoreSwitchControl from "./SlimeStoreSwitchControl";
