@@ -27,7 +27,7 @@ import type {
   SimulationRandomizationSettings,
   SimulationSettings,
   SlimeMoldDisplayPlaneUniforms,
-  SortedPresets,
+  SortedSimulationPresets,
   TexturePlaneUniforms,
   ToastState,
   TrailUniforms,
@@ -119,9 +119,9 @@ interface SlimeStore {
 
   controlsState: ControlsState;
   history: LoadableSlimeStoreSettings[];
-  presets: LoadableSlimeStoreSettings[];
-  sortedPresets: SortedPresets;
-  presetLoadedAt: number;
+  simulationPresets: LoadableSlimeStoreSettings[];
+  sortedSimulationPresets: SortedSimulationPresets;
+  simulationPresetLoadedAt: number;
   lastInteractionAt: number;
   interactionState: "active" | "inactive";
   toast: ToastState;
@@ -140,7 +140,7 @@ const persistOmit: (keyof SlimeStore)[] = [
   "randomizationState",
 
   "controlsState",
-  "presetLoadedAt",
+  "simulationPresetLoadedAt",
   "lastInteractionAt",
   "interactionState",
   "toast",
@@ -385,14 +385,14 @@ const useSlimeStore = create<SlimeStore>()(
           controlsClosedAt: Date.now(),
         },
         history: [],
-        presets: DEFAULT_PRESETS,
-        sortedPresets: {
+        simulationPresets: DEFAULT_PRESETS,
+        sortedSimulationPresets: {
           "Clock Only": [],
           "Simulation Only": [],
           "Color Only": [],
           Combination: [],
         },
-        presetLoadedAt: Date.now(),
+        simulationPresetLoadedAt: Date.now(),
         lastInteractionAt: Date.now(),
         interactionState: "active",
         toast: {

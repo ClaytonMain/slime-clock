@@ -20,8 +20,9 @@ export default function SettingsHistoryListener() {
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      const presetLoadedAt = useSlimeStore.getState().presetLoadedAt;
-      if (Date.now() - presetLoadedAt < 1500) return;
+      const simulationPresetLoadedAt =
+        useSlimeStore.getState().simulationPresetLoadedAt;
+      if (Date.now() - simulationPresetLoadedAt < 1500) return;
 
       const previousEntry: Partial<LoadableSlimeStoreSettings> =
         [...useSlimeStore.getState().history][0] || {};

@@ -14,7 +14,7 @@ import type { LoadableSlimeStoreSettings } from "../../types/types";
 import LoadOrSaveSettingsPopoverButton from "./LoadOrSaveSettingsPopoverButton";
 import TooltipWrapper from "./TooltipWrapper";
 
-export default function SettingsPresetLoadSaveControl({
+export default function SimulationPresetLoadSaveControl({
   label,
   labelHoverTabContentDisplay,
   settings,
@@ -113,11 +113,13 @@ export default function SettingsPresetLoadSaveControl({
       setDeletePresetText("Are you sure?");
       return;
     }
-    let presets = useSlimeStore.getState().presets;
-    presets = presets.filter((preset) => preset.name !== settings.name);
+    let simulationPresets = useSlimeStore.getState().simulationPresets;
+    simulationPresets = simulationPresets.filter(
+      (preset) => preset.name !== settings.name,
+    );
     useSlimeStore.setState(
       produce((state) => {
-        state.presets = presets;
+        state.simulationPresets = simulationPresets;
       }),
     );
   }

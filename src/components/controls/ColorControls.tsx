@@ -10,7 +10,7 @@ import useSlimeStore from "../../stores/useSlimeStore";
 import AccordionControlsItem from "./AccordionControlsItem";
 import AccordionControlsWrapper from "./AccordionControlsWrapper";
 import ButtonControlGroup from "./ButtonControlGroup";
-import SettingsPresetLoadSaveControl from "./SettingsPresetLoadSaveControl";
+import SimulationPresetLoadSaveControl from "./SimulationPresetLoadSaveControl";
 import SlimeStoreColorPickerControl from "./SlimeStoreColorPickerControl";
 import SlimeStoreSelectControl from "./SlimeStoreSelectControl";
 import SlimeStoreSliderControl from "./SlimeStoreSliderControl";
@@ -18,7 +18,9 @@ import TabContentContainer from "./TabContentContainer";
 import TabContentScrollArea from "./TabContentScrollArea";
 
 export default function ColorControls() {
-  const sortedPresets = useSlimeStore((state) => state.sortedPresets);
+  const sortedSimulationPresets = useSlimeStore(
+    (state) => state.sortedSimulationPresets,
+  );
   const selectedTab = useSlimeStore((state) => state.controlsState.selectedTab);
 
   const colorControlsLabelHoverTabContentDisplay = [
@@ -137,9 +139,9 @@ export default function ColorControls() {
             label="Presets"
             labelHoverTabContentDisplay={["Presets"]}
           >
-            {sortedPresets["Color Only"] &&
-              sortedPresets["Color Only"].map((preset) => (
-                <SettingsPresetLoadSaveControl
+            {sortedSimulationPresets["Color Only"] &&
+              sortedSimulationPresets["Color Only"].map((preset) => (
+                <SimulationPresetLoadSaveControl
                   key={preset.name}
                   label={preset.name}
                   labelHoverTabContentDisplay={[
@@ -152,9 +154,9 @@ export default function ColorControls() {
                   controlType="presets"
                 />
               ))}
-            {sortedPresets["Combination"] &&
-              sortedPresets["Combination"].map((preset) => (
-                <SettingsPresetLoadSaveControl
+            {sortedSimulationPresets["Combination"] &&
+              sortedSimulationPresets["Combination"].map((preset) => (
+                <SimulationPresetLoadSaveControl
                   key={preset.name}
                   label={preset.name}
                   labelHoverTabContentDisplay={[

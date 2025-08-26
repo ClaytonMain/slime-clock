@@ -15,17 +15,14 @@ import type {
 import AccordionControlsItem from "./AccordionControlsItem";
 import AccordionControlsWrapper from "./AccordionControlsWrapper";
 import ButtonControlGroup from "./ButtonControlGroup.tsx";
-import {
-  default as SettingsLoadSaveControl,
-  default as SettingsPresetLoadSaveControl,
-} from "./SettingsPresetLoadSaveControl.tsx";
+import SimulationPresetLoadSaveControl from "./SimulationPresetLoadSaveControl.tsx";
 import TabContentContainer from "./TabContentContainer";
 import TabContentScrollArea from "./TabContentScrollArea";
 
 export default function PresetsControls() {
   const selectedTab = useSlimeStore((state) => state.controlsState.selectedTab);
   const history = useSlimeStore((state) => state.history);
-  const sortedPresets = useSlimeStore((state) => state.sortedPresets);
+  const sortedPresets = useSlimeStore((state) => state.sortedSimulationPresets);
 
   const presetsControlsLabelHoverTabContentDisplay = [
     "Presets Controls",
@@ -282,7 +279,7 @@ export default function PresetsControls() {
                 label="Clock Only"
               >
                 {sortedPresets["Clock Only"].map((preset) => (
-                  <SettingsLoadSaveControl
+                  <SimulationPresetLoadSaveControl
                     key={preset.name}
                     label={preset.name}
                     labelHoverTabContentDisplay={[
@@ -303,7 +300,7 @@ export default function PresetsControls() {
                 label="Simulation Only"
               >
                 {sortedPresets["Simulation Only"].map((preset) => (
-                  <SettingsPresetLoadSaveControl
+                  <SimulationPresetLoadSaveControl
                     key={preset.name}
                     label={preset.name}
                     labelHoverTabContentDisplay={[
@@ -324,7 +321,7 @@ export default function PresetsControls() {
                 label="Color Only"
               >
                 {sortedPresets["Color Only"].map((preset) => (
-                  <SettingsLoadSaveControl
+                  <SimulationPresetLoadSaveControl
                     key={preset.name}
                     label={preset.name}
                     labelHoverTabContentDisplay={[
@@ -345,7 +342,7 @@ export default function PresetsControls() {
                 label="Combination"
               >
                 {sortedPresets["Combination"].map((preset) => (
-                  <SettingsLoadSaveControl
+                  <SimulationPresetLoadSaveControl
                     key={preset.name}
                     label={preset.name}
                     labelHoverTabContentDisplay={[
@@ -368,7 +365,7 @@ export default function PresetsControls() {
             labelHoverTabContentDisplay={[]}
           >
             {history.map((entry) => (
-              <SettingsLoadSaveControl
+              <SimulationPresetLoadSaveControl
                 key={entry.name}
                 label={entry.name}
                 labelHoverTabContentDisplay={[

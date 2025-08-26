@@ -224,12 +224,17 @@ export type PaletteCycleTypeOption = {
   label: PaletteCycleType;
 };
 
-export type SinglePresetType = "Clock Only" | "Simulation Only" | "Color Only";
-export type MultiplePresetType = "Combination";
-export type PresetType = SinglePresetType | MultiplePresetType;
+export type SingleSimulationPresetType =
+  | "Clock Only"
+  | "Simulation Only"
+  | "Color Only";
+export type MultipleSimulationPresetType = "Combination";
+export type SimulationPresetType =
+  | SingleSimulationPresetType
+  | MultipleSimulationPresetType;
 export type LoadableSlimeStoreSettings = {
   name: string;
-  presetType: PresetType;
+  presetType: SimulationPresetType;
   isBasePreset?: boolean;
   clockSettings?: LoadableClockSettings;
   simulationSettings?: LoadableSimulationSettings;
@@ -243,7 +248,10 @@ export type ToastState = {
   lastTriggeredAt: number;
 };
 
-export type SortedPresets = Record<PresetType, LoadableSlimeStoreSettings[]>;
+export type SortedSimulationPresets = Record<
+  SimulationPresetType,
+  LoadableSlimeStoreSettings[]
+>;
 
 type TexturePlaneUniformsKey = "uWindowResolution" | "uShowTexture";
 export type TexturePlaneUniforms = Record<

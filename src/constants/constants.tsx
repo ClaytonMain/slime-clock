@@ -8,13 +8,13 @@ import type {
   LoadableColorSettings,
   LoadableSimulationSettings,
   LoadableSlimeStoreSettings,
-  MultiplePresetType,
+  MultipleSimulationPresetType,
   NumericRangeRandomizationSetting,
   PaletteCycleTypeOption,
   ProceduralColorPaletteChannel,
   SimulationRandomizationPreset,
   SimulationSettings,
-  SinglePresetType,
+  SingleSimulationPresetType,
 } from "../types/types";
 
 type ControlsConfigs<T> = {
@@ -121,11 +121,12 @@ export const RANDOMIZATION_SETTINGS_AGENT_START_TYPE_OPTIONS: Record<
   {} as Record<string, { enabled: boolean; value: string; label: string }>,
 );
 
-export const DEFAULT_SIMULATION_RANDOMIZATION_SETTINGS_PRESET_NAME = "Slimy";
+export const DEFAULT_SIMULATION_RANDOMIZATION_SETTINGS_PRESET_NAME =
+  "Speedy Slime";
 export const SIMULATION_RANDOMIZATION_PRESETS: SimulationRandomizationPreset[] =
   [
     {
-      name: "Slimy",
+      name: "Speedy Slime",
       isBasePreset: true,
       settings: {
         agentStartType: {
@@ -244,6 +245,130 @@ export const SIMULATION_RANDOMIZATION_PRESETS: SimulationRandomizationPreset[] =
           flatRange: [2.0, 15.0],
           mu: 10.5,
           sigma: 1.5,
+          mode: "gaussian",
+        },
+      },
+    },
+    {
+      name: "Slow Slime",
+      isBasePreset: true,
+      settings: {
+        agentStartType: {
+          type: "optionList",
+          enabled: true,
+          options: { ...RANDOMIZATION_SETTINGS_AGENT_START_TYPE_OPTIONS },
+        },
+        agentClockAttraction: {
+          type: "numericRange",
+          enabled: true,
+          flatRange: [0.6, 0.8],
+          mu: 0.7,
+          sigma: 0.03,
+          mode: "gaussian",
+        },
+        agentClockDepositRate: {
+          type: "numericRange",
+          enabled: true,
+          flatRange: [12.0, 16.0],
+          mu: 14.0,
+          sigma: 1.0,
+          mode: "gaussian",
+        },
+        agentBackgroundDepositRate: {
+          type: "numericRange",
+          enabled: true,
+          flatRange: [4.0, 6.0],
+          mu: 5.0,
+          sigma: 0.3,
+          mode: "gaussian",
+        },
+        agentSensorDegrees: {
+          type: "numericRange",
+          enabled: true,
+          flatRange: [15, 35],
+          mu: 25,
+          sigma: 3,
+          mode: "gaussian",
+        },
+        agentRotationRate: {
+          type: "numericRange",
+          enabled: true,
+          flatRange: [1.3, 4.3],
+          mu: 2.8,
+          sigma: 0.5,
+          mode: "gaussian",
+        },
+        agentSensorOffset: {
+          type: "numericRange",
+          enabled: true,
+          flatRange: [0.4, 0.7],
+          mu: 0.55,
+          sigma: 0.05,
+          mode: "gaussian",
+        },
+        agentSensorWidth: {
+          type: "numericRange",
+          enabled: true,
+          flatRange: [0.1, 0.2],
+          mu: 0.15,
+          sigma: 0.02,
+          mode: "gaussian",
+        },
+        agentStepSize: {
+          type: "numericRange",
+          enabled: true,
+          flatRange: [0.4, 0.7],
+          mu: 0.55,
+          sigma: 0.05,
+          mode: "gaussian",
+        },
+        agentCrowdAvoidance: {
+          type: "numericRange",
+          enabled: true,
+          flatRange: [0.2, 0.5],
+          mu: 0.35,
+          sigma: 0.1,
+          mode: "gaussian",
+        },
+        agentWanderStrength: {
+          type: "numericRange",
+          enabled: true,
+          flatRange: [3.0, 7.0],
+          mu: 5.0,
+          sigma: 1.0,
+          mode: "gaussian",
+        },
+
+        trailClockDecayRate: {
+          type: "numericRange",
+          enabled: true,
+          flatRange: [0.35, 0.55],
+          mu: 0.45,
+          sigma: 0.06,
+          mode: "gaussian",
+        },
+        trailClockDiffuseRate: {
+          type: "numericRange",
+          enabled: true,
+          flatRange: [7.0, 10.0],
+          mu: 8.5,
+          sigma: 0.7,
+          mode: "gaussian",
+        },
+        trailBackgroundDecayRate: {
+          type: "numericRange",
+          enabled: true,
+          flatRange: [0.35, 0.55],
+          mu: 0.45,
+          sigma: 0.06,
+          mode: "gaussian",
+        },
+        trailBackgroundDiffuseRate: {
+          type: "numericRange",
+          enabled: true,
+          flatRange: [7.0, 10.0],
+          mu: 8.5,
+          sigma: 0.7,
           mode: "gaussian",
         },
       },
@@ -864,12 +989,14 @@ export const DEFAULT_PRESETS: LoadableSlimeStoreSettings[] = [
     },
   },
 ];
-export const SINGLE_PRESET_TYPES: SinglePresetType[] = [
+export const SINGLE_PRESET_TYPES: SingleSimulationPresetType[] = [
   "Clock Only",
   "Simulation Only",
   "Color Only",
 ];
-export const MULTIPLE_PRESET_TYPES: MultiplePresetType[] = ["Combination"];
+export const MULTIPLE_PRESET_TYPES: MultipleSimulationPresetType[] = [
+  "Combination",
+];
 
 // {
 //   "clockSettings": {
@@ -1006,5 +1133,72 @@ export const MULTIPLE_PRESET_TYPES: MultiplePresetType[] = ["Combination"];
 //     "paletteCycleSpeed": 0.54,
 //     "paletteCycleScale": 0.1,
 //     "paletteCycleType": 1
+//   }
+// }
+
+// {
+//   "clockSettings": {
+//     "show": true,
+//     "size": 22,
+//     "digitLayout": "vertical",
+//     "hourFormat": "24h",
+//     "digitStyle": "roboto",
+//     "padHours": true,
+//     "showClockShadow": true,
+//     "clockShadowOpacity": 0.09,
+//     "clockShadowColor": "#6f6f6f"
+//   },
+//   "simulationSettings": {
+//     "speed": 2.7,
+//     "boundaryBehavior": 0,
+//     "agentDensity": 0.25,
+//     "agentStartType": -1,
+//     "agentClockAttraction": 0.68,
+//     "agentClockDepositRate": 12.3,
+//     "agentBackgroundDepositRate": 5.1,
+//     "agentSensorDegrees": 22,
+//     "agentRotationRate": 2.3,
+//     "agentSensorOffset": 0.51,
+//     "agentSensorWidth": 0.15,
+//     "agentStepSize": 0.53,
+//     "agentCrowdAvoidance": 0.46,
+//     "agentWanderStrength": 5.3,
+//     "trailClockDecayRate": 0.48,
+//     "trailClockDiffuseRate": 7.8,
+//     "trailBackgroundDecayRate": 0.44,
+//     "trailBackgroundDiffuseRate": 7.5
+//   },
+//   "colorSettings": {
+//     "backgroundColor": "#000000",
+//     "slimeColorMode": "Procedural",
+//     "proceduralColorPalette": {
+//       "r": {
+//         "yOffset": 0.57,
+//         "amplitude": 0.59,
+//         "frequency": 1.28,
+//         "phase": 1.72
+//       },
+//       "g": {
+//         "yOffset": 0.82,
+//         "amplitude": 0.57,
+//         "frequency": 0.9,
+//         "phase": 2.96
+//       },
+//       "b": {
+//         "yOffset": 0.62,
+//         "amplitude": 0.71,
+//         "frequency": 0.99,
+//         "phase": 2
+//       }
+//     },
+//     "intensitySmoothing": 0.94,
+//     "agentDirectionSmoothing": 0.93,
+//     "agentDirectionColorOffset": 0.12,
+//     "clockColorOffset": 0.07,
+//     "xColorOffset": -0.35,
+//     "yColorOffset": 0.8,
+//     "paletteCycleSpeed": 0.54,
+//     "paletteCycleScale": 0.06,
+//     "paletteCycleType": 0
 //   }
 // }

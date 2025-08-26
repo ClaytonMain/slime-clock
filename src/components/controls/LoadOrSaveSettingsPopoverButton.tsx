@@ -3,7 +3,10 @@ import { motion } from "motion/react";
 import { Popover } from "radix-ui";
 import { useEffect, useState, type ChangeEvent } from "react";
 import useSlimeStore from "../../stores/useSlimeStore";
-import type { LoadableSlimeStoreSettings, PresetType } from "../../types/types";
+import type {
+  LoadableSlimeStoreSettings,
+  SimulationPresetType,
+} from "../../types/types";
 
 export default function LoadOrSaveSettingsPopoverButton({
   settings,
@@ -66,14 +69,14 @@ export default function LoadOrSaveSettingsPopoverButton({
   }
 
   function saveSettings() {
-    let presets = [...useSlimeStore.getState().presets];
+    let simulationPresets = [...useSlimeStore.getState().simulationPresets];
 
-    if (presets.length >= 100) {
+    if (simulationPresets.length >= 999) {
       setDisplayMessage("Unable to save: too many custom presets!");
       return;
     }
 
-    let presetType: PresetType = "Combination";
+    let presetType: SimulationPresetType = "Combination";
     if (Object.values(includeSettings).filter(Boolean).length === 1) {
       if (includeSettings.clockSettings) {
         presetType = "Clock Only";
@@ -85,7 +88,7 @@ export default function LoadOrSaveSettingsPopoverButton({
     }
 
     const trimmedPresetName = presetName.trim();
-    const duplicate = presets.some((preset) => {
+    const duplicate = simulationPresets.some((preset) => {
       if (
         trimmedPresetName === preset.name &&
         preset.presetType === presetType
@@ -113,13 +116,13 @@ export default function LoadOrSaveSettingsPopoverButton({
         : undefined,
     };
 
-    presets = [...presets, processedPreset];
+    simulationPresets = [...simulationPresets, processedPreset];
 
-    presets.sort((a, b) => a.name.localeCompare(b.name));
+    simulationPresets.sort((a, b) => a.name.localeCompare(b.name));
 
     useSlimeStore.setState(
       produce((state) => {
-        state.presets = presets;
+        state.simulationPresets = simulationPresets;
       }),
     );
     setDisplayMessage(null);

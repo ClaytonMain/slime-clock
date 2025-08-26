@@ -9,7 +9,7 @@ import type {
 import CodeBlock from "../code-block/CodeBlock";
 import AccordionControlsItem from "./AccordionControlsItem";
 import AccordionControlsWrapper from "./AccordionControlsWrapper";
-import SettingsPresetLoadSaveControl from "./SettingsPresetLoadSaveControl";
+import SimulationPresetLoadSaveControl from "./SimulationPresetLoadSaveControl";
 import SlimeStoreColorPickerControl from "./SlimeStoreColorPickerControl";
 import SlimeStoreSelectControl from "./SlimeStoreSelectControl";
 import SlimeStoreSliderControl from "./SlimeStoreSliderControl";
@@ -56,7 +56,9 @@ const clockFormatOptions: ClockHourFormatOption[] = [
 ] as const;
 
 export default function ClockControls() {
-  const sortedPresets = useSlimeStore((state) => state.sortedPresets);
+  const sortedSimulationPresets = useSlimeStore(
+    (state) => state.sortedSimulationPresets,
+  );
   const selectedTab = useSlimeStore((state) => state.controlsState.selectedTab);
 
   const clockControlsLabelHoverTabContentDisplay = [
@@ -90,9 +92,9 @@ export default function ClockControls() {
             label="Presets"
             labelHoverTabContentDisplay={["Presets"]}
           >
-            {sortedPresets["Clock Only"] &&
-              sortedPresets["Clock Only"].map((preset) => (
-                <SettingsPresetLoadSaveControl
+            {sortedSimulationPresets["Clock Only"] &&
+              sortedSimulationPresets["Clock Only"].map((preset) => (
+                <SimulationPresetLoadSaveControl
                   key={preset.name}
                   label={preset.name}
                   labelHoverTabContentDisplay={[
@@ -105,9 +107,9 @@ export default function ClockControls() {
                   controlType="presets"
                 />
               ))}
-            {sortedPresets["Combination"] &&
-              sortedPresets["Combination"].map((preset) => (
-                <SettingsPresetLoadSaveControl
+            {sortedSimulationPresets["Combination"] &&
+              sortedSimulationPresets["Combination"].map((preset) => (
+                <SimulationPresetLoadSaveControl
                   key={preset.name}
                   label={preset.name}
                   labelHoverTabContentDisplay={[

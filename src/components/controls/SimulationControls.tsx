@@ -13,7 +13,7 @@ import AccordionControlsItem from "./AccordionControlsItem";
 import AccordionControlsWrapper from "./AccordionControlsWrapper";
 import ButtonControlGroup from "./ButtonControlGroup.tsx";
 import HeightScaledPixelValueDisplay from "./HeightScaledPixelValueDisplay";
-import SettingsLoadSaveControl from "./SettingsPresetLoadSaveControl.tsx";
+import SettingsLoadSaveControl from "./SimulationPresetLoadSaveControl.tsx";
 import SlimeStoreSelectControl from "./SlimeStoreSelectControl";
 import SlimeStoreSliderControl from "./SlimeStoreSliderControl";
 import SlimeStoreSwitchControl from "./SlimeStoreSwitchControl";
@@ -21,7 +21,9 @@ import TabContentContainer from "./TabContentContainer";
 import TabContentScrollArea from "./TabContentScrollArea";
 
 export default function SimulationControls() {
-  const sortedPresets = useSlimeStore((state) => state.sortedPresets);
+  const sortedSimulationPresets = useSlimeStore(
+    (state) => state.sortedSimulationPresets,
+  );
   const selectedTab = useSlimeStore((state) => state.controlsState.selectedTab);
 
   const simulationControlsLabelHoverTabContentDisplay = [
@@ -180,8 +182,8 @@ export default function SimulationControls() {
             label="Presets"
             labelHoverTabContentDisplay={["Presets"]}
           >
-            {sortedPresets["Simulation Only"] &&
-              sortedPresets["Simulation Only"].map((preset) => (
+            {sortedSimulationPresets["Simulation Only"] &&
+              sortedSimulationPresets["Simulation Only"].map((preset) => (
                 <SettingsLoadSaveControl
                   key={preset.name}
                   label={preset.name}
@@ -195,8 +197,8 @@ export default function SimulationControls() {
                   controlType="presets"
                 />
               ))}
-            {sortedPresets["Combination"] &&
-              sortedPresets["Combination"].map((preset) => (
+            {sortedSimulationPresets["Combination"] &&
+              sortedSimulationPresets["Combination"].map((preset) => (
                 <SettingsLoadSaveControl
                   key={preset.name}
                   label={preset.name}

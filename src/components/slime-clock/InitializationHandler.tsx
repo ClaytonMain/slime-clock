@@ -58,8 +58,8 @@ function initializeSimulationSettings() {
   debugConsoleLogger(
     "initializeSimulationSettings > settings not set previously, initializing with default preset",
   );
-  const presets = useSlimeStore.getState().presets;
-  const defaultLoadableSimulationSettings = presets.filter(
+  const simulationPresets = useSlimeStore.getState().simulationPresets;
+  const defaultLoadableSimulationSettings = simulationPresets.filter(
     (preset) => preset.name === DEFAULT_SIMULATION_SETTINGS_PRESET_NAME,
   )[0].simulationSettings;
   if (!defaultLoadableSimulationSettings) {
@@ -140,8 +140,8 @@ function initializeColorSettings() {
   debugConsoleLogger(
     "initializeColorSettings > settings not set previously, initializing with default preset",
   );
-  const presets = useSlimeStore.getState().presets;
-  const defaultLoadableColorSettings = presets.filter(
+  const simulationPresets = useSlimeStore.getState().simulationPresets;
+  const defaultLoadableColorSettings = simulationPresets.filter(
     (preset) => preset.name === DEFAULT_COLOR_SETTINGS_PRESET_NAME,
   )[0].colorSettings;
   if (!defaultLoadableColorSettings) {

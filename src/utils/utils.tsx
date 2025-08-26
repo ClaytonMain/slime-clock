@@ -4,8 +4,8 @@ import useSlimeStore from "../stores/useSlimeStore";
 import type {
   DisplayTextureAspectRatio,
   LoadableSlimeStoreSettings,
-  PresetType,
-  SortedPresets,
+  SimulationPresetType,
+  SortedSimulationPresets,
 } from "../types/types";
 
 export function roundToFixed(value: number, decimals: number): number {
@@ -56,11 +56,11 @@ export function generateRandomColor() {
   return "#" + Math.floor(Math.random() * 16777215).toString(16);
 }
 
-export function getSortedPresets(
-  presets: LoadableSlimeStoreSettings[],
-  presetTypes?: PresetType[],
-): SortedPresets {
-  const sortedPresets = [...presets].sort((a, b) => {
+export function getSortedSimulationPresets(
+  simulationPresets: LoadableSlimeStoreSettings[],
+  presetTypes?: SimulationPresetType[],
+): SortedSimulationPresets {
+  const sortedPresets = [...simulationPresets].sort((a, b) => {
     return a.name.localeCompare(b.name);
   });
   return sortedPresets.reduce((acc, preset) => {
@@ -72,7 +72,7 @@ export function getSortedPresets(
     }
     acc[preset.presetType].push(preset);
     return acc;
-  }, {} as SortedPresets);
+  }, {} as SortedSimulationPresets);
 }
 
 function getAgentData(
