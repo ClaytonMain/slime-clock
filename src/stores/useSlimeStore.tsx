@@ -8,30 +8,33 @@ import {
 } from "zustand/middleware";
 import {
   DEFAULT_CLOCK_SETTINGS,
-  DEFAULT_COLOR_RANDOMIZATION_SETTINGS,
+  DEFAULT_COLOR_RANDOMIZATION_SETTINGS_PRESET_NAME,
   DEFAULT_COLOR_SETTINGS,
   DEFAULT_PRESETS,
   DEFAULT_SIMULATION_RANDOMIZATION_SETTINGS_PRESET_NAME,
   DEFAULT_SIMULATION_SETTINGS,
-  SIMULATION_RANDOMIZATION_PRESETS,
+  RANDOMIZATION_PRESETS,
 } from "../constants/constants";
-import type {
-  AgentDataUniforms,
-  AgentPositionsUniforms,
-  ClockSettings,
-  ColorRandomizationSettings,
-  ColorSettings,
-  ControlsTabName,
-  LoadableSlimeStoreSettings,
-  SimulationRandomizationPreset,
-  SimulationRandomizationSettings,
-  SimulationSettings,
-  SlimeMoldDisplayPlaneUniforms,
-  SortedSimulationPresets,
-  TexturePlaneUniforms,
-  ToastState,
-  TrailUniforms,
+import {
+  type AgentDataUniforms,
+  type AgentPositionsUniforms,
+  type ClockSettings,
+  type ColorRandomizationPreset,
+  type ColorRandomizationSettings,
+  type ColorSettings,
+  type ControlsTabName,
+  type LoadableSlimeStoreSettings,
+  type RandomizationPreset,
+  type SimulationRandomizationPreset,
+  type SimulationRandomizationSettings,
+  type SimulationSettings,
+  type SlimeMoldDisplayPlaneUniforms,
+  type SortedSimulationPresets,
+  type TexturePlaneUniforms,
+  type ToastState,
+  type TrailUniforms,
 } from "../types/types";
+import * as UTILS from "../utils/utils";
 
 interface ControlsState {
   selectedTab: ControlsTabName;
@@ -112,10 +115,14 @@ interface SlimeStore {
     allowProceduralColorPaletteRandomization: boolean;
     allowBackgroundColorRandomization: boolean;
     simulation: SimulationRandomizationSettings;
+    simulationAutoRandomizationMode:
+      | "useRandomPreset"
+      | "useCurrentRandSettings";
     color: ColorRandomizationSettings;
+    colorAutoRandomizationMode: "useRandomPreset" | "useCurrentRandSettings";
   };
 
-  simulationRandomizationPresets: SimulationRandomizationPreset[];
+  randomizationPresets: RandomizationPreset[];
 
   controlsState: ControlsState;
   history: LoadableSlimeStoreSettings[];
@@ -359,15 +366,23 @@ const useSlimeStore = create<SlimeStore>()(
           allowTrailRandomization: true,
           allowProceduralColorPaletteRandomization: true,
           allowBackgroundColorRandomization: true,
-          simulation: SIMULATION_RANDOMIZATION_PRESETS.filter(
-            (setting) =>
-              setting.name ===
+          simulation:
+            UTILS.getRandomizationPresetByNameAndType<SimulationRandomizationPreset>(
               DEFAULT_SIMULATION_RANDOMIZATION_SETTINGS_PRESET_NAME,
-          )![0].settings,
-          color: DEFAULT_COLOR_RANDOMIZATION_SETTINGS,
+              "simulation",
+              RANDOMIZATION_PRESETS,
+            ).settings,
+          simulationAutoRandomizationMode: "useRandomPreset",
+          color:
+            UTILS.getRandomizationPresetByNameAndType<ColorRandomizationPreset>(
+              DEFAULT_COLOR_RANDOMIZATION_SETTINGS_PRESET_NAME,
+              "color",
+              RANDOMIZATION_PRESETS,
+            ).settings,
+          colorAutoRandomizationMode: "useRandomPreset",
         },
 
-        simulationRandomizationPresets: SIMULATION_RANDOMIZATION_PRESETS,
+        randomizationPresets: RANDOMIZATION_PRESETS,
 
         controlsState: {
           selectedTab: "randomization-controls",

@@ -5,8 +5,20 @@ import { useEffect, useState, type ReactNode } from "react";
 import { LuClipboardCopy } from "react-icons/lu";
 import { PiCheck } from "react-icons/pi";
 import useSlimeStore from "../../stores/useSlimeStore";
-import type { SimulationRandomizationPreset } from "../../types/types";
+import type { RandomizationPreset } from "../../types/types";
+import SlimeStoreSwitch from "./SlimeStoreSwitch";
 import TooltipWrapper from "./TooltipWrapper";
+
+function getRandomizationPresetIndex(preset: RandomizationPreset) {
+  const presets = useSlimeStore.getState().randomizationPresets;
+  return (
+    presets.findIndex(
+      (storePreset) =>
+        storePreset.name === preset.name &&
+        storePreset.presetType === preset.presetType,
+    ) || -1
+  );
+}
 
 export default function RandomizationPresetLoadSaveControl({
   label,
@@ -15,10 +27,17 @@ export default function RandomizationPresetLoadSaveControl({
 }: {
   label?: string;
   labelHoverTabContentDisplay?: string | [string, string] | ReactNode;
-  preset: SimulationRandomizationPreset;
+  preset: RandomizationPreset;
 }) {
   const [deletePresetText, setDeletePresetText] = useState<string>("Delete");
   const [copyState, setCopyState] = useState<string>("ready");
+  const [presetIndex, setPresetIndex] = useState<number>(
+    getRandomizationPresetIndex(preset),
+  );
+
+  useEffect(() => {
+    setPresetIndex(getRandomizationPresetIndex(preset));
+  }, [preset]);
 
   function handlePointerOver() {
     if (labelHoverTabContentDisplay) {
@@ -74,11 +93,17 @@ export default function RandomizationPresetLoadSaveControl({
       setDeletePresetText("Are you sure?");
       return;
     }
-    let presets = useSlimeStore.getState().simulationRandomizationPresets;
-    presets = presets.filter((storePreset) => storePreset.name !== preset.name);
+    let presets = useSlimeStore.getState().randomizationPresets;
+    presets = presets.filter(
+      (storePreset) =>
+        !(
+          storePreset.name === preset.name &&
+          storePreset.presetType === preset.presetType
+        ),
+    );
     useSlimeStore.setState(
       produce((state) => {
-        state.simulationRandomizationPresets = presets;
+        state.randomizationPresets = presets;
       }),
     );
   }
@@ -103,6 +128,18 @@ export default function RandomizationPresetLoadSaveControl({
           paddingLeft: label ? undefined : "calc(var(--spacing) * 2)",
         }}
       >
+        <motion.div className="flex flex-col items-center justify-center bg-[#0002] p-1">
+          <Label.Root
+            className="w-full text-center text-xs"
+            htmlFor={`randomization-preset-${preset.name}-${preset.presetType}-enabled-switch`}
+          >
+            Can Load on Rand.
+          </Label.Root>
+          <SlimeStoreSwitch
+            baseId={`randomization-preset-${preset.name}-enabled-switch`}
+            storePath={["randomizationPresets", presetIndex, "enabled"]}
+          />
+        </motion.div>
         <motion.button
           className="flex cursor-pointer border border-sky-800 px-2 py-1"
           style={{ backgroundColor: "#18181b" }}

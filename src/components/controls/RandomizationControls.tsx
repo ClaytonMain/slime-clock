@@ -4,7 +4,9 @@ import useSlimeStore from "../../stores/useSlimeStore";
 import AccordionControlsItem from "./AccordionControlsItem";
 import AccordionControlsWrapper from "./AccordionControlsWrapper";
 import ButtonControlGroup from "./ButtonControlGroup";
+import ControlGroup from "./ControlGroup";
 import RandomizationPresetLoadSaveControl from "./RandomizationPresetLoadSaveControl";
+import SaveRandomizationPresetPopoverButton from "./SaveRandomizationPresetPopoverButton";
 import SlimeStoreNumericRangeRandomizationControl from "./SlimeStoreNumericRangeRandomizationControl";
 import SlimeStoreSliderControl from "./SlimeStoreSliderControl";
 import SlimeStoreSwitchControl from "./SlimeStoreSwitchControl";
@@ -14,8 +16,8 @@ import TabContentScrollArea from "./TabContentScrollArea";
 
 export default function RandomizationControls() {
   const selectedTab = useSlimeStore((state) => state.controlsState.selectedTab);
-  const simulationRandomizationPresets = useSlimeStore(
-    (state) => state.simulationRandomizationPresets,
+  const randomizationPresets = useSlimeStore(
+    (state) => state.randomizationPresets,
   );
 
   const randomizationControlsLabelHoverTabContentDisplay = [
@@ -214,6 +216,10 @@ export default function RandomizationControls() {
                 },
               ]}
             />
+            <ControlGroup justifyContent="center">
+              <SaveRandomizationPresetPopoverButton randomizationPresetType="simulation" />
+              <SaveRandomizationPresetPopoverButton randomizationPresetType="color" />
+            </ControlGroup>
           </AccordionControlsItem>
           <AccordionControlsItem
             value="simulation-randomization-setting-presets"
@@ -223,19 +229,25 @@ export default function RandomizationControls() {
               "Manage and apply presets for simulation randomization settings.",
             ]}
           >
-            {simulationRandomizationPresets.map((preset) => (
-              <RandomizationPresetLoadSaveControl
-                key={preset.name}
-                label={preset.name}
-                labelHoverTabContentDisplay={[
-                  preset.name,
-                  <pre className="px-2 py-1 text-[0.6rem] whitespace-pre-wrap">
-                    {JSON.stringify(preset, null, 1)}
-                  </pre>,
-                ]}
-                preset={preset}
-              />
-            ))}
+            <ControlGroup justifyContent="center">
+              <SaveRandomizationPresetPopoverButton randomizationPresetType="simulation" />
+            </ControlGroup>
+            {randomizationPresets.map((preset) => {
+              if (preset.presetType !== "simulation") return null;
+              return (
+                <RandomizationPresetLoadSaveControl
+                  key={preset.name}
+                  label={preset.name}
+                  labelHoverTabContentDisplay={[
+                    preset.name,
+                    <pre className="px-2 py-1 text-[0.6rem] whitespace-pre-wrap">
+                      {JSON.stringify(preset, null, 1)}
+                    </pre>,
+                  ]}
+                  preset={preset}
+                />
+              );
+            })}
           </AccordionControlsItem>
           <AccordionControlsItem
             value="agent-randomization-settings"
@@ -458,6 +470,34 @@ export default function RandomizationControls() {
                 "trailBackgroundDiffuseRate",
               ]}
             />
+          </AccordionControlsItem>
+          <AccordionControlsItem
+            value="color-randomization-setting-presets"
+            label="Color Randomization Presets"
+            labelHoverTabContentDisplay={[
+              "Color Randomization Presets",
+              "Manage and apply presets for color randomization settings.",
+            ]}
+          >
+            <ControlGroup justifyContent="center">
+              <SaveRandomizationPresetPopoverButton randomizationPresetType="color" />
+            </ControlGroup>
+            {randomizationPresets.map((preset) => {
+              if (preset.presetType !== "color") return null;
+              return (
+                <RandomizationPresetLoadSaveControl
+                  key={preset.name}
+                  label={preset.name}
+                  labelHoverTabContentDisplay={[
+                    preset.name,
+                    <pre className="px-2 py-1 text-[0.6rem] whitespace-pre-wrap">
+                      {JSON.stringify(preset, null, 1)}
+                    </pre>,
+                  ]}
+                  preset={preset}
+                />
+              );
+            })}
           </AccordionControlsItem>
           <AccordionControlsItem
             value="color-randomization-settings"

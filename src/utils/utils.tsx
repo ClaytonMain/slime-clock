@@ -1,9 +1,14 @@
 import * as THREE from "three";
-import { AGENT_START_TYPE_DROPDOWN_OPTIONS } from "../constants/constants";
+import {
+  AGENT_START_TYPE_DROPDOWN_OPTIONS,
+  DEFAULT_COLOR_RANDOMIZATION_SETTINGS_PRESET_NAME,
+  DEFAULT_SIMULATION_RANDOMIZATION_SETTINGS_PRESET_NAME,
+} from "../constants/constants";
 import useSlimeStore from "../stores/useSlimeStore";
 import type {
   DisplayTextureAspectRatio,
   LoadableSlimeStoreSettings,
+  RandomizationPreset,
   SimulationPresetType,
   SortedSimulationPresets,
 } from "../types/types";
@@ -298,4 +303,32 @@ export function getGaussRandomInControlBounds(
   const v = Math.random();
   const z = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
   return Math.max(min, Math.min(max, mu + z * sigma));
+}
+
+export function getRandomizationPresetByNameAndType<
+  T extends RandomizationPreset,
+>(
+  name: string,
+  type: "simulation" | "color",
+  presets?: RandomizationPreset[],
+): T {
+  if (!presets) {
+    presets = useSlimeStore.getState().randomizationPresets;
+  }
+  let preset = presets.find((p) => p.name === name && p.presetType === type);
+  if (!preset) {
+    const defaultName =
+      type === "simulation"
+        ? DEFAULT_SIMULATION_RANDOMIZATION_SETTINGS_PRESET_NAME
+        : DEFAULT_COLOR_RANDOMIZATION_SETTINGS_PRESET_NAME;
+    preset = presets.find(
+      (p) => p.name === defaultName && p.presetType === type,
+    );
+  }
+  if (!preset) {
+    throw new Error(
+      `Randomization preset not found: ${name} of type ${type}, and default preset also not found.`,
+    );
+  }
+  return preset as T;
 }

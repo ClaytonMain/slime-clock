@@ -4,6 +4,7 @@ import { produce } from "immer";
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import useSlimeStore from "../../stores/useSlimeStore.tsx";
+import type { SimulationRandomizationSettings } from "../../types/types.tsx";
 import SettingsHistoryListener from "../controls/SettingsHistoryListener.tsx";
 import ThreeControlDisplay from "../three-control-display/ThreeControlDisplay.tsx";
 import AgentDataMaterial from "./AgentDataMaterial.tsx";
@@ -17,6 +18,26 @@ import TrailMaterial from "./TrailMaterial.tsx";
 import UniformListeners from "./UniformListeners.tsx";
 
 extend({ AgentDataMaterial, AgentPositionsMaterial, TrailMaterial });
+
+function getAutoRandomizationSimulationRandomizationSettings() {
+  const randomizationSettings = useSlimeStore.getState().randomizationSettings;
+  let simulationRandomizationSettings = randomizationSettings.simulation;
+  if (
+    randomizationSettings.simulationAutoRandomizationMode === "useRandomPreset"
+  ) {
+    const simulationRandomizationPresets = useSlimeStore
+      .getState()
+      .randomizationPresets.filter(
+        (preset) => preset.presetType === "simulation" && preset.enabled,
+      );
+    if (simulationRandomizationPresets.length > 0) {
+      simulationRandomizationSettings = simulationRandomizationPresets[
+        Math.floor(Math.random() * simulationRandomizationPresets.length)
+      ].settings as SimulationRandomizationSettings;
+    }
+  }
+  return simulationRandomizationSettings;
+}
 
 function SlimeClockRenderer() {
   const simulationSettings = useSlimeStore((state) => state.simulationSettings);
@@ -262,6 +283,8 @@ function SlimeClockRenderer() {
             Date.now();
           state.randomizationState.backgroundColorRandomizationRequestedAt =
             Date.now();
+          state.randomizationSettings.simulation =
+            getAutoRandomizationSimulationRandomizationSettings();
         }),
       );
     }

@@ -11,7 +11,7 @@ export default function SlimeStoreSwitch({
   listen = true,
 }: {
   baseId?: string;
-  storePath: string[];
+  storePath: (string | number)[];
   onCheckedChange?: (value: boolean) => void;
   listen?: boolean;
 }) {

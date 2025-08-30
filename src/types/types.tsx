@@ -103,10 +103,13 @@ export interface SimulationRandomizationSettings {
   trailBackgroundDiffuseRate: NumericRangeRandomizationSetting;
 }
 export type SimulationRandomizationPreset = {
+  presetType: "simulation";
   name: string;
   isBasePreset?: boolean;
+  enabled: boolean;
   settings: SimulationRandomizationSettings;
 };
+
 export interface ProceduralColorPaletteChannelRandomizationSettings {
   yOffset: NumericRangeRandomizationSetting;
   amplitude: NumericRangeRandomizationSetting;
@@ -120,6 +123,17 @@ export interface ColorRandomizationSettings {
     b: ProceduralColorPaletteChannelRandomizationSettings;
   };
 }
+export type ColorRandomizationPreset = {
+  presetType: "color";
+  name: string;
+  isBasePreset?: boolean;
+  enabled: boolean;
+  settings: ColorRandomizationSettings;
+};
+
+export type RandomizationPreset =
+  | SimulationRandomizationPreset
+  | ColorRandomizationPreset;
 
 export interface ProceduralColorPaletteChannel {
   yOffset: number;
