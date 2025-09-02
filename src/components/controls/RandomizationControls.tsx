@@ -51,12 +51,8 @@ export default function RandomizationControls() {
               state.randomizationState.trailRandomizationRequestedAt =
                 Date.now();
               break;
-            case "palette":
-              state.randomizationState.proceduralColorPaletteRandomizationRequestedAt =
-                Date.now();
-              break;
-            case "background":
-              state.randomizationState.backgroundColorRandomizationRequestedAt =
+            case "color":
+              state.randomizationState.colorRandomizationRequestedAt =
                 Date.now();
               break;
           }
@@ -138,19 +134,11 @@ export default function RandomizationControls() {
                   ],
                 },
                 {
-                  label: "Color Palette",
-                  baseId: "color-palette-randomization-switch",
+                  label: "Color Settings",
+                  baseId: "color-settings-randomization-switch",
                   storePath: [
                     "randomizationSettings",
-                    "allowProceduralColorPaletteRandomization",
-                  ],
-                },
-                {
-                  label: "Background Color",
-                  baseId: "background-color-randomization-switch",
-                  storePath: [
-                    "randomizationSettings",
-                    "allowBackgroundColorRandomization",
+                    "allowColorRandomization",
                   ],
                 },
               ]}
@@ -178,12 +166,7 @@ export default function RandomizationControls() {
                   label: "Randomize All",
                   baseId: "randomize-all-button",
                   onClick: () => {
-                    updateNeededRandomizations([
-                      "agents",
-                      "trail",
-                      "palette",
-                      "background",
-                    ]);
+                    updateNeededRandomizations(["agents", "trail", "color"]);
                   },
                 },
                 {
@@ -201,17 +184,10 @@ export default function RandomizationControls() {
                   },
                 },
                 {
-                  label: "Randomize Palette",
-                  baseId: "randomize-palette-button",
+                  label: "Randomize Color Settings",
+                  baseId: "randomize-color-settings-button",
                   onClick: () => {
-                    updateNeededRandomizations(["palette"]);
-                  },
-                },
-                {
-                  label: "Randomize Background",
-                  baseId: "randomize-background-button",
-                  onClick: () => {
-                    updateNeededRandomizations(["background"]);
+                    updateNeededRandomizations(["color"]);
                   },
                 },
               ]}
@@ -509,6 +485,16 @@ export default function RandomizationControls() {
               "Controls the randomization settings for colors.",
             ]}
           >
+            <SlimeStoreSwitchControl
+              label="Enable Bg Color Rand."
+              baseId="randomization-controls-background-color-enabled-switch"
+              storePath={[
+                "randomizationSettings",
+                "color",
+                "backgroundColor",
+                "enabled",
+              ]}
+            />
             <SlimeStoreNumericRangeRandomizationControl
               label="Red Y-Offset"
               labelHoverTabContentDisplay={["Red Y-Offset"]}
@@ -640,6 +626,12 @@ export default function RandomizationControls() {
                 "b",
                 "phase",
               ]}
+            />
+            <SlimeStoreNumericRangeRandomizationControl
+              label="Intensity Smoothing"
+              labelHoverTabContentDisplay={["Intensity Smoothing"]}
+              baseId="intensity-smoothing-randomization-control"
+              randomizationSettingsStorePath={["color", "intensitySmoothing"]}
             />
           </AccordionControlsItem>
         </AccordionControlsWrapper>

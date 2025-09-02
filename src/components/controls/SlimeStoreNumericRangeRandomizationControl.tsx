@@ -4,6 +4,7 @@ import { Label } from "radix-ui";
 import * as R from "ramda";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import {
+  COLOR_CONTROLS_CONFIGS,
   PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS,
   SIMULATION_CONTROLS_CONFIGS,
 } from "../../constants/constants";
@@ -19,6 +20,7 @@ type RandomizationSettingsStorePath = [
   (
     | keyof typeof SIMULATION_CONTROLS_CONFIGS
     | keyof typeof PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS
+    | keyof typeof COLOR_CONTROLS_CONFIGS
   ),
 ];
 
@@ -48,12 +50,18 @@ export default function SlimeStoreNumericRangeRandomizationControl({
         controlName as keyof typeof SIMULATION_CONTROLS_CONFIGS
       ];
     } else if (settingType === "color") {
-      return PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS[
-        controlName as keyof typeof PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS
-      ];
+      if (randomizationSettingsStorePath.includes("proceduralColorPalette")) {
+        return PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS[
+          controlName as keyof typeof PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS
+        ];
+      } else {
+        return COLOR_CONTROLS_CONFIGS[
+          controlName as keyof typeof COLOR_CONTROLS_CONFIGS
+        ];
+      }
     }
     return null;
-  }, [controlName, settingType]);
+  }, [controlName, settingType, randomizationSettingsStorePath]);
   const randomizationModeStorePath = useMemo(
     () => ["randomizationSettings", ...randomizationSettingsStorePath, "mode"],
     [randomizationSettingsStorePath],

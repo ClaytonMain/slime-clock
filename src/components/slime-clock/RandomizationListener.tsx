@@ -1,12 +1,14 @@
 import { produce } from "immer";
 import { useEffect } from "react";
 import {
+  COLOR_CONTROLS_CONFIGS,
   PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS,
   SIMULATION_CONTROLS_CONFIGS,
 } from "../../constants/constants.tsx";
 import useSlimeStore from "../../stores/useSlimeStore.tsx";
 import type {
   ColorRandomizationSettings,
+  ColorSettings,
   NumericRangeRandomizationSetting,
   OptionListRandomizationSetting,
   ProceduralColorPaletteChannelRandomizationSettings,
@@ -125,16 +127,17 @@ export default function RandomizationListener() {
   // Procedural color palette randomization listener.
   useEffect(() => {
     if (
-      randomizationState.proceduralColorPaletteRandomizationRequestedAt <=
-      randomizationState.proceduralColorPaletteRandomizationCompletedAt
+      randomizationState.colorRandomizationRequestedAt <=
+      randomizationState.colorRandomizationCompletedAt
     )
       return;
     useSlimeStore.setState(
       produce((state) => {
-        state.randomizationState.proceduralColorPaletteRandomizationCompletedAt =
-          Date.now();
-        if (randomizationSettings.allowProceduralColorPaletteRandomization) {
+        state.randomizationState.colorRandomizationCompletedAt = Date.now();
+        if (randomizationSettings.allowColorRandomization) {
           state.colorSettings.slimeColorChangedAt = Date.now();
+
+          // Color Palette
           const paletteRandomizationSettings =
             randomizationSettings.color.proceduralColorPalette;
           Object.entries(paletteRandomizationSettings).forEach(
@@ -174,30 +177,39 @@ export default function RandomizationListener() {
               });
             },
           );
-        }
-      }),
-    );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [randomizationState.proceduralColorPaletteRandomizationRequestedAt]);
 
-  // Background color randomization listener.
-  useEffect(() => {
-    if (
-      randomizationState.backgroundColorRandomizationRequestedAt <=
-      randomizationState.backgroundColorRandomizationCompletedAt
-    )
-      return;
-    useSlimeStore.setState(
-      produce((state) => {
-        state.randomizationState.backgroundColorRandomizationCompletedAt =
-          Date.now();
-        if (randomizationSettings.allowBackgroundColorRandomization) {
-          state.colorSettings.backgroundColor = UTILS.generateRandomColor();
+          // Background Color
+          if (randomizationSettings.color.backgroundColor.enabled) {
+            state.colorSettings.backgroundColor = UTILS.generateRandomColor();
+          }
+
+          // Tweaks & offsets
+          const tweaksAndOffsetsRandomizationSettings = {
+            ...randomizationSettings.color,
+          };
+          Object.entries(tweaksAndOffsetsRandomizationSettings).forEach(
+            ([key, value]) => {
+              if (["proceduralColorPalette", "backgroundColor"].includes(key)) {
+                return;
+              }
+              const settingKey = key as keyof ColorSettings;
+              const randConfig = value as NumericRangeRandomizationSetting;
+              if (!randConfig.enabled) return;
+              if (randConfig.type === "numericRange") {
+                state.colorSettings[settingKey] = getNumericRangeRandomValue(
+                  randConfig,
+                  COLOR_CONTROLS_CONFIGS[settingKey]!.min as number,
+                  COLOR_CONTROLS_CONFIGS[settingKey]!.max as number,
+                  COLOR_CONTROLS_CONFIGS[settingKey]!.step as number,
+                );
+              }
+            },
+          );
         }
       }),
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [randomizationState.backgroundColorRandomizationRequestedAt]);
+  }, [randomizationState.colorRandomizationRequestedAt]);
 
   return null;
 }

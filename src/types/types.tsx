@@ -117,11 +117,20 @@ export interface ProceduralColorPaletteChannelRandomizationSettings {
   phase: NumericRangeRandomizationSetting;
 }
 export interface ColorRandomizationSettings {
+  backgroundColor: { type: "color"; enabled: boolean };
   proceduralColorPalette: {
     r: ProceduralColorPaletteChannelRandomizationSettings;
     g: ProceduralColorPaletteChannelRandomizationSettings;
     b: ProceduralColorPaletteChannelRandomizationSettings;
   };
+  intensitySmoothing: NumericRangeRandomizationSetting;
+  agentDirectionSmoothing: NumericRangeRandomizationSetting;
+  agentDirectionColorOffset: NumericRangeRandomizationSetting;
+  clockColorOffset: NumericRangeRandomizationSetting;
+  xColorOffset: NumericRangeRandomizationSetting;
+  yColorOffset: NumericRangeRandomizationSetting;
+  paletteCycleSpeed: NumericRangeRandomizationSetting;
+  paletteCycleScale: NumericRangeRandomizationSetting;
 }
 export type ColorRandomizationPreset = {
   presetType: "color";

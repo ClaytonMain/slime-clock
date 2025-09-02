@@ -100,10 +100,8 @@ interface SlimeStore {
     agentRandomizationCompletedAt: number;
     trailRandomizationRequestedAt: number;
     trailRandomizationCompletedAt: number;
-    proceduralColorPaletteRandomizationRequestedAt: number;
-    proceduralColorPaletteRandomizationCompletedAt: number;
-    backgroundColorRandomizationRequestedAt: number;
-    backgroundColorRandomizationCompletedAt: number;
+    colorRandomizationRequestedAt: number;
+    colorRandomizationCompletedAt: number;
   };
   randomizationSettings: {
     autoRandomizationEnabled: boolean;
@@ -112,8 +110,7 @@ interface SlimeStore {
     autoRestartInterval: number;
     allowAgentRandomization: boolean;
     allowTrailRandomization: boolean;
-    allowProceduralColorPaletteRandomization: boolean;
-    allowBackgroundColorRandomization: boolean;
+    allowColorRandomization: boolean;
     simulation: SimulationRandomizationSettings;
     simulationAutoRandomizationMode:
       | "useRandomPreset"
@@ -352,10 +349,8 @@ const useSlimeStore = create<SlimeStore>()(
           agentRandomizationCompletedAt: 0,
           trailRandomizationRequestedAt: 0,
           trailRandomizationCompletedAt: 0,
-          proceduralColorPaletteRandomizationRequestedAt: 0,
-          proceduralColorPaletteRandomizationCompletedAt: 0,
-          backgroundColorRandomizationRequestedAt: 0,
-          backgroundColorRandomizationCompletedAt: 0,
+          colorRandomizationRequestedAt: 0,
+          colorRandomizationCompletedAt: 0,
         },
         randomizationSettings: {
           autoRandomizationEnabled: true,
@@ -364,8 +359,7 @@ const useSlimeStore = create<SlimeStore>()(
           autoRestartInterval: 15,
           allowAgentRandomization: true,
           allowTrailRandomization: true,
-          allowProceduralColorPaletteRandomization: true,
-          allowBackgroundColorRandomization: true,
+          allowColorRandomization: true,
           simulation:
             UTILS.getRandomizationPresetByNameAndType<SimulationRandomizationPreset>(
               DEFAULT_SIMULATION_RANDOMIZATION_SETTINGS_PRESET_NAME,

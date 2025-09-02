@@ -162,10 +162,75 @@ const DEFAULT_PROCEDURAL_COLOR_PALETTE_RANDOMIZATION_SETTINGS: {
 };
 export const DEFAULT_COLOR_RANDOMIZATION_SETTINGS: ColorRandomizationSettings =
   {
+    backgroundColor: { type: "color", enabled: true },
     proceduralColorPalette: {
       r: DEFAULT_PROCEDURAL_COLOR_PALETTE_RANDOMIZATION_SETTINGS,
       g: DEFAULT_PROCEDURAL_COLOR_PALETTE_RANDOMIZATION_SETTINGS,
       b: DEFAULT_PROCEDURAL_COLOR_PALETTE_RANDOMIZATION_SETTINGS,
+    },
+    intensitySmoothing: {
+      type: "numericRange",
+      enabled: false,
+      flatRange: [0.4, 0.6],
+      mu: 0.5,
+      sigma: 0.03,
+      mode: "gaussian",
+    },
+    agentDirectionSmoothing: {
+      type: "numericRange",
+      enabled: false,
+      flatRange: [0.4, 0.6],
+      mu: 0.5,
+      sigma: 0.03,
+      mode: "gaussian",
+    },
+    agentDirectionColorOffset: {
+      type: "numericRange",
+      enabled: true,
+      flatRange: [-0.2, 0.2],
+      mu: 0.0,
+      sigma: 0.1,
+      mode: "gaussian",
+    },
+    clockColorOffset: {
+      type: "numericRange",
+      enabled: false,
+      flatRange: [0.05, 0.25],
+      mu: 0.15,
+      sigma: 0.03,
+      mode: "gaussian",
+    },
+    xColorOffset: {
+      type: "numericRange",
+      enabled: true,
+      flatRange: [-0.5, 0.5],
+      mu: 0.0,
+      sigma: 0.9,
+      mode: "gaussian",
+    },
+    yColorOffset: {
+      type: "numericRange",
+      enabled: true,
+      flatRange: [-0.5, 0.5],
+      mu: 0.0,
+      sigma: 0.9,
+      mode: "gaussian",
+    },
+    paletteCycleSpeed: {
+      type: "numericRange",
+      enabled: true,
+      flatRange: [0.2, 0.8],
+      mu: 0.5,
+      sigma: 0.15,
+      mode: "gaussian",
+    },
+    paletteCycleScale: {
+      type: "numericRange",
+      enabled: false,
+      flatRange: [0.05, 0.25],
+      mu: 0.15,
+      sigma: 0.03,
+      mode: "gaussian",
     },
   };
 

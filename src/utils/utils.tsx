@@ -10,6 +10,7 @@ import type {
   LoadableSlimeStoreSettings,
   RandomizationPreset,
   SimulationPresetType,
+  SimulationRandomizationSettings,
   SortedSimulationPresets,
 } from "../types/types";
 
@@ -331,4 +332,24 @@ export function getRandomizationPresetByNameAndType<
     );
   }
   return preset as T;
+}
+
+export function getAutoRandomizationSimulationRandomizationSettings() {
+  const randomizationSettings = useSlimeStore.getState().randomizationSettings;
+  let simulationRandomizationSettings = randomizationSettings.simulation;
+  if (
+    randomizationSettings.simulationAutoRandomizationMode === "useRandomPreset"
+  ) {
+    const simulationRandomizationPresets = useSlimeStore
+      .getState()
+      .randomizationPresets.filter(
+        (preset) => preset.presetType === "simulation" && preset.enabled,
+      );
+    if (simulationRandomizationPresets.length > 0) {
+      simulationRandomizationSettings = simulationRandomizationPresets[
+        Math.floor(Math.random() * simulationRandomizationPresets.length)
+      ].settings as SimulationRandomizationSettings;
+    }
+  }
+  return simulationRandomizationSettings;
 }

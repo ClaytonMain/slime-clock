@@ -31,11 +31,8 @@ export default function SlimeClockScene() {
       useSlimeStore.setState(
         produce((state) => {
           state.randomizationState.agentRandomizationRequestedAt = Date.now();
-          state.randomizationState.backgroundColorRandomizationRequestedAt =
-            Date.now();
-          state.randomizationState.proceduralColorPaletteRandomizationRequestedAt =
-            Date.now();
           state.randomizationState.trailRandomizationRequestedAt = Date.now();
+          state.randomizationState.colorRandomizationRequestedAt = Date.now();
         }),
       );
     }

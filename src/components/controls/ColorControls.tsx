@@ -81,44 +81,13 @@ export default function ColorControls() {
               ]}
               buttonConfigs={[
                 {
-                  label: "Randomize All",
-                  baseId: "quick-randomization-button",
+                  label: "Randomize Color Settings",
+                  baseId:
+                    "color-controls-quick-rand-rand-color-settings-button",
                   onClick: () => {
                     useSlimeStore.setState(
                       produce((state) => {
-                        state.randomizationState.proceduralColorPaletteRandomizationRequestedAt =
-                          Date.now();
-                        state.randomizationState.backgroundColorRandomizationRequestedAt =
-                          Date.now();
-                        state.controlsState.displayAreaContentName =
-                          "procedural-color-palette";
-                        state.controlsState.displayAreaContentType = "three";
-                        state.controlsState.displayAreaHtmlContent = null;
-                        state.controlsState.displayAreaContentUpdatedAt =
-                          Date.now();
-                      }),
-                    );
-                  },
-                },
-                {
-                  label: "Randomize Background Color",
-                  baseId: "randomize-background-color-button-01",
-                  onClick: () => {
-                    useSlimeStore.setState(
-                      produce((state) => {
-                        state.randomizationState.backgroundColorRandomizationRequestedAt =
-                          Date.now();
-                      }),
-                    );
-                  },
-                },
-                {
-                  label: "Randomize Color Palette",
-                  baseId: "randomize-procedural-color-palette-button-01",
-                  onClick: () => {
-                    useSlimeStore.setState(
-                      produce((state) => {
-                        state.randomizationState.proceduralColorPaletteRandomizationRequestedAt =
+                        state.randomizationState.colorRandomizationRequestedAt =
                           Date.now();
                         state.controlsState.displayAreaContentName =
                           "procedural-color-palette";
@@ -214,7 +183,7 @@ export default function ColorControls() {
                   onClick: () => {
                     useSlimeStore.setState(
                       produce((state) => {
-                        state.randomizationState.proceduralColorPaletteRandomizationRequestedAt =
+                        state.randomizationState.colorRandomizationRequestedAt =
                           Date.now();
                         state.controlsState.displayAreaContentName =
                           "procedural-color-palette";

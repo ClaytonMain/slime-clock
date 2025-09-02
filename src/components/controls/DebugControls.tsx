@@ -4,6 +4,7 @@ import useSlimeStore from "../../stores/useSlimeStore";
 import AccordionControlsItem from "./AccordionControlsItem";
 import AccordionControlsWrapper from "./AccordionControlsWrapper";
 import ButtonControlGroup from "./ButtonControlGroup";
+import RatingsAndCategorizationControl from "./RatingsAndCategorizationControl";
 import SlimeStoreSwitchControl from "./SlimeStoreSwitchControl";
 import TabContentContainer from "./TabContentContainer";
 import TabContentScrollArea from "./TabContentScrollArea";
@@ -41,8 +42,14 @@ export default function DebugControls() {
         <AccordionControlsWrapper
           accordionId="debug-controls-accordion"
           type="multiple"
-          defaultValue={["debug-settings"]}
+          defaultValue={["ratings-and-categorization", "debug-settings"]}
         >
+          <AccordionControlsItem
+            value="ratings-and-categorization"
+            label="Ratings & Categorization"
+          >
+            <RatingsAndCategorizationControl />
+          </AccordionControlsItem>
           <AccordionControlsItem
             value="debug-settings"
             label="Debug Settings"
