@@ -27,7 +27,7 @@ export default function ToastProvider() {
     if (!open) return;
     const timeoutId = setTimeout(() => {
       setOpen(false);
-    }, 2000);
+    }, 4000);
     return () => clearTimeout(timeoutId);
   }, [open]);
 

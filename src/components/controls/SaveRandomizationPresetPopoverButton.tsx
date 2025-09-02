@@ -58,6 +58,7 @@ export default function SaveRandomizationPresetPopoverButton({
     const processedPreset: RandomizationPreset = {
       presetType: randomizationPresetType,
       name: trimmedPresetName,
+      enabled: true,
       settings: presetTypeRandomizationSettings,
     };
 

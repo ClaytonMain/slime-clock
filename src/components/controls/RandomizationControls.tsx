@@ -232,11 +232,12 @@ export default function RandomizationControls() {
             <ControlGroup justifyContent="center">
               <SaveRandomizationPresetPopoverButton randomizationPresetType="simulation" />
             </ControlGroup>
-            {randomizationPresets.map((preset) => {
+            {randomizationPresets.map((preset, index) => {
               if (preset.presetType !== "simulation") return null;
               return (
                 <RandomizationPresetLoadSaveControl
                   key={preset.name}
+                  index={index}
                   label={preset.name}
                   labelHoverTabContentDisplay={[
                     preset.name,
@@ -482,12 +483,13 @@ export default function RandomizationControls() {
             <ControlGroup justifyContent="center">
               <SaveRandomizationPresetPopoverButton randomizationPresetType="color" />
             </ControlGroup>
-            {randomizationPresets.map((preset) => {
+            {randomizationPresets.map((preset, index) => {
               if (preset.presetType !== "color") return null;
               return (
                 <RandomizationPresetLoadSaveControl
                   key={preset.name}
                   label={preset.name}
+                  index={index}
                   labelHoverTabContentDisplay={[
                     preset.name,
                     <pre className="px-2 py-1 text-[0.6rem] whitespace-pre-wrap">

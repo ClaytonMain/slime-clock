@@ -1,43 +1,72 @@
+import { Cross2Icon } from "@radix-ui/react-icons";
 import { produce } from "immer";
 import { motion } from "motion/react";
 import { Label } from "radix-ui";
+import * as R from "ramda";
 import { useEffect, useState, type ReactNode } from "react";
 import { LuClipboardCopy } from "react-icons/lu";
-import { PiCheck } from "react-icons/pi";
+import { PiCheck, PiDiceFive } from "react-icons/pi";
 import useSlimeStore from "../../stores/useSlimeStore";
 import type { RandomizationPreset } from "../../types/types";
-import SlimeStoreSwitch from "./SlimeStoreSwitch";
 import TooltipWrapper from "./TooltipWrapper";
-
-function getRandomizationPresetIndex(preset: RandomizationPreset) {
-  const presets = useSlimeStore.getState().randomizationPresets;
-  return (
-    presets.findIndex(
-      (storePreset) =>
-        storePreset.name === preset.name &&
-        storePreset.presetType === preset.presetType,
-    ) || -1
-  );
-}
 
 export default function RandomizationPresetLoadSaveControl({
   label,
   labelHoverTabContentDisplay,
   preset,
+  index,
 }: {
   label?: string;
   labelHoverTabContentDisplay?: string | [string, string] | ReactNode;
   preset: RandomizationPreset;
+  index: number;
 }) {
   const [deletePresetText, setDeletePresetText] = useState<string>("Delete");
   const [copyState, setCopyState] = useState<string>("ready");
-  const [presetIndex, setPresetIndex] = useState<number>(
-    getRandomizationPresetIndex(preset),
+  const [canLoadOnAutoRand, setCanLoadOnAutoRand] = useState<boolean>(
+    R.view(
+      R.lensPath(["randomizationPresets", index, "enabled"]),
+      useSlimeStore.getState(),
+    ),
   );
 
   useEffect(() => {
-    setPresetIndex(getRandomizationPresetIndex(preset));
-  }, [preset]);
+    setCanLoadOnAutoRand(
+      R.view(
+        R.lensPath(["randomizationPresets", index, "enabled"]),
+        useSlimeStore.getState(),
+      ),
+    );
+  }, [index]);
+
+  useEffect(() => {
+    const unsub = useSlimeStore.subscribe(
+      (state) =>
+        R.view(R.lensPath(["randomizationPresets", index, "enabled"]), state),
+      (newValue) => {
+        setCanLoadOnAutoRand(newValue);
+      },
+    );
+    return () => unsub();
+  }, [index]);
+
+  function handleCanLoadOnAutoRandChange(newValue: boolean) {
+    useSlimeStore.setState(
+      R.over(
+        R.lensPath(["randomizationPresets", index, "enabled"]),
+        () => newValue,
+      ),
+    );
+    useSlimeStore.setState(
+      produce((state) => {
+        state.toast.title = "Load on Auto-Randomization";
+        state.toast.description = `Preset "${preset.name}" ${newValue ? "now" : "no longer"} has a chance to load during auto-randomization.`;
+        state.toast.type = "info";
+        state.toast.lastTriggeredAt = Date.now();
+      }),
+    );
+    setCanLoadOnAutoRand(newValue);
+  }
 
   function handlePointerOver() {
     if (labelHoverTabContentDisplay) {
@@ -128,17 +157,22 @@ export default function RandomizationPresetLoadSaveControl({
           paddingLeft: label ? undefined : "calc(var(--spacing) * 2)",
         }}
       >
-        <motion.div className="flex flex-col items-center justify-center bg-[#0002] p-1">
-          <Label.Root
-            className="w-full text-center text-xs"
-            htmlFor={`randomization-preset-${preset.name}-${preset.presetType}-enabled-switch`}
+        <motion.div
+          className="flex h-7 w-7 cursor-pointer flex-col items-center justify-center border border-sky-800 p-1"
+          onClick={() => handleCanLoadOnAutoRandChange(!canLoadOnAutoRand)}
+          style={{ backgroundColor: "#18181b" }}
+          whileHover={{ backgroundColor: "#27272a" }}
+        >
+          <motion.div
+            className="relative"
+            whileTap={{ scale: 0.95 }}
+            transition={{ duration: 0.05 }}
           >
-            Can Load on Rand.
-          </Label.Root>
-          <SlimeStoreSwitch
-            baseId={`randomization-preset-${preset.name}-enabled-switch`}
-            storePath={["randomizationPresets", presetIndex, "enabled"]}
-          />
+            <PiDiceFive className="absolute top-1/2 left-1/2 h-6 w-6 -translate-x-1/2 -translate-y-1/2" />
+            {!canLoadOnAutoRand && (
+              <Cross2Icon className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 scale-[2.1] stroke-rose-600 text-rose-600" />
+            )}
+          </motion.div>
         </motion.div>
         <motion.button
           className="flex cursor-pointer border border-sky-800 px-2 py-1"
