@@ -7,7 +7,7 @@ interface RatingsStore {
     timestamp: number;
     simulationSettings: SimulationSettings;
     overallRating: number;
-    doesItFeelSlimy: boolean;
+    sliminess: number;
     clockLegibility: number;
     fuzziness: number;
     agentCohesion: number;
@@ -17,6 +17,7 @@ interface RatingsStore {
     clusterSize: number;
     clusterDistance: number;
     griddiness: number;
+    splotchiness: number;
   }[];
 }
 

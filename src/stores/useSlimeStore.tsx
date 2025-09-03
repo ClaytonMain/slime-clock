@@ -354,9 +354,9 @@ const useSlimeStore = create<SlimeStore>()(
         },
         randomizationSettings: {
           autoRandomizationEnabled: true,
-          autoRandomizationInterval: 1,
+          autoRandomizationInterval: 3,
           autoRestartEnabled: true,
-          autoRestartInterval: 15,
+          autoRestartInterval: 3,
           allowAgentRandomization: true,
           allowTrailRandomization: true,
           allowColorRandomization: true,

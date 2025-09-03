@@ -26,10 +26,10 @@ export const DEFAULT_CLOCK_SETTINGS: ClockSettings = {
   size: 50,
   digitLayout: "not set",
   hourFormat: "24h",
-  digitStyle: "14segment",
+  digitStyle: "roboto",
   padHours: true,
   showClockShadow: true,
-  clockShadowOpacity: 0.25,
+  clockShadowOpacity: 0.1,
   clockShadowColor: "#6f6f6f",
 };
 export const CLOCK_CONTROLS_CONFIGS: ControlsConfigs<ClockSettings> = {
