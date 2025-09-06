@@ -192,7 +192,7 @@ export default function RandomizationControls() {
                 },
               ]}
             />
-            <ControlGroup justifyContent="center">
+            <ControlGroup label="Quick Save">
               <SaveRandomizationPresetPopoverButton randomizationPresetType="simulation" />
               <SaveRandomizationPresetPopoverButton randomizationPresetType="color" />
             </ControlGroup>
