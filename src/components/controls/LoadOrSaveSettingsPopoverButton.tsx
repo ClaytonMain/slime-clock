@@ -1,12 +1,15 @@
 import { produce } from "immer";
 import { motion } from "motion/react";
 import { Popover } from "radix-ui";
-import { useEffect, useState, type ChangeEvent } from "react";
+import { useState, type ChangeEvent } from "react";
+import { LuArrowUpFromLine } from "react-icons/lu";
+import { PiFloppyDisk } from "react-icons/pi";
 import useSlimeStore from "../../stores/useSlimeStore";
 import type {
   LoadableSlimeStoreSettings,
   SimulationPresetType,
 } from "../../types/types";
+import TooltipWrapper from "./TooltipWrapper";
 
 export default function LoadOrSaveSettingsPopoverButton({
   settings,
@@ -27,15 +30,10 @@ export default function LoadOrSaveSettingsPopoverButton({
   });
   const portalContainer = useSlimeStore((state) => state.portalContainer);
   const [presetName, setPresetName] = useState<string>(settings.name);
-  const [displayMessage, setDisplayMessage] = useState<string | null>(null);
 
   function onChangePresetNameInput(e: ChangeEvent<HTMLInputElement>) {
     setPresetName(e.currentTarget.value.replace(/\s\s+/g, " "));
   }
-
-  useEffect(() => {
-    setDisplayMessage(null);
-  }, [open]);
 
   function loadSettings() {
     const storeState = useSlimeStore.getState();
@@ -62,17 +60,29 @@ export default function LoadOrSaveSettingsPopoverButton({
         }
         if (Object.values(includeSettings).some(Boolean)) {
           state.presetLoadedAt = Date.now();
+          state.toast.title = "Settings Loaded";
+          state.toast.description = `"${settings.name}" loaded successfully.`;
+          state.toast.type = "success";
+          state.toast.lastTriggeredAt = Date.now();
         }
       }),
     );
     setOpen(false);
   }
 
-  function saveSettings() {
+  function handleOnSave() {
     let simulationPresets = [...useSlimeStore.getState().simulationPresets];
 
     if (simulationPresets.length >= 999) {
-      setDisplayMessage("Unable to save: too many custom presets!");
+      useSlimeStore.setState(
+        produce((state) => {
+          state.toast.title = "Too Many Presets!";
+          state.toast.description =
+            "Please delete some presets before adding more.";
+          state.toast.type = "error";
+          state.toast.lastTriggeredAt = Date.now();
+        }),
+      );
       return;
     }
 
@@ -88,19 +98,35 @@ export default function LoadOrSaveSettingsPopoverButton({
     }
 
     const trimmedPresetName = presetName.trim();
-    const duplicate = simulationPresets.some((preset) => {
-      if (
-        trimmedPresetName === preset.name &&
-        preset.presetType === presetType
-      ) {
-        setDisplayMessage(
-          `Unable to save: a "${presetType}" preset with this name already exists!`,
-        );
-        return true;
-      }
-      return false;
-    });
-    if (duplicate) return;
+    if (trimmedPresetName.length === 0) {
+      useSlimeStore.setState(
+        produce((state) => {
+          state.toast.title = "Invalid Preset Name!";
+          state.toast.description = "Preset name cannot be empty.";
+          state.toast.type = "error";
+          state.toast.lastTriggeredAt = Date.now();
+        }),
+      );
+      return;
+    }
+
+    setPresetName(trimmedPresetName);
+
+    const duplicate = simulationPresets.some(
+      (preset) =>
+        trimmedPresetName === preset.name && preset.presetType === presetType,
+    );
+    if (duplicate) {
+      useSlimeStore.setState(
+        produce((state) => {
+          state.toast.title = "Duplicate Preset Name!";
+          state.toast.description = `A ${presetType} preset with the name "${trimmedPresetName}" already exists.`;
+          state.toast.type = "error";
+          state.toast.lastTriggeredAt = Date.now();
+        }),
+      );
+      return;
+    }
 
     const processedPreset: LoadableSlimeStoreSettings = {
       name: trimmedPresetName,
@@ -123,23 +149,53 @@ export default function LoadOrSaveSettingsPopoverButton({
     useSlimeStore.setState(
       produce((state) => {
         state.simulationPresets = simulationPresets;
+        state.toast.title = "Preset Saved";
+        state.toast.description = `Preset "${trimmedPresetName}" saved successfully.`;
+        state.toast.type = "success";
+        state.toast.lastTriggeredAt = Date.now();
       }),
     );
-    setDisplayMessage(null);
     setOpen(false);
+  }
+
+  function handleKeyUp(e: React.KeyboardEvent) {
+    if (e.key === "Enter") {
+      if (buttonType === "save") {
+        handleOnSave();
+      }
+    }
   }
 
   return (
     <Popover.Root open={open} onOpenChange={setOpen} modal>
-      <Popover.Trigger asChild>
-        <motion.button
-          className="flex cursor-pointer border border-sky-800 px-2 py-1"
-          style={{ backgroundColor: "#18181b" }}
-          whileHover={{ backgroundColor: "#27272a" }}
-        >
-          {buttonType === "load" ? "Load" : "Save as Preset"}
-        </motion.button>
-      </Popover.Trigger>
+      <TooltipWrapper
+        tooltipText={buttonType === "load" ? "Load Settings" : "Save as Preset"}
+      >
+        <Popover.Trigger asChild>
+          <motion.button
+            className="flex h-7 w-7 cursor-pointer flex-col items-center justify-center border border-sky-800 p-1"
+            style={{ backgroundColor: "#18181b" }}
+            whileHover={{ backgroundColor: "#27272a" }}
+          >
+            <motion.div
+              className="relative"
+              whileTap={{ scale: 0.95 }}
+              transition={{ duration: 0.05 }}
+            >
+              <motion.div
+                className="absolute top-1/2 left-1/2 h-6 w-6 -translate-x-1/2 -translate-y-1/2"
+                transition={{ duration: 0.2 }}
+              >
+                {buttonType === "load" ? (
+                  <LuArrowUpFromLine className="h-full w-full scale-[0.8]" />
+                ) : (
+                  <PiFloppyDisk className="h-full w-full scale-[0.8]" />
+                )}
+              </motion.div>
+            </motion.div>
+          </motion.button>
+        </Popover.Trigger>
+      </TooltipWrapper>
       <Popover.Portal container={portalContainer}>
         <Popover.Content align="start" alignOffset={-20}>
           <div className="flex flex-col gap-2 bg-zinc-800 p-2 text-sm text-sky-50">
@@ -156,6 +212,7 @@ export default function LoadOrSaveSettingsPopoverButton({
                   onChange={onChangePresetNameInput}
                   maxLength={30}
                   size={20}
+                  onKeyUp={handleKeyUp}
                 />
               </div>
             )}
@@ -227,7 +284,7 @@ export default function LoadOrSaveSettingsPopoverButton({
                 className="flex cursor-pointer border border-sky-800 px-2 py-1"
                 style={{ backgroundColor: "#18181b" }}
                 whileHover={{ backgroundColor: "#27272a" }}
-                onClick={buttonType === "load" ? loadSettings : saveSettings}
+                onClick={buttonType === "load" ? loadSettings : handleOnSave}
               >
                 {buttonType === "load" ? "Load" : "Save as Preset"}
               </motion.button>
@@ -239,11 +296,6 @@ export default function LoadOrSaveSettingsPopoverButton({
               >
                 Cancel
               </motion.button>
-            </div>
-            <div className="flex justify-center gap-1">
-              {displayMessage && (
-                <span className="text-red-500">{displayMessage}</span>
-              )}
             </div>
           </div>
           <Popover.Arrow className="fill-zinc-800" />

@@ -1,7 +1,7 @@
 import { produce } from "immer";
 import { motion } from "motion/react";
 import { Popover } from "radix-ui";
-import { useEffect, useState, type ChangeEvent } from "react";
+import { useState, type ChangeEvent } from "react";
 import useSlimeStore from "../../stores/useSlimeStore";
 import type { RandomizationPreset } from "../../types/types";
 
@@ -15,17 +15,12 @@ export default function SaveRandomizationPresetPopoverButton({
   const [presetName, setPresetName] = useState<string>(
     "New Randomization Preset",
   );
-  const [displayMessage, setDisplayMessage] = useState<string | null>(null);
 
   function onChangePresetNameInput(e: ChangeEvent<HTMLInputElement>) {
     setPresetName(e.currentTarget.value.replace(/\s\s+/g, " "));
   }
 
-  useEffect(() => {
-    setDisplayMessage(null);
-  }, [open]);
-
-  function saveRandomizationPreset() {
+  function handleOnSave() {
     let randomizationPresets = [
       ...useSlimeStore.getState().randomizationPresets,
     ];
@@ -35,24 +30,49 @@ export default function SaveRandomizationPresetPopoverButton({
       randomizationSettings[randomizationPresetType];
 
     if (randomizationPresets.length >= 999) {
-      setDisplayMessage("Unable to save: too many custom presets!");
+      useSlimeStore.setState(
+        produce((state) => {
+          state.toast.title = "Too Many Presets!";
+          state.toast.description =
+            "Please delete some presets before adding more.";
+          state.toast.type = "error";
+          state.toast.lastTriggeredAt = Date.now();
+        }),
+      );
       return;
     }
 
     const trimmedPresetName = presetName.trim();
-    const duplicate = randomizationPresets.some((preset) => {
-      if (
+    if (trimmedPresetName.length === 0) {
+      useSlimeStore.setState(
+        produce((state) => {
+          state.toast.title = "Invalid Preset Name!";
+          state.toast.description = "Preset name cannot be empty.";
+          state.toast.type = "error";
+          state.toast.lastTriggeredAt = Date.now();
+        }),
+      );
+      return;
+    }
+
+    setPresetName(trimmedPresetName);
+
+    const duplicate = randomizationPresets.some(
+      (preset) =>
         trimmedPresetName === preset.name &&
-        preset.presetType === randomizationPresetType
-      ) {
-        setDisplayMessage(
-          `Unable to save: a "${randomizationPresetType}" randomization preset with this name already exists!`,
-        );
-        return true;
-      }
-      return false;
-    });
-    if (duplicate) return;
+        preset.presetType === randomizationPresetType,
+    );
+    if (duplicate) {
+      useSlimeStore.setState(
+        produce((state) => {
+          state.toast.title = "Duplicate Preset Name!";
+          state.toast.description = `A ${randomizationPresetType} randomization preset with the name "${trimmedPresetName}" already exists.`;
+          state.toast.type = "error";
+          state.toast.lastTriggeredAt = Date.now();
+        }),
+      );
+      return;
+    }
 
     // @ts-expect-error Be silent.
     const processedPreset: RandomizationPreset = {
@@ -64,17 +84,24 @@ export default function SaveRandomizationPresetPopoverButton({
 
     randomizationPresets = [...randomizationPresets, processedPreset];
 
-    console.log(randomizationPresets);
-
     randomizationPresets.sort((a, b) => a.name.localeCompare(b.name));
 
     useSlimeStore.setState(
       produce((state) => {
         state.randomizationPresets = randomizationPresets;
+        state.toast.title = "Preset Saved";
+        state.toast.description = `Randomization preset "${trimmedPresetName}" saved successfully.`;
+        state.toast.type = "success";
+        state.toast.lastTriggeredAt = Date.now();
       }),
     );
-    setDisplayMessage(null);
     setOpen(false);
+  }
+
+  function handleKeyUp(e: React.KeyboardEvent) {
+    if (e.key === "Enter") {
+      handleOnSave();
+    }
   }
 
   return (
@@ -105,6 +132,7 @@ export default function SaveRandomizationPresetPopoverButton({
                 onChange={onChangePresetNameInput}
                 maxLength={30}
                 size={20}
+                onKeyUp={handleKeyUp}
               />
             </div>
             <div className="flex justify-center gap-1">
@@ -112,7 +140,7 @@ export default function SaveRandomizationPresetPopoverButton({
                 className="flex cursor-pointer border border-sky-800 px-2 py-1"
                 style={{ backgroundColor: "#18181b" }}
                 whileHover={{ backgroundColor: "#27272a" }}
-                onClick={saveRandomizationPreset}
+                onClick={handleOnSave}
               >
                 {"Save as Preset"}
               </motion.button>
@@ -124,11 +152,6 @@ export default function SaveRandomizationPresetPopoverButton({
               >
                 Cancel
               </motion.button>
-            </div>
-            <div className="flex justify-center gap-1">
-              {displayMessage && (
-                <span className="text-red-500">{displayMessage}</span>
-              )}
             </div>
           </div>
           <Popover.Arrow className="fill-zinc-800" />

@@ -5,6 +5,7 @@ import useSlimeStore from "../../stores/useSlimeStore";
 import type {
   ClockDigitStyleValue,
   ClockHourFormatValue,
+  LoadableSlimeStoreSettings,
 } from "../../types/types";
 import CodeBlock from "../code-block/CodeBlock";
 import AccordionControlsItem from "./AccordionControlsItem";
@@ -79,6 +80,13 @@ export default function ClockControls() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedTab]);
 
+  function getPresetIndex(preset: LoadableSlimeStoreSettings) {
+    const presets = useSlimeStore.getState().simulationPresets;
+    return presets.findIndex(
+      (p) => p.name === preset.name && p.presetType === preset.presetType,
+    );
+  }
+
   return (
     <TabContentContainer tabsValue="clock-controls">
       <TabContentScrollArea title="Clock">
@@ -105,6 +113,7 @@ export default function ClockControls() {
                   ]}
                   settings={preset}
                   controlType="presets"
+                  index={getPresetIndex(preset)}
                 />
               ))}
             {sortedSimulationPresets["Combination"] &&
@@ -120,6 +129,7 @@ export default function ClockControls() {
                   ]}
                   settings={preset}
                   controlType="presets"
+                  index={getPresetIndex(preset)}
                 />
               ))}
           </AccordionControlsItem>

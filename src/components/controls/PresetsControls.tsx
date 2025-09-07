@@ -1,9 +1,13 @@
 import { produce } from "immer";
 import { useEffect } from "react";
 import {
+  CLOCK_CONTROLS_CONFIGS,
+  COLOR_CONTROLS_CONFIGS,
   LOADABLE_CLOCK_SETTINGS_KEYS,
   LOADABLE_COLOR_SETTINGS_KEYS,
   LOADABLE_SIMULATION_SETTINGS_KEYS,
+  PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS,
+  SIMULATION_CONTROLS_CONFIGS,
 } from "../../constants/constants.tsx";
 import useSlimeStore from "../../stores/useSlimeStore";
 import type {
@@ -41,6 +45,18 @@ export default function PresetsControls() {
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedTab]);
+
+  function getClampedValue(
+    value: number,
+    min: number,
+    max: number,
+    step?: number,
+  ) {
+    if (step) {
+      value = Math.round(value / step) * step;
+    }
+    return Math.min(max, Math.max(min, value));
+  }
 
   function handleLoadFromClipboard() {
     const clipboardData = navigator.clipboard.readText();
@@ -86,10 +102,19 @@ export default function PresetsControls() {
               if (
                 typeof currentValue !==
                 typeof useSlimeStore.getState().clockSettings[key]
-              ) {
+              )
                 return;
+              let newValue = currentValue;
+              if (Object.keys(CLOCK_CONTROLS_CONFIGS).includes(key)) {
+                const config = CLOCK_CONTROLS_CONFIGS[key];
+                newValue = getClampedValue(
+                  currentValue as number,
+                  config!.min as number,
+                  config!.max as number,
+                  config!.step as number,
+                );
               }
-              newClockSettings[key] = currentValue;
+              newClockSettings[key] = newValue;
             }
           });
           if (Object.keys(newClockSettings).length > 0) {
@@ -110,11 +135,23 @@ export default function PresetsControls() {
             if (key in parsedData.simulationSettings) {
               const currentValue = parsedData.simulationSettings[key];
               if (
-                typeof currentValue ===
+                typeof currentValue !==
                 typeof useSlimeStore.getState().simulationSettings[key]
-              ) {
-                newSimulationSettings[key] = currentValue;
+              )
+                return;
+              let newValue = currentValue;
+              if (Object.keys(SIMULATION_CONTROLS_CONFIGS).includes(key)) {
+                const config = SIMULATION_CONTROLS_CONFIGS[key];
+                newValue = getClampedValue(
+                  currentValue as number,
+                  config!.min as number,
+                  config!.max as number,
+                  config!.step as number,
+                );
+              } else if (key === "agentDensity") {
+                newValue = getClampedValue(currentValue as number, 0, 1, 0.01);
               }
+              newSimulationSettings[key] = newValue;
             }
           });
           if (Object.keys(newSimulationSettings).length > 0) {
@@ -133,12 +170,88 @@ export default function PresetsControls() {
           const newColorSettings: Partial<LoadableColorSettings> = {};
           LOADABLE_COLOR_SETTINGS_KEYS.forEach((key) => {
             if (key in parsedData.colorSettings) {
-              const currentValue = parsedData.colorSettings[key];
-              if (
-                typeof currentValue ===
-                typeof useSlimeStore.getState().colorSettings[key]
-              ) {
-                newColorSettings[key] = currentValue;
+              if (key === "proceduralColorPalette") {
+                if (!("proceduralColorPalette" in newColorSettings)) {
+                  const currentPalette =
+                    useSlimeStore.getState().colorSettings
+                      .proceduralColorPalette;
+                  newColorSettings.proceduralColorPalette = {
+                    r: { ...currentPalette.r },
+                    g: { ...currentPalette.g },
+                    b: { ...currentPalette.b },
+                  };
+                }
+                ["r", "g", "b"].forEach((channel) => {
+                  ["yOffset", "amplitude", "frequency", "phase"].forEach(
+                    (param) => {
+                      if (
+                        param in
+                        parsedData.colorSettings.proceduralColorPalette[channel]
+                      ) {
+                        const currentValue =
+                          parsedData.colorSettings.proceduralColorPalette[
+                            channel
+                          ][param];
+                        if (
+                          typeof currentValue !==
+                          typeof useSlimeStore.getState().colorSettings
+                            .proceduralColorPalette[channel as "r" | "g" | "b"][
+                            param as
+                              | "yOffset"
+                              | "amplitude"
+                              | "frequency"
+                              | "phase"
+                          ]
+                        )
+                          return;
+                        let newValue = currentValue;
+                        if (
+                          Object.keys(
+                            PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS,
+                          ).includes(param)
+                        ) {
+                          const config =
+                            PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS[
+                              param as keyof typeof PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS
+                            ];
+                          newValue = getClampedValue(
+                            currentValue as number,
+                            config!.min as number,
+                            config!.max as number,
+                            config!.step as number,
+                          );
+                          newColorSettings.proceduralColorPalette![
+                            channel as "r" | "g" | "b"
+                          ][
+                            param as
+                              | "yOffset"
+                              | "amplitude"
+                              | "frequency"
+                              | "phase"
+                          ] = newValue;
+                        }
+                      }
+                    },
+                  );
+                });
+              } else {
+                const currentValue = parsedData.colorSettings[key];
+                if (
+                  typeof currentValue !==
+                  typeof useSlimeStore.getState().colorSettings[key]
+                )
+                  return;
+                let newValue = currentValue;
+                if (Object.keys(COLOR_CONTROLS_CONFIGS).includes(key)) {
+                  const config = COLOR_CONTROLS_CONFIGS[key];
+                  newValue = getClampedValue(
+                    currentValue as number,
+                    config!.min as number,
+                    config!.max as number,
+                    config!.step as number,
+                  );
+                }
+                newColorSettings[key] = newValue;
               }
             }
           });
@@ -150,12 +263,11 @@ export default function PresetsControls() {
                   ...newColorSettings,
                   slimeColorChangedAt: Date.now(),
                 };
-                state.toast = {
-                  title: "Success!",
-                  description: "Loaded color settings from clipboard!",
-                  type: "success",
-                  lastTriggeredAt: Date.now(),
-                };
+                state.toast.title = "Success!";
+                state.toast.description =
+                  "Loaded color settings from clipboard!";
+                state.toast.type = "success";
+                state.toast.lastTriggeredAt = Date.now();
               }),
             );
           }
@@ -220,13 +332,18 @@ export default function PresetsControls() {
     );
     useSlimeStore.setState(
       produce((state) => {
-        state.toast = {
-          title: "Success!",
-          description: "Copied current settings to clipboard!",
-          type: "success",
-          lastTriggeredAt: Date.now(),
-        };
+        state.toast.title = "Success!";
+        state.toast.description = "Copied current settings to clipboard!";
+        state.toast.type = "success";
+        state.toast.lastTriggeredAt = Date.now();
       }),
+    );
+  }
+
+  function getPresetIndex(preset: LoadableSlimeStoreSettings) {
+    const presets = useSlimeStore.getState().simulationPresets;
+    return presets.findIndex(
+      (p) => p.name === preset.name && p.presetType === preset.presetType,
     );
   }
 
@@ -290,6 +407,7 @@ export default function PresetsControls() {
                     ]}
                     settings={preset}
                     controlType="presets"
+                    index={getPresetIndex(preset)}
                   />
                 ))}
               </AccordionControlsItem>
@@ -311,6 +429,7 @@ export default function PresetsControls() {
                     ]}
                     settings={preset}
                     controlType="presets"
+                    index={getPresetIndex(preset)}
                   />
                 ))}
               </AccordionControlsItem>
@@ -332,6 +451,7 @@ export default function PresetsControls() {
                     ]}
                     settings={preset}
                     controlType="presets"
+                    index={getPresetIndex(preset)}
                   />
                 ))}
               </AccordionControlsItem>
@@ -353,6 +473,7 @@ export default function PresetsControls() {
                     ]}
                     settings={preset}
                     controlType="presets"
+                    index={getPresetIndex(preset)}
                   />
                 ))}
               </AccordionControlsItem>
@@ -376,6 +497,7 @@ export default function PresetsControls() {
                 ]}
                 settings={entry}
                 controlType="history"
+                index={getPresetIndex(entry)}
               />
             ))}
           </AccordionControlsItem>

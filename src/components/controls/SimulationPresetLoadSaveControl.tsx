@@ -2,15 +2,17 @@ import { ClockIcon, MixerHorizontalIcon } from "@radix-ui/react-icons";
 import { produce } from "immer";
 import { motion } from "motion/react";
 import { Label } from "radix-ui";
+import * as R from "ramda";
 import { useEffect, useState, type ReactNode } from "react";
-import { LuClipboardCopy } from "react-icons/lu";
-import { PiCheck, PiPalette } from "react-icons/pi";
+import { LuArrowUpFromLine, LuClipboardCopy } from "react-icons/lu";
+import { PiPalette } from "react-icons/pi";
 import {
   MULTIPLE_PRESET_TYPES,
   SINGLE_PRESET_TYPES,
 } from "../../constants/constants";
 import useSlimeStore from "../../stores/useSlimeStore";
 import type { LoadableSlimeStoreSettings } from "../../types/types";
+import EditPresetNamePopoverButton from "./EditPresetNamePopoverButton";
 import LoadOrSaveSettingsPopoverButton from "./LoadOrSaveSettingsPopoverButton";
 import TooltipWrapper from "./TooltipWrapper";
 
@@ -19,14 +21,15 @@ export default function SimulationPresetLoadSaveControl({
   labelHoverTabContentDisplay,
   settings,
   controlType,
+  index,
 }: {
   label?: string;
   labelHoverTabContentDisplay?: string | [string, string] | ReactNode;
   settings: LoadableSlimeStoreSettings;
   controlType: "history" | "presets";
+  index: number;
 }) {
   const [deletePresetText, setDeletePresetText] = useState<string>("Delete");
-  const [copyState, setCopyState] = useState<string>("ready");
   const [presetIndicationIcons, setPresetIndicationIcons] = useState<
     ReactNode[]
   >([]);
@@ -63,12 +66,10 @@ export default function SimulationPresetLoadSaveControl({
           slimeColorChangedAt: Date.now(),
         };
         state.presetLoadedAt = Date.now();
-        state.toast = {
-          title: "Settings Loaded",
-          description: `Preset "${settings.name}" loaded successfully.`,
-          type: "success",
-          lastTriggeredAt: Date.now(),
-        };
+        state.toast.title = "Settings Loaded";
+        state.toast.description = `Preset "${settings.name}" loaded successfully.`;
+        state.toast.type = "success";
+        state.toast.lastTriggeredAt = Date.now();
       }),
     );
   }
@@ -92,15 +93,6 @@ export default function SimulationPresetLoadSaveControl({
   }, []);
 
   useEffect(() => {
-    if (copyState === "copied") {
-      const timeoutId = setTimeout(() => {
-        setCopyState("ready");
-      }, 2000);
-      return () => clearTimeout(timeoutId);
-    }
-  }, [copyState]);
-
-  useEffect(() => {
     if (deletePresetText !== "Are you sure?") return;
     const timeoutId = setTimeout(() => {
       setDeletePresetText("Delete");
@@ -115,13 +107,77 @@ export default function SimulationPresetLoadSaveControl({
     }
     let simulationPresets = useSlimeStore.getState().simulationPresets;
     simulationPresets = simulationPresets.filter(
-      (preset) => preset.name !== settings.name,
+      (preset) =>
+        !(
+          preset.name === settings.name &&
+          preset.presetType === settings.presetType
+        ),
     );
+
     useSlimeStore.setState(
       produce((state) => {
         state.simulationPresets = simulationPresets;
       }),
     );
+  }
+
+  function handleCopyToClipboard() {
+    useSlimeStore.setState(
+      produce((state) => {
+        state.toast.title = "Settings Copied";
+        state.toast.description = `Simulation ${controlType === "presets" ? "preset" : "settings"} "${settings.name}" copied to clipboard.`;
+        state.toast.type = "success";
+        state.toast.lastTriggeredAt = Date.now();
+      }),
+    );
+    navigator.clipboard.writeText(JSON.stringify(settings, null, 2));
+  }
+
+  function handleEditPresetName(newName: string): boolean {
+    const simulationPresets = useSlimeStore.getState().simulationPresets;
+    // `newName` should be trimmed already, but just in case.
+    const trimmedNewName = newName.trim();
+    if (trimmedNewName.length === 0) {
+      useSlimeStore.setState(
+        produce((state) => {
+          state.toast.title = "Invalid Preset Name";
+          state.toast.description = "Preset name cannot be empty.";
+          state.toast.type = "error";
+          state.toast.lastTriggeredAt = Date.now();
+        }),
+      );
+      return false;
+    }
+    const duplicate = simulationPresets.some(
+      (storePreset, storeIndex) =>
+        storePreset.name === trimmedNewName &&
+        storePreset.presetType === settings.presetType &&
+        storeIndex !== index,
+    );
+    if (duplicate) {
+      useSlimeStore.setState(
+        produce((state) => {
+          state.toast.title = "Duplicate Preset Name";
+          state.toast.description = `A "${settings.presetType.toLowerCase()}" simulation preset with this name already exists.`;
+          state.toast.type = "error";
+          state.toast.lastTriggeredAt = Date.now();
+        }),
+      );
+      return false;
+    }
+
+    useSlimeStore.setState(
+      R.over(R.lensPath(["simulationPresets", index, "name"]), () => newName),
+    );
+    useSlimeStore.setState(
+      produce((state) => {
+        state.toast.title = "Preset Renamed";
+        state.toast.description = `Preset "${settings.name}" renamed to "${newName}".`;
+        state.toast.type = "info";
+        state.toast.lastTriggeredAt = Date.now();
+      }),
+    );
+    return true;
   }
 
   return (
@@ -157,15 +213,49 @@ export default function SimulationPresetLoadSaveControl({
           paddingLeft: label ? undefined : "calc(var(--spacing) * 2)",
         }}
       >
-        {SINGLE_PRESET_TYPES.some((type) => type === settings.presetType) && (
+        <TooltipWrapper tooltipText="Copy to Clipboard">
           <motion.button
-            className="flex cursor-pointer border border-sky-800 px-2 py-1"
+            className="flex h-7 w-7 cursor-pointer flex-col items-center justify-center border border-sky-800 p-1"
+            onClick={handleCopyToClipboard}
             style={{ backgroundColor: "#18181b" }}
             whileHover={{ backgroundColor: "#27272a" }}
-            onClick={loadSettings}
           >
-            Load
+            <motion.div
+              className="relative"
+              whileTap={{ scale: 0.95 }}
+              transition={{ duration: 0.05 }}
+            >
+              <motion.div
+                className="absolute top-1/2 left-1/2 h-6 w-6 -translate-x-1/2 -translate-y-1/2"
+                transition={{ duration: 0.2 }}
+              >
+                <LuClipboardCopy className="h-full w-full scale-[0.8]" />
+              </motion.div>
+            </motion.div>
           </motion.button>
+        </TooltipWrapper>
+        {SINGLE_PRESET_TYPES.some((type) => type === settings.presetType) && (
+          <TooltipWrapper tooltipText="Load Preset Settings">
+            <motion.button
+              className="flex h-7 w-7 cursor-pointer flex-col items-center justify-center border border-sky-800 p-1"
+              onClick={loadSettings}
+              style={{ backgroundColor: "#18181b" }}
+              whileHover={{ backgroundColor: "#27272a" }}
+            >
+              <motion.div
+                className="relative"
+                whileTap={{ scale: 0.95 }}
+                transition={{ duration: 0.05 }}
+              >
+                <motion.div
+                  className="absolute top-1/2 left-1/2 h-6 w-6 -translate-x-1/2 -translate-y-1/2"
+                  transition={{ duration: 0.2 }}
+                >
+                  <LuArrowUpFromLine className="h-full w-full scale-[0.8]" />
+                </motion.div>
+              </motion.div>
+            </motion.button>
+          </TooltipWrapper>
         )}
         {MULTIPLE_PRESET_TYPES.some((type) => type === settings.presetType) && (
           <LoadOrSaveSettingsPopoverButton
@@ -179,57 +269,25 @@ export default function SimulationPresetLoadSaveControl({
             buttonType="save"
           />
         )}
-        {controlType === "presets" && !settings.isBasePreset && (
-          <motion.button
-            className="flex cursor-pointer border border-rose-800 px-2 py-1"
-            onClick={deletePreset}
-            style={{
-              backgroundColor: "#4d0218",
-            }}
-            whileHover={{ backgroundColor: "#8b0836" }}
-          >
-            {deletePresetText}
-          </motion.button>
-        )}
-        <motion.div className="mr-5 flex flex-1 items-center justify-end">
-          <TooltipWrapper tooltipText="Copy to Clipboard">
+        {!settings.isBasePreset && controlType === "presets" && (
+          <>
+            <EditPresetNamePopoverButton
+              oldName={settings.name}
+              onSave={handleEditPresetName}
+            />
+            <div className="flex flex-1" />
             <motion.button
-              className="relative flex h-7 w-7 cursor-pointer p-0.5"
-              style={{ backgroundColor: "#18181baa" }}
-              whileHover={{ backgroundColor: "#27272aaa" }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => {
-                setCopyState("copied");
-                useSlimeStore.setState(
-                  produce((state) => {
-                    state.toast = {
-                      title: "Settings Copied",
-                      description: `Preset "${settings.name}" copied to clipboard.`,
-                      type: "success",
-                      lastTriggeredAt: Date.now(),
-                    };
-                  }),
-                );
-                navigator.clipboard.writeText(
-                  JSON.stringify(settings, null, 2),
-                );
+              className="mr-5 flex cursor-pointer border border-rose-800 px-2 py-1"
+              onClick={deletePreset}
+              style={{
+                backgroundColor: "#4d0218",
               }}
+              whileHover={{ backgroundColor: "#8b0836" }}
             >
-              <motion.div
-                className="absolute top-1/2 left-1/2 z-[1] -translate-x-1/2 -translate-y-1/2"
-                animate={{ opacity: copyState === "ready" ? 1 : 0 }}
-              >
-                <LuClipboardCopy className="h-5 w-5" />
-              </motion.div>
-              <motion.div
-                className="absolute top-1/2 left-1/2 z-[1] -translate-x-1/2 -translate-y-1/2"
-                animate={{ opacity: copyState === "copied" ? 1 : 0 }}
-              >
-                <PiCheck className="h-5 w-5 text-green-500" />
-              </motion.div>
+              {deletePresetText}
             </motion.button>
-          </TooltipWrapper>
-        </motion.div>
+          </>
+        )}
       </div>
     </motion.div>
   );

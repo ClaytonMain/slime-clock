@@ -4,8 +4,8 @@ import { motion } from "motion/react";
 import { Label } from "radix-ui";
 import * as R from "ramda";
 import { useEffect, useState, type ReactNode } from "react";
-import { LuClipboardCopy } from "react-icons/lu";
-import { PiCheck, PiDiceFive } from "react-icons/pi";
+import { LuArrowUpFromLine, LuClipboardCopy } from "react-icons/lu";
+import { PiDiceFive } from "react-icons/pi";
 import useSlimeStore from "../../stores/useSlimeStore";
 import type { RandomizationPreset } from "../../types/types";
 import EditPresetNamePopoverButton from "./EditPresetNamePopoverButton";
@@ -23,7 +23,6 @@ export default function RandomizationPresetLoadSaveControl({
   index: number;
 }) {
   const [deletePresetText, setDeletePresetText] = useState<string>("Delete");
-  const [copyState, setCopyState] = useState<string>("ready");
   const [canLoadOnAutoRand, setCanLoadOnAutoRand] = useState<boolean>(
     R.view(
       R.lensPath(["randomizationPresets", index, "enabled"]),
@@ -70,15 +69,12 @@ export default function RandomizationPresetLoadSaveControl({
   }
 
   function handleCopyToClipboard() {
-    setCopyState("copied");
     useSlimeStore.setState(
       produce((state) => {
-        state.toast = {
-          title: "Settings Copied",
-          description: `Randomization preset "${preset.name}" copied to clipboard.`,
-          type: "success",
-          lastTriggeredAt: Date.now(),
-        };
+        state.toast.title = "Settings Copied";
+        state.toast.description = `Randomization preset "${preset.name}" copied to clipboard.`;
+        state.toast.type = "success";
+        state.toast.lastTriggeredAt = Date.now();
       }),
     );
     navigator.clipboard.writeText(JSON.stringify(preset, null, 2));
@@ -106,24 +102,13 @@ export default function RandomizationPresetLoadSaveControl({
           ...storeState.randomizationSettings.simulation,
           ...preset.settings,
         };
-        state.toast = {
-          title: "Settings Loaded",
-          description: `Preset "${preset.name}" loaded successfully.`,
-          type: "success",
-          lastTriggeredAt: Date.now(),
-        };
+        state.toast.title = "Settings Loaded";
+        state.toast.description = `Preset "${preset.name}" loaded successfully.`;
+        state.toast.type = "success";
+        state.toast.lastTriggeredAt = Date.now();
       }),
     );
   }
-
-  useEffect(() => {
-    if (copyState === "copied") {
-      const timeoutId = setTimeout(() => {
-        setCopyState("ready");
-      }, 1000);
-      return () => clearTimeout(timeoutId);
-    }
-  }, [copyState]);
 
   useEffect(() => {
     if (deletePresetText !== "Are you sure?") return;
@@ -262,37 +247,43 @@ export default function RandomizationPresetLoadSaveControl({
             >
               <motion.div
                 className="absolute top-1/2 left-1/2 h-6 w-6 -translate-x-1/2 -translate-y-1/2"
-                animate={{ opacity: copyState === "ready" ? 1 : 0 }}
                 transition={{ duration: 0.2 }}
               >
                 <LuClipboardCopy className="h-full w-full scale-[0.8]" />
               </motion.div>
+            </motion.div>
+          </motion.button>
+        </TooltipWrapper>
+        <TooltipWrapper tooltipText="Load Preset Settings">
+          <motion.button
+            className="flex h-7 w-7 cursor-pointer flex-col items-center justify-center border border-sky-800 p-1"
+            onClick={loadSettings}
+            style={{ backgroundColor: "#18181b" }}
+            whileHover={{ backgroundColor: "#27272a" }}
+          >
+            <motion.div
+              className="relative"
+              whileTap={{ scale: 0.95 }}
+              transition={{ duration: 0.05 }}
+            >
               <motion.div
                 className="absolute top-1/2 left-1/2 h-6 w-6 -translate-x-1/2 -translate-y-1/2"
-                animate={{ opacity: copyState === "copied" ? 1 : 0 }}
                 transition={{ duration: 0.2 }}
               >
-                <PiCheck className="h-full w-full text-green-500" />
+                <LuArrowUpFromLine className="h-full w-full scale-[0.8]" />
               </motion.div>
             </motion.div>
           </motion.button>
         </TooltipWrapper>
-        <motion.button
-          className="flex cursor-pointer border border-sky-800 px-2 py-1"
-          style={{ backgroundColor: "#18181b" }}
-          whileHover={{ backgroundColor: "#27272a" }}
-          onClick={loadSettings}
-        >
-          Load
-        </motion.button>
         {!preset.isBasePreset && (
           <>
             <EditPresetNamePopoverButton
               oldName={preset.name}
               onSave={handleEditPresetName}
             />
+            <div className="flex flex-1" />
             <motion.button
-              className="flex cursor-pointer border border-rose-800 px-2 py-1"
+              className="mr-5 flex cursor-pointer border border-rose-800 px-2 py-1"
               onClick={deletePreset}
               style={{
                 backgroundColor: "#4d0218",

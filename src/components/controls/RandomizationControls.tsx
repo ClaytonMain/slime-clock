@@ -630,8 +630,56 @@ export default function RandomizationControls() {
             <SlimeStoreNumericRangeRandomizationControl
               label="Intensity Smoothing"
               labelHoverTabContentDisplay={["Intensity Smoothing"]}
-              baseId="intensity-smoothing-randomization-control"
+              baseId="randomization-controls-intensity-smoothing-randomization-control"
               randomizationSettingsStorePath={["color", "intensitySmoothing"]}
+            />
+            <SlimeStoreNumericRangeRandomizationControl
+              label="Agent Dir. Smoothing"
+              labelHoverTabContentDisplay={["Agent Direction Smoothing"]}
+              baseId="randomization-controls-agent-direction-smoothing-randomization-control"
+              randomizationSettingsStorePath={[
+                "color",
+                "agentDirectionSmoothing",
+              ]}
+            />
+            <SlimeStoreNumericRangeRandomizationControl
+              label="Agent Dir. Color Offset"
+              labelHoverTabContentDisplay={["Agent Direction Color Offset"]}
+              baseId="randomization-controls-agent-direction-color-offset-randomization-control"
+              randomizationSettingsStorePath={[
+                "color",
+                "agentDirectionColorOffset",
+              ]}
+            />
+            <SlimeStoreNumericRangeRandomizationControl
+              label="Clock Color Offset"
+              labelHoverTabContentDisplay={["Clock Color Offset"]}
+              baseId="randomization-controls-clock-color-offset-randomization-control"
+              randomizationSettingsStorePath={["color", "clockColorOffset"]}
+            />
+            <SlimeStoreNumericRangeRandomizationControl
+              label="X Color Offset"
+              labelHoverTabContentDisplay={["X Color Offset"]}
+              baseId="randomization-controls-x-color-offset-randomization-control"
+              randomizationSettingsStorePath={["color", "xColorOffset"]}
+            />
+            <SlimeStoreNumericRangeRandomizationControl
+              label="Y Color Offset"
+              labelHoverTabContentDisplay={["Y Color Offset"]}
+              baseId="randomization-controls-y-color-offset-randomization-control"
+              randomizationSettingsStorePath={["color", "yColorOffset"]}
+            />
+            <SlimeStoreNumericRangeRandomizationControl
+              label="Palette Cycle Speed"
+              labelHoverTabContentDisplay={["Palette Cycle Speed"]}
+              baseId="randomization-controls-palette-cycle-speed-randomization-control"
+              randomizationSettingsStorePath={["color", "paletteCycleSpeed"]}
+            />
+            <SlimeStoreNumericRangeRandomizationControl
+              label="Palette Cycle Scale"
+              labelHoverTabContentDisplay={["Palette Cycle Scale"]}
+              baseId="randomization-controls-palette-cycle-scale-randomization-control"
+              randomizationSettingsStorePath={["color", "paletteCycleScale"]}
             />
           </AccordionControlsItem>
         </AccordionControlsWrapper>

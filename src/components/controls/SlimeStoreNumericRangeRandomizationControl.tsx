@@ -183,11 +183,8 @@ export default function SlimeStoreNumericRangeRandomizationControl({
               </Label.Root>
               <SlimeStoreSlider
                 baseInputId={`${baseId}-gaussian-mu-range-slider`}
-                min={0}
-                max={
-                  (controlConfig!.max as number) -
-                  (controlConfig!.min as number)
-                }
+                min={controlConfig!.min as number}
+                max={controlConfig!.max as number}
                 step={controlConfig!.step as number}
                 storePath={[
                   "randomizationSettings",
@@ -204,8 +201,11 @@ export default function SlimeStoreNumericRangeRandomizationControl({
               </Label.Root>
               <SlimeStoreSlider
                 baseInputId={`${baseId}-gaussian-sigma-range-slider`}
-                min={controlConfig!.min as number}
-                max={controlConfig!.max as number}
+                min={0}
+                max={
+                  (controlConfig!.max as number) -
+                  (controlConfig!.min as number)
+                }
                 step={controlConfig!.step as number}
                 storePath={[
                   "randomizationSettings",

@@ -6,7 +6,10 @@ import {
   SIMULATION_CONTROLS_CONFIGS,
 } from "../../constants/constants";
 import useSlimeStore from "../../stores/useSlimeStore";
-import { type DisplayTextureAspectRatio } from "../../types/types";
+import {
+  type DisplayTextureAspectRatio,
+  type LoadableSlimeStoreSettings,
+} from "../../types/types";
 import * as UTILS from "../../utils/utils.tsx";
 import CodeBlock from "../code-block/CodeBlock";
 import AccordionControlsItem from "./AccordionControlsItem";
@@ -81,21 +84,12 @@ export default function SimulationControls() {
     );
   }
 
-  // function handleDisplayTextureTargetQualityChange(value: number[]) {
-  //   const displayTextureAspectRatio =
-  //     useSlimeStore.getState().simulationSettings.displayTextureAspectRatio;
-  //   const resolution = UTILS.getDisplayTextureResolution(
-  //     displayTextureAspectRatio,
-  //     value[0],
-  //   );
-  //   useSlimeStore.setState(
-  //     produce((state) => {
-  //       state.simulationSettings.displayTextureTargetQuality = value[0];
-  //       state.simulationSettings.displayTextureWidth = resolution.width;
-  //       state.simulationSettings.displayTextureHeight = resolution.height;
-  //     }),
-  //   );
-  // }
+  function getPresetIndex(preset: LoadableSlimeStoreSettings) {
+    const presets = useSlimeStore.getState().simulationPresets;
+    return presets.findIndex(
+      (p) => p.name === preset.name && p.presetType === preset.presetType,
+    );
+  }
 
   return (
     <TabContentContainer tabsValue="simulation-controls">
@@ -195,6 +189,7 @@ export default function SimulationControls() {
                   ]}
                   settings={preset}
                   controlType="presets"
+                  index={getPresetIndex(preset)}
                 />
               ))}
             {sortedSimulationPresets["Combination"] &&
@@ -210,6 +205,7 @@ export default function SimulationControls() {
                   ]}
                   settings={preset}
                   controlType="presets"
+                  index={getPresetIndex(preset)}
                 />
               ))}
           </AccordionControlsItem>

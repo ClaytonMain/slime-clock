@@ -53,12 +53,11 @@ export default function RatingsAndCategorizationControl() {
     );
     useSlimeStore.setState(
       produce((state) => {
-        state.toast = {
-          title: "Success!",
-          description: "Ratings and categorization data saved successfully!",
-          type: "success",
-          lastTriggeredAt: Date.now(),
-        };
+        state.toast.title = "Success!";
+        state.toast.description =
+          "Ratings and categorization data saved successfully!";
+        state.toast.type = "success";
+        state.toast.lastTriggeredAt = Date.now();
       }),
     );
     setRatingsAndCategorization(defaultRatingsAndCategorization);
@@ -74,12 +73,10 @@ export default function RatingsAndCategorizationControl() {
     if (!ratingHistory || ratingHistory.length === 0) {
       useSlimeStore.setState(
         produce((state) => {
-          state.toast = {
-            title: "Error",
-            description: "No rating history available to copy.",
-            type: "error",
-            lastTriggeredAt: Date.now(),
-          };
+          state.toast.title = "Error";
+          state.toast.description = "No rating history available to copy.";
+          state.toast.type = "error";
+          state.toast.lastTriggeredAt = Date.now();
         }),
       );
       return;
@@ -134,12 +131,11 @@ export default function RatingsAndCategorizationControl() {
 
     useSlimeStore.setState(
       produce((state) => {
-        state.toast = {
-          title: "Success!",
-          description: "Ratings and categorization data copied to clipboard!",
-          type: "success",
-          lastTriggeredAt: Date.now(),
-        };
+        state.toast.title = "Success!";
+        state.toast.description =
+          "Ratings and categorization data copied to clipboard!";
+        state.toast.type = "success";
+        state.toast.lastTriggeredAt = Date.now();
       }),
     );
   }

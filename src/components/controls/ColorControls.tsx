@@ -7,6 +7,7 @@ import {
   PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS,
 } from "../../constants/constants";
 import useSlimeStore from "../../stores/useSlimeStore";
+import type { LoadableSlimeStoreSettings } from "../../types/types";
 import AccordionControlsItem from "./AccordionControlsItem";
 import AccordionControlsWrapper from "./AccordionControlsWrapper";
 import ButtonControlGroup from "./ButtonControlGroup";
@@ -50,6 +51,13 @@ export default function ColorControls() {
       }),
     );
     useSlimeStore.setState(R.over(R.lensPath(storePath), () => value[0]));
+  }
+
+  function getPresetIndex(preset: LoadableSlimeStoreSettings) {
+    const presets = useSlimeStore.getState().simulationPresets;
+    return presets.findIndex(
+      (p) => p.name === preset.name && p.presetType === preset.presetType,
+    );
   }
 
   return (
@@ -121,6 +129,7 @@ export default function ColorControls() {
                   ]}
                   settings={preset}
                   controlType="presets"
+                  index={getPresetIndex(preset)}
                 />
               ))}
             {sortedSimulationPresets["Combination"] &&
@@ -136,6 +145,7 @@ export default function ColorControls() {
                   ]}
                   settings={preset}
                   controlType="presets"
+                  index={getPresetIndex(preset)}
                 />
               ))}
           </AccordionControlsItem>
