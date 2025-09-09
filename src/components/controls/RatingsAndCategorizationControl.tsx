@@ -7,18 +7,15 @@ import useSlimeStore from "../../stores/useSlimeStore";
 const defaultRatingsAndCategorization = {
   timestamp: Date.now(),
   simulationSettings: useSlimeStore.getState().simulationSettings,
-  overallRating: 0,
-  sliminess: 0,
-  clockLegibility: 0,
-  fuzziness: 0,
-  agentCohesion: 0,
-  clockCoverage: 0,
-  backgroundCoverage: 0,
-  tendrilSize: 0,
-  clusterSize: 0,
-  clusterDistance: 0,
-  griddiness: 0,
-  splotchiness: 0,
+  overallRating: -1,
+  sliminess: -1,
+  clockLegibility: -1,
+  fuzziness: -1,
+  agentCohesion: -1,
+  clockCoverage: -1,
+  backgroundCoverage: -1,
+  tendrilThickness: -1,
+  tendrilLength: -1,
 };
 export default function RatingsAndCategorizationControl() {
   const simulationSettings = useSlimeStore((state) => state.simulationSettings);
@@ -109,7 +106,16 @@ export default function RatingsAndCategorizationControl() {
       valuesObjects.forEach((valuesObject) => {
         const row: (string | number)[] = [];
         headers.forEach((header) => {
-          row.push(valuesObject[header] ?? "");
+          const pushVal = valuesObject[header];
+          if (
+            pushVal === undefined ||
+            (Object.keys(defaultRatingsAndCategorization).includes(header) &&
+              pushVal === -1)
+          ) {
+            row.push("");
+          } else {
+            row.push(pushVal);
+          }
         });
         values.push(row);
       });
@@ -164,6 +170,12 @@ export default function RatingsAndCategorizationControl() {
             )
           }
         />
+        <button
+          className="cursor-pointer border border-sky-800 bg-zinc-800 p-1"
+          onClick={() => updateRatingsAndCategorization("overallRating", -1)}
+        >
+          Reset
+        </button>
       </div>
       <div className="flex w-full gap-1 p-2">
         <label
@@ -184,6 +196,12 @@ export default function RatingsAndCategorizationControl() {
             updateRatingsAndCategorization("sliminess", Number(e.target.value))
           }
         />
+        <button
+          className="cursor-pointer border border-sky-800 bg-zinc-800 p-1"
+          onClick={() => updateRatingsAndCategorization("sliminess", -1)}
+        >
+          Reset
+        </button>
       </div>
       <div className="flex w-full gap-1 p-2">
         <label
@@ -207,6 +225,12 @@ export default function RatingsAndCategorizationControl() {
             )
           }
         />
+        <button
+          className="cursor-pointer border border-sky-800 bg-zinc-800 p-1"
+          onClick={() => updateRatingsAndCategorization("clockLegibility", -1)}
+        >
+          Reset
+        </button>
       </div>
       <div className="flex w-full gap-1 p-2">
         <label
@@ -227,6 +251,12 @@ export default function RatingsAndCategorizationControl() {
             updateRatingsAndCategorization("fuzziness", Number(e.target.value))
           }
         />
+        <button
+          className="cursor-pointer border border-sky-800 bg-zinc-800 p-1"
+          onClick={() => updateRatingsAndCategorization("fuzziness", -1)}
+        >
+          Reset
+        </button>
       </div>
       <div className="flex w-full gap-1 p-2">
         <label
@@ -250,6 +280,12 @@ export default function RatingsAndCategorizationControl() {
             )
           }
         />
+        <button
+          className="cursor-pointer border border-sky-800 bg-zinc-800 p-1"
+          onClick={() => updateRatingsAndCategorization("agentCohesion", -1)}
+        >
+          Reset
+        </button>
       </div>
       <div className="flex w-full gap-1 p-2">
         <label
@@ -273,6 +309,12 @@ export default function RatingsAndCategorizationControl() {
             )
           }
         />
+        <button
+          className="cursor-pointer border border-sky-800 bg-zinc-800 p-1"
+          onClick={() => updateRatingsAndCategorization("clockCoverage", -1)}
+        >
+          Reset
+        </button>
       </div>
       <div className="flex w-full gap-1 p-2">
         <label
@@ -298,118 +340,72 @@ export default function RatingsAndCategorizationControl() {
             )
           }
         />
+        <button
+          className="cursor-pointer border border-sky-800 bg-zinc-800 p-1"
+          onClick={() =>
+            updateRatingsAndCategorization("backgroundCoverage", -1)
+          }
+        >
+          Reset
+        </button>
       </div>
       <div className="flex w-full gap-1 p-2">
         <label
           className="w-32 flex-none"
-          htmlFor="ratings-and-categorization-tendril-size"
+          htmlFor="ratings-and-categorization-tendril-thickness"
         >
-          Tendril Size
+          Tendril Thickness
         </label>
-        <span className="w-7">{ratingsAndCategorization.tendrilSize}</span>
+        <span className="w-7">{ratingsAndCategorization.tendrilThickness}</span>
         <input
           type="range"
           min="0"
           max="1"
-          step="0.1"
-          id="ratings-and-categorization-tendril-size"
-          value={ratingsAndCategorization.tendrilSize}
+          step="0.001"
+          id="ratings-and-categorization-tendril-thickness"
+          value={ratingsAndCategorization.tendrilThickness}
           onChange={(e) =>
             updateRatingsAndCategorization(
-              "tendrilSize",
+              "tendrilThickness",
               Number(e.target.value),
             )
           }
         />
+        <button
+          className="cursor-pointer border border-sky-800 bg-zinc-800 p-1"
+          onClick={() => updateRatingsAndCategorization("tendrilThickness", -1)}
+        >
+          Reset
+        </button>
       </div>
       <div className="flex w-full gap-1 p-2">
         <label
           className="w-32 flex-none"
-          htmlFor="ratings-and-categorization-cluster-size"
+          htmlFor="ratings-and-categorization-tendril-length"
         >
-          Cluster Size
+          Tendril Length
         </label>
-        <span className="w-7">{ratingsAndCategorization.clusterSize}</span>
+        <span className="w-7">{ratingsAndCategorization.tendrilLength}</span>
         <input
           type="range"
           min="0"
           max="1"
-          step="0.1"
-          id="ratings-and-categorization-cluster-size"
-          value={ratingsAndCategorization.clusterSize}
+          step="0.001"
+          id="ratings-and-categorization-tendril-length"
+          value={ratingsAndCategorization.tendrilLength}
           onChange={(e) =>
             updateRatingsAndCategorization(
-              "clusterSize",
+              "tendrilLength",
               Number(e.target.value),
             )
           }
         />
-      </div>
-      <div className="flex w-full gap-1 p-2">
-        <label
-          className="w-32 flex-none"
-          htmlFor="ratings-and-categorization-cluster-distance"
+        <button
+          className="cursor-pointer border border-sky-800 bg-zinc-800 p-1"
+          onClick={() => updateRatingsAndCategorization("tendrilLength", -1)}
         >
-          Cluster Distance
-        </label>
-        <span className="w-7">{ratingsAndCategorization.clusterDistance}</span>
-        <input
-          type="range"
-          min="0"
-          max="1"
-          step="0.1"
-          id="ratings-and-categorization-cluster-distance"
-          value={ratingsAndCategorization.clusterDistance}
-          onChange={(e) =>
-            updateRatingsAndCategorization(
-              "clusterDistance",
-              Number(e.target.value),
-            )
-          }
-        />
-      </div>
-      <div className="flex w-full gap-1 p-2">
-        <label
-          className="w-32 flex-none"
-          htmlFor="ratings-and-categorization-griddiness"
-        >
-          Griddiness
-        </label>
-        <span className="w-7">{ratingsAndCategorization.griddiness}</span>
-        <input
-          type="range"
-          min="0"
-          max="1"
-          step="0.1"
-          id="ratings-and-categorization-griddiness"
-          value={ratingsAndCategorization.griddiness}
-          onChange={(e) =>
-            updateRatingsAndCategorization("griddiness", Number(e.target.value))
-          }
-        />
-      </div>
-      <div className="flex w-full gap-1 p-2">
-        <label
-          className="w-32 flex-none"
-          htmlFor="ratings-and-categorization-splotchiness"
-        >
-          Splotchiness
-        </label>
-        <span className="w-7">{ratingsAndCategorization.splotchiness}</span>
-        <input
-          type="range"
-          min="0"
-          max="1"
-          step="0.1"
-          id="ratings-and-categorization-splotchiness"
-          value={ratingsAndCategorization.splotchiness}
-          onChange={(e) =>
-            updateRatingsAndCategorization(
-              "splotchiness",
-              Number(e.target.value),
-            )
-          }
-        />
+          Reset
+        </button>
       </div>
       <div className="flex w-full gap-1 p-2">
         <motion.button

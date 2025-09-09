@@ -13,11 +13,8 @@ interface RatingsStore {
     agentCohesion: number;
     clockCoverage: number;
     backgroundCoverage: number;
-    tendrilSize: number;
-    clusterSize: number;
-    clusterDistance: number;
-    griddiness: number;
-    splotchiness: number;
+    tendrilThickness: number;
+    tendrilLength: number;
   }[];
 }
 

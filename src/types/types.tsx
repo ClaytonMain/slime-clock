@@ -196,7 +196,8 @@ type AgentStartType =
   | "9 Rings"
   | "Circle"
   | "Spiral"
-  | "Fill";
+  | "Fill"
+  | "Hexagonal Grid";
 
 export type DisplayTextureAspectRatio =
   | "Window"

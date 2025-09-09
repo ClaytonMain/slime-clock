@@ -89,7 +89,7 @@ function getAgentData(
   startType: number,
 ) {
   const data = new Float32Array(gpuTextureWidth * gpuTextureHeight * 4);
-  const choice = startType === -1 ? Math.floor(Math.random() * 6) : startType;
+  const choice = startType === -1 ? Math.floor(Math.random() * 7) : startType;
   for (let i = 0; i < gpuTextureWidth * gpuTextureHeight; i++) {
     let x = 0.0;
     let y = 0.0;
@@ -133,6 +133,39 @@ function getAgentData(
       x = Math.random();
       y = Math.random();
       z = Math.random();
+    } else if (choice === 6) {
+      // Hexagonal Grid
+      x = 0.5;
+      y = 0.5;
+      const edgeLength = 0.1;
+      const maxWalkDistance = 1.5;
+      const thisWalkDistance = Math.random() * maxWalkDistance;
+      let angle = (Math.PI / 3) * Math.floor(Math.random() * 6);
+      let currentWalkDistance = 0;
+      while (currentWalkDistance < thisWalkDistance) {
+        x +=
+          (Math.cos(angle) *
+            Math.min(edgeLength, thisWalkDistance - currentWalkDistance) *
+            displayHeight) /
+          displayWidth;
+        y +=
+          Math.sin(angle) *
+          Math.min(edgeLength, thisWalkDistance - currentWalkDistance);
+        if (x < 0 || x > 1 || y < 0 || y > 1) {
+          x = 0.5;
+          y = 0.5;
+          angle = (Math.PI / 3) * Math.floor(Math.random() * 6);
+        } else {
+          angle += (Math.PI / 6) * (Math.random() < 0.5 ? 1 : -1);
+        }
+        currentWalkDistance += edgeLength;
+      }
+      // x = ((x + displayWidth) % displayWidth) / displayWidth;
+      // y = ((y + displayHeight) % displayHeight) / displayHeight;
+      z =
+        ((angle + (Math.random() * Math.PI) / 2 + Math.PI * 10) %
+          (Math.PI * 2)) /
+        (Math.PI * 2);
     }
 
     const i4 = i * 4;

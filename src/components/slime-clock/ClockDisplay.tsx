@@ -28,6 +28,7 @@ function getDigitFontUrl(style: ClockDigitStyleValue): string {
       return "../../fonts/Syne_Mono/SyneMono-Regular.ttf";
     case "roboto":
       return "../../fonts/Roboto_Mono/RobotoMono-VariableFont_wght.ttf";
+    // return "https://fonts.gstatic.com/s/roboto/v18/KFOmCnqEu92Fr1Mu4mxM.woff";
     default:
       return "../../fonts/DSEG14Modern-Regular.woff";
   }

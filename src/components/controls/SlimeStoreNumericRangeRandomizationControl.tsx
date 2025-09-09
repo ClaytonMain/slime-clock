@@ -10,6 +10,7 @@ import {
 } from "../../constants/constants";
 import useSlimeStore from "../../stores/useSlimeStore";
 import type { NumericRangeRandomizationSettingMode } from "../../types/types";
+import CodeBlock from "../code-block/CodeBlock";
 import SlimeStoreSelect from "./SlimeStoreSelect";
 import SlimeStoreSlider from "./SlimeStoreSlider";
 import SlimeStoreSwitch from "./SlimeStoreSwitch";
@@ -29,6 +30,8 @@ export default function SlimeStoreNumericRangeRandomizationControl({
   labelHoverTabContentDisplay,
   baseId,
   randomizationSettingsStorePath,
+  settingStorePath,
+  displayCurrentValue = true,
   onCheckedChange,
   onRangeChange,
   listen,
@@ -37,10 +40,20 @@ export default function SlimeStoreNumericRangeRandomizationControl({
   labelHoverTabContentDisplay?: string | [string, string] | ReactNode;
   baseId?: string;
   randomizationSettingsStorePath: RandomizationSettingsStorePath;
+  settingStorePath?: string[];
+  displayCurrentValue?: boolean;
   onCheckedChange?: (value: boolean) => void;
   onRangeChange?: (value: [number] | [number, number]) => void;
   listen?: boolean;
 }) {
+  const [currentValue, setCurrentValue] = useState<number>(
+    settingStorePath
+      ? (R.view(
+          R.lensPath(settingStorePath),
+          useSlimeStore.getState(),
+        ) as number)
+      : -999.0,
+  );
   const settingType = randomizationSettingsStorePath[0];
   const controlName =
     randomizationSettingsStorePath[randomizationSettingsStorePath.length - 1];
@@ -70,7 +83,6 @@ export default function SlimeStoreNumericRangeRandomizationControl({
     useState<NumericRangeRandomizationSettingMode>(
       R.view(R.lensPath(randomizationModeStorePath), useSlimeStore.getState()),
     );
-
   useEffect(() => {
     const unsubRandomizationMode = useSlimeStore.subscribe(
       (state) => R.view(R.lensPath(randomizationModeStorePath), state),
@@ -84,6 +96,19 @@ export default function SlimeStoreNumericRangeRandomizationControl({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    if (!settingStorePath) return;
+    const unsubSetting = useSlimeStore.subscribe(
+      (state) => R.view(R.lensPath(settingStorePath), state),
+      (newValue) => {
+        setCurrentValue(newValue as number);
+      },
+    );
+    return () => {
+      unsubSetting();
+    };
+  }, [settingStorePath]);
+
   function handlePointerOver() {
     if (labelHoverTabContentDisplay) {
       useSlimeStore.setState(
@@ -92,6 +117,27 @@ export default function SlimeStoreNumericRangeRandomizationControl({
           state.controlsState.displayAreaContentName = null;
           state.controlsState.displayAreaHtmlContent =
             labelHoverTabContentDisplay;
+          state.controlsState.displayAreaContentType = "html";
+        }),
+      );
+    } else if (displayCurrentValue && settingStorePath) {
+      const content = (
+        <>
+          <div className="px-2 py-1">
+            The current {settingType} settings value for{" "}
+            {label?.toLowerCase() || controlName} is
+            <CodeBlock>{currentValue}</CodeBlock>.
+          </div>
+        </>
+      );
+      useSlimeStore.setState(
+        produce((state) => {
+          state.controlsState.displayAreaContentUpdatedAt = Date.now();
+          state.controlsState.displayAreaContentName = null;
+          state.controlsState.displayAreaHtmlContent = [
+            label || controlName,
+            content,
+          ];
           state.controlsState.displayAreaContentType = "html";
         }),
       );

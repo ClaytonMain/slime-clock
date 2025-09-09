@@ -313,94 +313,109 @@ export default function RandomizationControls() {
                     "enabled",
                   ],
                 },
+                {
+                  label: "Hexagonal Grid",
+                  baseId: "start-type-randomization-hexagonal-grid-switch",
+                  storePath: [
+                    "randomizationSettings",
+                    "simulation",
+                    "agentStartType",
+                    "options",
+                    "Hexagonal Grid",
+                    "enabled",
+                  ],
+                },
               ]}
             />
             <SlimeStoreNumericRangeRandomizationControl
               label="Clock Attraction"
-              labelHoverTabContentDisplay={["Clock Attraction"]}
               baseId="clock-attraction-randomization-control"
               randomizationSettingsStorePath={[
                 "simulation",
                 "agentClockAttraction",
               ]}
+              settingStorePath={["simulationSettings", "agentClockAttraction"]}
             />
             <SlimeStoreNumericRangeRandomizationControl
               label="Clock Deposit Rate"
-              labelHoverTabContentDisplay={["Clock Deposit Rate"]}
               baseId="clock-deposit-rate-randomization-control"
               randomizationSettingsStorePath={[
                 "simulation",
                 "agentClockDepositRate",
               ]}
+              settingStorePath={["simulationSettings", "agentClockDepositRate"]}
             />
             <SlimeStoreNumericRangeRandomizationControl
               label="Background Deposit Rate"
-              labelHoverTabContentDisplay={["Background Deposit Rate"]}
               baseId="background-deposit-rate-randomization-control"
               randomizationSettingsStorePath={[
                 "simulation",
                 "agentBackgroundDepositRate",
               ]}
+              settingStorePath={[
+                "simulationSettings",
+                "agentBackgroundDepositRate",
+              ]}
             />
             <SlimeStoreNumericRangeRandomizationControl
               label="Sensor Degrees"
-              labelHoverTabContentDisplay={["Sensor Degrees"]}
               baseId="sensor-degrees-randomization-control"
               randomizationSettingsStorePath={[
                 "simulation",
                 "agentSensorDegrees",
               ]}
+              settingStorePath={["simulationSettings", "agentSensorDegrees"]}
             />
             <SlimeStoreNumericRangeRandomizationControl
               label="Rotation Rate"
-              labelHoverTabContentDisplay={["Rotation Rate"]}
               baseId="rotation-rate-randomization-control"
               randomizationSettingsStorePath={[
                 "simulation",
                 "agentRotationRate",
               ]}
+              settingStorePath={["simulationSettings", "agentRotationRate"]}
             />
             <SlimeStoreNumericRangeRandomizationControl
               label="Sensor Offset"
-              labelHoverTabContentDisplay={["Sensor Offset"]}
               baseId="sensor-offset-randomization-control"
               randomizationSettingsStorePath={[
                 "simulation",
                 "agentSensorOffset",
               ]}
+              settingStorePath={["simulationSettings", "agentSensorOffset"]}
             />
             <SlimeStoreNumericRangeRandomizationControl
               label="Sensor Width"
-              labelHoverTabContentDisplay={["Sensor Width"]}
               baseId="sensor-width-randomization-control"
               randomizationSettingsStorePath={[
                 "simulation",
                 "agentSensorWidth",
               ]}
+              settingStorePath={["simulationSettings", "agentSensorWidth"]}
             />
             <SlimeStoreNumericRangeRandomizationControl
               label="Step Size"
-              labelHoverTabContentDisplay={["Step Size"]}
               baseId="step-size-randomization-control"
               randomizationSettingsStorePath={["simulation", "agentStepSize"]}
+              settingStorePath={["simulationSettings", "agentStepSize"]}
             />
             <SlimeStoreNumericRangeRandomizationControl
               label="Crowd Avoidance"
-              labelHoverTabContentDisplay={["Crowd Avoidance"]}
               baseId="crowd-avoidance-randomization-control"
               randomizationSettingsStorePath={[
                 "simulation",
                 "agentCrowdAvoidance",
               ]}
+              settingStorePath={["simulationSettings", "agentCrowdAvoidance"]}
             />
             <SlimeStoreNumericRangeRandomizationControl
               label="Wander Strength"
-              labelHoverTabContentDisplay={["Wander Strength"]}
               baseId="wander-strength-randomization-control"
               randomizationSettingsStorePath={[
                 "simulation",
                 "agentWanderStrength",
               ]}
+              settingStorePath={["simulationSettings", "agentWanderStrength"]}
             />
           </AccordionControlsItem>
           <AccordionControlsItem
@@ -413,37 +428,43 @@ export default function RandomizationControls() {
           >
             <SlimeStoreNumericRangeRandomizationControl
               label="Clock Decay Rate"
-              labelHoverTabContentDisplay={["Clock Decay Rate"]}
               baseId="clock-decay-rate-randomization-control"
               randomizationSettingsStorePath={[
                 "simulation",
                 "trailClockDecayRate",
               ]}
+              settingStorePath={["simulationSettings", "trailClockDecayRate"]}
             />
             <SlimeStoreNumericRangeRandomizationControl
               label="Clock Diffuse Rate"
-              labelHoverTabContentDisplay={["Clock Diffuse Rate"]}
               baseId="clock-diffuse-rate-randomization-control"
               randomizationSettingsStorePath={[
                 "simulation",
                 "trailClockDiffuseRate",
               ]}
+              settingStorePath={["simulationSettings", "trailClockDiffuseRate"]}
             />
             <SlimeStoreNumericRangeRandomizationControl
               label="Background Decay Rate"
-              labelHoverTabContentDisplay={["Background Decay Rate"]}
               baseId="background-decay-rate-randomization-control"
               randomizationSettingsStorePath={[
                 "simulation",
                 "trailBackgroundDecayRate",
               ]}
+              settingStorePath={[
+                "simulationSettings",
+                "trailBackgroundDecayRate",
+              ]}
             />
             <SlimeStoreNumericRangeRandomizationControl
               label="Background Diffuse Rate"
-              labelHoverTabContentDisplay={["Background Diffuse Rate"]}
               baseId="background-diffuse-rate-randomization-control"
               randomizationSettingsStorePath={[
                 "simulation",
+                "trailBackgroundDiffuseRate",
+              ]}
+              settingStorePath={[
+                "simulationSettings",
                 "trailBackgroundDiffuseRate",
               ]}
             />
@@ -497,7 +518,6 @@ export default function RandomizationControls() {
             />
             <SlimeStoreNumericRangeRandomizationControl
               label="Red Y-Offset"
-              labelHoverTabContentDisplay={["Red Y-Offset"]}
               baseId="red-y-offset-randomization-control"
               randomizationSettingsStorePath={[
                 "color",
@@ -505,10 +525,15 @@ export default function RandomizationControls() {
                 "r",
                 "yOffset",
               ]}
+              settingStorePath={[
+                "colorSettings",
+                "proceduralColorPalette",
+                "r",
+                "yOffset",
+              ]}
             />
             <SlimeStoreNumericRangeRandomizationControl
               label="Red Amplitude"
-              labelHoverTabContentDisplay={["Red Amplitude"]}
               baseId="red-amplitude-randomization-control"
               randomizationSettingsStorePath={[
                 "color",
@@ -516,10 +541,15 @@ export default function RandomizationControls() {
                 "r",
                 "amplitude",
               ]}
+              settingStorePath={[
+                "colorSettings",
+                "proceduralColorPalette",
+                "r",
+                "amplitude",
+              ]}
             />
             <SlimeStoreNumericRangeRandomizationControl
               label="Red Frequency"
-              labelHoverTabContentDisplay={["Red Frequency"]}
               baseId="red-frequency-randomization-control"
               randomizationSettingsStorePath={[
                 "color",
@@ -527,10 +557,15 @@ export default function RandomizationControls() {
                 "r",
                 "frequency",
               ]}
+              settingStorePath={[
+                "colorSettings",
+                "proceduralColorPalette",
+                "r",
+                "frequency",
+              ]}
             />
             <SlimeStoreNumericRangeRandomizationControl
               label="Red Phase"
-              labelHoverTabContentDisplay={["Red Phase"]}
               baseId="red-phase-randomization-control"
               randomizationSettingsStorePath={[
                 "color",
@@ -538,10 +573,15 @@ export default function RandomizationControls() {
                 "r",
                 "phase",
               ]}
+              settingStorePath={[
+                "colorSettings",
+                "proceduralColorPalette",
+                "r",
+                "phase",
+              ]}
             />
             <SlimeStoreNumericRangeRandomizationControl
               label="Green Y-Offset"
-              labelHoverTabContentDisplay={["Green Y-Offset"]}
               baseId="green-y-offset-randomization-control"
               randomizationSettingsStorePath={[
                 "color",
@@ -549,10 +589,15 @@ export default function RandomizationControls() {
                 "g",
                 "yOffset",
               ]}
+              settingStorePath={[
+                "colorSettings",
+                "proceduralColorPalette",
+                "g",
+                "yOffset",
+              ]}
             />
             <SlimeStoreNumericRangeRandomizationControl
               label="Green Amplitude"
-              labelHoverTabContentDisplay={["Green Amplitude"]}
               baseId="green-amplitude-randomization-control"
               randomizationSettingsStorePath={[
                 "color",
@@ -560,10 +605,15 @@ export default function RandomizationControls() {
                 "g",
                 "amplitude",
               ]}
+              settingStorePath={[
+                "colorSettings",
+                "proceduralColorPalette",
+                "g",
+                "amplitude",
+              ]}
             />
             <SlimeStoreNumericRangeRandomizationControl
               label="Green Frequency"
-              labelHoverTabContentDisplay={["Green Frequency"]}
               baseId="green-frequency-randomization-control"
               randomizationSettingsStorePath={[
                 "color",
@@ -571,10 +621,15 @@ export default function RandomizationControls() {
                 "g",
                 "frequency",
               ]}
+              settingStorePath={[
+                "colorSettings",
+                "proceduralColorPalette",
+                "g",
+                "frequency",
+              ]}
             />
             <SlimeStoreNumericRangeRandomizationControl
               label="Green Phase"
-              labelHoverTabContentDisplay={["Green Phase"]}
               baseId="green-phase-randomization-control"
               randomizationSettingsStorePath={[
                 "color",
@@ -582,10 +637,15 @@ export default function RandomizationControls() {
                 "g",
                 "phase",
               ]}
+              settingStorePath={[
+                "colorSettings",
+                "proceduralColorPalette",
+                "g",
+                "phase",
+              ]}
             />
             <SlimeStoreNumericRangeRandomizationControl
               label="Blue Y-Offset"
-              labelHoverTabContentDisplay={["Blue Y-Offset"]}
               baseId="blue-y-offset-randomization-control"
               randomizationSettingsStorePath={[
                 "color",
@@ -593,10 +653,15 @@ export default function RandomizationControls() {
                 "b",
                 "yOffset",
               ]}
+              settingStorePath={[
+                "colorSettings",
+                "proceduralColorPalette",
+                "b",
+                "yOffset",
+              ]}
             />
             <SlimeStoreNumericRangeRandomizationControl
               label="Blue Amplitude"
-              labelHoverTabContentDisplay={["Blue Amplitude"]}
               baseId="blue-amplitude-randomization-control"
               randomizationSettingsStorePath={[
                 "color",
@@ -604,10 +669,15 @@ export default function RandomizationControls() {
                 "b",
                 "amplitude",
               ]}
+              settingStorePath={[
+                "colorSettings",
+                "proceduralColorPalette",
+                "b",
+                "amplitude",
+              ]}
             />
             <SlimeStoreNumericRangeRandomizationControl
               label="Blue Frequency"
-              labelHoverTabContentDisplay={["Blue Frequency"]}
               baseId="blue-frequency-randomization-control"
               randomizationSettingsStorePath={[
                 "color",
@@ -615,10 +685,15 @@ export default function RandomizationControls() {
                 "b",
                 "frequency",
               ]}
+              settingStorePath={[
+                "colorSettings",
+                "proceduralColorPalette",
+                "b",
+                "frequency",
+              ]}
             />
             <SlimeStoreNumericRangeRandomizationControl
               label="Blue Phase"
-              labelHoverTabContentDisplay={["Blue Phase"]}
               baseId="blue-phase-randomization-control"
               randomizationSettingsStorePath={[
                 "color",
@@ -626,60 +701,66 @@ export default function RandomizationControls() {
                 "b",
                 "phase",
               ]}
+              settingStorePath={[
+                "colorSettings",
+                "proceduralColorPalette",
+                "b",
+                "phase",
+              ]}
             />
             <SlimeStoreNumericRangeRandomizationControl
               label="Intensity Smoothing"
-              labelHoverTabContentDisplay={["Intensity Smoothing"]}
               baseId="randomization-controls-intensity-smoothing-randomization-control"
               randomizationSettingsStorePath={["color", "intensitySmoothing"]}
+              settingStorePath={["colorSettings", "intensitySmoothing"]}
             />
             <SlimeStoreNumericRangeRandomizationControl
               label="Agent Dir. Smoothing"
-              labelHoverTabContentDisplay={["Agent Direction Smoothing"]}
               baseId="randomization-controls-agent-direction-smoothing-randomization-control"
               randomizationSettingsStorePath={[
                 "color",
                 "agentDirectionSmoothing",
               ]}
+              settingStorePath={["colorSettings", "agentDirectionSmoothing"]}
             />
             <SlimeStoreNumericRangeRandomizationControl
               label="Agent Dir. Color Offset"
-              labelHoverTabContentDisplay={["Agent Direction Color Offset"]}
               baseId="randomization-controls-agent-direction-color-offset-randomization-control"
               randomizationSettingsStorePath={[
                 "color",
                 "agentDirectionColorOffset",
               ]}
+              settingStorePath={["colorSettings", "agentDirectionColorOffset"]}
             />
             <SlimeStoreNumericRangeRandomizationControl
               label="Clock Color Offset"
-              labelHoverTabContentDisplay={["Clock Color Offset"]}
               baseId="randomization-controls-clock-color-offset-randomization-control"
               randomizationSettingsStorePath={["color", "clockColorOffset"]}
+              settingStorePath={["colorSettings", "clockColorOffset"]}
             />
             <SlimeStoreNumericRangeRandomizationControl
               label="X Color Offset"
-              labelHoverTabContentDisplay={["X Color Offset"]}
               baseId="randomization-controls-x-color-offset-randomization-control"
               randomizationSettingsStorePath={["color", "xColorOffset"]}
+              settingStorePath={["colorSettings", "xColorOffset"]}
             />
             <SlimeStoreNumericRangeRandomizationControl
               label="Y Color Offset"
-              labelHoverTabContentDisplay={["Y Color Offset"]}
               baseId="randomization-controls-y-color-offset-randomization-control"
               randomizationSettingsStorePath={["color", "yColorOffset"]}
+              settingStorePath={["colorSettings", "yColorOffset"]}
             />
             <SlimeStoreNumericRangeRandomizationControl
               label="Palette Cycle Speed"
-              labelHoverTabContentDisplay={["Palette Cycle Speed"]}
               baseId="randomization-controls-palette-cycle-speed-randomization-control"
               randomizationSettingsStorePath={["color", "paletteCycleSpeed"]}
+              settingStorePath={["colorSettings", "paletteCycleSpeed"]}
             />
             <SlimeStoreNumericRangeRandomizationControl
               label="Palette Cycle Scale"
-              labelHoverTabContentDisplay={["Palette Cycle Scale"]}
               baseId="randomization-controls-palette-cycle-scale-randomization-control"
               randomizationSettingsStorePath={["color", "paletteCycleScale"]}
+              settingStorePath={["colorSettings", "paletteCycleScale"]}
             />
           </AccordionControlsItem>
         </AccordionControlsWrapper>
