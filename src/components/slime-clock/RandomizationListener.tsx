@@ -29,9 +29,11 @@ function getNumericRangeRandomValue(
     randValue = UTILS.getGaussRandomInControlBounds(
       min,
       max,
-      numericRangeRandConfig.mu,
-      numericRangeRandConfig.sigma,
+      numericRangeRandConfig.gaussMu,
+      numericRangeRandConfig.gaussSigma,
     );
+  } else if (numericRangeRandConfig.mode === "pert") {
+    randValue = UTILS.getPertRandom(...numericRangeRandConfig.pertMinModeMax);
   }
   if (step) {
     randValue = UTILS.roundToFixed(Math.round(randValue / step) * step, 4);
@@ -159,9 +161,11 @@ export default function RandomizationListener() {
                       .min as number,
                     PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS[settingKey]!
                       .max as number,
-                    randConfig.mu,
-                    randConfig.sigma,
+                    randConfig.gaussMu,
+                    randConfig.gaussSigma,
                   );
+                } else if (randConfig.mode === "pert") {
+                  randValue = UTILS.getPertRandom(...randConfig.pertMinModeMax);
                 }
                 const step =
                   PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS[settingKey]!.step;

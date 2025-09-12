@@ -66,14 +66,15 @@ export interface SimulationSettings extends LoadableSimulationSettings {
   displayTextureTargetQuality: number;
 }
 
-export type NumericRangeRandomizationSettingMode = "flat" | "gaussian";
+export type NumericRangeRandomizationSettingMode = "flat" | "gaussian" | "pert";
 
 export interface NumericRangeRandomizationSetting {
   type: "numericRange";
   enabled: boolean;
   flatRange: [number, number];
-  mu: number;
-  sigma: number;
+  gaussMu: number;
+  gaussSigma: number;
+  pertMinModeMax: [number, number, number];
   mode: NumericRangeRandomizationSettingMode;
 }
 
@@ -352,3 +353,9 @@ type TrailUniformsKey =
   | "uDelta"
   | "uTime";
 export type TrailUniforms = Record<TrailUniformsKey, THREE.Uniform>;
+
+export type DisplayAreaPdfValues = {
+  currentSettingValue: number;
+  controlConfig: { min: number; max: number; step: number };
+  numericRangeRandomizationSettings: NumericRangeRandomizationSetting;
+};

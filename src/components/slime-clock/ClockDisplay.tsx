@@ -70,9 +70,9 @@ function getFormattedDigitTime({
 export default function ClockDisplay() {
   const clockSettings = useSlimeStore((state) => state.clockSettings);
   const [displayText1, setDisplayText1] = useState<string>(
-    Math.random() > 0.99 &&
-      clockSettings.digitStyle === "14segment" &&
-      clockSettings.digitLayout === "horizontal"
+    (Math.random() > 0.99 &&
+    clockSettings.digitStyle === "14segment" &&
+    clockSettings.digitLayout === "horizontal"
       ? "ME:OW"
       : getFormattedDigitTime({
           hourFormat: clockSettings.hourFormat,
@@ -81,9 +81,9 @@ export default function ClockDisplay() {
           showSeconds: false,
           showAmPm: false,
           padHours: clockSettings.padHours,
-        }),
+        })) || "",
   );
-  const [displayText2, setDisplayText2] = useState<string>(displayText1);
+  const [displayText2, setDisplayText2] = useState<string>(displayText1 || "");
   const [fontUrl, setFontUrl] = useState(
     getDigitFontUrl(clockSettings.digitStyle),
   );
@@ -93,6 +93,13 @@ export default function ClockDisplay() {
   const displayTextureHeight = useSlimeStore(
     (state) => state.simulationSettings.displayTextureHeight,
   );
+
+  const clockDigitStyle = useSlimeStore(
+    (state) => state.clockSettings.digitStyle,
+  );
+  useEffect(() => {
+    setFontUrl(getDigitFontUrl(clockDigitStyle));
+  }, [clockDigitStyle]);
 
   const material1Ref = useRef<THREE.ShaderMaterial>(null!);
   const material2Ref = useRef<THREE.ShaderMaterial>(null!);
@@ -148,10 +155,6 @@ export default function ClockDisplay() {
       setDisplayText2(formattedTime);
     }
   });
-
-  useEffect(() => {
-    setFontUrl(getDigitFontUrl(clockSettings.digitStyle));
-  }, [clockSettings.digitStyle]);
 
   return (
     <>

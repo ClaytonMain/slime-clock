@@ -1,11 +1,9 @@
-uniform float uYMax;
-uniform float uYMin;
-uniform float uYAmp;
-uniform float uYMid;
-uniform vec3 uPaletteA;
-uniform vec3 uPaletteB;
-uniform vec3 uPaletteC;
-uniform vec3 uPaletteD;
+uniform float uCurrentSettingValue;
+uniform vec2 uUniformMinMax;
+uniform vec2 uGaussMuSigma;
+uniform vec2 uBetaAB;
+uniform float uPertGamma;
+uniform int uPdfType; // 0: Uniform, 1: Gaussian, 2: PERT (beta)
 
 varying vec2 vUv;
 
@@ -34,7 +32,7 @@ void main() {
 
     vec3 cosValues = clamp(getCosValues(vUv.x, uPaletteA, uPaletteB, uPaletteC, uPaletteD), uYMin, uYMax);
 
-    gl_FragColor = vec4(color * ((1.0 - step(uYMin, normY)) * 0.75 + 0.25), 1.0);
+    gl_FragColor = vec4(color * ((1.0 - step(uYMin, normY)) * 0.75 + 0.25), uAlpha);
 
     vec3 normYMinusCosValues = abs(normY - cosValues);
 

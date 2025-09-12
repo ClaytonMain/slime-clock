@@ -12,6 +12,7 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import useSlimeStore from "../../stores/useSlimeStore";
 import ProceduralColorPaletteDisplay from "../procedural-color-palette-display/ProceduralColorPaletteDisplay";
+import RandomizationPdfDisplay from "../randomization-pdf-display/RandomizationPdfDisplay";
 
 const displayPlaneUniforms = {
   uPositionOffset: new THREE.Uniform(new THREE.Vector2(0, 0)),
@@ -217,6 +218,7 @@ export default function ThreeControlDisplay() {
             {contentName === "procedural-color-palette" && (
               <ProceduralColorPaletteDisplay />
             )}
+            {contentName === "randomization-pdf" && <RandomizationPdfDisplay />}
           </RenderTexture>
         </meshBasicMaterial>
       </Plane>

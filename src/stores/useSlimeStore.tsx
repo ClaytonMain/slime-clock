@@ -23,6 +23,7 @@ import {
   type ColorRandomizationSettings,
   type ColorSettings,
   type ControlsTabName,
+  type DisplayAreaPdfValues,
   type LoadableSlimeStoreSettings,
   type RandomizationPreset,
   type SimulationRandomizationPreset,
@@ -44,6 +45,7 @@ interface ControlsState {
   displayAreaHtmlContent: string | [string, string] | ReactNode | null;
   displayAreaContentType: "html" | "three";
   displayAreaBoundingClientRect: DOMRect | null;
+  displayAreaPdfValues: DisplayAreaPdfValues;
   controlsAreaBoundingClientRect: DOMRect | null;
   selectedTabButtonClientRect: DOMRect | null;
   showSelectedTabCornerIcons: boolean;
@@ -386,6 +388,19 @@ const useSlimeStore = create<SlimeStore>()(
           displayAreaHtmlContent: null,
           displayAreaContentType: "html",
           displayAreaBoundingClientRect: null,
+          displayAreaPdfValues: {
+            currentSettingValue: 0.0,
+            controlConfig: { min: 0, max: 1, step: 0.01 },
+            numericRangeRandomizationSettings: {
+              type: "numericRange",
+              enabled: true,
+              flatRange: [0, 1],
+              gaussMu: 0.5,
+              gaussSigma: 0.15,
+              pertMinModeMax: [0, 0.5, 1],
+              mode: "pert",
+            },
+          },
           controlsAreaBoundingClientRect: null,
           selectedTabButtonClientRect: null,
           showSelectedTabCornerIcons: false,

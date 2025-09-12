@@ -15,6 +15,7 @@ interface RatingsStore {
     backgroundCoverage: number;
     tendrilThickness: number;
     tendrilLength: number;
+    waviness: number;
   }[];
 }
 

@@ -43,6 +43,7 @@ export default function ColorControls() {
   }, [selectedTab]);
 
   function handleOnValueChange(value: number[], storePath: string[]) {
+    useSlimeStore.setState(R.over(R.lensPath(storePath), () => value[0]));
     useSlimeStore.setState(
       produce((state) => {
         state.controlsState.displayAreaContentName = "procedural-color-palette";
@@ -50,7 +51,6 @@ export default function ColorControls() {
         state.colorSettings.slimeColorChangedAt = Date.now();
       }),
     );
-    useSlimeStore.setState(R.over(R.lensPath(storePath), () => value[0]));
   }
 
   function getPresetIndex(preset: LoadableSlimeStoreSettings) {

@@ -24,7 +24,6 @@ const uniforms = {
   uPaletteB: new THREE.Uniform(new THREE.Vector3(0, 0, 0)),
   uPaletteC: new THREE.Uniform(new THREE.Vector3(0, 0, 0)),
   uPaletteD: new THREE.Uniform(new THREE.Vector3(0, 0, 0)),
-  uAlpha: new THREE.Uniform(1.0),
 };
 
 function updateUniforms() {

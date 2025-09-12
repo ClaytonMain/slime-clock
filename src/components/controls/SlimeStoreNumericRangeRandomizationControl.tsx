@@ -10,7 +10,6 @@ import {
 } from "../../constants/constants";
 import useSlimeStore from "../../stores/useSlimeStore";
 import type { NumericRangeRandomizationSettingMode } from "../../types/types";
-import CodeBlock from "../code-block/CodeBlock";
 import SlimeStoreSelect from "./SlimeStoreSelect";
 import SlimeStoreSlider from "./SlimeStoreSlider";
 import SlimeStoreSwitch from "./SlimeStoreSwitch";
@@ -43,7 +42,9 @@ export default function SlimeStoreNumericRangeRandomizationControl({
   settingStorePath?: string[];
   displayCurrentValue?: boolean;
   onCheckedChange?: (value: boolean) => void;
-  onRangeChange?: (value: [number] | [number, number]) => void;
+  onRangeChange?: (
+    value: [number] | [number, number] | [number, number, number],
+  ) => void;
   listen?: boolean;
 }) {
   const [currentValue, setCurrentValue] = useState<number>(
@@ -110,38 +111,62 @@ export default function SlimeStoreNumericRangeRandomizationControl({
   }, [settingStorePath]);
 
   function handlePointerOver() {
-    if (labelHoverTabContentDisplay) {
-      useSlimeStore.setState(
-        produce((state) => {
-          state.controlsState.displayAreaContentUpdatedAt = Date.now();
-          state.controlsState.displayAreaContentName = null;
-          state.controlsState.displayAreaHtmlContent =
-            labelHoverTabContentDisplay;
-          state.controlsState.displayAreaContentType = "html";
-        }),
-      );
-    } else if (displayCurrentValue && settingStorePath) {
-      const content = (
-        <>
-          <div className="px-2 py-1">
-            The current {settingType} settings value for{" "}
-            {label?.toLowerCase() || controlName} is
-            <CodeBlock>{currentValue}</CodeBlock>.
-          </div>
-        </>
-      );
-      useSlimeStore.setState(
-        produce((state) => {
-          state.controlsState.displayAreaContentUpdatedAt = Date.now();
-          state.controlsState.displayAreaContentName = null;
-          state.controlsState.displayAreaHtmlContent = [
-            label || controlName,
-            content,
-          ];
-          state.controlsState.displayAreaContentType = "html";
-        }),
-      );
+    // if (labelHoverTabContentDisplay) {
+    //   useSlimeStore.setState(
+    //     produce((state) => {
+    //       state.controlsState.displayAreaContentUpdatedAt = Date.now();
+    //       state.controlsState.displayAreaContentName = null;
+    //       state.controlsState.displayAreaHtmlContent =
+    //         labelHoverTabContentDisplay;
+    //       state.controlsState.displayAreaContentType = "html";
+    //     }),
+    //   );
+    // } else if (displayCurrentValue && settingStorePath) {
+    //   const content = (
+    //     <>
+    //       <div className="px-2 py-1">
+    //         The current {settingType} settings value for{" "}
+    //         {label?.toLowerCase() || controlName} is
+    //         <CodeBlock>{currentValue}</CodeBlock>.
+    //       </div>
+    //     </>
+    //   );
+    //   useSlimeStore.setState(
+    //     produce((state) => {
+    //       state.controlsState.displayAreaContentUpdatedAt = Date.now();
+    //       state.controlsState.displayAreaContentName = null;
+    //       state.controlsState.displayAreaHtmlContent = [
+    //         label || controlName,
+    //         content,
+    //       ];
+    //       state.controlsState.displayAreaContentType = "html";
+    //     }),
+    //   );
+    // }
+    if (
+      labelHoverTabContentDisplay ||
+      (displayCurrentValue && settingStorePath)
+    ) {
+      // TODO: Address these variables.
     }
+    useSlimeStore.setState(
+      produce((state) => {
+        state.controlsState.displayAreaContentUpdatedAt = Date.now();
+        state.controlsState.displayAreaContentName = "randomization-pdf";
+        state.controlsState.displayAreaContentType = "three";
+        state.controlsState.displayAreaPdfValues = {
+          currentSettingValue: currentValue,
+          controlConfig: controlConfig,
+          numericRangeRandomizationSettings: R.view(
+            R.lensPath([
+              "randomizationSettings",
+              ...randomizationSettingsStorePath,
+            ]),
+            useSlimeStore.getState(),
+          ) as NumericRangeRandomizationSettingMode,
+        };
+      }),
+    );
   }
 
   return (
@@ -200,6 +225,7 @@ export default function SlimeStoreNumericRangeRandomizationControl({
                 options={[
                   { label: "Flat", value: "flat" },
                   { label: "Gaussian", value: "gaussian" },
+                  { label: "PERT", value: "pert" },
                 ]}
               />
             </div>
@@ -235,7 +261,7 @@ export default function SlimeStoreNumericRangeRandomizationControl({
                 storePath={[
                   "randomizationSettings",
                   ...randomizationSettingsStorePath,
-                  "mu",
+                  "gaussMu",
                 ]}
                 listen={listen}
                 type="slider"
@@ -256,13 +282,29 @@ export default function SlimeStoreNumericRangeRandomizationControl({
                 storePath={[
                   "randomizationSettings",
                   ...randomizationSettingsStorePath,
-                  "sigma",
+                  "gaussSigma",
                 ]}
                 listen={listen}
                 type="slider"
               />
             </div>
           </div>
+        )}
+        {randomizationMode === "pert" && (
+          <SlimeStoreSlider
+            baseInputId={`${baseId}-flat-range-slider`}
+            min={controlConfig!.min as number}
+            max={controlConfig!.max as number}
+            step={controlConfig!.step as number}
+            storePath={[
+              "randomizationSettings",
+              ...randomizationSettingsStorePath,
+              "pertMinModeMax",
+            ]}
+            onValueChange={onRangeChange}
+            listen={listen}
+            type="minModeMax"
+          />
         )}
       </div>
     </motion.div>

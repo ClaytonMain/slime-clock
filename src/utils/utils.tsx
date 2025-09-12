@@ -1,3 +1,5 @@
+// @ts-expect-error no types for jstat
+import { beta } from "jstat";
 import * as THREE from "three";
 import {
   AGENT_START_TYPE_DROPDOWN_OPTIONS,
@@ -144,26 +146,28 @@ function getAgentData(
       let currentWalkDistance = 0;
       while (currentWalkDistance < thisWalkDistance) {
         x +=
-          (Math.cos(angle) *
-            Math.min(edgeLength, thisWalkDistance - currentWalkDistance) *
-            displayHeight) /
-          displayWidth;
+          Math.cos(angle) *
+          Math.min(edgeLength, thisWalkDistance - currentWalkDistance);
         y +=
           Math.sin(angle) *
           Math.min(edgeLength, thisWalkDistance - currentWalkDistance);
-        if (x < 0 || x > 1 || y < 0 || y > 1) {
+        if (y < 0 || y > 1) {
           x = 0.5;
           y = 0.5;
           angle = (Math.PI / 3) * Math.floor(Math.random() * 6);
         } else {
-          angle += (Math.PI / 6) * (Math.random() < 0.5 ? 1 : -1);
+          angle += (Math.PI / 3) * (Math.random() < 0.5 ? 1 : -1);
         }
         currentWalkDistance += edgeLength;
       }
       // x = ((x + displayWidth) % displayWidth) / displayWidth;
       // y = ((y + displayHeight) % displayHeight) / displayHeight;
+      x = ((x - 0.5) * displayHeight) / displayWidth + 0.5;
       z =
-        ((angle + (Math.random() * Math.PI) / 2 + Math.PI * 10) %
+        ((angle +
+          Math.PI / 3 +
+          (Math.round(Math.random()) * 2 - 1) * (Math.PI / 2) +
+          Math.PI * 10) %
           (Math.PI * 2)) /
         (Math.PI * 2);
     }
@@ -337,6 +341,20 @@ export function getGaussRandomInControlBounds(
   const v = Math.random();
   const z = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
   return Math.max(min, Math.min(max, mu + z * sigma));
+}
+
+// https://medium.com/data-science/python-scenario-analysis-modeling-expert-estimates-with-the-beta-pert-distribution-22a5e90cfa79
+export function getPertRandom(
+  min: number,
+  mode: number,
+  max: number,
+  gamma: number = 4,
+): number {
+  const a = 1 + (gamma * (mode - min)) / (max - min);
+  const b = 1 + (gamma * (max - mode)) / (max - min);
+  const x = beta.sample(a, b) as number;
+  const newValue = min + (max - min) * x;
+  return newValue;
 }
 
 export function getRandomizationPresetByNameAndType<

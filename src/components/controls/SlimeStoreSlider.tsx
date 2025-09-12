@@ -21,9 +21,11 @@ export default function SlimeStoreSlider({
   max: number;
   step?: number;
   storePath: string[];
-  onValueChange?: (value: [number] | [number, number]) => void;
+  onValueChange?: (
+    value: [number] | [number, number] | [number, number, number],
+  ) => void;
   listen?: boolean;
-  type?: "slider" | "range";
+  type?: "slider" | "range" | "minModeMax";
   hideSlider?: boolean; // I just didn't want to write a `SlimeStoreInput` component for this.
   boundValue?: boolean;
 }) {
@@ -31,23 +33,27 @@ export default function SlimeStoreSlider({
   const inputId = `${baseInputId}-input`;
 
   const [selectedValue, setSelectedValue] = useState<
-    [number] | [number, number]
+    [number] | [number, number] | [number, number, number]
   >(
     type === "slider"
       ? [R.view(R.lensPath(storePath), useSlimeStore.getState())]
       : R.view(R.lensPath(storePath), useSlimeStore.getState()),
   );
 
-  function handleOnValueChange(value: [number] | [number, number]) {
+  function handleOnValueChange(
+    value: [number] | [number, number] | [number, number, number],
+  ) {
     let processedValue = value;
     if (boundValue) {
       processedValue = value.map((v) => Math.min(Math.max(v, min), max)) as
         | [number]
-        | [number, number];
+        | [number, number]
+        | [number, number, number];
     }
     processedValue = processedValue.sort((a, b) => a - b) as
       | [number]
-      | [number, number];
+      | [number, number]
+      | [number, number, number];
     if (onValueChange) {
       onValueChange(processedValue);
     } else {
@@ -103,36 +109,103 @@ export default function SlimeStoreSlider({
       )}
       {type === "range" && (
         <div className="order-last flex w-full items-center justify-center gap-1">
-          <input
-            id={`${inputId}-min`}
-            type="number"
-            value={selectedValue[0]}
-            onChange={(e) =>
-              handleOnValueChange([
-                Number(e.target.value),
-                selectedValue[1] as number,
-              ])
-            }
-            min={min}
-            max={max}
-            step={step}
-            className="h-7 w-18 flex-initial border border-sky-800 bg-zinc-900 px-2 py-1 text-lg text-sky-50 md:text-sm"
-          />
-          <input
-            id={`${inputId}-max`}
-            type="number"
-            value={selectedValue[1]}
-            onChange={(e) =>
-              handleOnValueChange([
-                selectedValue[0] as number,
-                Number(e.target.value),
-              ])
-            }
-            min={min}
-            max={max}
-            step={step}
-            className="h-7 w-18 flex-initial border border-sky-800 bg-zinc-900 px-2 py-1 text-lg text-sky-50 md:text-sm"
-          />
+          <div className="flex flex-col items-center">
+            <input
+              id={`${inputId}-min`}
+              type="number"
+              value={selectedValue[0]}
+              onChange={(e) =>
+                handleOnValueChange([
+                  Number(e.target.value),
+                  selectedValue[1] as number,
+                ])
+              }
+              min={min}
+              max={max}
+              step={step}
+              className="h-7 w-18 flex-initial border border-sky-800 bg-zinc-900 px-2 py-1 text-lg text-sky-50 md:text-sm"
+            />
+            <div className="text-xs">Min</div>
+          </div>
+          <div className="flex flex-col items-center">
+            <input
+              id={`${inputId}-max`}
+              type="number"
+              value={selectedValue[1]}
+              onChange={(e) =>
+                handleOnValueChange([
+                  selectedValue[0] as number,
+                  Number(e.target.value),
+                ])
+              }
+              min={min}
+              max={max}
+              step={step}
+              className="h-7 w-18 flex-initial border border-sky-800 bg-zinc-900 px-2 py-1 text-lg text-sky-50 md:text-sm"
+            />
+            <div className="text-xs">Max</div>
+          </div>
+        </div>
+      )}
+      {type === "minModeMax" && (
+        <div className="order-last flex w-full items-center justify-center gap-1">
+          <div className="flex flex-col items-center">
+            <input
+              id={`${inputId}-min`}
+              type="number"
+              value={selectedValue[0]}
+              onChange={(e) =>
+                handleOnValueChange([
+                  Number(e.target.value),
+                  selectedValue[1] as number,
+                  selectedValue[2] as number,
+                ])
+              }
+              min={min}
+              max={max}
+              step={step}
+              className="h-7 w-18 flex-initial border border-sky-800 bg-zinc-900 px-2 py-1 text-lg text-sky-50 md:text-sm"
+            />
+            <div className="text-xs">Min</div>
+          </div>
+          <div className="flex flex-col items-center">
+            <input
+              id={`${inputId}-mode`}
+              type="number"
+              value={selectedValue[1]}
+              onChange={(e) =>
+                handleOnValueChange([
+                  selectedValue[0] as number,
+                  Number(e.target.value),
+                  selectedValue[2] as number,
+                ])
+              }
+              min={min}
+              max={max}
+              step={step}
+              className="h-7 w-18 flex-initial border border-sky-800 bg-zinc-900 px-2 py-1 text-lg text-sky-50 md:text-sm"
+            />
+            <div className="text-xs">Mode</div>
+          </div>
+          <div className="flex flex-col items-center">
+            <input
+              id={`${inputId}-max`}
+              type="number"
+              value={selectedValue[2]}
+              onChange={(e) =>
+                handleOnValueChange([
+                  selectedValue[0] as number,
+                  selectedValue[1] as number,
+                  Number(e.target.value),
+                ])
+              }
+              min={min}
+              max={max}
+              step={step}
+              className="h-7 w-18 flex-initial border border-sky-800 bg-zinc-900 px-2 py-1 text-lg text-sky-50 md:text-sm"
+            />
+            <div className="text-xs">Max</div>
+          </div>
         </div>
       )}
       <div className="flex w-full items-center justify-center">
@@ -157,7 +230,16 @@ export default function SlimeStoreSlider({
                 style={{ backgroundColor: "var(--color-sky-50)" }}
               />
             </Slider.Thumb>
-            {type === "range" && (
+            {(type === "range" || type === "minModeMax") && (
+              <Slider.Thumb asChild>
+                <motion.div
+                  className="block size-5 rounded-[10px] focus:shadow-[0_0_0_5px] focus:shadow-sky-600 focus:outline-none"
+                  whileHover={{ backgroundColor: "var(--color-sky-100)" }}
+                  style={{ backgroundColor: "var(--color-sky-50)" }}
+                />
+              </Slider.Thumb>
+            )}
+            {type === "minModeMax" && (
               <Slider.Thumb asChild>
                 <motion.div
                   className="block size-5 rounded-[10px] focus:shadow-[0_0_0_5px] focus:shadow-sky-600 focus:outline-none"

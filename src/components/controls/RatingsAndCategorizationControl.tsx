@@ -16,6 +16,7 @@ const defaultRatingsAndCategorization = {
   backgroundCoverage: -1,
   tendrilThickness: -1,
   tendrilLength: -1,
+  waviness: -1,
 };
 export default function RatingsAndCategorizationControl() {
   const simulationSettings = useSlimeStore((state) => state.simulationSettings);
@@ -403,6 +404,32 @@ export default function RatingsAndCategorizationControl() {
         <button
           className="cursor-pointer border border-sky-800 bg-zinc-800 p-1"
           onClick={() => updateRatingsAndCategorization("tendrilLength", -1)}
+        >
+          Reset
+        </button>
+      </div>
+      <div className="flex w-full gap-1 p-2">
+        <label
+          className="w-32 flex-none"
+          htmlFor="ratings-and-categorization-waviness"
+        >
+          Waviness
+        </label>
+        <span className="w-7">{ratingsAndCategorization.waviness}</span>
+        <input
+          type="range"
+          min="0"
+          max="1"
+          step="0.1"
+          id="ratings-and-categorization-waviness"
+          value={ratingsAndCategorization.waviness}
+          onChange={(e) =>
+            updateRatingsAndCategorization("waviness", Number(e.target.value))
+          }
+        />
+        <button
+          className="cursor-pointer border border-sky-800 bg-zinc-800 p-1"
+          onClick={() => updateRatingsAndCategorization("waviness", -1)}
         >
           Reset
         </button>
