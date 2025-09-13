@@ -9,6 +9,7 @@ import {
   SIMULATION_CONTROLS_CONFIGS,
 } from "../../constants/constants";
 import useSlimeStore from "../../stores/useSlimeStore";
+import RandomizationPdfDisplayHtml from "../randomization-pdf-display/RandomizationPdfDisplayHtml";
 import SlimeStoreSelect from "./SlimeStoreSelect";
 import SlimeStoreSlider from "./SlimeStoreSlider";
 import SlimeStoreSwitch from "./SlimeStoreSwitch";
@@ -89,10 +90,9 @@ export default function SlimeStoreNumericRangeRandomizationControl({
       produce((state) => {
         state.controlsState.displayAreaContentUpdatedAt = Date.now();
         state.controlsState.displayAreaContentName = "randomization-pdf";
-        state.controlsState.displayAreaHtmlContent = [
-          null,
-          "GET UR TEXT OFF MY PDF ASLDKJFLKSAJDFKLJSDF",
-        ];
+        state.controlsState.displayAreaHtmlContent = (
+          <RandomizationPdfDisplayHtml />
+        );
         state.controlsState.hideDisplayAreaBackground = true;
         state.controlsState.displayAreaPdfValues = {
           currentSettingValue: currentValue,
@@ -160,10 +160,9 @@ export default function SlimeStoreNumericRangeRandomizationControl({
       produce((state) => {
         state.controlsState.displayAreaContentUpdatedAt = Date.now();
         state.controlsState.displayAreaContentName = "randomization-pdf";
-        state.controlsState.displayAreaHtmlContent = [
-          null,
-          "GET UR TEXT OFF MY PDF ASLDKJFLKSAJDFKLJSDF",
-        ];
+        state.controlsState.displayAreaHtmlContent = (
+          <RandomizationPdfDisplayHtml />
+        );
         state.controlsState.hideDisplayAreaBackground = true;
         state.controlsState.displayAreaPdfValues = {
           currentSettingValue: currentValue,
