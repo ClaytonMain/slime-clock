@@ -9,7 +9,6 @@ import {
   SIMULATION_CONTROLS_CONFIGS,
 } from "../../constants/constants";
 import useSlimeStore from "../../stores/useSlimeStore";
-import type { NumericRangeRandomizationSettingMode } from "../../types/types";
 import SlimeStoreSelect from "./SlimeStoreSelect";
 import SlimeStoreSlider from "./SlimeStoreSlider";
 import SlimeStoreSwitch from "./SlimeStoreSwitch";
@@ -76,26 +75,34 @@ export default function SlimeStoreNumericRangeRandomizationControl({
     }
     return null;
   }, [controlName, settingType, randomizationSettingsStorePath]);
-  const randomizationModeStorePath = useMemo(
-    () => ["randomizationSettings", ...randomizationSettingsStorePath, "mode"],
-    [randomizationSettingsStorePath],
+  const [editing, setEditing] = useState(false);
+
+  const randomizationSettings = useSlimeStore((state) =>
+    R.view(
+      R.lensPath(["randomizationSettings", ...randomizationSettingsStorePath]),
+      state,
+    ),
   );
-  const [randomizationMode, setRandomizationMode] =
-    useState<NumericRangeRandomizationSettingMode>(
-      R.view(R.lensPath(randomizationModeStorePath), useSlimeStore.getState()),
-    );
   useEffect(() => {
-    const unsubRandomizationMode = useSlimeStore.subscribe(
-      (state) => R.view(R.lensPath(randomizationModeStorePath), state),
-      (newValue) => {
-        setRandomizationMode(newValue);
-      },
+    if (!editing) return;
+    useSlimeStore.setState(
+      produce((state) => {
+        state.controlsState.displayAreaContentUpdatedAt = Date.now();
+        state.controlsState.displayAreaContentName = "randomization-pdf";
+        state.controlsState.displayAreaHtmlContent = [
+          null,
+          "GET UR TEXT OFF MY PDF ASLDKJFLKSAJDFKLJSDF",
+        ];
+        state.controlsState.hideDisplayAreaBackground = true;
+        state.controlsState.displayAreaPdfValues = {
+          currentSettingValue: currentValue,
+          controlConfig: controlConfig,
+          numericRangeRandomizationSettings: randomizationSettings,
+        };
+      }),
     );
-    return () => {
-      unsubRandomizationMode();
-    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [randomizationSettings]);
 
   useEffect(() => {
     if (!settingStorePath) return;
@@ -153,25 +160,33 @@ export default function SlimeStoreNumericRangeRandomizationControl({
       produce((state) => {
         state.controlsState.displayAreaContentUpdatedAt = Date.now();
         state.controlsState.displayAreaContentName = "randomization-pdf";
-        state.controlsState.displayAreaContentType = "three";
+        state.controlsState.displayAreaHtmlContent = [
+          null,
+          "GET UR TEXT OFF MY PDF ASLDKJFLKSAJDFKLJSDF",
+        ];
+        state.controlsState.hideDisplayAreaBackground = true;
         state.controlsState.displayAreaPdfValues = {
           currentSettingValue: currentValue,
           controlConfig: controlConfig,
-          numericRangeRandomizationSettings: R.view(
-            R.lensPath([
-              "randomizationSettings",
-              ...randomizationSettingsStorePath,
-            ]),
-            useSlimeStore.getState(),
-          ) as NumericRangeRandomizationSettingMode,
+          numericRangeRandomizationSettings: randomizationSettings,
         };
       }),
     );
   }
 
+  function handlePointerDown() {
+    setEditing(true);
+  }
+
+  function handlePointerUp() {
+    setEditing(false);
+  }
+
   return (
     <motion.div
       onPointerOver={handlePointerOver}
+      onPointerDown={handlePointerDown}
+      onPointerUp={handlePointerUp}
       whileHover={{ backgroundColor: "#0004" }}
       className="flex w-full items-center gap-1 py-2"
     >
@@ -231,7 +246,7 @@ export default function SlimeStoreNumericRangeRandomizationControl({
             </div>
           </div>
         </div>
-        {randomizationMode === "flat" && (
+        {randomizationSettings.mode === "flat" && (
           <SlimeStoreSlider
             baseInputId={`${baseId}-flat-range-slider`}
             min={controlConfig!.min as number}
@@ -247,7 +262,7 @@ export default function SlimeStoreNumericRangeRandomizationControl({
             type="range"
           />
         )}
-        {randomizationMode === "gaussian" && (
+        {randomizationSettings.mode === "gaussian" && (
           <div className="flex w-full flex-col gap-1">
             <div className="flex h-full gap-1">
               <Label.Root className="flex w-4 flex-none items-center justify-end text-right text-xs">
@@ -290,7 +305,7 @@ export default function SlimeStoreNumericRangeRandomizationControl({
             </div>
           </div>
         )}
-        {randomizationMode === "pert" && (
+        {randomizationSettings.mode === "pert" && (
           <SlimeStoreSlider
             baseInputId={`${baseId}-flat-range-slider`}
             min={controlConfig!.min as number}

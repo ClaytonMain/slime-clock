@@ -43,13 +43,12 @@ interface ControlsState {
   displayAreaContentUpdatedAt: number;
   displayAreaContentName: string | null;
   displayAreaHtmlContent: string | [string, string] | ReactNode | null;
-  displayAreaContentType: "html" | "three";
   displayAreaBoundingClientRect: DOMRect | null;
   displayAreaPdfValues: DisplayAreaPdfValues;
+  hideDisplayAreaBackground: boolean;
   controlsAreaBoundingClientRect: DOMRect | null;
   selectedTabButtonClientRect: DOMRect | null;
   showSelectedTabCornerIcons: boolean;
-  controlsEditStoppedAt: number;
   accordionValues: Record<string, string | string[]>;
   controlsClosedAt: number;
 }
@@ -386,7 +385,6 @@ const useSlimeStore = create<SlimeStore>()(
           displayAreaContentUpdatedAt: Date.now(),
           displayAreaContentName: null,
           displayAreaHtmlContent: null,
-          displayAreaContentType: "html",
           displayAreaBoundingClientRect: null,
           displayAreaPdfValues: {
             currentSettingValue: 0.0,
@@ -401,10 +399,10 @@ const useSlimeStore = create<SlimeStore>()(
               mode: "pert",
             },
           },
+          hideDisplayAreaBackground: false,
           controlsAreaBoundingClientRect: null,
           selectedTabButtonClientRect: null,
           showSelectedTabCornerIcons: false,
-          controlsEditStoppedAt: Date.now(),
           accordionValues: {},
           controlsClosedAt: Date.now(),
         },

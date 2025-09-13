@@ -23,8 +23,8 @@ export default function DebugControls() {
         produce((state) => {
           state.controlsState.displayAreaHtmlContent =
             debugControlsDefaultLabelHoverTabContentDisplay;
-          state.controlsState.displayAreaContentType = "html";
           state.controlsState.displayAreaContentName = null;
+          state.controlsState.hideDisplayAreaBackground = false;
         }),
       );
     }

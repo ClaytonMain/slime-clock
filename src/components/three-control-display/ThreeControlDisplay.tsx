@@ -95,7 +95,9 @@ export default function ThreeControlDisplay() {
         // Handle display plane visibility.
         if (
           newControlsState.isOpen &&
-          newControlsState.displayAreaContentType === "three"
+          ["procedural-color-palette", "randomization-pdf"].includes(
+            newControlsState.displayAreaContentName || "",
+          )
         ) {
           setDisplayPlaneVisible(true);
         } else {

@@ -31,8 +31,8 @@ export default function RandomizationControls() {
       produce((state) => {
         state.controlsState.displayAreaHtmlContent =
           randomizationControlsLabelHoverTabContentDisplay;
-        state.controlsState.displayAreaContentType = "html";
         state.controlsState.displayAreaContentName = null;
+        state.controlsState.hideDisplayAreaBackground = false;
       }),
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps

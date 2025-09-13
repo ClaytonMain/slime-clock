@@ -39,8 +39,8 @@ export default function PresetsControls() {
       produce((state) => {
         state.controlsState.displayAreaHtmlContent =
           presetsControlsLabelHoverTabContentDisplay;
-        state.controlsState.displayAreaContentType = "html";
         state.controlsState.displayAreaContentName = null;
+        state.controlsState.hideDisplayAreaBackground = false;
       }),
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps

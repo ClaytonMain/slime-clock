@@ -1,6 +1,6 @@
 import { produce } from "immer";
 import { motion } from "motion/react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import useSlimeStore from "../../stores/useSlimeStore";
 import TabContentDisplayAreaHtmlContent from "./TabContentDisplayAreaHtmlContent";
 
@@ -37,24 +37,6 @@ export default function TabContentDisplayArea() {
     };
   }, []);
 
-  /**
-   * HTML content.
-   */
-  const [displayAreaContentType, setDisplayAreaContentType] = useState<
-    "html" | "three"
-  >(useSlimeStore.getState().controlsState.displayAreaContentType);
-  useEffect(() => {
-    const unsubControlsState = useSlimeStore.subscribe(
-      (state) => state.controlsState,
-      (newControlsState) => {
-        setDisplayAreaContentType(newControlsState.displayAreaContentType);
-      },
-    );
-    return () => {
-      unsubControlsState();
-    };
-  }, []);
-
   return (
     <motion.div
       key="tab-content-display-area"
@@ -65,9 +47,7 @@ export default function TabContentDisplayArea() {
         className="flex h-full w-full items-center border border-dashed border-sky-50"
         onViewportEnter={handleViewportEnter}
       >
-        {displayAreaContentType === "html" && (
-          <TabContentDisplayAreaHtmlContent />
-        )}
+        <TabContentDisplayAreaHtmlContent />
       </motion.div>
     </motion.div>
   );

@@ -35,8 +35,8 @@ export default function ColorControls() {
       produce((state) => {
         state.controlsState.displayAreaHtmlContent =
           colorControlsLabelHoverTabContentDisplay;
-        state.controlsState.displayAreaContentType = "html";
         state.controlsState.displayAreaContentName = null;
+        state.controlsState.hideDisplayAreaBackground = false;
       }),
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -47,7 +47,8 @@ export default function ColorControls() {
     useSlimeStore.setState(
       produce((state) => {
         state.controlsState.displayAreaContentName = "procedural-color-palette";
-        state.controlsState.displayAreaContentType = "three";
+        state.controlsState.displayAreaHtmlContent = null;
+        state.controlsState.hideDisplayAreaBackground = false;
         state.colorSettings.slimeColorChangedAt = Date.now();
       }),
     );
@@ -99,8 +100,8 @@ export default function ColorControls() {
                           Date.now();
                         state.controlsState.displayAreaContentName =
                           "procedural-color-palette";
-                        state.controlsState.displayAreaContentType = "three";
                         state.controlsState.displayAreaHtmlContent = null;
+                        state.controlsState.hideDisplayAreaBackground = false;
                         state.controlsState.displayAreaContentUpdatedAt =
                           Date.now();
                       }),
@@ -197,8 +198,8 @@ export default function ColorControls() {
                           Date.now();
                         state.controlsState.displayAreaContentName =
                           "procedural-color-palette";
-                        state.controlsState.displayAreaContentType = "three";
                         state.controlsState.displayAreaHtmlContent = null;
+                        state.controlsState.hideDisplayAreaBackground = false;
                         state.controlsState.displayAreaContentUpdatedAt =
                           Date.now();
                       }),

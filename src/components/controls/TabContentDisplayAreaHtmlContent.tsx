@@ -1,7 +1,3 @@
-/**
- * Naming files is hard.
- */
-
 import { useEffect, useState, type ReactNode } from "react";
 import useSlimeStore from "../../stores/useSlimeStore";
 import TabContentScrollArea from "./TabContentScrollArea";
@@ -43,12 +39,17 @@ export default function TabContentDisplayAreaHtmlContent() {
   }, [controlsState]);
 
   return (
-    <TabContentScrollArea
-      title={header}
-      titleFontSize={titleFontSize}
-      childrenPadding={childrenPadding}
-    >
-      {content}
-    </TabContentScrollArea>
+    <>
+      {(header || content) && (
+        <TabContentScrollArea
+          title={header}
+          titleFontSize={titleFontSize}
+          childrenPadding={childrenPadding}
+          hideBackground={controlsState.hideDisplayAreaBackground}
+        >
+          {content}
+        </TabContentScrollArea>
+      )}
+    </>
   );
 }

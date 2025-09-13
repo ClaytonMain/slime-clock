@@ -1,46 +1,35 @@
 uniform float uCurrentSettingValue;
-uniform vec2 uUniformMinMax;
-uniform vec2 uGaussMuSigma;
-uniform vec2 uBetaAB;
-uniform float uPertGamma;
-uniform int uPdfType; // 0: Uniform, 1: Gaussian, 2: PERT (beta)
+uniform float[1000] uPdfValues;
+uniform float uNBins;
 
 varying vec2 vUv;
 
 #define PI2 6.283185
+#define STEP 0.0005
 
-// Credit to Inigo Quilez for the palette function
-// https://iquilezles.org/articles/palettes/
-vec3 palette(float t, vec3 a, vec3 b, vec3 c, vec3 d) {
-    return a + b * cos(PI2 * (c * t + d));
-}
-
-vec3 getCosValues(float t, vec3 a, vec3 b, vec3 c, vec3 d) {
-    vec3 values = vec3(0.0);
-
-    values.x = cos((d.x + c.x * t) * PI2) * b.x * uYAmp + uYMid + (a.x - 0.5) * uYAmp;
-    values.y = cos((d.y + c.y * t) * PI2) * b.y * uYAmp + uYMid + (a.y - 0.5) * uYAmp;
-    values.z = cos((d.z + c.z * t) * PI2) * b.z * uYAmp + uYMid + (a.z - 0.5) * uYAmp;
-
-    return values;
+// https://stackoverflow.com/questions/9246100/how-can-i-implement-the-distance-from-a-point-to-a-line-segment-in-glsl
+float distanceToLine(vec2 pt1, vec2 pt2, vec2 testPt) {
+    vec2 lineDir = pt2 - pt1;
+    vec2 normalDir = vec2(lineDir.y, -lineDir.x);
+    vec2 dirToPt1 = testPt - pt1;
+    return abs(dot(normalize(normalDir), dirToPt1));
 }
 
 void main() {
-    vec3 color = clamp(palette(vUv.x, uPaletteA, uPaletteB, uPaletteC, uPaletteD), 0.0, 1.0);
+    // Get slope of PDF using neighbors.
+    float leftvUv = vUv.x - STEP;
+    float rightvUv = vUv.x + STEP;
+    int leftIndex = clamp(int(floor(leftvUv * uNBins)), 0, int(uNBins) - 1);
+    int rightIndex = clamp(int(floor(rightvUv * uNBins)), 0, int(uNBins) - 1);
+    int centerIndex = int(floor(vUv.x * uNBins));
+    float dist = distanceToLine(vec2(leftvUv, uPdfValues[leftIndex]), vec2(rightvUv, uPdfValues[rightIndex]), vUv);
+    dist += smoothstep(0.1, 0.2, abs(uPdfValues[leftIndex] - uPdfValues[rightIndex]));
+    vec4 color = vec4(0.094, 0.094, 0.106, 0.7 + (sign(uPdfValues[centerIndex] - vUv.y) * 0.5 + 0.5) * 0.2);
 
-    float normY = vUv.y * uYMax;
+    float smoothDist = smoothstep(0.01, 0.0, dist);
+    color = mix(color, vec4(0.0, 0.65, 0.96, 1.0), smoothDist * smoothDist * smoothDist);
 
-    vec3 cosValues = clamp(getCosValues(vUv.x, uPaletteA, uPaletteB, uPaletteC, uPaletteD), uYMin, uYMax);
-
-    gl_FragColor = vec4(color * ((1.0 - step(uYMin, normY)) * 0.75 + 0.25), uAlpha);
-
-    vec3 normYMinusCosValues = abs(normY - cosValues);
-
-    gl_FragColor.rgb += (1.0 - step(0.003, normYMinusCosValues)) * (step(uYMin, normY));
-
-    // if (normYMinusCosValues.r > 1.0) {
-    //     gl_FragColor.rgb = vec3(1.0);
-    // }
+    gl_FragColor = color;
 
     // #include <tonemapping_fragment>
     // #include <colorspace_fragment>

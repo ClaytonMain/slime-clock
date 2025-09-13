@@ -8,11 +8,13 @@ export default function TabContentScrollArea({
   titleFontSize = "1.5rem",
   children,
   childrenPadding,
+  hideBackground = false,
 }: {
   title?: ReactNode;
   titleFontSize?: string;
   children?: ReactNode;
   childrenPadding?: string[];
+  hideBackground?: boolean;
 }) {
   const scrollbarRef = useRef<HTMLDivElement>(null);
   const [scrollbarIsVisible, setScrollbarIsVisible] = useState(false);
@@ -50,7 +52,7 @@ export default function TabContentScrollArea({
       )}
       <ScrollArea.Root
         key="scroll-area-root"
-        className="h-0 grow overflow-hidden bg-zinc-900/80"
+        className={`h-0 grow overflow-hidden bg-zinc-900/${hideBackground ? "0" : "80"}`}
       >
         <ScrollArea.Viewport
           key="scroll-area-viewport"

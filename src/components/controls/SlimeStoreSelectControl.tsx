@@ -35,7 +35,7 @@ export default function SlimeStoreSelectControl({
           state.controlsState.displayAreaContentName = null;
           state.controlsState.displayAreaHtmlContent =
             labelHoverTabContentDisplay;
-          state.controlsState.displayAreaContentType = "html";
+          state.controlsState.hideDisplayAreaBackground = false;
         }),
       );
     }
