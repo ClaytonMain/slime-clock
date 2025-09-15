@@ -8,6 +8,9 @@ export default function TabContentDisplayAreaHtmlContent() {
   const [titleFontSize, setTitleFontSize] = useState<string>("1.5rem");
   const [content, setContent] = useState<string | ReactNode | null>(null);
   const [childrenPadding, setChildrenPadding] = useState<string[]>([]);
+  const [hideBackground, setHideBackground] = useState<boolean>(
+    controlsState.hideDisplayAreaBackground,
+  );
 
   useEffect(() => {
     const displayAreaContent = controlsState.displayAreaHtmlContent;
@@ -36,6 +39,7 @@ export default function TabContentDisplayAreaHtmlContent() {
       setContent(displayAreaContent);
       setChildrenPadding([]);
     }
+    setHideBackground(controlsState.hideDisplayAreaBackground);
   }, [controlsState]);
 
   return (
@@ -45,7 +49,7 @@ export default function TabContentDisplayAreaHtmlContent() {
           title={header}
           titleFontSize={titleFontSize}
           childrenPadding={childrenPadding}
-          hideBackground={controlsState.hideDisplayAreaBackground}
+          hideBackground={hideBackground}
         >
           {content}
         </TabContentScrollArea>

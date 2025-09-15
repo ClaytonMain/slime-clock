@@ -52,7 +52,11 @@ export default function TabContentScrollArea({
       )}
       <ScrollArea.Root
         key="scroll-area-root"
-        className={`h-0 grow overflow-hidden bg-zinc-900/${hideBackground ? "0" : "80"}`}
+        className={
+          hideBackground
+            ? "h-0 grow overflow-hidden bg-zinc-900/0"
+            : "h-0 grow overflow-hidden bg-zinc-900/80"
+        }
       >
         <ScrollArea.Viewport
           key="scroll-area-viewport"

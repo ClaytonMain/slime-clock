@@ -61,6 +61,29 @@ export default function RandomizationControls() {
     );
   }
 
+  function setAutoLoadOnRandAll(
+    value: boolean,
+    presetType: "simulation" | "color",
+  ) {
+    let simulationPresets = [...useSlimeStore.getState().randomizationPresets];
+    simulationPresets = simulationPresets.map((preset) => {
+      const modifiedPreset = { ...preset };
+      if (preset.presetType === presetType) {
+        modifiedPreset.enabled = value;
+      }
+      return modifiedPreset;
+    });
+    useSlimeStore.setState(
+      produce((state) => {
+        state.randomizationPresets = simulationPresets;
+        state.toast.title = "Auto Load on Rand. Updated";
+        state.toast.description = `All ${presetType} randomization presets have been ${value ? "enabled" : "disabled"} for auto load on randomization.`;
+        state.toast.type = "info";
+        state.toast.lastTriggeredAt = Date.now();
+      }),
+    );
+  }
+
   return (
     <TabContentContainer tabsValue="randomization-controls">
       <TabContentScrollArea title="Randomization">
@@ -208,6 +231,21 @@ export default function RandomizationControls() {
             <ControlGroup justifyContent="center">
               <SaveRandomizationPresetPopoverButton randomizationPresetType="simulation" />
             </ControlGroup>
+            <ButtonControlGroup
+              justifyContent="center"
+              buttonConfigs={[
+                {
+                  label: "Enable Auto Load on Rand - All Sim.",
+                  baseId: "enable-auto-load-on-rand-all-button",
+                  onClick: () => setAutoLoadOnRandAll(true, "simulation"),
+                },
+                {
+                  label: "Disable Auto Load on Rand - All Sim.",
+                  baseId: "disable-auto-load-on-rand-all-button",
+                  onClick: () => setAutoLoadOnRandAll(false, "simulation"),
+                },
+              ]}
+            />
             {randomizationPresets.map((preset, index) => {
               if (preset.presetType !== "simulation") return null;
               return (
@@ -234,11 +272,12 @@ export default function RandomizationControls() {
               "Controls the randomization settings for agents.",
             ]}
           >
+            {/* TODO: Don't allow the enabled start types to change on auto-randomization. Kind of defeats the purpose. */}
             <SwitchControlGroup
               label="Enabled Start Types"
               labelHoverTabContentDisplay={[
                 "Enabled Start Types",
-                "Toggles to enable or disable randomization for various start types. Please note: this is only effective when `Simulation > Agent Settings > Start Type` is set to `Random`.",
+                "Toggles to enable or disable randomization for various start types. Note: if all start types are disabled, then a random start type will be chosen.",
               ]}
               switchConfigs={[
                 {
@@ -480,6 +519,21 @@ export default function RandomizationControls() {
             <ControlGroup justifyContent="center">
               <SaveRandomizationPresetPopoverButton randomizationPresetType="color" />
             </ControlGroup>
+            <ButtonControlGroup
+              justifyContent="center"
+              buttonConfigs={[
+                {
+                  label: "Enable Auto Load on Rand - All Colors",
+                  baseId: "enable-auto-load-on-rand-all-button",
+                  onClick: () => setAutoLoadOnRandAll(true, "color"),
+                },
+                {
+                  label: "Disable Auto Load on Rand - All Colors",
+                  baseId: "disable-auto-load-on-rand-all-button",
+                  onClick: () => setAutoLoadOnRandAll(false, "color"),
+                },
+              ]}
+            />
             {randomizationPresets.map((preset, index) => {
               if (preset.presetType !== "color") return null;
               return (

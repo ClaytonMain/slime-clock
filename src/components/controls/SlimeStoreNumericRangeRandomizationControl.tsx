@@ -95,6 +95,7 @@ export default function SlimeStoreNumericRangeRandomizationControl({
         );
         state.controlsState.hideDisplayAreaBackground = true;
         state.controlsState.displayAreaPdfValues = {
+          currentSettingTitle: label || controlName,
           currentSettingValue: currentValue,
           controlConfig: controlConfig,
           numericRangeRandomizationSettings: randomizationSettings,
@@ -165,6 +166,7 @@ export default function SlimeStoreNumericRangeRandomizationControl({
         );
         state.controlsState.hideDisplayAreaBackground = true;
         state.controlsState.displayAreaPdfValues = {
+          currentSettingTitle: label || controlName,
           currentSettingValue: currentValue,
           controlConfig: controlConfig,
           numericRangeRandomizationSettings: randomizationSettings,

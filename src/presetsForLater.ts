@@ -341,6 +341,30 @@ const toImplement: Array<unknown> = [
       trailBackgroundDiffuseRate: 2.1,
     },
   },
+  {
+    name: "Slimy 09",
+    presetType: "Simulation Only",
+    simulationSettings: {
+      speed: 3.3,
+      boundaryBehavior: 0,
+      agentDensity: 0.25,
+      agentStartType: -1,
+      agentClockAttraction: 0.08,
+      agentClockDepositRate: 6.6,
+      agentBackgroundDepositRate: 6,
+      agentSensorDegrees: 19,
+      agentRotationRate: 3.1,
+      agentSensorOffset: 0.83,
+      agentSensorWidth: 0.24,
+      agentStepSize: 1.47,
+      agentCrowdAvoidance: 0.29,
+      agentWanderStrength: 3.3,
+      trailClockDecayRate: 0.1,
+      trailClockDiffuseRate: 12.3,
+      trailBackgroundDecayRate: 0.36,
+      trailBackgroundDiffuseRate: 11.2,
+    },
+  },
 ];
 
 console.log(toImplement);

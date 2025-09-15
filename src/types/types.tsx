@@ -355,6 +355,7 @@ type TrailUniformsKey =
 export type TrailUniforms = Record<TrailUniformsKey, THREE.Uniform>;
 
 export type DisplayAreaPdfValues = {
+  currentSettingTitle: string;
   currentSettingValue: number;
   controlConfig: { min: number; max: number; step: number };
   numericRangeRandomizationSettings: NumericRangeRandomizationSetting;

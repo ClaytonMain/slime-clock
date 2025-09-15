@@ -387,6 +387,7 @@ const useSlimeStore = create<SlimeStore>()(
           displayAreaHtmlContent: null,
           displayAreaBoundingClientRect: null,
           displayAreaPdfValues: {
+            currentSettingTitle: "",
             currentSettingValue: 0.0,
             controlConfig: { min: 0, max: 1, step: 0.01 },
             numericRangeRandomizationSettings: {
