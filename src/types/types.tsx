@@ -23,6 +23,7 @@ export interface LoadableClockSettings {
   showClockShadow: boolean;
   clockShadowOpacity: number;
   clockShadowColor: string;
+  digitFadeSpeed: number;
 }
 // To match the SimulationSettings and ColorSettings interface layout.
 export type ClockSettings = LoadableClockSettings;
@@ -349,6 +350,7 @@ type TrailUniformsKey =
   | "uClockDiffuseRate"
   | "uBackgroundDecayRate"
   | "uBackgroundDiffuseRate"
+  | "uSensorWidth"
   | "uBoundaryBehavior"
   | "uDelta"
   | "uTime";

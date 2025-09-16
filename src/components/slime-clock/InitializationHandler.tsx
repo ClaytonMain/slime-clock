@@ -488,13 +488,13 @@ export default function InitializationHandler() {
       ),
       uRotationRate: new THREE.Uniform(simulationSettings.agentRotationRate),
       uSensorOffset: new THREE.Uniform(
-        UTILS.getHeightScaledPixelValue(simulationSettings.agentSensorOffset),
+        UTILS.getWindowHeightScaledValue(simulationSettings.agentSensorOffset),
       ),
       uSensorWidth: new THREE.Uniform(
-        UTILS.getHeightScaledPixelValue(simulationSettings.agentSensorWidth),
+        UTILS.getWindowHeightScaledValue(simulationSettings.agentSensorWidth),
       ),
       uStepSize: new THREE.Uniform(
-        UTILS.getHeightScaledPixelValue(simulationSettings.agentStepSize),
+        UTILS.getWindowHeightScaledValue(simulationSettings.agentStepSize),
       ),
       uCrowdAvoidance: new THREE.Uniform(
         simulationSettings.agentCrowdAvoidance,
@@ -532,6 +532,9 @@ export default function InitializationHandler() {
       ),
       uBackgroundDiffuseRate: new THREE.Uniform(
         simulationSettings.trailBackgroundDiffuseRate,
+      ),
+      uSensorWidth: new THREE.Uniform(
+        UTILS.getWindowHeightScaledValue(simulationSettings.agentSensorWidth),
       ),
       uBoundaryBehavior: new THREE.Uniform(simulationSettings.boundaryBehavior),
       uDelta: new THREE.Uniform(0.0),

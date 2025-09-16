@@ -32,9 +32,7 @@ export default function HeightScaledPixelValueDisplay({
   valueIsPercent?: boolean;
   precision?: number;
 }) {
-  const height = useSlimeStore(
-    (state) => state.simulationSettings.displayTextureHeight,
-  );
+  const height = window.innerHeight;
   const displayAreaContentUpdatedAt = useSlimeStore(
     (state) => state.controlsState.displayAreaContentUpdatedAt,
   );

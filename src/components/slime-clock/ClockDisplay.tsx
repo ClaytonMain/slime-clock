@@ -123,7 +123,7 @@ export default function ClockDisplay() {
     // TODO: Condense this.
     if (minutePingPongRef.current === 0) {
       if (opacityRef.current < 1.0) {
-        opacityRef.current += delta * 0.1;
+        opacityRef.current += delta * clockSettings.digitFadeSpeed * 0.1;
       } else if (opacityRef.current > 1.0) {
         opacityRef.current = 1.0;
       }
@@ -139,7 +139,7 @@ export default function ClockDisplay() {
       setDisplayText1(formattedTime);
     } else if (minutePingPongRef.current === 1) {
       if (opacityRef.current > 0.0) {
-        opacityRef.current -= delta * 0.1;
+        opacityRef.current -= delta * clockSettings.digitFadeSpeed * 0.1;
       } else if (opacityRef.current < 0.0) {
         opacityRef.current = 0.0;
       }

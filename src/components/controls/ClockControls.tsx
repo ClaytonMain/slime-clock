@@ -233,6 +233,18 @@ export default function ClockControls() {
               baseId="clock-shadow-color-picker"
               storePath={["clockSettings", "clockShadowColor"]}
             />
+            <SlimeStoreSliderControl
+              label="Digit Fade Speed"
+              labelHoverTabContentDisplay={[
+                "Digit Fade Speed",
+                "Changes the speed at which the digits fade in and out when they change. Higher values are faster.",
+              ]}
+              baseInputId="clock-digit-fade-speed-slider"
+              min={CLOCK_CONTROLS_CONFIGS.digitFadeSpeed!.min}
+              max={CLOCK_CONTROLS_CONFIGS.digitFadeSpeed!.max}
+              step={CLOCK_CONTROLS_CONFIGS.digitFadeSpeed!.step}
+              storePath={["clockSettings", "digitFadeSpeed"]}
+            />
           </AccordionControlsItem>
         </AccordionControlsWrapper>
       </TabContentScrollArea>

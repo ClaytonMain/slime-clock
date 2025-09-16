@@ -223,6 +223,7 @@ const useSlimeStore = create<SlimeStore>()(
             uClockDiffuseRate: new THREE.Uniform(null),
             uBackgroundDecayRate: new THREE.Uniform(null),
             uBackgroundDiffuseRate: new THREE.Uniform(null),
+            uSensorWidth: new THREE.Uniform(null),
             uBoundaryBehavior: new THREE.Uniform(null),
             uDelta: new THREE.Uniform(null),
             uTime: new THREE.Uniform(null),
@@ -277,6 +278,7 @@ const useSlimeStore = create<SlimeStore>()(
           showClockShadow: DEFAULT_CLOCK_SETTINGS.showClockShadow,
           clockShadowOpacity: DEFAULT_CLOCK_SETTINGS.clockShadowOpacity,
           clockShadowColor: DEFAULT_CLOCK_SETTINGS.clockShadowColor,
+          digitFadeSpeed: DEFAULT_CLOCK_SETTINGS.digitFadeSpeed,
         },
         simulationSettings: {
           // Nearly all of these values will be overridden in the

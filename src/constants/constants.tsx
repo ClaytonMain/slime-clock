@@ -31,10 +31,12 @@ export const DEFAULT_CLOCK_SETTINGS: ClockSettings = {
   showClockShadow: true,
   clockShadowOpacity: 0.1,
   clockShadowColor: "#6f6f6f",
+  digitFadeSpeed: 1.0,
 };
 export const CLOCK_CONTROLS_CONFIGS: ControlsConfigs<ClockSettings> = {
   size: { min: 1, max: 100, step: 1 },
   clockShadowOpacity: { min: 0, max: 1, step: 0.01 },
+  digitFadeSpeed: { min: 0.1, max: 5.0, step: 0.1 },
 };
 
 export const DEFAULT_SIMULATION_SETTINGS_PRESET_NAME = "Slimy 01";
@@ -85,9 +87,9 @@ export const SIMULATION_CONTROLS_CONFIGS: ControlsConfigs<SimulationSettings> =
     agentBackgroundDepositRate: { min: 0.0, max: 30.0, step: 0.1 },
     agentSensorDegrees: { min: 0.0, max: 180.0, step: 1.0 },
     agentRotationRate: { min: 0.0, max: 10.0, step: 0.1 },
-    agentSensorOffset: { min: 0.0, max: 3.0, step: 0.01 },
-    agentSensorWidth: { min: 0.0, max: 3.0, step: 0.01 },
-    agentStepSize: { min: 0.0, max: 3.0, step: 0.01 },
+    agentSensorOffset: { min: 0.0, max: 10.0, step: 0.01 },
+    agentSensorWidth: { min: 0.0, max: 10.0, step: 0.01 },
+    agentStepSize: { min: 0.0, max: 10.0, step: 0.01 },
     agentCrowdAvoidance: { min: 0.0, max: 1.0, step: 0.01 },
     agentWanderStrength: { min: 0.0, max: 15.0, step: 0.1 },
 
@@ -958,6 +960,7 @@ export const LOADABLE_CLOCK_SETTINGS_KEYS: (keyof LoadableClockSettings)[] = [
   "showClockShadow",
   "clockShadowOpacity",
   "clockShadowColor",
+  "digitFadeSpeed",
 ];
 export const LOADABLE_SIMULATION_SETTINGS_KEYS: (keyof LoadableSimulationSettings)[] =
   [
@@ -1010,6 +1013,7 @@ export const DEFAULT_PRESETS: LoadableSlimeStoreSettings[] = [
       showClockShadow: true,
       clockShadowOpacity: 0.25,
       clockShadowColor: "#6f6f6f",
+      digitFadeSpeed: 1.0,
     },
   },
   {
@@ -1026,6 +1030,7 @@ export const DEFAULT_PRESETS: LoadableSlimeStoreSettings[] = [
       showClockShadow: true,
       clockShadowOpacity: 0.25,
       clockShadowColor: "#6f6f6f",
+      digitFadeSpeed: 1.0,
     },
   },
   {
@@ -1363,6 +1368,7 @@ export const DEFAULT_PRESETS: LoadableSlimeStoreSettings[] = [
       showClockShadow: true,
       clockShadowOpacity: 0.09,
       clockShadowColor: "#6f6f6f",
+      digitFadeSpeed: 1.0,
     },
     simulationSettings: {
       speed: 2.7,
