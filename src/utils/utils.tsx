@@ -182,8 +182,8 @@ function getAgentData(
 }
 function getRandomAllowedStartType(): number | null {
   const enabledOptions = Object.values(
-    useSlimeStore.getState().randomizationSettings.simulation.agentStartType
-      .options,
+    useSlimeStore.getState().randomizationSettings
+      .agentStartTypeRandomizationOptions.options,
   ).filter((opt) => opt.enabled);
   if (enabledOptions.length === 0) return null;
   const randomIndex = Math.floor(Math.random() * enabledOptions.length);
@@ -401,9 +401,13 @@ export function getRandomizationPresetByNameAndType<
   return preset as T;
 }
 
-export function getAutoRandomizationSimulationRandomizationSettings() {
+export function getAutoRandomizationSimulationRandomizationSettingsAndName(): {
+  settings: SimulationRandomizationSettings;
+  name: string | null;
+} {
   const randomizationSettings = useSlimeStore.getState().randomizationSettings;
   let simulationRandomizationSettings = randomizationSettings.simulation;
+  let lastLoadedPresetName = null;
   if (
     randomizationSettings.simulationAutoRandomizationMode === "useRandomPreset"
   ) {
@@ -413,10 +417,19 @@ export function getAutoRandomizationSimulationRandomizationSettings() {
         (preset) => preset.presetType === "simulation" && preset.enabled,
       );
     if (simulationRandomizationPresets.length > 0) {
-      simulationRandomizationSettings = simulationRandomizationPresets[
-        Math.floor(Math.random() * simulationRandomizationPresets.length)
-      ].settings as SimulationRandomizationSettings;
+      const preset =
+        simulationRandomizationPresets[
+          Math.floor(Math.random() * simulationRandomizationPresets.length)
+        ];
+      simulationRandomizationSettings =
+        preset.settings as SimulationRandomizationSettings;
+      lastLoadedPresetName = preset.name;
+    } else {
+      lastLoadedPresetName = null;
     }
   }
-  return simulationRandomizationSettings;
+  return {
+    settings: simulationRandomizationSettings,
+    name: lastLoadedPresetName,
+  };
 }

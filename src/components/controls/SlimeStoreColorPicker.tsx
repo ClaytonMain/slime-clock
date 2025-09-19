@@ -48,7 +48,7 @@ export default function SlimeStoreColorPicker({
         color={selectedValue}
         onChange={handleOnValueChange}
         prefixed
-        className="h-7 w-20 flex-initial border border-sky-800 bg-zinc-900 px-2 py-1 text-lg text-sky-50 md:text-sm"
+        className="h-7 w-20 flex-initial border border-sky-800 bg-zinc-900 px-2 py-1 text-sm text-sky-50"
       />
       <HexColorPicker
         id={`${baseId}-picker`}

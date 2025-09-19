@@ -16,6 +16,7 @@ interface RatingsStore {
     tendrilThickness: number;
     tendrilLength: number;
     waviness: number;
+    lastLoadedSimulationRandomizationPreset: string | null;
   }[];
 }
 

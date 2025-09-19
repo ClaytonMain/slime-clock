@@ -7,6 +7,7 @@ import {
   subscribeWithSelector,
 } from "zustand/middleware";
 import {
+  AGENT_START_TYPE_RANDOMIZATION_SETTINGS,
   DEFAULT_CLOCK_SETTINGS,
   DEFAULT_COLOR_RANDOMIZATION_SETTINGS_PRESET_NAME,
   DEFAULT_COLOR_SETTINGS,
@@ -25,6 +26,7 @@ import {
   type ControlsTabName,
   type DisplayAreaPdfValues,
   type LoadableSlimeStoreSettings,
+  type OptionListRandomizationSettings,
   type RandomizationPreset,
   type SimulationRandomizationPreset,
   type SimulationRandomizationSettings,
@@ -103,6 +105,7 @@ interface SlimeStore {
     trailRandomizationCompletedAt: number;
     colorRandomizationRequestedAt: number;
     colorRandomizationCompletedAt: number;
+    lastLoadedSimulationRandomizationPreset: string | null;
   };
   randomizationSettings: {
     autoRandomizationEnabled: boolean;
@@ -112,6 +115,7 @@ interface SlimeStore {
     allowAgentRandomization: boolean;
     allowTrailRandomization: boolean;
     allowColorRandomization: boolean;
+    agentStartTypeRandomizationOptions: OptionListRandomizationSettings;
     simulation: SimulationRandomizationSettings;
     simulationAutoRandomizationMode:
       | "useRandomPreset"
@@ -354,6 +358,7 @@ const useSlimeStore = create<SlimeStore>()(
           trailRandomizationCompletedAt: 0,
           colorRandomizationRequestedAt: 0,
           colorRandomizationCompletedAt: 0,
+          lastLoadedSimulationRandomizationPreset: null,
         },
         randomizationSettings: {
           autoRandomizationEnabled: true,
@@ -363,6 +368,9 @@ const useSlimeStore = create<SlimeStore>()(
           allowAgentRandomization: true,
           allowTrailRandomization: true,
           allowColorRandomization: true,
+          agentStartTypeRandomizationOptions: {
+            ...AGENT_START_TYPE_RANDOMIZATION_SETTINGS,
+          },
           simulation:
             UTILS.getRandomizationPresetByNameAndType<SimulationRandomizationPreset>(
               DEFAULT_SIMULATION_RANDOMIZATION_SETTINGS_PRESET_NAME,

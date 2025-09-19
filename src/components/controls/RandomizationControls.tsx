@@ -285,8 +285,7 @@ export default function RandomizationControls() {
                   baseId: "start-type-randomization-center-switch",
                   storePath: [
                     "randomizationSettings",
-                    "simulation",
-                    "agentStartType",
+                    "agentStartTypeRandomizationOptions",
                     "options",
                     "Center",
                     "enabled",
@@ -297,8 +296,7 @@ export default function RandomizationControls() {
                   baseId: "start-type-randomization-ring-switch",
                   storePath: [
                     "randomizationSettings",
-                    "simulation",
-                    "agentStartType",
+                    "agentStartTypeRandomizationOptions",
                     "options",
                     "Ring",
                     "enabled",
@@ -309,8 +307,7 @@ export default function RandomizationControls() {
                   baseId: "start-type-randomization-9-rings-switch",
                   storePath: [
                     "randomizationSettings",
-                    "simulation",
-                    "agentStartType",
+                    "agentStartTypeRandomizationOptions",
                     "options",
                     "9 Rings",
                     "enabled",
@@ -321,8 +318,7 @@ export default function RandomizationControls() {
                   baseId: "start-type-randomization-circle-switch",
                   storePath: [
                     "randomizationSettings",
-                    "simulation",
-                    "agentStartType",
+                    "agentStartTypeRandomizationOptions",
                     "options",
                     "Circle",
                     "enabled",
@@ -333,8 +329,7 @@ export default function RandomizationControls() {
                   baseId: "start-type-randomization-spiral-switch",
                   storePath: [
                     "randomizationSettings",
-                    "simulation",
-                    "agentStartType",
+                    "agentStartTypeRandomizationOptions",
                     "options",
                     "Spiral",
                     "enabled",
@@ -345,8 +340,7 @@ export default function RandomizationControls() {
                   baseId: "start-type-randomization-fill-switch",
                   storePath: [
                     "randomizationSettings",
-                    "simulation",
-                    "agentStartType",
+                    "agentStartTypeRandomizationOptions",
                     "options",
                     "Fill",
                     "enabled",
@@ -357,8 +351,7 @@ export default function RandomizationControls() {
                   baseId: "start-type-randomization-hexagonal-grid-switch",
                   storePath: [
                     "randomizationSettings",
-                    "simulation",
-                    "agentStartType",
+                    "agentStartTypeRandomizationOptions",
                     "options",
                     "Hexagonal Grid",
                     "enabled",

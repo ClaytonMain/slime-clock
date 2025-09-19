@@ -119,7 +119,7 @@ export default function Controls() {
                   handleControlsContentOuterContainerViewportEnter
                 }
                 key="controls-dialog-content-outer-container"
-                className="fixed top-1/2 left-1/2 flex h-full max-h-[50rem] w-full -translate-1/2 flex-col rounded-xs text-sky-50 sm:h-10/12 sm:w-10/12 md:h-10/12 md:py-0 lg:w-8/12 xl:h-9/12 xl:w-7/12 2xl:h-7/12 2xl:w-5/12"
+                className="fixed top-1/2 left-1/2 flex h-full max-h-[50rem] w-full max-w-[1000px] -translate-1/2 flex-col rounded-xs text-sky-50 sm:h-10/12 sm:w-10/12 md:h-10/12 md:py-0 lg:w-9/12 xl:h-9/12 xl:w-7/12 2xl:h-7/12 2xl:w-6/12"
                 exit={{
                   transition: { duration: 0.3, when: "afterChildren" },
                 }}
@@ -244,14 +244,14 @@ export default function Controls() {
                       <AnimatePresence propagate>
                         <motion.div
                           key="controls-content-inner-container"
-                          className="flex w-full grow flex-col-reverse items-center md:flex-row"
+                          className="flex w-full grow flex-col-reverse items-center lg:flex-row"
                           initial={{ opacity: 0 }}
                           animate={ANIMATION_CONFIGS.flickerIn}
                           exit={ANIMATION_CONFIGS.flickerOut}
                         >
                           <motion.div
                             key="tab-content-controls-content-inner-container"
-                            className="flex w-full grow items-center px-3 py-3 md:h-full"
+                            className="flex w-full grow items-center px-3 py-3 lg:h-full"
                             initial={{ opacity: 0 }}
                             animate={ANIMATION_CONFIGS.flickerIn}
                             exit={ANIMATION_CONFIGS.flickerOut}
@@ -267,7 +267,7 @@ export default function Controls() {
                           </motion.div>
                           <Separator.Root
                             key="tab-content-separator"
-                            className="flex h-px w-10/12 border-b border-sky-50 md:h-10/12 md:w-px md:border-l"
+                            className="flex h-px w-10/12 border-b border-sky-50 lg:h-10/12 lg:w-px lg:border-l"
                           />
                           <TabContentDisplayArea key="tab-content-display-area" />
                         </motion.div>

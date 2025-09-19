@@ -230,12 +230,17 @@ function SlimeClockRenderer() {
         produce((state) => {
           state.randomizationState.simulationRestartRequestedAt = Date.now();
           if (randomizationSettings.autoRandomizationEnabled) {
+            uTimeRef.current = 0.0;
+            uPaletteCycleTimeRef.current = 0.0;
             lastRandomizedAtMinutesRef.current = currentMinutes;
+            const { settings, name } =
+              UTILS.getAutoRandomizationSimulationRandomizationSettingsAndName();
             state.randomizationState.agentRandomizationRequestedAt = Date.now();
             state.randomizationState.trailRandomizationRequestedAt = Date.now();
             state.randomizationState.colorRandomizationRequestedAt = Date.now();
-            state.randomizationSettings.simulation =
-              UTILS.getAutoRandomizationSimulationRandomizationSettings();
+            state.randomizationSettings.simulation = settings;
+            state.randomizationState.lastLoadedSimulationRandomizationPreset =
+              name;
           }
         }),
       );
@@ -254,13 +259,16 @@ function SlimeClockRenderer() {
         currentMinutes,
       );
       lastRandomizedAtMinutesRef.current = currentMinutes;
+      const { settings, name } =
+        UTILS.getAutoRandomizationSimulationRandomizationSettingsAndName();
       useSlimeStore.setState(
         produce((state) => {
           state.randomizationState.agentRandomizationRequestedAt = Date.now();
           state.randomizationState.trailRandomizationRequestedAt = Date.now();
           state.randomizationState.colorRandomizationRequestedAt = Date.now();
-          state.randomizationSettings.simulation =
-            UTILS.getAutoRandomizationSimulationRandomizationSettings();
+          state.randomizationSettings.simulation = settings;
+          state.randomizationState.lastLoadedSimulationRandomizationPreset =
+            name;
         }),
       );
     }

@@ -38,6 +38,14 @@ export default function RatingsAndCategorizationControl() {
     }));
   }, [simulationSettings]);
   function appendToRatingHistory() {
+    console.log(useSlimeStore.getState());
+    const lastLoadedSimulationRandomizationPreset =
+      useSlimeStore.getState().randomizationState
+        .lastLoadedSimulationRandomizationPreset;
+    console.log(
+      "lastLoadedSimulationRandomizationPreset",
+      lastLoadedSimulationRandomizationPreset,
+    );
     useRatingsStore.setState(
       produce((state) => {
         state.ratingHistory = [
@@ -45,6 +53,8 @@ export default function RatingsAndCategorizationControl() {
           {
             ...ratingsAndCategorization,
             timestamp: Date.now(),
+            lastLoadedSimulationRandomizationPreset:
+              lastLoadedSimulationRandomizationPreset,
           },
         ];
       }),

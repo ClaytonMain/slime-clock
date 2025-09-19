@@ -10,7 +10,7 @@ import type {
   ColorRandomizationSettings,
   ColorSettings,
   NumericRangeRandomizationSetting,
-  OptionListRandomizationSetting,
+  OptionListRandomizationSettings,
   ProceduralColorPaletteChannelRandomizationSettings,
   SimulationSettings,
 } from "../../types/types.tsx";
@@ -70,7 +70,7 @@ export default function RandomizationListener() {
               const settingKey = key as keyof SimulationSettings;
               const randConfig = value as
                 | NumericRangeRandomizationSetting
-                | OptionListRandomizationSetting;
+                | OptionListRandomizationSettings;
               if (!settingKey.startsWith("agent") || !randConfig.enabled)
                 return;
               if (randConfig.type === "numericRange") {
@@ -106,7 +106,7 @@ export default function RandomizationListener() {
               const settingKey = key as keyof SimulationSettings;
               const randConfig = value as
                 | NumericRangeRandomizationSetting
-                | OptionListRandomizationSetting;
+                | OptionListRandomizationSettings;
               if (!settingKey.startsWith("trail") || !randConfig.enabled)
                 return;
               if (randConfig.type === "numericRange") {

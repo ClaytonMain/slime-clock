@@ -302,11 +302,11 @@ export default function PresetsControls() {
   function handleCopyCurrentToClipboard() {
     const currentState = useSlimeStore.getState();
     const currentLoadableSettings: Partial<LoadableSlimeStoreSettings> = {
-      // @ts-expect-error Don't look at me.
+      // @ts-expect-error This is fine.
       clockSettings: {},
-      // @ts-expect-error Ignore me.
+      // @ts-expect-error This is fine.
       simulationSettings: {},
-      // @ts-expect-error Shhhhhhhhhhh.
+      // @ts-expect-error This is fine.
       colorSettings: {},
     };
     LOADABLE_CLOCK_SETTINGS_KEYS.forEach((key) => {

@@ -61,7 +61,7 @@ function initializeSimulationSettings() {
   const simulationPresets = useSlimeStore.getState().simulationPresets;
   const defaultLoadableSimulationSettings = simulationPresets.filter(
     (preset) => preset.name === DEFAULT_SIMULATION_SETTINGS_PRESET_NAME,
-  )[0].simulationSettings;
+  )[0]?.simulationSettings;
   if (!defaultLoadableSimulationSettings) {
     debugConsoleLogger(
       "initializeSimulationSettings > default preset not found; throwing error",

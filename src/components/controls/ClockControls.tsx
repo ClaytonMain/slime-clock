@@ -10,6 +10,8 @@ import type {
 import CodeBlock from "../code-block/CodeBlock";
 import AccordionControlsItem from "./AccordionControlsItem";
 import AccordionControlsWrapper from "./AccordionControlsWrapper";
+import ControlGroup from "./ControlGroup";
+import SaveCurrentSettingsAsPresetPopoverButton from "./SaveCurrentSettingsAsPresetPopoverButton";
 import SimulationPresetLoadSaveControl from "./SimulationPresetLoadSaveControl";
 import SlimeStoreColorPickerControl from "./SlimeStoreColorPickerControl";
 import SlimeStoreSelectControl from "./SlimeStoreSelectControl";
@@ -100,6 +102,9 @@ export default function ClockControls() {
             label="Presets"
             labelHoverTabContentDisplay={["Presets"]}
           >
+            <ControlGroup justifyContent="center">
+              <SaveCurrentSettingsAsPresetPopoverButton presetType="Clock Only" />
+            </ControlGroup>
             {sortedSimulationPresets["Clock Only"] &&
               sortedSimulationPresets["Clock Only"].map((preset) => (
                 <SimulationPresetLoadSaveControl
@@ -203,6 +208,18 @@ export default function ClockControls() {
                 "Whether to pad hours with a leading zero.",
               ]}
             />
+            <SlimeStoreSliderControl
+              label="Digit Fade Speed"
+              labelHoverTabContentDisplay={[
+                "Digit Fade Speed",
+                "Changes the speed at which the digits fade in and out when they change. Higher values are faster.",
+              ]}
+              baseInputId="clock-digit-fade-speed-slider"
+              min={CLOCK_CONTROLS_CONFIGS.digitFadeSpeed!.min}
+              max={CLOCK_CONTROLS_CONFIGS.digitFadeSpeed!.max}
+              step={CLOCK_CONTROLS_CONFIGS.digitFadeSpeed!.step}
+              storePath={["clockSettings", "digitFadeSpeed"]}
+            />
             <SlimeStoreSwitchControl
               label="Show Clock Shadow"
               baseId="clock-show-shadow-switch"
@@ -232,18 +249,6 @@ export default function ClockControls() {
               ]}
               baseId="clock-shadow-color-picker"
               storePath={["clockSettings", "clockShadowColor"]}
-            />
-            <SlimeStoreSliderControl
-              label="Digit Fade Speed"
-              labelHoverTabContentDisplay={[
-                "Digit Fade Speed",
-                "Changes the speed at which the digits fade in and out when they change. Higher values are faster.",
-              ]}
-              baseInputId="clock-digit-fade-speed-slider"
-              min={CLOCK_CONTROLS_CONFIGS.digitFadeSpeed!.min}
-              max={CLOCK_CONTROLS_CONFIGS.digitFadeSpeed!.max}
-              step={CLOCK_CONTROLS_CONFIGS.digitFadeSpeed!.step}
-              storePath={["clockSettings", "digitFadeSpeed"]}
             />
           </AccordionControlsItem>
         </AccordionControlsWrapper>
