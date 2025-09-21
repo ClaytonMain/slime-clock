@@ -39,6 +39,10 @@ export default function RandomizationControls() {
   }, [selectedTab]);
 
   function updateNeededRandomizations(settings: string[]) {
+    const randomizationSettings =
+      useSlimeStore.getState().randomizationSettings;
+    const randomized: string[] = [];
+    const notRandomized: string[] = [];
     useSlimeStore.setState(
       produce((state) => {
         settings.forEach((setting) => {
@@ -46,17 +50,63 @@ export default function RandomizationControls() {
             case "agents":
               state.randomizationState.agentRandomizationRequestedAt =
                 Date.now();
+              if (randomizationSettings.allowAgentRandomization) {
+                randomized.push("agents");
+              } else {
+                notRandomized.push("agents");
+              }
               break;
             case "trail":
               state.randomizationState.trailRandomizationRequestedAt =
                 Date.now();
+              if (randomizationSettings.allowTrailRandomization) {
+                randomized.push("trail");
+              } else {
+                notRandomized.push("trail");
+              }
               break;
             case "color":
               state.randomizationState.colorRandomizationRequestedAt =
                 Date.now();
+              if (randomizationSettings.allowColorRandomization) {
+                randomized.push("color");
+              } else {
+                notRandomized.push("color");
+              }
               break;
           }
         });
+        if (settings.length === 1) {
+          if (randomized.length === 1) {
+            state.toast.title = "Randomization Applied";
+            state.toast.description = `The ${randomized[0]} settings have been randomized.`;
+            state.toast.type = "success";
+            state.toast.lastTriggeredAt = Date.now();
+          } else if (notRandomized.length === 1) {
+            state.toast.title = "Randomization Skipped";
+            state.toast.description = `Randomization for ${notRandomized[0]} settings is disabled.`;
+            state.toast.type = "error";
+            state.toast.lastTriggeredAt = Date.now();
+          }
+        } else if (settings.length > 1) {
+          const descriptionArray: string[] = [];
+          if (randomized.length > 0) {
+            descriptionArray.push(`Randomized: ${randomized.join(", ")}.`);
+          }
+          if (notRandomized.length > 0) {
+            descriptionArray.push(`Skipped: ${notRandomized.join(", ")}.`);
+          }
+          let toastType = "info";
+          if (randomized.length === settings.length) {
+            toastType = "success";
+          } else if (notRandomized.length === settings.length) {
+            toastType = "error";
+          }
+          state.toast.title = "Randomization Info";
+          state.toast.description = descriptionArray.join("\n");
+          state.toast.type = toastType;
+          state.toast.lastTriggeredAt = Date.now();
+        }
       }),
     );
   }
@@ -101,22 +151,49 @@ export default function RandomizationControls() {
             ]}
           >
             <SlimeStoreSwitchControl
-              label="Auto Rand. Enabled"
+              label="Sim. Auto Rand. Enabled"
               labelHoverTabContentDisplay={[
-                "Auto Randomization Enabled",
+                "Simulation Auto Randomization Enabled",
                 'Allows the simulation to randomize certain parameters at set intervals. The randomization interval is set using the \'Randomization Interval\' slider. Control over which parameters are randomized can be found in the "Agent Randomization Settings" and "Trail Randomization Settings" accordions below. Auto randomization is disabled when the controls are open.',
               ]}
               baseId="auto-randomization-enabled-switch"
-              storePath={["randomizationSettings", "autoRandomizationEnabled"]}
+              storePath={[
+                "randomizationSettings",
+                "simulationAutoRandomizationEnabled",
+              ]}
             />
             <SlimeStoreSliderControl
-              label="Auto Rand. Interval"
+              label="Sim. Auto Rand. Interval"
               labelHoverTabContentDisplay={[]}
               baseInputId="auto-randomization-interval-slider"
               min={1}
               max={60}
               step={1}
-              storePath={["randomizationSettings", "autoRandomizationInterval"]}
+              storePath={[
+                "randomizationSettings",
+                "simulationAutoRandomizationInterval",
+              ]}
+            />
+            <SlimeStoreSwitchControl
+              label="Color Auto Rand. Enabled"
+              labelHoverTabContentDisplay={[]}
+              baseId="color-auto-randomization-enabled-switch"
+              storePath={[
+                "randomizationSettings",
+                "colorAutoRandomizationEnabled",
+              ]}
+            />
+            <SlimeStoreSliderControl
+              label="Color Auto Rand. Interval"
+              labelHoverTabContentDisplay={[]}
+              baseInputId="color-auto-randomization-interval-slider"
+              min={1}
+              max={60}
+              step={1}
+              storePath={[
+                "randomizationSettings",
+                "colorAutoRandomizationInterval",
+              ]}
             />
             <SlimeStoreSwitchControl
               label="Auto Restart Enabled"
@@ -181,6 +258,11 @@ export default function RandomizationControls() {
                       produce((state) => {
                         state.randomizationState.simulationRestartRequestedAt =
                           Date.now();
+                        state.toast.title = "Simulation Restarted";
+                        state.toast.description =
+                          "The simulation has been restarted.";
+                        state.toast.type = "info";
+                        state.toast.lastTriggeredAt = Date.now();
                       }),
                     );
                   },
@@ -272,7 +354,6 @@ export default function RandomizationControls() {
               "Controls the randomization settings for agents.",
             ]}
           >
-            {/* TODO: Don't allow the enabled start types to change on auto-randomization. Kind of defeats the purpose. */}
             <SwitchControlGroup
               label="Enabled Start Types"
               labelHoverTabContentDisplay={[
@@ -458,6 +539,14 @@ export default function RandomizationControls() {
               "Controls the randomization settings for trails.",
             ]}
           >
+            <SlimeStoreSwitchControl
+              label="Allow Boundary Behavior Rand."
+              baseId="allow-boundary-behavior-randomization-switch"
+              storePath={[
+                "randomizationSettings",
+                "allowBoundaryBehaviorRandomization",
+              ]}
+            />
             <SlimeStoreNumericRangeRandomizationControl
               label="Clock Decay Rate"
               baseId="clock-decay-rate-randomization-control"

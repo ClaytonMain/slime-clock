@@ -29,10 +29,6 @@ const clockDigitLayoutOptions: ClockDigitLayoutOption[] = [
   { value: "vertical", label: "Vertical" },
 ] as const;
 
-/**
- * Clock Digit Style
- * 7 Segment, Dot Matrix
- */
 type ClockDigitStyleOption = {
   value: ClockDigitStyleValue;
   label: string;
@@ -40,15 +36,11 @@ type ClockDigitStyleOption = {
 const clockStyleOptions: ClockDigitStyleOption[] = [
   { value: "7segment", label: "7 Segment" },
   { value: "14segment", label: "14 Segment" },
-  { value: "dotmatrix", label: "Dot Matrix" },
-  { value: "syne", label: "Syne Mono" },
+  { value: "dm80", label: "DM-80" },
   { value: "roboto", label: "Roboto Mono" },
+  { value: "her", label: "Her?" },
 ] as const;
 
-/**
- * Clock Hour Format
- * 12 Hour, 24 Hour
- */
 type ClockHourFormatOption = {
   value: ClockHourFormatValue;
   label: string;

@@ -1,7 +1,6 @@
 import { produce } from "immer";
 import { useEffect } from "react";
 import {
-  AGENT_START_TYPE_DROPDOWN_OPTIONS,
   DISPLAY_TEXTURE_ASPECT_RATIO_OPTIONS,
   SIMULATION_CONTROLS_CONFIGS,
 } from "../../constants/constants";
@@ -15,11 +14,13 @@ import CodeBlock from "../code-block/CodeBlock";
 import AccordionControlsItem from "./AccordionControlsItem";
 import AccordionControlsWrapper from "./AccordionControlsWrapper";
 import ButtonControlGroup from "./ButtonControlGroup.tsx";
-import HeightScaledPixelValueDisplay from "./HeightScaledPixelValueDisplay";
+import ControlGroup from "./ControlGroup.tsx";
+import SaveCurrentSettingsAsPresetPopoverButton from "./SaveCurrentSettingsAsPresetPopoverButton.tsx";
 import SettingsLoadSaveControl from "./SimulationPresetLoadSaveControl.tsx";
 import SlimeStoreSelectControl from "./SlimeStoreSelectControl";
 import SlimeStoreSliderControl from "./SlimeStoreSliderControl";
 import SlimeStoreSwitchControl from "./SlimeStoreSwitchControl";
+import SwitchControlGroup from "./SwitchControlGroup.tsx";
 import TabContentContainer from "./TabContentContainer";
 import TabContentScrollArea from "./TabContentScrollArea";
 
@@ -113,6 +114,92 @@ export default function SimulationControls() {
               </div>,
             ]}
           >
+            <SwitchControlGroup
+              label="Enabled Start Types"
+              labelHoverTabContentDisplay={[
+                "Enabled Start Types",
+                "Toggles to enable or disable randomization for various start types. Note: if all start types are disabled, then a random start type will be chosen.",
+              ]}
+              switchConfigs={[
+                {
+                  label: "Center",
+                  baseId: "start-type-randomization-center-switch",
+                  storePath: [
+                    "randomizationSettings",
+                    "agentStartTypeRandomizationOptions",
+                    "options",
+                    "Center",
+                    "enabled",
+                  ],
+                },
+                {
+                  label: "Ring",
+                  baseId: "start-type-randomization-ring-switch",
+                  storePath: [
+                    "randomizationSettings",
+                    "agentStartTypeRandomizationOptions",
+                    "options",
+                    "Ring",
+                    "enabled",
+                  ],
+                },
+                {
+                  label: "9 Rings",
+                  baseId: "start-type-randomization-9-rings-switch",
+                  storePath: [
+                    "randomizationSettings",
+                    "agentStartTypeRandomizationOptions",
+                    "options",
+                    "9 Rings",
+                    "enabled",
+                  ],
+                },
+                {
+                  label: "Circle",
+                  baseId: "start-type-randomization-circle-switch",
+                  storePath: [
+                    "randomizationSettings",
+                    "agentStartTypeRandomizationOptions",
+                    "options",
+                    "Circle",
+                    "enabled",
+                  ],
+                },
+                {
+                  label: "Spiral",
+                  baseId: "start-type-randomization-spiral-switch",
+                  storePath: [
+                    "randomizationSettings",
+                    "agentStartTypeRandomizationOptions",
+                    "options",
+                    "Spiral",
+                    "enabled",
+                  ],
+                },
+                {
+                  label: "Fill",
+                  baseId: "start-type-randomization-fill-switch",
+                  storePath: [
+                    "randomizationSettings",
+                    "agentStartTypeRandomizationOptions",
+                    "options",
+                    "Fill",
+                    "enabled",
+                  ],
+                },
+                {
+                  label: "Hexagonal Grid",
+                  baseId: "start-type-randomization-hexagonal-grid-switch",
+                  storePath: [
+                    "randomizationSettings",
+                    "agentStartTypeRandomizationOptions",
+                    "options",
+                    "Hexagonal Grid",
+                    "enabled",
+                  ],
+                },
+              ]}
+            />
             <ButtonControlGroup
               label="Quick Rand."
               labelHoverTabContentDisplay={[
@@ -120,6 +207,18 @@ export default function SimulationControls() {
                 "Allows you to quickly randomize the simulation settings. You can configure the randomization bounds for each setting in the 'Randomization Controls' tab (the dice icon below).",
               ]}
               buttonConfigs={[
+                {
+                  label: "Restart Simulation",
+                  baseId: "restart-simulation-button",
+                  onClick: () => {
+                    useSlimeStore.setState(
+                      produce((state) => {
+                        state.randomizationState.simulationRestartRequestedAt =
+                          Date.now();
+                      }),
+                    );
+                  },
+                },
                 {
                   label: "Randomize Simulation",
                   baseId: "randomize-simulation-button",
@@ -164,7 +263,7 @@ export default function SimulationControls() {
               label="Show FPS"
               labelHoverTabContentDisplay={[
                 "Show FPS Counter",
-                "Enables a small FPS (and other stats) counter at the top-left of the screen. Hidden after a few moments of inaction.",
+                "Enables a small FPS (and other stats) counter at the top-left of the screen. Hidden after a few moments of inactivity.",
               ]}
               baseId="simulation-controls-show-fps-switch"
               storePath={["showFPS"]}
@@ -176,6 +275,9 @@ export default function SimulationControls() {
             label="Presets"
             labelHoverTabContentDisplay={["Presets"]}
           >
+            <ControlGroup justifyContent="center">
+              <SaveCurrentSettingsAsPresetPopoverButton presetType="Simulation Only" />
+            </ControlGroup>
             {sortedSimulationPresets["Simulation Only"] &&
               sortedSimulationPresets["Simulation Only"].map((preset) => (
                 <SettingsLoadSaveControl
@@ -247,25 +349,31 @@ export default function SimulationControls() {
               valueType="number"
             />
             <SlimeStoreSwitchControl
-              label="Auto Rand. Enabled"
+              label="Sim. Auto Rand. Enabled"
               labelHoverTabContentDisplay={[
-                "Auto Randomization Enabled",
+                "Simulation Auto Randomization Enabled",
                 'Allows the simulation to randomize certain parameters at set intervals. The randomization interval is set using the "Randomization Interval" slider. Control over which parameters are randomized can be found in the "Randomization Controls" tab. Auto randomization is disabled when the controls are open.',
               ]}
               baseId="auto-randomization-enabled-switch"
-              storePath={["randomizationSettings", "autoRandomizationEnabled"]}
+              storePath={[
+                "randomizationSettings",
+                "simulationAutoRandomizationEnabled",
+              ]}
             />
             <SlimeStoreSliderControl
-              label="Auto Randomization Interval"
+              label="Sim. Auto Rand. Interval"
               labelHoverTabContentDisplay={[
-                "Auto Randomization Interval",
+                "Simulation Auto Randomization Interval",
                 'Controls how often (in minutes) the simulation randomizes its parameters. Control over which parameters are randomized can be found in the "Randomization Controls" tab. Has no effect when auto randomization is disabled. Auto randomization is disabled when the controls are open.',
               ]}
               baseInputId="auto-randomization-interval-slider"
               min={1}
               max={60}
               step={1}
-              storePath={["randomizationSettings", "autoRandomizationInterval"]}
+              storePath={[
+                "randomizationSettings",
+                "simulationAutoRandomizationInterval",
+              ]}
             />
             <SlimeStoreSwitchControl
               label="Auto Restart Enabled"
@@ -331,18 +439,6 @@ export default function SimulationControls() {
               storePath={["simulationSettings", "agentDensity"]}
               onValueChange={handleAgentDensityChange}
               hideSlider={true}
-            />
-            <SlimeStoreSelectControl
-              label="Start Type"
-              labelHoverTabContentDisplay={[
-                "Agent Start Type",
-                'Controls how agents are spawned into the simulation. "Fill" will spawn agents evenly across the display area, which can be good for testing how different settings affect the clock display. Other starting patterns may be more interesting, but may not fill the clock display evenly at first.',
-              ]}
-              baseInputId="agent-start-type-select"
-              placeholder="Agent Start Type"
-              storePath={["simulationSettings", "agentStartType"]}
-              options={AGENT_START_TYPE_DROPDOWN_OPTIONS}
-              valueType="number"
             />
             <SlimeStoreSliderControl
               label="Clock Attraction"
@@ -410,10 +506,7 @@ export default function SimulationControls() {
               label="Sensor Offset"
               labelHoverTabContentDisplay={[
                 "Agent Sensor Offset",
-                <HeightScaledPixelValueDisplay
-                  storePath={["simulationSettings", "agentSensorOffset"]}
-                  description="Controls how far each agent's sensors are from their center. TODO: Explain what that means. For consistency across resolutions, the slider value is a percentage of the display height."
-                />,
+                "Controls how far each agent's sensors are from their center, in pixels.",
               ]}
               baseInputId="agent-sensor-offset-slider"
               min={SIMULATION_CONTROLS_CONFIGS.agentSensorOffset!.min}
@@ -425,10 +518,7 @@ export default function SimulationControls() {
               label="Sensor Width"
               labelHoverTabContentDisplay={[
                 "Agent Sensor Width",
-                <HeightScaledPixelValueDisplay
-                  storePath={["simulationSettings", "agentSensorWidth"]}
-                  description="The width of each agent's sensors. TODO: Explain what that means. For consistency across resolutions, the slider value is a percentage of the display height."
-                />,
+                "The width of each agent's sensors, in pixels.",
               ]}
               baseInputId="agent-sensor-width-slider"
               min={SIMULATION_CONTROLS_CONFIGS.agentSensorWidth!.min}
@@ -440,10 +530,7 @@ export default function SimulationControls() {
               label="Step Size"
               labelHoverTabContentDisplay={[
                 "Agent Step Size",
-                <HeightScaledPixelValueDisplay
-                  storePath={["simulationSettings", "agentStepSize"]}
-                  description="The distance each agent moves forward in a single step. For consistency across resolutions, the slider value is a percentage of the display height."
-                />,
+                "The distance each agent moves forward in a single step, in pixels.",
               ]}
               baseInputId="agent-step-size-slider"
               min={SIMULATION_CONTROLS_CONFIGS.agentStepSize!.min}

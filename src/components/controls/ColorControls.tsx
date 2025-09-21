@@ -11,10 +11,13 @@ import type { LoadableSlimeStoreSettings } from "../../types/types";
 import AccordionControlsItem from "./AccordionControlsItem";
 import AccordionControlsWrapper from "./AccordionControlsWrapper";
 import ButtonControlGroup from "./ButtonControlGroup";
+import ControlGroup from "./ControlGroup";
+import SaveCurrentSettingsAsPresetPopoverButton from "./SaveCurrentSettingsAsPresetPopoverButton";
 import SimulationPresetLoadSaveControl from "./SimulationPresetLoadSaveControl";
 import SlimeStoreColorPickerControl from "./SlimeStoreColorPickerControl";
 import SlimeStoreSelectControl from "./SlimeStoreSelectControl";
 import SlimeStoreSliderControl from "./SlimeStoreSliderControl";
+import SlimeStoreSwitchControl from "./SlimeStoreSwitchControl";
 import TabContentContainer from "./TabContentContainer";
 import TabContentScrollArea from "./TabContentScrollArea";
 
@@ -82,6 +85,33 @@ export default function ColorControls() {
             label="Quick Controls"
             labelHoverTabContentDisplay={["Quick Controls"]}
           >
+            <SlimeStoreSwitchControl
+              label="Color Auto Rand. Enabled"
+              labelHoverTabContentDisplay={[
+                "Color Auto Randomization Enabled",
+                'Allows the color settings to be randomized at set intervals. The randomization interval is set using the "Color Rand. Interval" slider. Control over which parameters are randomized can be found in the "Randomization Controls" tab. Auto randomization is disabled when the controls are open.',
+              ]}
+              baseId="color-controls-color-auto-randomization-enabled-switch"
+              storePath={[
+                "randomizationSettings",
+                "colorAutoRandomizationEnabled",
+              ]}
+            />
+            <SlimeStoreSliderControl
+              label="Color Auto Rand. Interval"
+              labelHoverTabContentDisplay={[
+                "Color Auto Randomization Interval",
+                'Controls how often (in minutes) the color settings randomize their parameters. Control over which parameters are randomized can be found in the "Randomization Controls" tab. Has no effect when auto randomization is disabled. Auto randomization is disabled when the controls are open.',
+              ]}
+              baseInputId="color-controls-color-auto-randomization-interval-slider"
+              min={1}
+              max={60}
+              step={1}
+              storePath={[
+                "randomizationSettings",
+                "colorAutoRandomizationInterval",
+              ]}
+            />
             <ButtonControlGroup
               label="Quick Rand."
               labelHoverTabContentDisplay={[
@@ -117,6 +147,9 @@ export default function ColorControls() {
             label="Presets"
             labelHoverTabContentDisplay={["Presets"]}
           >
+            <ControlGroup justifyContent="center">
+              <SaveCurrentSettingsAsPresetPopoverButton presetType="Color Only" />
+            </ControlGroup>
             {sortedSimulationPresets["Color Only"] &&
               sortedSimulationPresets["Color Only"].map((preset) => (
                 <SimulationPresetLoadSaveControl

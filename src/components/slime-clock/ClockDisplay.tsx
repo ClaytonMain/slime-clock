@@ -11,24 +11,24 @@ import type {
 const SCALE_FACTORS: Record<ClockDigitStyleValue, number> = {
   "7segment": 1.0,
   "14segment": 1.0,
-  dotmatrix: 1.42,
-  syne: 1.5,
+  dm80: 1.3,
   roboto: 1.3,
+  her: 1.0,
 };
 
 function getDigitFontUrl(style: ClockDigitStyleValue): string {
   switch (style) {
     case "7segment":
-      return "../../fonts/DSEG7ClassicMini-Regular.woff";
+      return "../../fonts/fonts-DSEG_v046/DSEG7-Classic/DSEG7Classic-Regular.woff";
     case "14segment":
-      return "../../fonts/DSEG14Modern-Regular.woff";
-    case "dotmatrix":
-      return "../../fonts/5by7/5by7.ttf";
-    case "syne":
-      return "../../fonts/Syne_Mono/SyneMono-Regular.ttf";
+      return "../../fonts/fonts-DSEG_v046/DSEG14-Classic/DSEG14Classic-Regular.woff";
+    case "dm80":
+      return "../../fonts/dm_80/DM-80-Regular.woff";
     case "roboto":
-      return "../../fonts/Roboto_Mono/RobotoMono-VariableFont_wght.ttf";
+      return "../../fonts/Roboto_Mono/static/RobotoMono-Regular.ttf";
     // return "https://fonts.gstatic.com/s/roboto/v18/KFOmCnqEu92Fr1Mu4mxM.woff";
+    case "her":
+      return "../../fonts/fonts-DSEG_v046/DSEG7-7SEGG-CHAN/DSEG7SEGGCHAN-Regular.woff";
     default:
       return "../../fonts/DSEG14Modern-Regular.woff";
   }

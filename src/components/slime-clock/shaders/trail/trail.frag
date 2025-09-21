@@ -52,7 +52,7 @@ void main() {
     int i;
     float averageNeighborIntensity = intensity;
     for (i = 0; i < 8; i++) {
-        vec2 neighborUv = uv + vec2(neighborOffsets[i], neighborOffsets[(i + 6) % 8]) * 1.0 / uDisplayTextureResolution;
+        vec2 neighborUv = uv + vec2(neighborOffsets[i], neighborOffsets[(i + 6) % 8]) / uDisplayTextureResolution;
         if (neighborUv.x <= 0.0 || neighborUv.x >= 1.0 || neighborUv.y <= 0.0 || neighborUv.y >= 1.0) {
             if (uBoundaryBehavior == 0) { // Wrap
                 neighborUv = fract(neighborUv);

@@ -64,7 +64,7 @@ export default function ToastProvider() {
               )}
               <div className="font-semibold">{toastState.title}</div>
             </div>
-            <div className="justify-left w-full text-sm">
+            <div className="justify-left w-full text-sm whitespace-pre-wrap">
               {toastState.description}
             </div>
           </div>

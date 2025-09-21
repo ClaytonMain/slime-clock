@@ -101,6 +101,10 @@ export default function RandomizationListener() {
       produce((state) => {
         state.randomizationState.trailRandomizationCompletedAt = Date.now();
         if (randomizationSettings.allowTrailRandomization) {
+          if (randomizationSettings.allowBoundaryBehaviorRandomization) {
+            state.simulationSettings.boundaryBehavior =
+              Math.random() < 0.5 ? 0 : 1;
+          }
           Object.entries(randomizationSettings.simulation).forEach(
             ([key, value]) => {
               const settingKey = key as keyof SimulationSettings;

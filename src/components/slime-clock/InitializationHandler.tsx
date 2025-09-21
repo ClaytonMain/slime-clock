@@ -3,19 +3,179 @@ import { useEffect } from "react";
 import * as THREE from "three";
 import {
   DEFAULT_COLOR_SETTINGS_PRESET_NAME,
+  DEFAULT_PRESETS,
   DEFAULT_SIMULATION_SETTINGS_PRESET_NAME,
+  RANDOMIZATION_PRESETS,
 } from "../../constants/constants.tsx";
 import useSlimeStore from "../../stores/useSlimeStore.tsx";
 import type {
   AgentDataUniforms,
   AgentPositionsUniforms,
   ColorSettings,
+  LoadableSlimeStoreSettings,
+  RandomizationPreset,
   SimulationSettings,
   SlimeMoldDisplayPlaneUniforms,
   TexturePlaneUniforms,
   TrailUniforms,
 } from "../../types/types.tsx";
 import * as UTILS from "../../utils/utils.tsx";
+
+function initializeRandomizationPresets() {
+  const debugConsoleLogger = useSlimeStore.getState().debugConsoleLogger;
+  debugConsoleLogger("initializeRandomizationPresets called");
+  const randomizationPresets: RandomizationPreset[] = [];
+  const currentRandomizationPresets =
+    useSlimeStore.getState().randomizationPresets;
+  const combinedPresets = [
+    ...RANDOMIZATION_PRESETS,
+    ...useSlimeStore.getState().randomizationPresets,
+  ];
+  debugConsoleLogger(
+    "initializeRandomizationPresets > currentRandomizationPresets:",
+    currentRandomizationPresets,
+  );
+  combinedPresets.forEach((preset, i) => {
+    if (preset.isBasePreset) {
+      if (
+        RANDOMIZATION_PRESETS.findIndex(
+          (p) => p.name === preset.name && p.presetType === preset.presetType,
+        ) === -1
+      ) {
+        // If a base preset is no longer in the default presets list,
+        // we need to add it to the new list as a non-base preset.
+        randomizationPresets.push({ ...preset, isBasePreset: false });
+      } else if (
+        randomizationPresets.findIndex(
+          (p) => p.name === preset.name && p.presetType === preset.presetType,
+        ) === -1
+      ) {
+        // If a base preset is in the default presets list, and
+        // hasn't already been added to the new list, we can add it
+        // as-is.
+        randomizationPresets.push(preset);
+      }
+    } else {
+      if (
+        combinedPresets.findIndex(
+          (p, j) =>
+            p.name === preset.name &&
+            p.presetType === preset.presetType &&
+            i !== j,
+        ) !== -1
+      ) {
+        // If a non-base preset shares a name with another preset
+        // it should be renamed to preserve uniqueness.
+        randomizationPresets.push({
+          ...preset,
+          name: `${preset.name} [User-Defined ${Math.floor(
+            Math.random() * 10000,
+          )
+            .toString()
+            .padStart(5, "0")}]`,
+        });
+      } else if (
+        randomizationPresets.findIndex(
+          (p) => p.name === preset.name && p.presetType === preset.presetType,
+        ) === -1
+      ) {
+        // Otherwise, we can just add the non-base preset as-is.
+        randomizationPresets.push(preset);
+      }
+    }
+  });
+  debugConsoleLogger(
+    "initializeRandomizationPresets > randomizationPresets:",
+    randomizationPresets,
+  );
+  useSlimeStore.setState(
+    produce((state) => {
+      state.randomizationPresets = randomizationPresets;
+    }),
+  );
+}
+
+function initializeSimulationPresets() {
+  const debugConsoleLogger = useSlimeStore.getState().debugConsoleLogger;
+  debugConsoleLogger("initializeSimulationPresets called");
+
+  const simulationPresets: LoadableSlimeStoreSettings[] = [];
+  const currentSimulationPresets = useSlimeStore.getState().simulationPresets;
+  const combinedPresets = [
+    ...DEFAULT_PRESETS,
+    ...useSlimeStore.getState().simulationPresets,
+  ];
+  debugConsoleLogger(
+    "initializeSimulationPresets > currentSimulationPresets:",
+    currentSimulationPresets,
+  );
+  combinedPresets.forEach((preset, i) => {
+    if (preset.isBasePreset) {
+      if (
+        DEFAULT_PRESETS.findIndex(
+          (p) => p.name === preset.name && p.presetType === preset.presetType,
+        ) === -1
+      ) {
+        // If a base preset is no longer in the default presets list,
+        // we need to add it to the new list as a non-base preset.
+        simulationPresets.push({ ...preset, isBasePreset: false });
+      } else if (
+        simulationPresets.findIndex(
+          (p) => p.name === preset.name && p.presetType === preset.presetType,
+        ) === -1
+      ) {
+        // If a base preset is in the default presets list, and
+        // hasn't already been added to the new list, we can add it
+        // as-is.
+        simulationPresets.push(preset);
+      }
+    } else {
+      if (
+        combinedPresets.findIndex(
+          (p, j) =>
+            p.name === preset.name &&
+            p.presetType === preset.presetType &&
+            i !== j,
+        ) !== -1
+      ) {
+        // If a non-base preset shares a name with another preset
+        // it should be renamed to preserve uniqueness.
+        simulationPresets.push({
+          ...preset,
+          name: `${preset.name} [User-Defined ${Math.floor(
+            Math.random() * 10000,
+          )
+            .toString()
+            .padStart(5, "0")}]`,
+        });
+      } else if (
+        simulationPresets.findIndex(
+          (p) => p.name === preset.name && p.presetType === preset.presetType,
+        ) === -1
+      ) {
+        // Otherwise, we can just add the non-base preset as-is.
+        simulationPresets.push(preset);
+      }
+    }
+  });
+  debugConsoleLogger(
+    "initializeSimulationPresets > simulationPresets:",
+    simulationPresets,
+  );
+  useSlimeStore.setState(
+    produce((state) => {
+      state.simulationPresets = simulationPresets;
+    }),
+  );
+}
+
+function initializePresets() {
+  const debugConsoleLogger = useSlimeStore.getState().debugConsoleLogger;
+  debugConsoleLogger("initializePresets called");
+
+  initializeRandomizationPresets();
+  initializeSimulationPresets();
+}
 
 function initializeClockSettings() {
   const debugConsoleLogger = useSlimeStore.getState().debugConsoleLogger;
@@ -312,6 +472,7 @@ export default function InitializationHandler() {
    */
   function initializeStore() {
     debugConsoleLogger("InitializationHandler > initializeStore called");
+    initializePresets();
     initializeClockSettings();
     initializeSimulationSettings();
     initializeColorSettings();
@@ -487,15 +648,9 @@ export default function InitializationHandler() {
         simulationSettings.agentSensorDegrees * (Math.PI / 180),
       ),
       uRotationRate: new THREE.Uniform(simulationSettings.agentRotationRate),
-      uSensorOffset: new THREE.Uniform(
-        UTILS.getWindowHeightScaledValue(simulationSettings.agentSensorOffset),
-      ),
-      uSensorWidth: new THREE.Uniform(
-        UTILS.getWindowHeightScaledValue(simulationSettings.agentSensorWidth),
-      ),
-      uStepSize: new THREE.Uniform(
-        UTILS.getWindowHeightScaledValue(simulationSettings.agentStepSize),
-      ),
+      uSensorOffset: new THREE.Uniform(simulationSettings.agentSensorOffset),
+      uSensorWidth: new THREE.Uniform(simulationSettings.agentSensorWidth),
+      uStepSize: new THREE.Uniform(simulationSettings.agentStepSize),
       uCrowdAvoidance: new THREE.Uniform(
         simulationSettings.agentCrowdAvoidance,
       ),
@@ -533,9 +688,7 @@ export default function InitializationHandler() {
       uBackgroundDiffuseRate: new THREE.Uniform(
         simulationSettings.trailBackgroundDiffuseRate,
       ),
-      uSensorWidth: new THREE.Uniform(
-        UTILS.getWindowHeightScaledValue(simulationSettings.agentSensorWidth),
-      ),
+      uSensorWidth: new THREE.Uniform(simulationSettings.agentSensorWidth),
       uBoundaryBehavior: new THREE.Uniform(simulationSettings.boundaryBehavior),
       uDelta: new THREE.Uniform(0.0),
       uTime: new THREE.Uniform(0.0),

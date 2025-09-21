@@ -51,8 +51,6 @@ function SimpleUniformListener({
   valueStorePath,
   uniformStorePath,
   valueType = "number",
-  windowHeightScaled = false,
-  displayTextureHeightScaled = false,
   factor,
 }: {
   valueStorePath: ValueStorePath;
@@ -73,11 +71,7 @@ function SimpleUniformListener({
         let newValue = newStoreValue;
         switch (valueType) {
           case "number":
-            if (windowHeightScaled) {
-              newValue = UTILS.getWindowHeightScaledValue(newValue);
-            } else if (displayTextureHeightScaled) {
-              newValue = UTILS.getDisplayTextureHeightScaledValue(newValue);
-            } else if (factor) {
+            if (factor) {
               newValue *= factor;
             }
             break;
@@ -130,8 +124,6 @@ const SIMPLE_UNIFORM_LISTENER_CONFIGS: Array<{
   valueStorePath: ValueStorePath;
   uniformStorePath: UniformStorePath;
   valueType?: "number" | "boolean" | "color";
-  windowHeightScaled?: boolean;
-  displayTextureHeightScaled?: boolean;
   factor?: number;
 }> = [
   /**
@@ -153,17 +145,14 @@ const SIMPLE_UNIFORM_LISTENER_CONFIGS: Array<{
   {
     valueStorePath: ["simulationSettings", "agentSensorOffset"],
     uniformStorePath: ["agentData", "uSensorOffset"],
-    windowHeightScaled: true,
   },
   {
     valueStorePath: ["simulationSettings", "agentSensorWidth"],
     uniformStorePath: ["agentData", "uSensorWidth"],
-    windowHeightScaled: true,
   },
   {
     valueStorePath: ["simulationSettings", "agentStepSize"],
     uniformStorePath: ["agentData", "uStepSize"],
-    windowHeightScaled: true,
   },
   {
     valueStorePath: ["simulationSettings", "agentCrowdAvoidance"],
@@ -212,7 +201,6 @@ const SIMPLE_UNIFORM_LISTENER_CONFIGS: Array<{
   {
     valueStorePath: ["simulationSettings", "agentSensorWidth"],
     uniformStorePath: ["trail", "uSensorWidth"],
-    windowHeightScaled: true,
   },
   {
     valueStorePath: ["simulationSettings", "boundaryBehavior"],
@@ -416,31 +404,6 @@ function UniformSubscriptionListeners() {
     simulationSettings.agentDensity,
     simulationRestartRequestedAt,
   ]);
-
-  // Update height-scaled values whenever displayTextureHeight or window heigh changes.
-  useEffect(() => {
-    debugConsoleLogger(
-      "SimulationSettings.displayTextureHeight / window.innerHeight useEffect triggered",
-    );
-    if (!initializationStates.all.initialized) return;
-    if (Date.now() - initializationStates.all.completedAt < 1000) return;
-
-    useSlimeStore.setState(
-      produce((state) => {
-        state.uniforms.agentData.uSensorOffset.value =
-          UTILS.getWindowHeightScaledValue(
-            simulationSettings.agentSensorOffset,
-          );
-        state.uniforms.agentData.uStepSize.value =
-          UTILS.getWindowHeightScaledValue(simulationSettings.agentStepSize);
-        state.uniforms.agentData.uSensorWidth.value =
-          UTILS.getWindowHeightScaledValue(simulationSettings.agentSensorWidth);
-        state.uniforms.trail.uSensorWidth.value =
-          UTILS.getWindowHeightScaledValue(simulationSettings.agentSensorWidth);
-      }),
-    );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [simulationSettings.displayTextureHeight, window.innerHeight]);
 
   useEffect(() => {
     debugConsoleLogger("ColorSettings.slimeColorChangedAt useEffect triggered");

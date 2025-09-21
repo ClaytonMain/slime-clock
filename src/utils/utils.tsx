@@ -196,7 +196,8 @@ export function getAgentDataTexture(
   displayTextureHeight: number,
   startType: number = -1,
 ) {
-  console.log("getAgentDataTexture called with startType:", startType);
+  const debugConsoleLogger = useSlimeStore.getState().debugConsoleLogger;
+  debugConsoleLogger("getAgentDataTexture called with startType:", startType);
   let effectiveStartType = startType;
   const agentStartTypeIndexOfRandom =
     AGENT_START_TYPE_DROPDOWN_OPTIONS.findIndex(
@@ -305,31 +306,6 @@ export function getDisplayTextureResolutionVector(
 
 export function getWindowResolutionVector(): THREE.Vector2 {
   return new THREE.Vector2(window.innerWidth, window.innerHeight);
-}
-
-export function getWindowHeightScaledValue(
-  value: number,
-  decimals: number = 4,
-): number {
-  const windowHeight = window.innerHeight;
-  const windowHeightScaledValue = roundToFixed(
-    value * (windowHeight / 100),
-    decimals,
-  );
-  return windowHeightScaledValue;
-}
-
-export function getDisplayTextureHeightScaledValue(
-  value: number,
-  decimals: number = 4,
-): number {
-  const displayTextureHeight =
-    useSlimeStore.getState().simulationSettings.displayTextureHeight;
-  const displayTextureHeightScaledValue = roundToFixed(
-    value * (displayTextureHeight / 100),
-    decimals,
-  );
-  return displayTextureHeightScaledValue;
 }
 
 export function getDisplayScaleVector(

@@ -184,9 +184,9 @@ export interface ColorSettings extends LoadableColorSettings {
 export type ClockDigitStyleValue =
   | "7segment"
   | "14segment"
-  | "dotmatrix"
-  | "syne"
-  | "roboto";
+  | "dm80"
+  | "roboto"
+  | "her";
 export type ClockHourFormatValue = "12h" | "24h";
 
 type AgentStartType =

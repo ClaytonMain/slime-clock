@@ -108,13 +108,16 @@ interface SlimeStore {
     lastLoadedSimulationRandomizationPreset: string | null;
   };
   randomizationSettings: {
-    autoRandomizationEnabled: boolean;
-    autoRandomizationInterval: number;
+    simulationAutoRandomizationEnabled: boolean;
+    simulationAutoRandomizationInterval: number;
+    colorAutoRandomizationEnabled: boolean;
+    colorAutoRandomizationInterval: number;
     autoRestartEnabled: boolean;
     autoRestartInterval: number;
     allowAgentRandomization: boolean;
     allowTrailRandomization: boolean;
     allowColorRandomization: boolean;
+    allowBoundaryBehaviorRandomization: boolean;
     agentStartTypeRandomizationOptions: OptionListRandomizationSettings;
     simulation: SimulationRandomizationSettings;
     simulationAutoRandomizationMode:
@@ -139,7 +142,6 @@ interface SlimeStore {
 }
 
 const persistOmit: (keyof SlimeStore)[] = [
-  "debug",
   "debugConsoleLogger",
   "initialization",
   "uniforms",
@@ -160,7 +162,7 @@ const useSlimeStore = create<SlimeStore>()(
   subscribeWithSelector(
     persist(
       (_, get) => ({
-        debug: false,
+        debug: true,
         debugConsoleLogger: (...data: unknown[]) => {
           if (get().debug) {
             console.log(...data);
@@ -361,13 +363,16 @@ const useSlimeStore = create<SlimeStore>()(
           lastLoadedSimulationRandomizationPreset: null,
         },
         randomizationSettings: {
-          autoRandomizationEnabled: true,
-          autoRandomizationInterval: 3,
+          simulationAutoRandomizationEnabled: true,
+          simulationAutoRandomizationInterval: 1,
+          colorAutoRandomizationEnabled: true,
+          colorAutoRandomizationInterval: 5,
           autoRestartEnabled: true,
-          autoRestartInterval: 3,
+          autoRestartInterval: 5,
           allowAgentRandomization: true,
           allowTrailRandomization: true,
           allowColorRandomization: true,
+          allowBoundaryBehaviorRandomization: true,
           agentStartTypeRandomizationOptions: {
             ...AGENT_START_TYPE_RANDOMIZATION_SETTINGS,
           },
