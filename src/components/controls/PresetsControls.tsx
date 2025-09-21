@@ -19,6 +19,8 @@ import type {
 import AccordionControlsItem from "./AccordionControlsItem";
 import AccordionControlsWrapper from "./AccordionControlsWrapper";
 import ButtonControlGroup from "./ButtonControlGroup.tsx";
+import ControlGroup from "./ControlGroup.tsx";
+import SaveCurrentSettingsAsPresetPopoverButton from "./SaveCurrentSettingsAsPresetPopoverButton.tsx";
 import SimulationPresetLoadSaveControl from "./SimulationPresetLoadSaveControl.tsx";
 import TabContentContainer from "./TabContentContainer";
 import TabContentScrollArea from "./TabContentScrollArea";
@@ -390,6 +392,9 @@ export default function PresetsControls() {
             label="Presets"
             labelHoverTabContentDisplay={[]}
           >
+            <ControlGroup justifyContent="center">
+              <SaveCurrentSettingsAsPresetPopoverButton presetType="Combination" />
+            </ControlGroup>
             {sortedPresets["Clock Only"] && (
               <AccordionControlsItem
                 value="presets-clock-only"

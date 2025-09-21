@@ -86,6 +86,23 @@ export default function LoadOrSaveSettingsPopoverButton({
       return;
     }
 
+    if (
+      !includeSettings.clockSettings &&
+      !includeSettings.simulationSettings &&
+      !includeSettings.colorSettings
+    ) {
+      useSlimeStore.setState(
+        produce((state) => {
+          state.toast.title = "No Settings Selected!";
+          state.toast.description =
+            "Select at least one settings category to save.";
+          state.toast.type = "error";
+          state.toast.lastTriggeredAt = Date.now();
+        }),
+      );
+      return;
+    }
+
     let presetType: SimulationPresetType = "Combination";
     if (Object.values(includeSettings).filter(Boolean).length === 1) {
       if (includeSettings.clockSettings) {
