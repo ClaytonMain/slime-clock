@@ -58,6 +58,7 @@ interface ControlsState {
 interface SlimeStore {
   debug: boolean;
   debugConsoleLogger: (...data: unknown[]) => void;
+  framerateGaugedPreviously: boolean;
   initialization: {
     lastUpdatedAt: number;
     controlsDisplayStatus: "initializing" | "ready";
@@ -162,12 +163,13 @@ const useSlimeStore = create<SlimeStore>()(
   subscribeWithSelector(
     persist(
       (_, get) => ({
-        debug: true,
+        debug: false,
         debugConsoleLogger: (...data: unknown[]) => {
           if (get().debug) {
             console.log(...data);
           }
         },
+        framerateGaugedPreviously: false,
         initialization: {
           lastUpdatedAt: Date.now(),
           controlsDisplayStatus: "initializing",

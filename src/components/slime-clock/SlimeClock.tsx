@@ -1,4 +1,4 @@
-import { Plane, useFBO } from "@react-three/drei";
+import { PerformanceMonitor, Plane, useFBO } from "@react-three/drei";
 import { createPortal, extend, useFrame } from "@react-three/fiber";
 import { produce } from "immer";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -204,6 +204,9 @@ function SlimeClockRenderer() {
   const randomizationSettings = useSlimeStore(
     (state) => state.randomizationSettings,
   );
+  const initializationCompletedAt = useSlimeStore(
+    (state) => state.initialization.all.completedAt,
+  );
 
   useFrame(({ gl }, delta) => {
     const currentMinutes = Math.floor(Date.now() / 1000 / 60);
@@ -221,7 +224,9 @@ function SlimeClockRenderer() {
       (lastRestartedAtMinutesRef.current < controlsClosedAtMinutes ||
         simulationLastRandomizedAtMinutesRef.current <
           controlsClosedAtMinutes ||
-        colorLastRandomizedAtMinutesRef.current < controlsClosedAtMinutes)
+        colorLastRandomizedAtMinutesRef.current < controlsClosedAtMinutes ||
+        Date.now() - initializationCompletedAt < 15000 ||
+        Date.now() - controlsClosedAt < 10000)
     ) {
       simulationLastRandomizedAtMinutesRef.current = currentMinutes;
       colorLastRandomizedAtMinutesRef.current = currentMinutes;
@@ -434,8 +439,70 @@ function SlimeClockRenderer() {
     pingPongRef.current = !pingPongRef.current;
   });
 
+  const [performanceGauged, setPerformanceGauged] = useState(
+    useSlimeStore.getState().framerateGaugedPreviously,
+  );
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (!performanceGauged) {
+        setPerformanceGauged(true);
+        useSlimeStore.setState(
+          produce((state) => {
+            state.randomizationState.simulationRestartRequestedAt = Date.now();
+            state.framerateGaugedPreviously = true;
+          }),
+        );
+      }
+    }, 10000);
+    return () => clearTimeout(timeout);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  function onIncline() {
+    if (performanceGauged) return;
+    const displayTextureTargetQuality =
+      useSlimeStore.getState().simulationSettings.displayTextureTargetQuality;
+    console.log("increasing quality to ", displayTextureTargetQuality + 0.5);
+    useSlimeStore.setState(
+      produce((state) => {
+        state.simulationSettings.displayTextureTargetQuality =
+          displayTextureTargetQuality + 0.5;
+      }),
+    );
+  }
+
+  function onDecline() {
+    if (performanceGauged) return;
+    const displayTextureTargetQuality =
+      useSlimeStore.getState().simulationSettings.displayTextureTargetQuality;
+    console.log("decreasing quality to ", displayTextureTargetQuality - 0.25);
+    useSlimeStore.setState(
+      produce((state) => {
+        state.simulationSettings.displayTextureTargetQuality = Math.max(
+          0.25,
+          displayTextureTargetQuality - 0.25,
+        );
+      }),
+    );
+  }
+
+  function bounds(refreshrate: number): [lower: number, upper: number] {
+    console.log(
+      "bounds called with refreshrate:",
+      refreshrate,
+      Math.floor(refreshrate / 5) * 5,
+    );
+    return [Math.floor(refreshrate * 0.75), Math.floor(refreshrate / 5) * 5];
+  }
+
   return (
     <>
+      <PerformanceMonitor
+        bounds={bounds}
+        onIncline={onIncline}
+        onDecline={onDecline}
+      />
       {createPortal(
         <mesh>
           <agentDataMaterial
@@ -549,7 +616,7 @@ function SlimeClockRenderer() {
         </mesh>,
         trailSceneB,
       )}
-      <Plane visible={true}>
+      <Plane visible={performanceGauged}>
         <shaderMaterial
           ref={slimeMoldDisplayShaderRef}
           uniforms={slimeMoldDisplayPlaneUniforms}

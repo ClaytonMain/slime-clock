@@ -38,7 +38,7 @@ const clockStyleOptions: ClockDigitStyleOption[] = [
   { value: "14segment", label: "14 Segment" },
   { value: "dm80", label: "DM-80" },
   { value: "roboto", label: "Roboto Mono" },
-  { value: "her", label: "Her?" },
+  // { value: "her", label: "Her?" },
 ] as const;
 
 type ClockHourFormatOption = {

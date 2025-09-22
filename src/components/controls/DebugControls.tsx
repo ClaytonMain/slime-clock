@@ -60,7 +60,7 @@ export default function DebugControls() {
             <SlimeStoreSwitchControl
               label="Enable 'debug' in Store"
               baseId="debug-controls-enable-debug-switch"
-              storePath={["enableDebug"]}
+              storePath={["debug"]}
               labelHoverTabContentDisplay={[
                 "Enable 'debug' in Store",
                 "Toggle the 'debug' flag in the global store. Currently only affects logging.",

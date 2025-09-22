@@ -198,24 +198,24 @@ export function getAgentDataTexture(
 ) {
   const debugConsoleLogger = useSlimeStore.getState().debugConsoleLogger;
   debugConsoleLogger("getAgentDataTexture called with startType:", startType);
+  const framerateGaugedPreviously =
+    useSlimeStore.getState().framerateGaugedPreviously;
   let effectiveStartType = startType;
   const agentStartTypeIndexOfRandom =
     AGENT_START_TYPE_DROPDOWN_OPTIONS.findIndex(
       (option) => option.label === "Random",
     );
-  console.log("agentStartTypeIndexOfRandom:", agentStartTypeIndexOfRandom);
-  console.log(AGENT_START_TYPE_DROPDOWN_OPTIONS[agentStartTypeIndexOfRandom]);
-  console.log(
-    AGENT_START_TYPE_DROPDOWN_OPTIONS[agentStartTypeIndexOfRandom].value,
-  );
   if (
     AGENT_START_TYPE_DROPDOWN_OPTIONS[agentStartTypeIndexOfRandom].value ===
     String(startType)
   ) {
-    console.log("Getting random allowed start type");
-    const randomStartType = getRandomAllowedStartType();
-    if (randomStartType !== null) {
-      effectiveStartType = randomStartType;
+    if (!framerateGaugedPreviously) {
+      effectiveStartType = 5; // Fill
+    } else {
+      const randomStartType = getRandomAllowedStartType();
+      if (randomStartType !== null) {
+        effectiveStartType = randomStartType;
+      }
     }
   }
   const data = getAgentData(

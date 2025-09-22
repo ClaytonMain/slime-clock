@@ -52,7 +52,7 @@ export const DEFAULT_SIMULATION_SETTINGS: SimulationSettings = {
 
   boundaryBehavior: 0, // 0: Wrap, 1: Bounce
 
-  agentDensity: 0.25,
+  agentDensity: 0.2,
   gpuTextureWidth: 16,
   gpuTextureHeight: 16,
   agentStartType: -1,
@@ -68,7 +68,7 @@ export const DEFAULT_SIMULATION_SETTINGS: SimulationSettings = {
   agentWanderStrength: 5.3,
 
   displayTextureAspectRatio: "Window",
-  displayTextureTargetQuality: 1.0,
+  displayTextureTargetQuality: 1.5,
   displayTextureWidth: -1,
   displayTextureHeight: -1,
   trailClockDecayRate: 0.05,
@@ -205,11 +205,11 @@ export const DEFAULT_COLOR_RANDOMIZATION_SETTINGS: ColorRandomizationSettings =
     },
     clockColorOffset: {
       type: "numericRange",
-      enabled: false,
+      enabled: true,
       flatRange: [0.05, 0.25],
       gaussMu: 0.15,
       gaussSigma: 0.03,
-      pertMinModeMax: [0.05, 0.15, 0.25],
+      pertMinModeMax: [0.1, 0.2, 0.3],
       mode: "pert",
     },
     xColorOffset: {
