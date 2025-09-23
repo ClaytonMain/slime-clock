@@ -1,4 +1,8 @@
-import { ClockIcon, MixerHorizontalIcon } from "@radix-ui/react-icons";
+import {
+  ClockIcon,
+  InfoCircledIcon,
+  MixerHorizontalIcon,
+} from "@radix-ui/react-icons";
 import { produce } from "immer";
 import { motion } from "motion/react";
 import { Tabs } from "radix-ui";
@@ -109,6 +113,9 @@ export default function TabButton({
             )}
             {tabName === "presets-controls" && (
               <PiFloppyDisk className="absolute top-1/2 left-1/2 z-[1] h-6 w-6 -translate-x-1/2 -translate-y-1/2" />
+            )}
+            {tabName === "info-controls" && (
+              <InfoCircledIcon className="absolute top-1/2 left-1/2 z-[1] h-6 w-6 -translate-x-1/2 -translate-y-1/2" />
             )}
             {tabName === "debug-controls" && (
               <MdBugReport className="absolute top-1/2 left-1/2 z-[1] h-6 w-6 -translate-x-1/2 -translate-y-1/2" />

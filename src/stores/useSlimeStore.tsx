@@ -59,6 +59,8 @@ interface SlimeStore {
   debug: boolean;
   debugConsoleLogger: (...data: unknown[]) => void;
   framerateGaugedPreviously: boolean;
+  framerateGaugeStartedAt: number;
+  framerateGaugeCompletedAt: number;
   initialization: {
     lastUpdatedAt: number;
     controlsDisplayStatus: "initializing" | "ready";
@@ -147,6 +149,9 @@ const persistOmit: (keyof SlimeStore)[] = [
   "initialization",
   "uniforms",
 
+  "framerateGaugeStartedAt",
+  "framerateGaugeCompletedAt",
+
   "portalContainer",
 
   "randomizationState",
@@ -170,6 +175,8 @@ const useSlimeStore = create<SlimeStore>()(
           }
         },
         framerateGaugedPreviously: false,
+        framerateGaugeStartedAt: 0,
+        framerateGaugeCompletedAt: 0,
         initialization: {
           lastUpdatedAt: Date.now(),
           controlsDisplayStatus: "initializing",

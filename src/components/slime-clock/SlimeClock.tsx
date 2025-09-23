@@ -207,6 +207,9 @@ function SlimeClockRenderer() {
   const initializationCompletedAt = useSlimeStore(
     (state) => state.initialization.all.completedAt,
   );
+  const framerateGaugeCompletedAt = useSlimeStore(
+    (state) => state.framerateGaugeCompletedAt,
+  );
 
   useFrame(({ gl }, delta) => {
     const currentMinutes = Math.floor(Date.now() / 1000 / 60);
@@ -226,7 +229,8 @@ function SlimeClockRenderer() {
           controlsClosedAtMinutes ||
         colorLastRandomizedAtMinutesRef.current < controlsClosedAtMinutes ||
         Date.now() - initializationCompletedAt < 15000 ||
-        Date.now() - controlsClosedAt < 10000)
+        Date.now() - controlsClosedAt < 10000 ||
+        Date.now() - framerateGaugeCompletedAt < 15000)
     ) {
       simulationLastRandomizedAtMinutesRef.current = currentMinutes;
       colorLastRandomizedAtMinutesRef.current = currentMinutes;
@@ -442,8 +446,16 @@ function SlimeClockRenderer() {
   const [performanceGauged, setPerformanceGauged] = useState(
     useSlimeStore.getState().framerateGaugedPreviously,
   );
+  const framerateGaugedPreviously = useSlimeStore(
+    (state) => state.framerateGaugedPreviously,
+  );
 
   useEffect(() => {
+    useSlimeStore.setState(
+      produce((state) => {
+        state.framerateGaugeStartedAt = Date.now();
+      }),
+    );
     const timeout = setTimeout(() => {
       if (!performanceGauged) {
         setPerformanceGauged(true);
@@ -451,6 +463,13 @@ function SlimeClockRenderer() {
           produce((state) => {
             state.randomizationState.simulationRestartRequestedAt = Date.now();
             state.framerateGaugedPreviously = true;
+            state.framerateGaugeCompletedAt = Date.now();
+          }),
+        );
+      } else if (useSlimeStore.getState().framerateGaugeCompletedAt === 0) {
+        useSlimeStore.setState(
+          produce((state) => {
+            state.framerateGaugeCompletedAt = Date.now();
           }),
         );
       }
@@ -461,40 +480,49 @@ function SlimeClockRenderer() {
 
   function onIncline() {
     if (performanceGauged) return;
+    const debugConsoleLogger = useSlimeStore.getState().debugConsoleLogger;
     const displayTextureTargetQuality =
       useSlimeStore.getState().simulationSettings.displayTextureTargetQuality;
-    console.log("increasing quality to ", displayTextureTargetQuality + 0.5);
+    debugConsoleLogger(
+      "increasing quality to ",
+      displayTextureTargetQuality + 0.3,
+    );
     useSlimeStore.setState(
       produce((state) => {
         state.simulationSettings.displayTextureTargetQuality =
-          displayTextureTargetQuality + 0.5;
+          displayTextureTargetQuality + 0.3;
       }),
     );
   }
 
   function onDecline() {
     if (performanceGauged) return;
+    const debugConsoleLogger = useSlimeStore.getState().debugConsoleLogger;
     const displayTextureTargetQuality =
       useSlimeStore.getState().simulationSettings.displayTextureTargetQuality;
-    console.log("decreasing quality to ", displayTextureTargetQuality - 0.25);
+    debugConsoleLogger(
+      "decreasing quality to ",
+      displayTextureTargetQuality - 0.2,
+    );
     useSlimeStore.setState(
       produce((state) => {
         state.simulationSettings.displayTextureTargetQuality = Math.max(
-          0.25,
-          displayTextureTargetQuality - 0.25,
+          0.2,
+          displayTextureTargetQuality - 0.2,
         );
       }),
     );
   }
 
   function bounds(refreshrate: number): [lower: number, upper: number] {
-    console.log(
-      "bounds called with refreshrate:",
-      refreshrate,
-      Math.floor(refreshrate / 5) * 5,
-    );
-    return [Math.floor(refreshrate * 0.75), Math.floor(refreshrate / 5) * 5];
+    return [Math.floor(refreshrate * 0.7), Math.floor(refreshrate * 0.99)];
   }
+
+  useEffect(() => {
+    if (!performanceGauged && framerateGaugedPreviously) {
+      setPerformanceGauged(true);
+    }
+  }, [performanceGauged, framerateGaugedPreviously]);
 
   return (
     <>

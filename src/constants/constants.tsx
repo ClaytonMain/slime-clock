@@ -68,7 +68,7 @@ export const DEFAULT_SIMULATION_SETTINGS: SimulationSettings = {
   agentWanderStrength: 5.3,
 
   displayTextureAspectRatio: "Window",
-  displayTextureTargetQuality: 1.5,
+  displayTextureTargetQuality: 2.0,
   displayTextureWidth: -1,
   displayTextureHeight: -1,
   trailClockDecayRate: 0.05,

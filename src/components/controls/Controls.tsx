@@ -1,4 +1,9 @@
-import { Cross2Icon, GearIcon, PlusIcon } from "@radix-ui/react-icons";
+import {
+  Cross2Icon,
+  GearIcon,
+  InfoCircledIcon,
+  PlusIcon,
+} from "@radix-ui/react-icons";
 import { produce } from "immer";
 import { AnimatePresence, motion } from "motion/react";
 import { Dialog, Separator, Tabs, VisuallyHidden } from "radix-ui";
@@ -8,6 +13,7 @@ import useSlimeStore from "../../stores/useSlimeStore";
 import ClockControls from "./ClockControls";
 import ColorControls from "./ColorControls";
 import DebugControls from "./DebugControls";
+import InfoControls from "./InfoControls";
 import PresetsControls from "./PresetsControls";
 import RandomizationControls from "./RandomizationControls";
 import SelectedTabCornerIcons from "./SelectedTabCornerIcons";
@@ -87,7 +93,7 @@ export default function Controls() {
           <TooltipWrapper tooltipText="Open Controls">
             <Dialog.Trigger asChild>
               <motion.div
-                className="inline-flex cursor-pointer appearance-none rounded-full p-1"
+                className="inline-flex cursor-pointer appearance-none items-center rounded-full p-1"
                 animate={{
                   backgroundColor: "var(--color-zinc-950-60)",
                   opacity: interactionState === "active" || isOpen ? 1 : 0.0,
@@ -97,6 +103,8 @@ export default function Controls() {
                 }}
               >
                 <GearIcon className="h-6 w-6" />
+                <span className="text-2xl font-thin">/</span>
+                <InfoCircledIcon className="h-6 w-6" />
               </motion.div>
             </Dialog.Trigger>
           </TooltipWrapper>
@@ -261,6 +269,7 @@ export default function Controls() {
                             <SimulationControls key="simulation-controls" />
                             <ColorControls key="color-controls" />
                             <PresetsControls key="presets-controls" />
+                            <InfoControls key="info-controls" />
                             {window.location.hash === "#debug" && (
                               <DebugControls key="debug-controls" />
                             )}
@@ -323,10 +332,19 @@ export default function Controls() {
                               tabName="presets-controls"
                               tooltipText="Presets"
                             />
+                            <Separator.Root
+                              key="tab-button-separator-05"
+                              className="flex h-2/3 w-px border-l border-sky-50"
+                            />
+                            <TabButton
+                              key="tab-button-info-controls"
+                              tabName="info-controls"
+                              tooltipText="Information"
+                            />
                             {window.location.hash === "#debug" && (
                               <>
                                 <Separator.Root
-                                  key="tab-button-separator-05"
+                                  key="tab-button-separator-06"
                                   className="flex h-2/3 w-px border-l border-sky-50"
                                 />
                                 <TabButton

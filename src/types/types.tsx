@@ -6,7 +6,8 @@ export type ControlsTabName =
   | "simulation-controls"
   | "color-controls"
   | "presets-controls"
-  | "debug-controls";
+  | "debug-controls"
+  | "info-controls";
 
 export type SelectOption<T> = {
   value: T;

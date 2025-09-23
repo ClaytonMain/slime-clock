@@ -44,7 +44,10 @@ function initializeRandomizationPresets() {
       ) {
         // If a base preset is no longer in the default presets list,
         // we need to add it to the new list as a non-base preset.
-        randomizationPresets.push({ ...preset, isBasePreset: false });
+        randomizationPresets.push({
+          ...preset,
+          isBasePreset: false,
+        });
       } else if (
         randomizationPresets.findIndex(
           (p) => p.name === preset.name && p.presetType === preset.presetType,
@@ -118,7 +121,10 @@ function initializeSimulationPresets() {
       ) {
         // If a base preset is no longer in the default presets list,
         // we need to add it to the new list as a non-base preset.
-        simulationPresets.push({ ...preset, isBasePreset: false });
+        simulationPresets.push({
+          ...preset,
+          isBasePreset: false,
+        });
       } else if (
         simulationPresets.findIndex(
           (p) => p.name === preset.name && p.presetType === preset.presetType,
