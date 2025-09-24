@@ -6,6 +6,7 @@ import { produce } from "immer";
 import InteractionListener from "../../InteractionListener";
 import PresetsChangeListener from "../../PresetsChangeListener";
 import useSlimeStore from "../../stores/useSlimeStore";
+import PostProcessing from "../PostProcessing";
 import SlimeClock from "./SlimeClock";
 import StatsComponent from "./StatsComponent";
 
@@ -36,7 +37,6 @@ export default function SlimeClockScene() {
         }),
       );
     }
-    console.log(e);
   }
 
   useEffect(() => {
@@ -82,6 +82,7 @@ export default function SlimeClockScene() {
           <InteractionListener />
           <PresetsChangeListener />
         </Suspense>
+        <PostProcessing />
       </Canvas>
       <Loader />
     </>

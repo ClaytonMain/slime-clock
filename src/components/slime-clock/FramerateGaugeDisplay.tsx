@@ -60,10 +60,10 @@ export default function FramerateGaugeDisplay() {
           >
             <div className="flex w-sm animate-pulse flex-col rounded-xs border border-sky-700 bg-slate-900/60 px-4 py-2 text-center text-sm text-sky-50">
               Adjusting resolution based on device performance...
-              <div className="mt-1 text-2xl text-white/80 italic">
-                {framerateGaugedPreviously
-                  ? "Done!"
-                  : `${timeRemaining.toFixed(3)}s`}
+              <div className="mt-1 flex w-full flex-row items-baseline justify-center text-white/80 italic">
+                <p className="flex w-full grow justify-end text-3xl">{`${Math.floor(timeRemaining)}`}</p>
+                <p className="flex-none text-xs">.</p>
+                <p className="flex w-full grow text-xs">{`${timeRemaining.toFixed(3).replace(/\d+\./, "")}`}</p>
               </div>
               <button
                 onClick={skipFramerateGauge}

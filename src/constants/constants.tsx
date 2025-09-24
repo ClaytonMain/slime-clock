@@ -234,18 +234,18 @@ export const DEFAULT_COLOR_RANDOMIZATION_SETTINGS: ColorRandomizationSettings =
       type: "numericRange",
       enabled: true,
       flatRange: [0.2, 0.8],
-      gaussMu: 0.5,
-      gaussSigma: 0.15,
-      pertMinModeMax: [0.2, 0.5, 0.8],
+      gaussMu: 0.15,
+      gaussSigma: 0.05,
+      pertMinModeMax: [0.05, 0.15, 0.25],
       mode: "pert",
     },
     paletteCycleScale: {
       type: "numericRange",
       enabled: false,
-      flatRange: [0.05, 0.25],
-      gaussMu: 0.15,
-      gaussSigma: 0.03,
-      pertMinModeMax: [0.05, 0.15, 0.25],
+      flatRange: [0.05, 0.6],
+      gaussMu: 0.4,
+      gaussSigma: 0.05,
+      pertMinModeMax: [0.2, 0.4, 0.6],
       mode: "pert",
     },
   };
@@ -273,7 +273,7 @@ export const AGENT_START_TYPE_RANDOMIZATION_SETTINGS: OptionListRandomizationSet
       Circle: {
         value: "3",
         label: "Circle",
-        enabled: true,
+        enabled: false,
       },
       Spiral: {
         value: "4",
@@ -283,7 +283,7 @@ export const AGENT_START_TYPE_RANDOMIZATION_SETTINGS: OptionListRandomizationSet
       Fill: {
         value: "5",
         label: "Fill",
-        enabled: true,
+        enabled: false,
       },
       "Hexagonal Grid": {
         value: "6",
@@ -1263,8 +1263,8 @@ export const DEFAULT_COLOR_SETTINGS: ColorSettings = {
   clockColorOffset: 0.64,
   xColorOffset: 0.65,
   yColorOffset: 0.8,
-  paletteCycleSpeed: 0.54,
-  paletteCycleScale: 0.1,
+  paletteCycleSpeed: 0.15,
+  paletteCycleScale: 0.4,
   paletteCycleType: 1,
 };
 
@@ -1495,11 +1495,12 @@ export const DEFAULT_PRESETS: LoadableSlimeStoreSettings[] = [
   {
     name: "Extra Gooey 01",
     presetType: "Simulation Only",
+    enabled: true,
     isBasePreset: true,
     simulationSettings: {
       speed: 3.3,
       boundaryBehavior: 0,
-      agentDensity: 0.25,
+      agentDensity: 0.2,
       agentStartType: -1,
       agentClockAttraction: 0.11,
       agentClockDepositRate: 7.4,
@@ -1520,11 +1521,12 @@ export const DEFAULT_PRESETS: LoadableSlimeStoreSettings[] = [
   {
     name: "Fuzzy 01",
     presetType: "Simulation Only",
+    enabled: true,
     isBasePreset: true,
     simulationSettings: {
       speed: 3.3,
       boundaryBehavior: 0,
-      agentDensity: 0.25,
+      agentDensity: 0.2,
       agentStartType: -1,
       agentClockAttraction: 0.04,
       agentClockDepositRate: 11,
@@ -1545,11 +1547,12 @@ export const DEFAULT_PRESETS: LoadableSlimeStoreSettings[] = [
   {
     name: "Inverted Roiling",
     presetType: "Simulation Only",
+    enabled: true,
     isBasePreset: true,
     simulationSettings: {
       speed: 3.3,
       boundaryBehavior: 0,
-      agentDensity: 0.25,
+      agentDensity: 0.2,
       agentStartType: -1,
       agentClockAttraction: 0.2,
       agentClockDepositRate: 3.1,
@@ -1570,11 +1573,12 @@ export const DEFAULT_PRESETS: LoadableSlimeStoreSettings[] = [
   {
     name: "Slimy 01",
     presetType: "Simulation Only",
+    enabled: true,
     isBasePreset: true,
     simulationSettings: {
       speed: 3.3,
       boundaryBehavior: 0,
-      agentDensity: 0.25,
+      agentDensity: 0.2,
       agentStartType: -1,
       agentClockAttraction: 0.18,
       agentClockDepositRate: 7.6,
@@ -1595,11 +1599,12 @@ export const DEFAULT_PRESETS: LoadableSlimeStoreSettings[] = [
   {
     name: "Slimy 02",
     presetType: "Simulation Only",
+    enabled: true,
     isBasePreset: true,
     simulationSettings: {
       speed: 3.3,
       boundaryBehavior: 0,
-      agentDensity: 0.25,
+      agentDensity: 0.2,
       agentStartType: -1,
       agentClockAttraction: 0.03,
       agentClockDepositRate: 14.5,
@@ -1620,11 +1625,12 @@ export const DEFAULT_PRESETS: LoadableSlimeStoreSettings[] = [
   {
     name: "Slimy 03",
     presetType: "Simulation Only",
+    enabled: true,
     isBasePreset: true,
     simulationSettings: {
       speed: 3.3,
       boundaryBehavior: 0,
-      agentDensity: 0.25,
+      agentDensity: 0.2,
       agentStartType: -1,
       agentClockAttraction: 0.05,
       agentClockDepositRate: 10.2,
@@ -1645,11 +1651,12 @@ export const DEFAULT_PRESETS: LoadableSlimeStoreSettings[] = [
   {
     name: "Slimy 04",
     presetType: "Simulation Only",
+    enabled: true,
     isBasePreset: true,
     simulationSettings: {
       speed: 3.3,
       boundaryBehavior: 0,
-      agentDensity: 0.25,
+      agentDensity: 0.2,
       agentStartType: -1,
       agentClockAttraction: 0.27,
       agentClockDepositRate: 3.3,
@@ -1670,6 +1677,7 @@ export const DEFAULT_PRESETS: LoadableSlimeStoreSettings[] = [
   {
     name: "Rainbow",
     presetType: "Color Only",
+    enabled: true,
     isBasePreset: true,
     colorSettings: {
       backgroundColor: "#130f26",
@@ -1685,14 +1693,15 @@ export const DEFAULT_PRESETS: LoadableSlimeStoreSettings[] = [
       clockColorOffset: 0.64,
       xColorOffset: 0.65,
       yColorOffset: 0.8,
-      paletteCycleSpeed: 0.54,
-      paletteCycleScale: 0.1,
+      paletteCycleSpeed: 0.15,
+      paletteCycleScale: 0.4,
       paletteCycleType: 1,
     },
   },
   {
     name: "Pride 01",
     presetType: "Color Only",
+    enabled: true,
     isBasePreset: true,
     colorSettings: {
       backgroundColor: "#510c43",
@@ -1708,19 +1717,20 @@ export const DEFAULT_PRESETS: LoadableSlimeStoreSettings[] = [
       clockColorOffset: 0.64,
       xColorOffset: 0.65,
       yColorOffset: 0.8,
-      paletteCycleSpeed: 0.54,
-      paletteCycleScale: 0.1,
+      paletteCycleSpeed: 0.15,
+      paletteCycleScale: 0.4,
       paletteCycleType: 1,
     },
   },
   {
     name: "Unnamed Sim. 02", // Checked. TODO: Tweak it a little so it covers the digits better.
     presetType: "Simulation Only",
+    enabled: true,
     isBasePreset: true,
     simulationSettings: {
       speed: 3.3,
       boundaryBehavior: 0,
-      agentDensity: 0.25,
+      agentDensity: 0.2,
       agentStartType: -1,
       agentClockAttraction: 0.07,
       agentClockDepositRate: 6.4,
@@ -1741,11 +1751,12 @@ export const DEFAULT_PRESETS: LoadableSlimeStoreSettings[] = [
   {
     name: "Unnamed Sim. 03", // Checked. TODO: Tweak it to fill the digits better
     presetType: "Simulation Only",
+    enabled: true,
     isBasePreset: true,
     simulationSettings: {
       speed: 2.7,
       boundaryBehavior: 0,
-      agentDensity: 0.25,
+      agentDensity: 0.2,
       agentStartType: -1,
       agentClockAttraction: 0.72,
       agentClockDepositRate: 14.8,
@@ -1766,11 +1777,12 @@ export const DEFAULT_PRESETS: LoadableSlimeStoreSettings[] = [
   {
     name: "Unnamed Sim. 06 (Possibly 'Inverted 02')", // Checked
     presetType: "Simulation Only",
+    enabled: true,
     isBasePreset: true,
     simulationSettings: {
       speed: 3.3,
       boundaryBehavior: 0,
-      agentDensity: 0.25,
+      agentDensity: 0.2,
       agentStartType: -1,
       agentClockAttraction: 0.23,
       agentClockDepositRate: 7.8,
@@ -1791,11 +1803,12 @@ export const DEFAULT_PRESETS: LoadableSlimeStoreSettings[] = [
   {
     name: "Unnamed Sim. 07 (Possibly 'Inverted 03')", // Checked
     presetType: "Simulation Only",
+    enabled: true,
     isBasePreset: true,
     simulationSettings: {
       speed: 3.3,
       boundaryBehavior: 0,
-      agentDensity: 0.25,
+      agentDensity: 0.2,
       agentStartType: -1,
       agentClockAttraction: 0.69,
       agentClockDepositRate: 4,
@@ -1816,11 +1829,12 @@ export const DEFAULT_PRESETS: LoadableSlimeStoreSettings[] = [
   {
     name: "Unnamed Sim. 08 (Possibly 'Spectral')", // Checked. TODO: Keeping because it's interesting, but it needs work.
     presetType: "Simulation Only",
+    enabled: true,
     isBasePreset: true,
     simulationSettings: {
       speed: 3.3,
       boundaryBehavior: 0,
-      agentDensity: 0.25,
+      agentDensity: 0.2,
       agentStartType: -1,
       agentClockAttraction: 0.17,
       agentClockDepositRate: 16.6,
@@ -1841,11 +1855,12 @@ export const DEFAULT_PRESETS: LoadableSlimeStoreSettings[] = [
   {
     name: "Unnamed Sim. 09 (Possibly 'Spiderwebby')", // Checked
     presetType: "Simulation Only",
+    enabled: true,
     isBasePreset: true,
     simulationSettings: {
       speed: 3.3,
       boundaryBehavior: 0,
-      agentDensity: 0.25,
+      agentDensity: 0.2,
       agentStartType: -1,
       agentClockAttraction: 0.65,
       agentClockDepositRate: 18.9,
@@ -1866,11 +1881,12 @@ export const DEFAULT_PRESETS: LoadableSlimeStoreSettings[] = [
   {
     name: "Unnamed Sim. 10 (Possibly 'Slimy 07')", // Checked
     presetType: "Simulation Only",
+    enabled: true,
     isBasePreset: true,
     simulationSettings: {
       speed: 3.3,
       boundaryBehavior: 1,
-      agentDensity: 0.25,
+      agentDensity: 0.2,
       agentStartType: -1,
       agentClockAttraction: 0.04,
       agentClockDepositRate: 8.3,
@@ -1891,6 +1907,7 @@ export const DEFAULT_PRESETS: LoadableSlimeStoreSettings[] = [
   {
     name: "Unnamed Color 01",
     presetType: "Color Only",
+    enabled: true,
     isBasePreset: true,
     colorSettings: {
       backgroundColor: "#e9f8be",
@@ -1921,14 +1938,15 @@ export const DEFAULT_PRESETS: LoadableSlimeStoreSettings[] = [
       clockColorOffset: 0.64,
       xColorOffset: 0.65,
       yColorOffset: 0.8,
-      paletteCycleSpeed: 0.54,
-      paletteCycleScale: 0.1,
+      paletteCycleSpeed: 0.15,
+      paletteCycleScale: 0.4,
       paletteCycleType: 1,
     },
   },
   {
     name: "Unnamed Color 02",
     presetType: "Color Only",
+    enabled: true,
     isBasePreset: true,
     colorSettings: {
       backgroundColor: "#1b7d34",
@@ -1959,14 +1977,15 @@ export const DEFAULT_PRESETS: LoadableSlimeStoreSettings[] = [
       clockColorOffset: 0.64,
       xColorOffset: 0.65,
       yColorOffset: 0.8,
-      paletteCycleSpeed: 0.54,
-      paletteCycleScale: 0.1,
+      paletteCycleSpeed: 0.15,
+      paletteCycleScale: 0.4,
       paletteCycleType: 1,
     },
   },
   {
     name: "Unnamed Color 03",
     presetType: "Color Only",
+    enabled: true,
     isBasePreset: true,
     colorSettings: {
       backgroundColor: "#000000",
@@ -1997,14 +2016,15 @@ export const DEFAULT_PRESETS: LoadableSlimeStoreSettings[] = [
       clockColorOffset: 0.07,
       xColorOffset: -0.35,
       yColorOffset: 0.8,
-      paletteCycleSpeed: 0.54,
-      paletteCycleScale: 0.06,
+      paletteCycleSpeed: 0.15,
+      paletteCycleScale: 0.4,
       paletteCycleType: 0,
     },
   },
   {
     name: "Pride 02",
     presetType: "Color Only",
+    enabled: true,
     isBasePreset: true,
     colorSettings: {
       backgroundColor: "#ffffff",
@@ -2035,14 +2055,15 @@ export const DEFAULT_PRESETS: LoadableSlimeStoreSettings[] = [
       clockColorOffset: 0.64,
       xColorOffset: -0.24,
       yColorOffset: 0.24,
-      paletteCycleSpeed: 0.4,
-      paletteCycleScale: 0.1,
+      paletteCycleSpeed: 0.15,
+      paletteCycleScale: 0.4,
       paletteCycleType: 1,
     },
   },
   {
     name: "Black & White",
     presetType: "Color Only",
+    enabled: true,
     isBasePreset: true,
     colorSettings: {
       backgroundColor: "#000000",
@@ -2073,14 +2094,15 @@ export const DEFAULT_PRESETS: LoadableSlimeStoreSettings[] = [
       clockColorOffset: 0.64,
       xColorOffset: 0.39,
       yColorOffset: -0.03,
-      paletteCycleSpeed: 0.46,
-      paletteCycleScale: 0.1,
+      paletteCycleSpeed: 0.15,
+      paletteCycleScale: 0.4,
       paletteCycleType: 1,
     },
   },
   {
     name: "White & Black",
     presetType: "Color Only",
+    enabled: true,
     isBasePreset: true,
     colorSettings: {
       backgroundColor: "#ffffff",
@@ -2111,14 +2133,15 @@ export const DEFAULT_PRESETS: LoadableSlimeStoreSettings[] = [
       clockColorOffset: 0.64,
       xColorOffset: 0.39,
       yColorOffset: -0.03,
-      paletteCycleSpeed: 0.46,
-      paletteCycleScale: 0.1,
+      paletteCycleSpeed: 0.15,
+      paletteCycleScale: 0.4,
       paletteCycleType: 1,
     },
   },
   {
     name: "Blue & Orange",
     presetType: "Color Only",
+    enabled: true,
     isBasePreset: true,
     colorSettings: {
       backgroundColor: "#bcc2ff",
@@ -2149,14 +2172,15 @@ export const DEFAULT_PRESETS: LoadableSlimeStoreSettings[] = [
       clockColorOffset: 0.64,
       xColorOffset: 0.65,
       yColorOffset: 0.8,
-      paletteCycleSpeed: 0.54,
-      paletteCycleScale: 0.1,
+      paletteCycleSpeed: 0.15,
+      paletteCycleScale: 0.4,
       paletteCycleType: 1,
     },
   },
   {
-    name: "Black & Yellow",
+    name: "Yellow & Black",
     presetType: "Color Only",
+    enabled: true,
     isBasePreset: true,
     colorSettings: {
       backgroundColor: "#ead600",
@@ -2187,8 +2211,8 @@ export const DEFAULT_PRESETS: LoadableSlimeStoreSettings[] = [
       clockColorOffset: 0.64,
       xColorOffset: 0.65,
       yColorOffset: 0.8,
-      paletteCycleSpeed: 0.54,
-      paletteCycleScale: 0.1,
+      paletteCycleSpeed: 0.15,
+      paletteCycleScale: 0.4,
       paletteCycleType: 1,
     },
   },

@@ -8,7 +8,10 @@ import {
 } from "../constants/constants";
 import useSlimeStore from "../stores/useSlimeStore";
 import type {
+  ColorRandomizationSettings,
   DisplayTextureAspectRatio,
+  LoadableColorSettings,
+  LoadableSimulationSettings,
   LoadableSlimeStoreSettings,
   RandomizationPreset,
   SimulationPresetType,
@@ -385,7 +388,8 @@ export function getAutoRandomizationSimulationRandomizationSettingsAndName(): {
   let simulationRandomizationSettings = randomizationSettings.simulation;
   let lastLoadedPresetName = null;
   if (
-    randomizationSettings.simulationAutoRandomizationMode === "useRandomPreset"
+    randomizationSettings.simulationAutoRandomizationMode ===
+    "selectEnabledRandomizationPreset"
   ) {
     const simulationRandomizationPresets = useSlimeStore
       .getState()
@@ -408,4 +412,66 @@ export function getAutoRandomizationSimulationRandomizationSettingsAndName(): {
     settings: simulationRandomizationSettings,
     name: lastLoadedPresetName,
   };
+}
+
+export function getRandomEnabledSimulationPresetSettings(): Partial<LoadableSimulationSettings> {
+  const simulationPresets = useSlimeStore
+    .getState()
+    .simulationPresets.filter(
+      (preset) => Boolean(preset.simulationSettings) && preset.enabled,
+    );
+  if (simulationPresets.length > 0) {
+    const preset =
+      simulationPresets[Math.floor(Math.random() * simulationPresets.length)];
+    return preset.simulationSettings as LoadableSimulationSettings;
+  }
+  return {};
+}
+
+export function getAutoRandomizationColorRandomizationSettingsAndName(): {
+  settings: ColorRandomizationSettings;
+  name: string | null;
+} {
+  const randomizationSettings = useSlimeStore.getState().randomizationSettings;
+  let colorRandomizationSettings = randomizationSettings.color;
+  let lastLoadedPresetName = null;
+  if (
+    randomizationSettings.colorAutoRandomizationMode ===
+    "selectEnabledRandomizationPreset"
+  ) {
+    const colorRandomizationPresets = useSlimeStore
+      .getState()
+      .randomizationPresets.filter(
+        (preset) => preset.presetType === "color" && preset.enabled,
+      );
+    if (colorRandomizationPresets.length > 0) {
+      const preset =
+        colorRandomizationPresets[
+          Math.floor(Math.random() * colorRandomizationPresets.length)
+        ];
+      colorRandomizationSettings =
+        preset.settings as ColorRandomizationSettings;
+      lastLoadedPresetName = preset.name;
+    } else {
+      lastLoadedPresetName = null;
+    }
+  }
+  return {
+    settings: colorRandomizationSettings,
+    name: lastLoadedPresetName,
+  };
+}
+
+export function getRandomEnabledColorPresetSettings(): Partial<LoadableColorSettings> {
+  const colorPresets = useSlimeStore
+    .getState()
+    .simulationPresets.filter(
+      (preset) => Boolean(preset.colorSettings) && preset.enabled,
+    );
+  if (colorPresets.length > 0) {
+    const preset =
+      colorPresets[Math.floor(Math.random() * colorPresets.length)];
+    return preset.colorSettings as LoadableColorSettings;
+  }
+  return {};
 }

@@ -109,12 +109,21 @@ interface SlimeStore {
     colorRandomizationRequestedAt: number;
     colorRandomizationCompletedAt: number;
     lastLoadedSimulationRandomizationPreset: string | null;
+    lastLoadedColorRandomizationPreset: string | null;
   };
   randomizationSettings: {
     simulationAutoRandomizationEnabled: boolean;
     simulationAutoRandomizationInterval: number;
+    simulationAutoRandomizationMode:
+      | "selectEnabledRandomizationPreset"
+      | "selectEnabledSimulationPreset"
+      | "useCurrentRandomizationSettings";
     colorAutoRandomizationEnabled: boolean;
     colorAutoRandomizationInterval: number;
+    colorAutoRandomizationMode:
+      | "selectEnabledRandomizationPreset"
+      | "selectEnabledColorPreset"
+      | "useCurrentRandomizationSettings";
     autoRestartEnabled: boolean;
     autoRestartInterval: number;
     allowAgentRandomization: boolean;
@@ -123,11 +132,7 @@ interface SlimeStore {
     allowBoundaryBehaviorRandomization: boolean;
     agentStartTypeRandomizationOptions: OptionListRandomizationSettings;
     simulation: SimulationRandomizationSettings;
-    simulationAutoRandomizationMode:
-      | "useRandomPreset"
-      | "useCurrentRandSettings";
     color: ColorRandomizationSettings;
-    colorAutoRandomizationMode: "useRandomPreset" | "useCurrentRandSettings";
   };
 
   randomizationPresets: RandomizationPreset[];
@@ -370,12 +375,15 @@ const useSlimeStore = create<SlimeStore>()(
           colorRandomizationRequestedAt: 0,
           colorRandomizationCompletedAt: 0,
           lastLoadedSimulationRandomizationPreset: null,
+          lastLoadedColorRandomizationPreset: null,
         },
         randomizationSettings: {
           simulationAutoRandomizationEnabled: true,
           simulationAutoRandomizationInterval: 1,
+          simulationAutoRandomizationMode: "selectEnabledRandomizationPreset",
           colorAutoRandomizationEnabled: true,
           colorAutoRandomizationInterval: 5,
+          colorAutoRandomizationMode: "selectEnabledRandomizationPreset",
           autoRestartEnabled: true,
           autoRestartInterval: 5,
           allowAgentRandomization: true,
@@ -391,14 +399,12 @@ const useSlimeStore = create<SlimeStore>()(
               "simulation",
               RANDOMIZATION_PRESETS,
             ).settings,
-          simulationAutoRandomizationMode: "useRandomPreset",
           color:
             UTILS.getRandomizationPresetByNameAndType<ColorRandomizationPreset>(
               DEFAULT_COLOR_RANDOMIZATION_SETTINGS_PRESET_NAME,
               "color",
               RANDOMIZATION_PRESETS,
             ).settings,
-          colorAutoRandomizationMode: "useRandomPreset",
         },
 
         randomizationPresets: RANDOMIZATION_PRESETS,

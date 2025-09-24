@@ -101,16 +101,7 @@ export default function InfoControls() {
                     >
                       Iñigo Quílez's
                     </a>
-                    {" shader references (check out "}
-                    <a
-                      href="https://iquilezles.org/articles/palettes/"
-                      className="cursor-pointer text-sky-400 italic underline"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      this article
-                    </a>
-                    {" on generating procedural color palettes)."}
+                    {" extensive shader references."}
                   </li>
                   <li>
                     <a

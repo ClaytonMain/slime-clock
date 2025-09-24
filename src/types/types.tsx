@@ -260,6 +260,7 @@ export type SimulationPresetType =
 export type LoadableSlimeStoreSettings = {
   name: string;
   presetType: SimulationPresetType;
+  enabled?: boolean;
   isBasePreset?: boolean;
   clockSettings?: LoadableClockSettings;
   simulationSettings?: LoadableSimulationSettings;

@@ -237,6 +237,7 @@ function SlimeClockRenderer() {
       lastRestartedAtMinutesRef.current = currentMinutes;
     }
 
+    // TODO: Clean up this mess.
     if (
       !controlsAreOpen &&
       randomizationSettings.autoRestartEnabled &&
@@ -251,19 +252,55 @@ function SlimeClockRenderer() {
           uPaletteCycleTimeRef.current = 0.0;
           if (randomizationSettings.simulationAutoRandomizationEnabled) {
             simulationLastRandomizedAtMinutesRef.current = currentMinutes;
-            const { settings, name } =
-              UTILS.getAutoRandomizationSimulationRandomizationSettingsAndName();
-            state.randomizationState.agentRandomizationRequestedAt = Date.now();
-            state.randomizationState.trailRandomizationRequestedAt = Date.now();
-            state.randomizationState.colorRandomizationRequestedAt = Date.now();
-            state.randomizationSettings.simulation = settings;
-            state.randomizationState.lastLoadedSimulationRandomizationPreset =
-              name;
+            if (
+              [
+                "selectEnabledRandomizationPreset",
+                "useCurrentRandomizationSettings", // The UTILS function will return the current randomization values if needed.
+              ].includes(randomizationSettings.simulationAutoRandomizationMode)
+            ) {
+              const { settings, name } =
+                UTILS.getAutoRandomizationSimulationRandomizationSettingsAndName();
+              state.randomizationState.agentRandomizationRequestedAt =
+                Date.now();
+              state.randomizationState.trailRandomizationRequestedAt =
+                Date.now();
+              state.randomizationSettings.simulation = settings;
+              state.randomizationState.lastLoadedSimulationRandomizationPreset =
+                name;
+            } else if (
+              randomizationSettings.simulationAutoRandomizationMode ===
+              "selectEnabledSimulationPreset"
+            ) {
+              const settings = UTILS.getRandomEnabledSimulationPresetSettings();
+              state.simulationSettings = {
+                ...state.simulationSettings,
+                ...settings,
+              };
+            }
           }
           if (randomizationSettings.colorAutoRandomizationEnabled) {
             colorLastRandomizedAtMinutesRef.current = currentMinutes;
             uPaletteCycleTimeRef.current = 0.0;
-            state.randomizationState.colorRandomizationRequestedAt = Date.now();
+            if (
+              [
+                "selectEnabledRandomizationPreset",
+                "useCurrentRandomizationSettings", // The UTILS function will return the current randomization values if needed.
+              ].includes(randomizationSettings.colorAutoRandomizationMode)
+            ) {
+              const { settings, name } =
+                UTILS.getAutoRandomizationColorRandomizationSettingsAndName();
+              state.randomizationSettings.color = settings;
+              state.randomizationState.lastLoadedColorRandomizationPreset =
+                name;
+              state.randomizationState.colorRandomizationRequestedAt =
+                Date.now();
+            } else if (
+              randomizationSettings.colorAutoRandomizationMode ===
+              "selectEnabledColorPreset"
+            ) {
+              const settings = UTILS.getRandomEnabledColorPresetSettings();
+              state.colorSettings = { ...state.colorSettings, ...settings };
+            }
           }
         }),
       );
@@ -284,17 +321,40 @@ function SlimeClockRenderer() {
         currentMinutes,
       );
       simulationLastRandomizedAtMinutesRef.current = currentMinutes;
-      const { settings, name } =
-        UTILS.getAutoRandomizationSimulationRandomizationSettingsAndName();
       useSlimeStore.setState(
         produce((state) => {
-          state.randomizationState.agentRandomizationRequestedAt = Date.now();
-          state.randomizationState.trailRandomizationRequestedAt = Date.now();
-          state.randomizationSettings.simulation = settings;
-          state.randomizationState.lastLoadedSimulationRandomizationPreset =
-            name;
+          if (
+            [
+              "selectEnabledRandomizationPreset",
+              "useCurrentRandomizationSettings", // The UTILS function will return the current randomization values if needed.
+            ].includes(randomizationSettings.simulationAutoRandomizationMode)
+          ) {
+            const { settings, name } =
+              UTILS.getAutoRandomizationSimulationRandomizationSettingsAndName();
+            useSlimeStore.setState(
+              produce((state) => {
+                state.randomizationState.agentRandomizationRequestedAt =
+                  Date.now();
+                state.randomizationState.trailRandomizationRequestedAt =
+                  Date.now();
+                state.randomizationSettings.simulation = settings;
+                state.randomizationState.lastLoadedSimulationRandomizationPreset =
+                  name;
+              }),
+            );
+          } else if (
+            randomizationSettings.simulationAutoRandomizationMode ===
+            "selectEnabledSimulationPreset"
+          ) {
+            const settings = UTILS.getRandomEnabledSimulationPresetSettings();
+            state.simulationSettings = {
+              ...state.simulationSettings,
+              ...settings,
+            };
+          }
         }),
       );
+      return;
     }
 
     if (
@@ -312,7 +372,30 @@ function SlimeClockRenderer() {
       colorLastRandomizedAtMinutesRef.current = currentMinutes;
       useSlimeStore.setState(
         produce((state) => {
-          state.randomizationState.colorRandomizationRequestedAt = Date.now();
+          if (
+            [
+              "selectEnabledRandomizationPreset",
+              "useCurrentRandomizationSettings", // The UTILS function will return the current randomization values if needed.
+            ].includes(randomizationSettings.colorAutoRandomizationMode)
+          ) {
+            const { settings, name } =
+              UTILS.getAutoRandomizationColorRandomizationSettingsAndName();
+            useSlimeStore.setState(
+              produce((state) => {
+                state.randomizationState.colorRandomizationRequestedAt =
+                  Date.now();
+                state.randomizationSettings.color = settings;
+                state.randomizationState.lastLoadedColorRandomizationPreset =
+                  name;
+              }),
+            );
+          } else if (
+            randomizationSettings.colorAutoRandomizationMode ===
+            "selectEnabledColorPreset"
+          ) {
+            const settings = UTILS.getRandomEnabledColorPresetSettings();
+            state.colorSettings = { ...state.colorSettings, ...settings };
+          }
         }),
       );
     }
@@ -490,7 +573,7 @@ function SlimeClockRenderer() {
     useSlimeStore.setState(
       produce((state) => {
         state.simulationSettings.displayTextureTargetQuality =
-          displayTextureTargetQuality + 0.3;
+          Math.round((displayTextureTargetQuality + 0.3) * 100) / 100;
       }),
     );
   }
@@ -508,7 +591,7 @@ function SlimeClockRenderer() {
       produce((state) => {
         state.simulationSettings.displayTextureTargetQuality = Math.max(
           0.2,
-          displayTextureTargetQuality - 0.2,
+          Math.round((displayTextureTargetQuality - 0.2) * 100) / 100,
         );
       }),
     );
