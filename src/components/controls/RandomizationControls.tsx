@@ -242,21 +242,6 @@ export default function RandomizationControls() {
                 },
               ]}
             />
-            <SlimeStoreSwitchControl
-              label="Auto Restart Enabled"
-              labelHoverTabContentDisplay={[]}
-              baseId="auto-restart-enabled-switch"
-              storePath={["randomizationSettings", "autoRestartEnabled"]}
-            />
-            <SlimeStoreSliderControl
-              label="Auto Restart Interval"
-              labelHoverTabContentDisplay={[]}
-              baseInputId="auto-restart-interval-slider"
-              min={1}
-              max={60}
-              step={1}
-              storePath={["randomizationSettings", "autoRestartInterval"]}
-            />
             <SwitchControlGroup
               label="Enabled Rands."
               labelHoverTabContentDisplay={[
@@ -286,6 +271,107 @@ export default function RandomizationControls() {
                   storePath: [
                     "randomizationSettings",
                     "allowColorRandomization",
+                  ],
+                },
+              ]}
+            />
+            <SlimeStoreSwitchControl
+              label="Auto Restart Enabled"
+              labelHoverTabContentDisplay={[]}
+              baseId="auto-restart-enabled-switch"
+              storePath={["randomizationSettings", "autoRestartEnabled"]}
+            />
+            <SlimeStoreSliderControl
+              label="Auto Restart Interval"
+              labelHoverTabContentDisplay={[]}
+              baseInputId="auto-restart-interval-slider"
+              min={1}
+              max={60}
+              step={1}
+              storePath={["randomizationSettings", "autoRestartInterval"]}
+            />
+            <SwitchControlGroup
+              label="Enabled Start Types"
+              labelHoverTabContentDisplay={[
+                "Enabled Start Types",
+                "Toggles to enable or disable randomization for various start types. Note: if all start types are disabled, then a random start type will be chosen.",
+              ]}
+              switchConfigs={[
+                {
+                  label: "Center",
+                  baseId: "start-type-randomization-center-switch",
+                  storePath: [
+                    "randomizationSettings",
+                    "agentStartTypeRandomizationOptions",
+                    "options",
+                    "Center",
+                    "enabled",
+                  ],
+                },
+                {
+                  label: "Ring",
+                  baseId: "start-type-randomization-ring-switch",
+                  storePath: [
+                    "randomizationSettings",
+                    "agentStartTypeRandomizationOptions",
+                    "options",
+                    "Ring",
+                    "enabled",
+                  ],
+                },
+                {
+                  label: "9 Rings",
+                  baseId: "start-type-randomization-9-rings-switch",
+                  storePath: [
+                    "randomizationSettings",
+                    "agentStartTypeRandomizationOptions",
+                    "options",
+                    "9 Rings",
+                    "enabled",
+                  ],
+                },
+                {
+                  label: "Circle",
+                  baseId: "start-type-randomization-circle-switch",
+                  storePath: [
+                    "randomizationSettings",
+                    "agentStartTypeRandomizationOptions",
+                    "options",
+                    "Circle",
+                    "enabled",
+                  ],
+                },
+                {
+                  label: "Spiral",
+                  baseId: "start-type-randomization-spiral-switch",
+                  storePath: [
+                    "randomizationSettings",
+                    "agentStartTypeRandomizationOptions",
+                    "options",
+                    "Spiral",
+                    "enabled",
+                  ],
+                },
+                {
+                  label: "Fill",
+                  baseId: "start-type-randomization-fill-switch",
+                  storePath: [
+                    "randomizationSettings",
+                    "agentStartTypeRandomizationOptions",
+                    "options",
+                    "Fill",
+                    "enabled",
+                  ],
+                },
+                {
+                  label: "Hexagonal Grid",
+                  baseId: "start-type-randomization-hexagonal-grid-switch",
+                  storePath: [
+                    "randomizationSettings",
+                    "agentStartTypeRandomizationOptions",
+                    "options",
+                    "Hexagonal Grid",
+                    "enabled",
                   ],
                 },
               ]}

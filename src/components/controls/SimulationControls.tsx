@@ -92,19 +92,107 @@ export default function SimulationControls() {
     );
   }
 
+  function setAutoLoadOnRandAll(value: boolean) {
+    let simulationPresets = [...useSlimeStore.getState().simulationPresets];
+    simulationPresets = simulationPresets.map((preset) => {
+      const modifiedPreset = { ...preset };
+      if (["Combination", "Simulation Only"].includes(preset.presetType)) {
+        modifiedPreset.enabled = value;
+      }
+      return modifiedPreset;
+    });
+    useSlimeStore.setState(
+      produce((state) => {
+        state.simulationPresets = simulationPresets;
+        state.toast.title = "Auto Load on Rand. Updated";
+        state.toast.description = `All "simulation" and "combination" presets have been ${value ? "enabled" : "disabled"} for load on auto-randomization.`;
+        state.toast.type = "info";
+        state.toast.lastTriggeredAt = Date.now();
+      }),
+    );
+  }
+
+  function updateNeededRandomizations(settings: string[]) {
+    const randomizationSettings =
+      useSlimeStore.getState().randomizationSettings;
+    const randomized: string[] = [];
+    const notRandomized: string[] = [];
+    useSlimeStore.setState(
+      produce((state) => {
+        settings.forEach((setting) => {
+          switch (setting) {
+            case "agents":
+              state.randomizationState.agentRandomizationRequestedAt =
+                Date.now();
+              if (randomizationSettings.allowAgentRandomization) {
+                randomized.push("agents");
+              } else {
+                notRandomized.push("agents");
+              }
+              break;
+            case "trail":
+              state.randomizationState.trailRandomizationRequestedAt =
+                Date.now();
+              if (randomizationSettings.allowTrailRandomization) {
+                randomized.push("trail");
+              } else {
+                notRandomized.push("trail");
+              }
+              break;
+          }
+        });
+        if (settings.length === 1) {
+          if (randomized.length === 1) {
+            state.toast.title = "Randomization Applied";
+            state.toast.description = `The ${randomized[0]} settings have been randomized.`;
+            state.toast.type = "success";
+            state.toast.lastTriggeredAt = Date.now();
+          } else if (notRandomized.length === 1) {
+            state.toast.title = "Randomization Skipped";
+            state.toast.description = `Randomization for ${notRandomized[0]} settings is disabled.`;
+            state.toast.type = "error";
+            state.toast.lastTriggeredAt = Date.now();
+          }
+        } else if (settings.length > 1) {
+          const descriptionArray: string[] = [];
+          if (randomized.length > 0) {
+            descriptionArray.push(`Randomized: ${randomized.join(", ")}.`);
+          }
+          if (notRandomized.length > 0) {
+            descriptionArray.push(`Skipped: ${notRandomized.join(", ")}.`);
+          }
+          let toastType = "info";
+          if (randomized.length === settings.length) {
+            toastType = "success";
+          } else if (notRandomized.length === settings.length) {
+            toastType = "error";
+          }
+          state.toast.title = "Randomization Info";
+          state.toast.description = descriptionArray.join("\n");
+          state.toast.type = toastType;
+          state.toast.lastTriggeredAt = Date.now();
+        }
+      }),
+    );
+  }
+
   return (
     <TabContentContainer tabsValue="simulation-controls">
       <TabContentScrollArea title="Simulation">
         <AccordionControlsWrapper
           accordionId="simulation-controls-accordion"
           type="multiple"
-          defaultValue={["quick-settings", "simulation-controls-presets"]}
+          defaultValue={[
+            "quick-controls",
+            "randomization-controls",
+            "simulation-controls-presets",
+          ]}
         >
           <AccordionControlsItem
-            value="quick-settings"
-            label="Quick Settings"
+            value="quick-controls"
+            label="Quick Controls"
             labelHoverTabContentDisplay={[
-              "Quick Settings",
+              "Quick Controls",
               <div className="px-2 py-1">
                 <ul className="list-inside list-disc">
                   <li>Randomize Simulation</li>
@@ -114,6 +202,169 @@ export default function SimulationControls() {
               </div>,
             ]}
           >
+            <SlimeStoreSwitchControl
+              label="Show FPS"
+              labelHoverTabContentDisplay={[
+                "Show FPS Counter",
+                "Enables a small FPS (and other stats) counter at the top-left of the screen. Hidden after a few moments of inactivity.",
+              ]}
+              baseId="simulation-controls-show-fps-switch"
+              storePath={["showFPS"]}
+            />
+            <SlimeStoreSliderControl
+              label="Simulation Speed"
+              baseInputId="simulation-speed-slider"
+              min={SIMULATION_CONTROLS_CONFIGS.speed!.min}
+              max={SIMULATION_CONTROLS_CONFIGS.speed!.max}
+              step={SIMULATION_CONTROLS_CONFIGS.speed!.step}
+              storePath={["simulationSettings", "speed"]}
+              labelHoverTabContentDisplay={[
+                "Simulation Speed",
+                "Controls the speed of the entire simulation.",
+              ]}
+            />
+            <SlimeStoreSelectControl
+              label="Boundary Behavior"
+              baseInputId="boundary-behavior-select"
+              storePath={["simulationSettings", "boundaryBehavior"]}
+              options={[
+                { label: "Wrap", value: "0" },
+                { label: "Bounce", value: "1" },
+              ]}
+              valueType="number"
+            />
+            <SlimeStoreSelectControl
+              label="Display Texture Aspect Ratio"
+              labelHoverTabContentDisplay={["Display Texture Aspect Ratio"]}
+              baseInputId="display-texture-aspect-ratio-select"
+              placeholder="Display Texture Aspect Ratio"
+              storePath={["simulationSettings", "displayTextureAspectRatio"]}
+              options={DISPLAY_TEXTURE_ASPECT_RATIO_OPTIONS}
+              onValueChange={handleDisplayTextureAspectRatioChange}
+            />
+            <SlimeStoreSliderControl
+              label="Display Texture Target Quality"
+              labelHoverTabContentDisplay={[
+                "Display Texture Target Quality",
+                <div className="px-2 py-1">
+                  Controls the target quality of the trail display texture. The
+                  value is essentially the number of megapixels in the display
+                  texture. Some loose conversions between these quality values
+                  and their corresponding video quality definitions are:
+                  <ul className="list-inside list-disc">
+                    <li>0.3: 480p</li>
+                    <li>0.9: 720p</li>
+                    <li>2.1: 1080p</li>
+                    <li>3.7: 1440p</li>
+                    <li>8.3: 2160p</li>
+                  </ul>
+                  Unless you've got a beefy GPU, use caution with higher values!
+                </div>,
+              ]}
+              baseInputId="trail-display-texture-target-quality-slider"
+              min={SIMULATION_CONTROLS_CONFIGS.displayTextureTargetQuality!.min}
+              max={SIMULATION_CONTROLS_CONFIGS.displayTextureTargetQuality!.max}
+              step={
+                SIMULATION_CONTROLS_CONFIGS.displayTextureTargetQuality!.step
+              }
+              storePath={["simulationSettings", "displayTextureTargetQuality"]}
+            />
+          </AccordionControlsItem>
+          <AccordionControlsItem
+            value="randomization-controls"
+            label="Randomization Controls"
+            labelHoverTabContentDisplay={[
+              "Randomization Controls",
+              "A few simulation-related randomization controls. More robust randomization controls can be found in the 'Randomization Controls' tab (the dice icon below).",
+            ]}
+          >
+            <SlimeStoreSwitchControl
+              label="Sim. Auto Rand. Enabled"
+              labelHoverTabContentDisplay={[
+                "Simulation Auto Randomization Enabled",
+                'Allows the simulation to randomize certain parameters at set intervals. The randomization interval is set using the \'Randomization Interval\' slider. Control over which parameters are randomized can be found in the "Agent Randomization Settings" and "Trail Randomization Settings" accordions below. Auto randomization is disabled when the controls are open.',
+              ]}
+              baseId="auto-randomization-enabled-switch"
+              storePath={[
+                "randomizationSettings",
+                "simulationAutoRandomizationEnabled",
+              ]}
+            />
+            <SlimeStoreSliderControl
+              label="Sim. Auto Rand. Interval"
+              labelHoverTabContentDisplay={[]}
+              baseInputId="auto-randomization-interval-slider"
+              min={1}
+              max={60}
+              step={1}
+              storePath={[
+                "randomizationSettings",
+                "simulationAutoRandomizationInterval",
+              ]}
+            />
+            <SlimeStoreSelectControl
+              label="Sim. Auto Rand. Mode"
+              labelHoverTabContentDisplay={[]}
+              baseInputId="randomization-controls-auto-randomization-mode-select"
+              storePath={[
+                "randomizationSettings",
+                "simulationAutoRandomizationMode",
+              ]}
+              options={[
+                {
+                  label: "Use Random Enabled Randomization Preset",
+                  value: "selectEnabledRandomizationPreset",
+                },
+                {
+                  label: "Use Random Enabled Simulation Preset",
+                  value: "selectEnabledSimulationPreset",
+                },
+                {
+                  label: "Use Current Randomization Settings",
+                  value: "useCurrentRandomizationSettings",
+                },
+              ]}
+            />
+            <SwitchControlGroup
+              label="Enabled Rands."
+              labelHoverTabContentDisplay={[
+                "Enabled Randomizations",
+                "Toggles to enable or disable randomization for various setting groups.",
+              ]}
+              switchConfigs={[
+                {
+                  label: "Agents",
+                  baseId: "agent-randomization-switch",
+                  storePath: [
+                    "randomizationSettings",
+                    "allowAgentRandomization",
+                  ],
+                },
+                {
+                  label: "Trail",
+                  baseId: "trail-randomization-switch",
+                  storePath: [
+                    "randomizationSettings",
+                    "allowTrailRandomization",
+                  ],
+                },
+              ]}
+            />
+            <SlimeStoreSwitchControl
+              label="Auto Restart Enabled"
+              labelHoverTabContentDisplay={[]}
+              baseId="auto-restart-enabled-switch"
+              storePath={["randomizationSettings", "autoRestartEnabled"]}
+            />
+            <SlimeStoreSliderControl
+              label="Auto Restart Interval"
+              labelHoverTabContentDisplay={[]}
+              baseInputId="auto-restart-interval-slider"
+              min={1}
+              max={60}
+              step={1}
+              storePath={["randomizationSettings", "autoRestartInterval"]}
+            />
             <SwitchControlGroup
               label="Enabled Start Types"
               labelHoverTabContentDisplay={[
@@ -215,6 +466,11 @@ export default function SimulationControls() {
                       produce((state) => {
                         state.randomizationState.simulationRestartRequestedAt =
                           Date.now();
+                        state.toast.title = "Simulation Restarted";
+                        state.toast.description =
+                          "The simulation has been restarted.";
+                        state.toast.type = "info";
+                        state.toast.lastTriggeredAt = Date.now();
                       }),
                     );
                   },
@@ -223,53 +479,26 @@ export default function SimulationControls() {
                   label: "Randomize Simulation",
                   baseId: "randomize-simulation-button",
                   onClick: () => {
-                    useSlimeStore.setState(
-                      produce((state) => {
-                        state.randomizationState.agentRandomizationRequestedAt =
-                          Date.now();
-                        state.randomizationState.trailRandomizationRequestedAt =
-                          Date.now();
-                      }),
-                    );
+                    updateNeededRandomizations(["agents", "trail"]);
                   },
                 },
                 {
                   label: "Randomize Agent Settings",
                   baseId: "randomize-agent-settings-button",
                   onClick: () => {
-                    useSlimeStore.setState(
-                      produce((state) => {
-                        state.randomizationState.agentRandomizationRequestedAt =
-                          Date.now();
-                      }),
-                    );
+                    updateNeededRandomizations(["agents"]);
                   },
                 },
                 {
                   label: "Randomize Trail Settings",
                   baseId: "randomize-trail-settings-button",
                   onClick: () => {
-                    useSlimeStore.setState(
-                      produce((state) => {
-                        state.randomizationState.trailRandomizationRequestedAt =
-                          Date.now();
-                      }),
-                    );
+                    updateNeededRandomizations(["trail"]);
                   },
                 },
               ]}
             />
-            <SlimeStoreSwitchControl
-              label="Show FPS"
-              labelHoverTabContentDisplay={[
-                "Show FPS Counter",
-                "Enables a small FPS (and other stats) counter at the top-left of the screen. Hidden after a few moments of inactivity.",
-              ]}
-              baseId="simulation-controls-show-fps-switch"
-              storePath={["showFPS"]}
-            />
           </AccordionControlsItem>
-
           <AccordionControlsItem
             value="simulation-controls-presets"
             label="Presets"
@@ -278,6 +507,21 @@ export default function SimulationControls() {
             <ControlGroup justifyContent="center">
               <SaveCurrentSettingsAsPresetPopoverButton presetType="Simulation Only" />
             </ControlGroup>
+            <ButtonControlGroup
+              justifyContent="center"
+              buttonConfigs={[
+                {
+                  label: "Enable Auto Load on Rand - All Sim.",
+                  baseId: "enable-auto-load-on-rand-all-button",
+                  onClick: () => setAutoLoadOnRandAll(true),
+                },
+                {
+                  label: "Disable Auto Load on Rand - All Sim.",
+                  baseId: "disable-auto-load-on-rand-all-button",
+                  onClick: () => setAutoLoadOnRandAll(false),
+                },
+              ]}
+            />
             {sortedSimulationPresets["Simulation Only"] &&
               sortedSimulationPresets["Simulation Only"].map((preset) => (
                 <SimulationPresetLoadSaveControl
@@ -310,92 +554,6 @@ export default function SimulationControls() {
                   index={getPresetIndex(preset)}
                 />
               ))}
-          </AccordionControlsItem>
-
-          <AccordionControlsItem
-            value="simulation-settings"
-            label="Simulation Settings"
-            labelHoverTabContentDisplay={[
-              "Simulation Settings",
-              <div className="px-2 py-1">
-                <ul className="list-inside list-disc">
-                  <li>Simulation Speed</li>
-                  <li>Randomization Enabled</li>
-                  <li>Randomization Interval</li>
-                </ul>
-              </div>,
-            ]}
-          >
-            <SlimeStoreSliderControl
-              label="Simulation Speed"
-              baseInputId="simulation-speed-slider"
-              min={SIMULATION_CONTROLS_CONFIGS.speed!.min}
-              max={SIMULATION_CONTROLS_CONFIGS.speed!.max}
-              step={SIMULATION_CONTROLS_CONFIGS.speed!.step}
-              storePath={["simulationSettings", "speed"]}
-              labelHoverTabContentDisplay={[
-                "Simulation Speed",
-                "Controls the speed of the entire simulation.",
-              ]}
-            />
-            <SlimeStoreSelectControl
-              label="Boundary Behavior"
-              baseInputId="boundary-behavior-select"
-              storePath={["simulationSettings", "boundaryBehavior"]}
-              options={[
-                { label: "Wrap", value: "0" },
-                { label: "Bounce", value: "1" },
-              ]}
-              valueType="number"
-            />
-            <SlimeStoreSwitchControl
-              label="Sim. Auto Rand. Enabled"
-              labelHoverTabContentDisplay={[
-                "Simulation Auto Randomization Enabled",
-                'Allows the simulation to randomize certain parameters at set intervals. The randomization interval is set using the "Randomization Interval" slider. Control over which parameters are randomized can be found in the "Randomization Controls" tab. Auto randomization is disabled when the controls are open.',
-              ]}
-              baseId="auto-randomization-enabled-switch"
-              storePath={[
-                "randomizationSettings",
-                "simulationAutoRandomizationEnabled",
-              ]}
-            />
-            <SlimeStoreSliderControl
-              label="Sim. Auto Rand. Interval"
-              labelHoverTabContentDisplay={[
-                "Simulation Auto Randomization Interval",
-                'Controls how often (in minutes) the simulation randomizes its parameters. Control over which parameters are randomized can be found in the "Randomization Controls" tab. Has no effect when auto randomization is disabled. Auto randomization is disabled when the controls are open.',
-              ]}
-              baseInputId="auto-randomization-interval-slider"
-              min={1}
-              max={60}
-              step={1}
-              storePath={[
-                "randomizationSettings",
-                "simulationAutoRandomizationInterval",
-              ]}
-            />
-            <SlimeStoreSwitchControl
-              label="Auto Restart Enabled"
-              labelHoverTabContentDisplay={[
-                "Auto Restart Enabled",
-                "Allows the simulation to automatically restart at set intervals. Interval is set using the 'Auto Restart Interval' slider.",
-              ]}
-              baseId="auto-restart-enabled-switch"
-              storePath={["randomizationSettings", "autoRestartEnabled"]}
-            />
-            <SlimeStoreSliderControl
-              label="Auto Restart Interval"
-              labelHoverTabContentDisplay={[
-                "Auto Restart Interval",
-                "Controls how often the simulation restarts. Interval is in minutes.",
-              ]}
-              baseInputId="auto-restart-interval-slider"
-              min={1}
-              max={60}
-              step={1}
-              storePath={["randomizationSettings", "autoRestartInterval"]}
-            />
           </AccordionControlsItem>
 
           <AccordionControlsItem
