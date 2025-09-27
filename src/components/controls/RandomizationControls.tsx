@@ -8,6 +8,7 @@ import ControlGroup from "./ControlGroup";
 import RandomizationPresetLoadSaveControl from "./RandomizationPresetLoadSaveControl";
 import SaveRandomizationPresetPopoverButton from "./SaveRandomizationPresetPopoverButton";
 import SlimeStoreNumericRangeRandomizationControl from "./SlimeStoreNumericRangeRandomizationControl";
+import SlimeStoreSelectControl from "./SlimeStoreSelectControl";
 import SlimeStoreSliderControl from "./SlimeStoreSliderControl";
 import SlimeStoreSwitchControl from "./SlimeStoreSwitchControl";
 import SwitchControlGroup from "./SwitchControlGroup";
@@ -174,6 +175,29 @@ export default function RandomizationControls() {
                 "simulationAutoRandomizationInterval",
               ]}
             />
+            <SlimeStoreSelectControl
+              label="Sim. Auto Rand. Mode"
+              labelHoverTabContentDisplay={[]}
+              baseInputId="randomization-controls-auto-randomization-mode-select"
+              storePath={[
+                "randomizationSettings",
+                "simulationAutoRandomizationMode",
+              ]}
+              options={[
+                {
+                  label: "Use Random Enabled Randomization Preset",
+                  value: "selectEnabledRandomizationPreset",
+                },
+                {
+                  label: "Use Random Enabled Simulation Preset",
+                  value: "selectEnabledSimulationPreset",
+                },
+                {
+                  label: "Use Current Randomization Settings",
+                  value: "useCurrentRandomizationSettings",
+                },
+              ]}
+            />
             <SlimeStoreSwitchControl
               label="Color Auto Rand. Enabled"
               labelHoverTabContentDisplay={[]}
@@ -193,6 +217,29 @@ export default function RandomizationControls() {
               storePath={[
                 "randomizationSettings",
                 "colorAutoRandomizationInterval",
+              ]}
+            />
+            <SlimeStoreSelectControl
+              label="Color Auto Rand. Mode"
+              labelHoverTabContentDisplay={[]}
+              baseInputId="randomization-controls-color-auto-randomization-mode-select"
+              storePath={[
+                "randomizationSettings",
+                "colorAutoRandomizationMode",
+              ]}
+              options={[
+                {
+                  label: "Use Random Enabled Randomization Preset",
+                  value: "selectEnabledRandomizationPreset",
+                },
+                {
+                  label: "Use Random Enabled Color Preset",
+                  value: "selectEnabledColorPreset",
+                },
+                {
+                  label: "Use Current Randomization Settings",
+                  value: "useCurrentRandomizationSettings",
+                },
               ]}
             />
             <SlimeStoreSwitchControl

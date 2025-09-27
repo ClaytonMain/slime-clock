@@ -299,7 +299,11 @@ function SlimeClockRenderer() {
               "selectEnabledColorPreset"
             ) {
               const settings = UTILS.getRandomEnabledColorPresetSettings();
-              state.colorSettings = { ...state.colorSettings, ...settings };
+              state.colorSettings = {
+                ...state.colorSettings,
+                ...settings,
+                slimeColorChangedAt: Date.now(),
+              };
             }
           }
         }),
@@ -394,7 +398,12 @@ function SlimeClockRenderer() {
             "selectEnabledColorPreset"
           ) {
             const settings = UTILS.getRandomEnabledColorPresetSettings();
-            state.colorSettings = { ...state.colorSettings, ...settings };
+            console.log("Applying color preset", settings);
+            state.colorSettings = {
+              ...state.colorSettings,
+              ...settings,
+              slimeColorChangedAt: Date.now(),
+            };
           }
         }),
       );

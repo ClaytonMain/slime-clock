@@ -98,54 +98,58 @@ function initializeRandomizationPresets() {
   );
 }
 
+function getPresetInPresetList(
+  preset: LoadableSlimeStoreSettings,
+  presetList: LoadableSlimeStoreSettings[],
+): LoadableSlimeStoreSettings | null {
+  return (
+    presetList.find(
+      (p) => p.name === preset.name && p.presetType === preset.presetType,
+    ) || null
+  );
+}
+
 function initializeSimulationPresets() {
   const debugConsoleLogger = useSlimeStore.getState().debugConsoleLogger;
   debugConsoleLogger("initializeSimulationPresets called");
 
   const simulationPresets: LoadableSlimeStoreSettings[] = [];
   const currentSimulationPresets = useSlimeStore.getState().simulationPresets;
-  const combinedPresets = [
-    ...DEFAULT_PRESETS,
-    ...useSlimeStore.getState().simulationPresets,
-  ];
   debugConsoleLogger(
     "initializeSimulationPresets > currentSimulationPresets:",
     currentSimulationPresets,
   );
-  combinedPresets.forEach((preset, i) => {
-    if (preset.isBasePreset) {
-      if (
-        DEFAULT_PRESETS.findIndex(
-          (p) => p.name === preset.name && p.presetType === preset.presetType,
-        ) === -1
-      ) {
-        // If a base preset is no longer in the default presets list,
-        // we need to add it to the new list as a non-base preset.
+
+  DEFAULT_PRESETS.forEach((preset) => {
+    const inCurrentPresets = getPresetInPresetList(
+      preset,
+      currentSimulationPresets,
+    );
+    if (inCurrentPresets) {
+      // If the `inCurrentPresets` is a base preset, we can merge it with the default
+      // preset in case any settings have changed, but also keep the `enabled` flag
+      // from the current preset.
+      if (inCurrentPresets.isBasePreset) {
         simulationPresets.push({
           ...preset,
-          isBasePreset: false,
+          enabled: inCurrentPresets.enabled,
         });
-      } else if (
-        simulationPresets.findIndex(
-          (p) => p.name === preset.name && p.presetType === preset.presetType,
-        ) === -1
-      ) {
-        // If a base preset is in the default presets list, and
-        // hasn't already been added to the new list, we can add it
-        // as-is.
+      } else {
+        // Otherwise, add the preset as-is & handle renaming the `inCurrentPresets`
+        // preset later.
         simulationPresets.push(preset);
       }
     } else {
-      if (
-        combinedPresets.findIndex(
-          (p, j) =>
-            p.name === preset.name &&
-            p.presetType === preset.presetType &&
-            i !== j,
-        ) !== -1
-      ) {
-        // If a non-base preset shares a name with another preset
-        // it should be renamed to preserve uniqueness.
+      simulationPresets.push(preset);
+    }
+  });
+
+  currentSimulationPresets.forEach((preset) => {
+    const inDefaultPresets = getPresetInPresetList(preset, DEFAULT_PRESETS);
+    if (inDefaultPresets) {
+      if (!preset.isBasePreset) {
+        // If a non-base preset shares a name with a default preset, we need to
+        // rename it.
         simulationPresets.push({
           ...preset,
           name: `${preset.name} [User-Defined ${Math.floor(
@@ -154,14 +158,13 @@ function initializeSimulationPresets() {
             .toString()
             .padStart(5, "0")}]`,
         });
-      } else if (
-        simulationPresets.findIndex(
-          (p) => p.name === preset.name && p.presetType === preset.presetType,
-        ) === -1
-      ) {
-        // Otherwise, we can just add the non-base preset as-is.
-        simulationPresets.push(preset);
       }
+      // Any other base presets should already be included.
+    } else {
+      simulationPresets.push({
+        ...preset,
+        isBasePreset: false,
+      });
     }
   });
   debugConsoleLogger(

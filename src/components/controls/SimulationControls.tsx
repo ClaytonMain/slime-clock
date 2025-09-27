@@ -16,7 +16,7 @@ import AccordionControlsWrapper from "./AccordionControlsWrapper";
 import ButtonControlGroup from "./ButtonControlGroup.tsx";
 import ControlGroup from "./ControlGroup.tsx";
 import SaveCurrentSettingsAsPresetPopoverButton from "./SaveCurrentSettingsAsPresetPopoverButton.tsx";
-import SettingsLoadSaveControl from "./SimulationPresetLoadSaveControl.tsx";
+import SimulationPresetLoadSaveControl from "./SimulationPresetLoadSaveControl.tsx";
 import SlimeStoreSelectControl from "./SlimeStoreSelectControl";
 import SlimeStoreSliderControl from "./SlimeStoreSliderControl";
 import SlimeStoreSwitchControl from "./SlimeStoreSwitchControl";
@@ -280,7 +280,7 @@ export default function SimulationControls() {
             </ControlGroup>
             {sortedSimulationPresets["Simulation Only"] &&
               sortedSimulationPresets["Simulation Only"].map((preset) => (
-                <SettingsLoadSaveControl
+                <SimulationPresetLoadSaveControl
                   key={preset.name}
                   label={preset.name}
                   labelHoverTabContentDisplay={[
@@ -296,7 +296,7 @@ export default function SimulationControls() {
               ))}
             {sortedSimulationPresets["Combination"] &&
               sortedSimulationPresets["Combination"].map((preset) => (
-                <SettingsLoadSaveControl
+                <SimulationPresetLoadSaveControl
                   key={preset.name}
                   label={preset.name}
                   labelHoverTabContentDisplay={[

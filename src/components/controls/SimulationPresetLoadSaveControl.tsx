@@ -1,11 +1,15 @@
-import { ClockIcon, MixerHorizontalIcon } from "@radix-ui/react-icons";
+import {
+  ClockIcon,
+  Cross2Icon,
+  MixerHorizontalIcon,
+} from "@radix-ui/react-icons";
 import { produce } from "immer";
 import { motion } from "motion/react";
 import { Label } from "radix-ui";
 import * as R from "ramda";
 import { useEffect, useState, type ReactNode } from "react";
 import { LuArrowUpFromLine, LuClipboardCopy } from "react-icons/lu";
-import { PiPalette } from "react-icons/pi";
+import { PiDiceFive, PiPalette } from "react-icons/pi";
 import {
   MULTIPLE_PRESET_TYPES,
   SINGLE_PRESET_TYPES,
@@ -33,6 +37,58 @@ export default function SimulationPresetLoadSaveControl({
   const [presetIndicationIcons, setPresetIndicationIcons] = useState<
     ReactNode[]
   >([]);
+  const [canLoadOnAutoRand, setCanLoadOnAutoRand] = useState<
+    boolean | undefined
+  >(
+    controlType === "presets"
+      ? R.view(
+          R.lensPath(["simulationPresets", index, "enabled"]),
+          useSlimeStore.getState(),
+        )
+      : undefined,
+  );
+
+  useEffect(() => {
+    if (controlType !== "presets") {
+      setCanLoadOnAutoRand(undefined);
+    } else {
+      setCanLoadOnAutoRand(
+        R.view(
+          R.lensPath(["simulationPresets", index, "enabled"]),
+          useSlimeStore.getState(),
+        ),
+      );
+    }
+  }, [index, controlType]);
+
+  useEffect(() => {
+    const unsub = useSlimeStore.subscribe(
+      (state) =>
+        R.view(R.lensPath(["simulationPresets", index, "enabled"]), state),
+      (newValue) => {
+        setCanLoadOnAutoRand(newValue);
+      },
+    );
+    return () => unsub();
+  }, [index]);
+
+  function handleCanLoadOnAutoRandChange(newValue: boolean) {
+    useSlimeStore.setState(
+      R.over(
+        R.lensPath(["simulationPresets", index, "enabled"]),
+        () => newValue,
+      ),
+    );
+    useSlimeStore.setState(
+      produce((state) => {
+        state.toast.title = "Load on Auto-Randomization";
+        state.toast.description = `Preset "${settings.name}" ${newValue ? "now" : "no longer"} has a chance to load during auto-randomization.`;
+        state.toast.type = "info";
+        state.toast.lastTriggeredAt = Date.now();
+      }),
+    );
+    setCanLoadOnAutoRand(newValue);
+  }
 
   function handlePointerOver() {
     if (labelHoverTabContentDisplay) {
@@ -213,6 +269,33 @@ export default function SimulationPresetLoadSaveControl({
           paddingLeft: label ? undefined : "calc(var(--spacing) * 2)",
         }}
       >
+        {settings.presetType !== "Clock Only" && controlType === "presets" && (
+          <TooltipWrapper tooltipText="Toggle Load on Auto-Randomization">
+            <motion.button
+              className="flex h-7 w-7 cursor-pointer flex-col items-center justify-center border border-sky-800 p-1"
+              onClick={() => handleCanLoadOnAutoRandChange(!canLoadOnAutoRand)}
+              style={{ backgroundColor: "#18181b" }}
+              whileHover={{ backgroundColor: "#27272a" }}
+            >
+              <motion.div
+                className="relative"
+                whileTap={{ scale: 0.95 }}
+                transition={{ duration: 0.05 }}
+              >
+                <motion.div className="absolute top-1/2 left-1/2 h-6 w-6 -translate-x-1/2 -translate-y-1/2">
+                  <PiDiceFive className="h-full w-full" />
+                </motion.div>
+                <motion.div
+                  className="absolute top-1/2 left-1/2 h-6 w-6 -translate-x-1/2 -translate-y-1/2"
+                  animate={{ opacity: canLoadOnAutoRand ? 0 : 1 }}
+                  transition={{ duration: 0.1 }}
+                >
+                  <Cross2Icon className="h-full w-full scale-[1.15] stroke-rose-600 text-rose-600" />
+                </motion.div>
+              </motion.div>
+            </motion.button>
+          </TooltipWrapper>
+        )}
         <TooltipWrapper tooltipText="Copy to Clipboard">
           <motion.button
             className="flex h-7 w-7 cursor-pointer flex-col items-center justify-center border border-sky-800 p-1"
