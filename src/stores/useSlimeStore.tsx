@@ -45,6 +45,11 @@ interface ControlsState {
   displayAreaContentUpdatedAt: number;
   displayAreaContentName: string | null;
   displayAreaHtmlContent: string | [string, string] | ReactNode | null;
+  tabDefaultDisplayAreaHtmlContent:
+    | string
+    | [string, string]
+    | ReactNode
+    | null;
   displayAreaBoundingClientRect: DOMRect | null;
   displayAreaPdfValues: DisplayAreaPdfValues;
   hideDisplayAreaBackground: boolean;
@@ -415,6 +420,7 @@ const useSlimeStore = create<SlimeStore>()(
           displayAreaContentUpdatedAt: Date.now(),
           displayAreaContentName: null,
           displayAreaHtmlContent: null,
+          tabDefaultDisplayAreaHtmlContent: null,
           displayAreaBoundingClientRect: null,
           displayAreaPdfValues: {
             currentSettingTitle: "",

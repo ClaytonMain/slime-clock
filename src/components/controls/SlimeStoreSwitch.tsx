@@ -1,5 +1,5 @@
 import { motion } from "motion/react";
-import { Switch } from "radix-ui";
+import { Label, Switch } from "radix-ui";
 import * as R from "ramda";
 import { useEffect, useState } from "react";
 import useSlimeStore from "../../stores/useSlimeStore";
@@ -9,11 +9,19 @@ export default function SlimeStoreSwitch({
   storePath,
   onCheckedChange,
   listen = true,
+  switchLabel,
+  switchLabelPosition = "bottom",
+  switchLabelSize = "text-xs",
+  darkenBackground,
 }: {
   baseId?: string;
   storePath: (string | number)[];
   onCheckedChange?: (value: boolean) => void;
   listen?: boolean;
+  switchLabel?: string;
+  switchLabelPosition?: "top" | "bottom";
+  switchLabelSize?: string;
+  darkenBackground?: boolean;
 }) {
   const [checked, setChecked] = useState<boolean>(
     R.view(R.lensPath(storePath), useSlimeStore.getState()),
@@ -43,36 +51,56 @@ export default function SlimeStoreSwitch({
   }, []);
 
   return (
-    <Switch.Root
-      id={baseId}
-      checked={checked}
-      onCheckedChange={handleOnCheckedChange}
-      asChild
+    <div
+      className={`flex flex-col items-center justify-center ${darkenBackground ? "bg-[#0002]" : ""} gap-0.5 p-1`}
     >
-      <motion.div
-        className="flex h-6 w-12 cursor-pointer items-center rounded-full p-0.5"
-        animate={{
-          backgroundColor: checked
-            ? "var(--color-sky-500)"
-            : "var(--color-zinc-900)",
-        }}
-        style={{
-          backgroundColor: "var(--color-zinc-900)",
-          justifyContent: checked ? "flex-end" : "flex-start",
-        }}
+      {switchLabel && switchLabelPosition === "top" && (
+        <Label.Root
+          className={`w-full text-center ${switchLabelSize}`}
+          htmlFor={baseId}
+        >
+          {switchLabel}
+        </Label.Root>
+      )}
+      <Switch.Root
+        id={baseId}
+        checked={checked}
+        onCheckedChange={handleOnCheckedChange}
+        asChild
       >
-        <Switch.Thumb asChild>
-          <motion.div
-            className="h-5 w-5 rounded-full bg-white"
-            transition={{
-              type: "spring",
-              visualDuration: 0.3,
-              bounce: 0.2,
-            }}
-            layout
-          />
-        </Switch.Thumb>
-      </motion.div>
-    </Switch.Root>
+        <motion.div
+          className="flex h-6 w-12 cursor-pointer items-center rounded-full p-0.5"
+          animate={{
+            backgroundColor: checked
+              ? "var(--color-sky-500)"
+              : "var(--color-zinc-900)",
+          }}
+          style={{
+            backgroundColor: "var(--color-zinc-900)",
+            justifyContent: checked ? "flex-end" : "flex-start",
+          }}
+        >
+          <Switch.Thumb asChild>
+            <motion.div
+              className="h-5 w-5 rounded-full bg-white"
+              transition={{
+                type: "spring",
+                visualDuration: 0.3,
+                bounce: 0.2,
+              }}
+              layout
+            />
+          </Switch.Thumb>
+        </motion.div>
+      </Switch.Root>
+      {switchLabel && switchLabelPosition === "bottom" && (
+        <Label.Root
+          className={`w-full text-center ${switchLabelSize}`}
+          htmlFor={baseId}
+        >
+          {switchLabel}
+        </Label.Root>
+      )}
+    </div>
   );
 }

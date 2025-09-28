@@ -19,18 +19,18 @@ const SCALE_FACTORS: Record<ClockDigitStyleValue, number> = {
 function getDigitFontUrl(style: ClockDigitStyleValue): string {
   switch (style) {
     case "7segment":
-      return "../../fonts/fonts-DSEG_v046/DSEG7-Classic/DSEG7Classic-Regular.woff";
+      return "./fonts/fonts-DSEG_v046/DSEG7-Classic/DSEG7Classic-Regular.woff";
     case "14segment":
-      return "../../fonts/fonts-DSEG_v046/DSEG14-Classic/DSEG14Classic-Regular.woff";
+      return "./fonts/fonts-DSEG_v046/DSEG14-Classic/DSEG14Classic-Regular.woff";
     case "dm80":
-      return "../../fonts/dm_80/DM-80-Regular.woff";
+      return "./fonts/dm_80/DM-80-Regular.woff";
     case "roboto":
-      return "../../fonts/Roboto_Mono/static/RobotoMono-Regular.ttf";
+      return "./fonts/Roboto_Mono/static/RobotoMono-Regular.ttf";
     // return "https://fonts.gstatic.com/s/roboto/v18/KFOmCnqEu92Fr1Mu4mxM.woff";
     case "her":
-      return "../../fonts/fonts-DSEG_v046/DSEG7-7SEGG-CHAN/DSEG7SEGGCHAN-Regular.woff";
+      return "./fonts/fonts-DSEG_v046/DSEG7-7SEGG-CHAN/DSEG7SEGGCHAN-Regular.woff";
     default:
-      return "../../fonts/DSEG14Modern-Regular.woff";
+      return "./fonts/DSEG14Modern-Regular.woff";
   }
 }
 

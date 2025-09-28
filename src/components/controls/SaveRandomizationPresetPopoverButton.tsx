@@ -86,11 +86,15 @@ export default function SaveRandomizationPresetPopoverButton({
 
     randomizationPresets.sort((a, b) => a.name.localeCompare(b.name));
 
+    const capitalizedPresetType =
+      randomizationPresetType.charAt(0).toUpperCase() +
+      randomizationPresetType.slice(1);
+
     useSlimeStore.setState(
       produce((state) => {
         state.randomizationPresets = randomizationPresets;
         state.toast.title = "Preset Saved";
-        state.toast.description = `Randomization preset "${trimmedPresetName}" saved successfully.`;
+        state.toast.description = `${capitalizedPresetType} randomization preset "${trimmedPresetName}" saved successfully.`;
         state.toast.type = "success";
         state.toast.lastTriggeredAt = Date.now();
       }),

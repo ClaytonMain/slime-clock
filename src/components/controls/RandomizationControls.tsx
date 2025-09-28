@@ -1,6 +1,7 @@
 import { produce } from "immer";
 import { useEffect } from "react";
 import useSlimeStore from "../../stores/useSlimeStore";
+import CodeBlock from "../code-block/CodeBlock";
 import AccordionControlsItem from "./AccordionControlsItem";
 import AccordionControlsWrapper from "./AccordionControlsWrapper";
 import ButtonControlGroup from "./ButtonControlGroup";
@@ -9,10 +10,12 @@ import RandomizationPresetLoadSaveControl from "./RandomizationPresetLoadSaveCon
 import SaveRandomizationPresetPopoverButton from "./SaveRandomizationPresetPopoverButton";
 import SlimeStoreNumericRangeRandomizationControl from "./SlimeStoreNumericRangeRandomizationControl";
 import SlimeStoreSelectControl from "./SlimeStoreSelectControl";
-import SlimeStoreSliderControl from "./SlimeStoreSliderControl";
+import SlimeStoreSlider from "./SlimeStoreSlider";
+import SlimeStoreSwitch from "./SlimeStoreSwitch";
 import SlimeStoreSwitchControl from "./SlimeStoreSwitchControl";
 import SwitchControlGroup from "./SwitchControlGroup";
 import TabContentContainer from "./TabContentContainer";
+import TabContentDisplayAreaContentWrapper from "./TabContentDisplayAreaContentWrapper";
 import TabContentScrollArea from "./TabContentScrollArea";
 
 export default function RandomizationControls() {
@@ -30,6 +33,9 @@ export default function RandomizationControls() {
     if (selectedTab !== "randomization-controls") return;
     useSlimeStore.setState(
       produce((state) => {
+        state.controlsState.displayAreaContentUpdatedAt = Date.now();
+        state.controlsState.tabDefaultDisplayAreaHtmlContent =
+          randomizationControlsLabelHoverTabContentDisplay;
         state.controlsState.displayAreaHtmlContent =
           randomizationControlsLabelHoverTabContentDisplay;
         state.controlsState.displayAreaContentName = null;
@@ -151,33 +157,72 @@ export default function RandomizationControls() {
               "Allows quick access to randomization toggles and buttons.",
             ]}
           >
-            <SlimeStoreSwitchControl
-              label="Sim. Auto Rand. Enabled"
+            <ControlGroup
+              label="Sim. Auto Rand."
               labelHoverTabContentDisplay={[
-                "Simulation Auto Randomization Enabled",
-                'Allows the simulation to randomize certain parameters at set intervals. The randomization interval is set using the \'Randomization Interval\' slider. Control over which parameters are randomized can be found in the "Agent Randomization Settings" and "Trail Randomization Settings" accordions below. Auto randomization is disabled when the controls are open.',
+                "Simulation Auto Randomization",
+                <TabContentDisplayAreaContentWrapper>
+                  Allows the simulation to randomize certain enabled parameters
+                  at set intervals. The <CodeBlock>enabled</CodeBlock> switch
+                  toggles auto-randomization for the simulation. The{" "}
+                  <CodeBlock>interval</CodeBlock> slider controls how often the
+                  randomization occurs (in minutes).
+                </TabContentDisplayAreaContentWrapper>,
               ]}
-              baseId="auto-randomization-enabled-switch"
-              storePath={[
-                "randomizationSettings",
-                "simulationAutoRandomizationEnabled",
-              ]}
-            />
-            <SlimeStoreSliderControl
-              label="Sim. Auto Rand. Interval"
-              labelHoverTabContentDisplay={[]}
-              baseInputId="auto-randomization-interval-slider"
-              min={1}
-              max={60}
-              step={1}
-              storePath={[
-                "randomizationSettings",
-                "simulationAutoRandomizationInterval",
-              ]}
-            />
+            >
+              <SlimeStoreSwitch
+                baseId="rand-controls-simulation-auto-randomization-enabled-switch"
+                storePath={[
+                  "randomizationSettings",
+                  "simulationAutoRandomizationEnabled",
+                ]}
+                switchLabel="Enabled"
+              />
+              <div className="flex-grow">
+                <SlimeStoreSlider
+                  baseInputId="rand-controls-simulation-auto-randomization-interval-slider"
+                  min={1}
+                  max={60}
+                  step={1}
+                  storePath={[
+                    "randomizationSettings",
+                    "simulationAutoRandomizationInterval",
+                  ]}
+                  sliderLabel="Interval"
+                />
+              </div>
+            </ControlGroup>
             <SlimeStoreSelectControl
               label="Sim. Auto Rand. Mode"
-              labelHoverTabContentDisplay={[]}
+              labelHoverTabContentDisplay={[
+                "Simulation Auto Randomization Mode",
+                <TabContentDisplayAreaContentWrapper>
+                  <ul className="list-inside list-disc">
+                    <li>
+                      <em>Use Random Enabled Randomization Preset: </em>
+                      Randomly loads one of the <em>enabled</em> randomization
+                      presets from the <em>Simulation Randomization Presets</em>
+                      section below prior to randomizing the simulation. The
+                      settings in the <em>Agent Randomization Settings</em>
+                      and <em>Trail Randomization Settings</em> sections below
+                      are overwritten by the loaded preset.
+                    </li>
+                    <li>
+                      <em>Use Random Enabled Simulation Preset: </em>
+                      Randomly loads one of the <em>enabled</em> simulation
+                      presets from the <em>Simulation Presets</em> tab prior to
+                      randomizing the simulation.
+                    </li>
+                    <li>
+                      <em>Use Current Randomization Settings: </em>
+                      Uses the current settings in the{" "}
+                      <em>Agent Randomization Settings</em>
+                      and <em>Trail Randomization Settings</em> sections below
+                      to randomize the simulation.
+                    </li>
+                  </ul>
+                </TabContentDisplayAreaContentWrapper>,
+              ]}
               baseInputId="randomization-controls-auto-randomization-mode-select"
               storePath={[
                 "randomizationSettings",
@@ -198,31 +243,71 @@ export default function RandomizationControls() {
                 },
               ]}
             />
-            <SlimeStoreSwitchControl
-              label="Color Auto Rand. Enabled"
-              labelHoverTabContentDisplay={[]}
-              baseId="color-auto-randomization-enabled-switch"
-              storePath={[
-                "randomizationSettings",
-                "colorAutoRandomizationEnabled",
+            <ControlGroup
+              label="Color Auto Rand."
+              labelHoverTabContentDisplay={[
+                "Color Auto Randomization",
+                <TabContentDisplayAreaContentWrapper>
+                  Allows the color settings to randomize certain enabled
+                  parameters at set intervals. The{" "}
+                  <CodeBlock>enabled</CodeBlock> switch toggles
+                  auto-randomization for the color settings. The{" "}
+                  <CodeBlock>interval</CodeBlock> slider controls how often the
+                  randomization occurs (in minutes).
+                </TabContentDisplayAreaContentWrapper>,
               ]}
-            />
-            <SlimeStoreSliderControl
-              label="Color Auto Rand. Interval"
-              labelHoverTabContentDisplay={[]}
-              baseInputId="color-auto-randomization-interval-slider"
-              min={1}
-              max={60}
-              step={1}
-              storePath={[
-                "randomizationSettings",
-                "colorAutoRandomizationInterval",
-              ]}
-            />
+            >
+              <SlimeStoreSwitch
+                baseId="rand-controls-color-auto-randomization-enabled-switch"
+                storePath={[
+                  "randomizationSettings",
+                  "colorAutoRandomizationEnabled",
+                ]}
+                switchLabel="Enabled"
+              />
+              <div className="flex-grow">
+                <SlimeStoreSlider
+                  baseInputId="rand-controls-color-auto-randomization-interval-slider"
+                  min={1}
+                  max={60}
+                  step={1}
+                  storePath={[
+                    "randomizationSettings",
+                    "colorAutoRandomizationInterval",
+                  ]}
+                  sliderLabel="Interval"
+                />
+              </div>
+            </ControlGroup>
             <SlimeStoreSelectControl
               label="Color Auto Rand. Mode"
-              labelHoverTabContentDisplay={[]}
-              baseInputId="randomization-controls-color-auto-randomization-mode-select"
+              labelHoverTabContentDisplay={[
+                "Color Auto Randomization Mode",
+                <TabContentDisplayAreaContentWrapper>
+                  <ul className="list-inside list-disc">
+                    <li>
+                      <em>Use Random Enabled Randomization Preset: </em>
+                      Randomly loads one of the <em>enabled</em> randomization
+                      presets from the <em>Simulation Randomization Presets</em>
+                      section below prior to randomizing the color settings. The
+                      settings in the <em>Color Randomization Settings</em>{" "}
+                      section are overwritten by the loaded preset.
+                    </li>
+                    <li>
+                      <em>Use Random Enabled Color Preset: </em>
+                      Randomly loads one of the <em>enabled</em> color presets
+                      from the <em>Color Presets</em> tab prior to randomizing
+                      the color settings.
+                    </li>
+                    <li>
+                      <em>Use Current Randomization Settings: </em>
+                      Uses the current randomization settings without loading
+                      any presets.
+                    </li>
+                  </ul>
+                </TabContentDisplayAreaContentWrapper>,
+              ]}
+              baseInputId="rand-controls-color-auto-randomization-mode-select"
               storePath={[
                 "randomizationSettings",
                 "colorAutoRandomizationMode",
@@ -246,12 +331,12 @@ export default function RandomizationControls() {
               label="Enabled Rands."
               labelHoverTabContentDisplay={[
                 "Enabled Randomizations",
-                "Toggles to enable or disable randomization for various setting groups.",
+                "Toggles to enable or disable randomization for the simulation's agent, trail, and color settings. This toggles randomization completely - independent of the auto-randomization toggles above. Auto-randomization will only randomize settings that are enabled here.",
               ]}
               switchConfigs={[
                 {
                   label: "Agents",
-                  baseId: "agent-randomization-switch",
+                  baseId: "rand-controls-agent-randomization-switch",
                   storePath: [
                     "randomizationSettings",
                     "allowAgentRandomization",
@@ -259,7 +344,7 @@ export default function RandomizationControls() {
                 },
                 {
                   label: "Trail",
-                  baseId: "trail-randomization-switch",
+                  baseId: "rand-controls-trail-randomization-switch",
                   storePath: [
                     "randomizationSettings",
                     "allowTrailRandomization",
@@ -267,7 +352,7 @@ export default function RandomizationControls() {
                 },
                 {
                   label: "Color Settings",
-                  baseId: "color-settings-randomization-switch",
+                  baseId: "rand-controls-color-settings-randomization-switch",
                   storePath: [
                     "randomizationSettings",
                     "allowColorRandomization",
@@ -275,21 +360,34 @@ export default function RandomizationControls() {
                 },
               ]}
             />
-            <SlimeStoreSwitchControl
-              label="Auto Restart Enabled"
-              labelHoverTabContentDisplay={[]}
-              baseId="auto-restart-enabled-switch"
-              storePath={["randomizationSettings", "autoRestartEnabled"]}
-            />
-            <SlimeStoreSliderControl
-              label="Auto Restart Interval"
-              labelHoverTabContentDisplay={[]}
-              baseInputId="auto-restart-interval-slider"
-              min={1}
-              max={60}
-              step={1}
-              storePath={["randomizationSettings", "autoRestartInterval"]}
-            />
+            <ControlGroup
+              label="Auto Restart"
+              labelHoverTabContentDisplay={[
+                "Auto Restart",
+                <TabContentDisplayAreaContentWrapper>
+                  Automatically restarts the simulation at set intervals. The{" "}
+                  <CodeBlock>enabled</CodeBlock> switch toggles auto-restarting
+                  for the simulation. The <CodeBlock>interval</CodeBlock> slider
+                  controls how often the restart occurs (in minutes).
+                </TabContentDisplayAreaContentWrapper>,
+              ]}
+            >
+              <SlimeStoreSwitch
+                baseId="rand-controls-auto-restart-enabled-switch"
+                storePath={["randomizationSettings", "autoRestartEnabled"]}
+                switchLabel="Enabled"
+              />
+              <div className="flex-grow">
+                <SlimeStoreSlider
+                  baseInputId="rand-controls-auto-restart-interval-slider"
+                  min={1}
+                  max={60}
+                  step={1}
+                  storePath={["randomizationSettings", "autoRestartInterval"]}
+                  sliderLabel="Interval"
+                />
+              </div>
+            </ControlGroup>
             <SwitchControlGroup
               label="Enabled Start Types"
               labelHoverTabContentDisplay={[
@@ -380,7 +478,7 @@ export default function RandomizationControls() {
               label="Quick Rand."
               labelHoverTabContentDisplay={[
                 "Quick Randomization",
-                "A set of buttons to quickly randomize various settings.",
+                'A set of buttons to quickly randomize various settings or restart the simulation. Only enabled randomizations will be applied (see the "Enabled Rands." section above).',
               ]}
               buttonConfigs={[
                 {
@@ -430,7 +528,13 @@ export default function RandomizationControls() {
                 },
               ]}
             />
-            <ControlGroup label="Quick Save">
+            <ControlGroup
+              label="Quick Save"
+              labelHoverTabContentDisplay={[
+                "Quick Save - Randomization Settings",
+                "These buttons allow you to save the current simulation or color randomization settings as presets. Clicking a button will open a dialog to enter the preset name prior to saving. You can manage and apply saved presets in the sections below. Preset names must be unique for each preset type.",
+              ]}
+            >
               <SaveRandomizationPresetPopoverButton randomizationPresetType="simulation" />
               <SaveRandomizationPresetPopoverButton randomizationPresetType="color" />
             </ControlGroup>
@@ -440,10 +544,16 @@ export default function RandomizationControls() {
             label="Simulation Randomization Presets"
             labelHoverTabContentDisplay={[
               "Simulation Randomization Presets",
-              "Manage and apply presets for simulation randomization settings.",
+              "Manage and apply simulation randomization settings presets.",
             ]}
           >
-            <ControlGroup justifyContent="center">
+            <ControlGroup
+              justifyContent="center"
+              labelHoverTabContentDisplay={[
+                "Save Current Simulation Randomization Settings as Preset",
+                "Allows you to save the current simulation randomization settings as a preset. Clicking this button will open a dialog to enter the preset name prior to saving. All simulation randomization preset names must be unique. You can manage and apply your saved presets below. Default presets cannot be overwritten or deleted.",
+              ]}
+            >
               <SaveRandomizationPresetPopoverButton randomizationPresetType="simulation" />
             </ControlGroup>
             <ButtonControlGroup

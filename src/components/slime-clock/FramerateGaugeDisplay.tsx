@@ -76,7 +76,7 @@ export default function FramerateGaugeDisplay() {
           >
             <div className="fixed top-1/2 left-1/2 flex w-sm -translate-1/2 flex-col items-center bg-slate-900/60 px-4 py-2 text-sm text-sky-50">
               {Array.from({ length: 4 }).map((_, index) => (
-                <>
+                <div key={index}>
                   <DivCornerPlusIcon
                     key={`framerate-gauge-corner-plus-icon-${index}`}
                     index={index}
@@ -85,7 +85,7 @@ export default function FramerateGaugeDisplay() {
                     key={`framerate-gauge-dashed-edge-${index}`}
                     index={index}
                   />
-                </>
+                </div>
               ))}
               <div className="w-2/3 text-center text-[1.0rem]">
                 Adjusting resolution based on device performance...

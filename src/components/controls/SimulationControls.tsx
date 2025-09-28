@@ -511,12 +511,12 @@ export default function SimulationControls() {
               justifyContent="center"
               buttonConfigs={[
                 {
-                  label: "Enable Auto Load on Rand - All Sim.",
+                  label: "Enable Auto Load on Rand - All Presets",
                   baseId: "enable-auto-load-on-rand-all-button",
                   onClick: () => setAutoLoadOnRandAll(true),
                 },
                 {
-                  label: "Disable Auto Load on Rand - All Sim.",
+                  label: "Disable Auto Load on Rand - All Presets",
                   baseId: "disable-auto-load-on-rand-all-button",
                   onClick: () => setAutoLoadOnRandAll(false),
                 },

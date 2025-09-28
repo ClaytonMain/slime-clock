@@ -18,7 +18,6 @@ import SlimeStoreColorPickerControl from "./SlimeStoreColorPickerControl";
 import SlimeStoreSelectControl from "./SlimeStoreSelectControl";
 import SlimeStoreSliderControl from "./SlimeStoreSliderControl";
 import SlimeStoreSwitchControl from "./SlimeStoreSwitchControl";
-import SwitchControlGroup from "./SwitchControlGroup";
 import TabContentContainer from "./TabContentContainer";
 import TabContentScrollArea from "./TabContentScrollArea";
 
@@ -201,22 +200,11 @@ export default function ColorControls() {
                 },
               ]}
             />
-            <SwitchControlGroup
-              label="Enabled Rands."
-              labelHoverTabContentDisplay={[
-                "Enabled Randomizations",
-                "Toggles to enable or disable randomization for various setting groups.",
-              ]}
-              switchConfigs={[
-                {
-                  label: "Color Settings",
-                  baseId: "color-settings-randomization-switch",
-                  storePath: [
-                    "randomizationSettings",
-                    "allowColorRandomization",
-                  ],
-                },
-              ]}
+            <SlimeStoreSwitchControl
+              label="Allow Color Rand."
+              labelHoverTabContentDisplay={[]}
+              baseId="color-randomization-enabled-switch"
+              storePath={["randomizationSettings", "allowColorRandomization"]}
             />
             <ButtonControlGroup
               label="Quick Rand."

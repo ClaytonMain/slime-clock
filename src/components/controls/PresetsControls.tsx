@@ -349,21 +349,37 @@ export default function PresetsControls() {
     );
   }
 
+  function setAutoLoadOnRandAll(value: boolean) {
+    let simulationPresets = [...useSlimeStore.getState().simulationPresets];
+    simulationPresets = simulationPresets.map((preset) => {
+      const modifiedPreset = { ...preset };
+      if (
+        ["Combination", "Simulation Only", "Color Only"].includes(
+          preset.presetType,
+        )
+      ) {
+        modifiedPreset.enabled = value;
+      }
+      return modifiedPreset;
+    });
+    useSlimeStore.setState(
+      produce((state) => {
+        state.simulationPresets = simulationPresets;
+        state.toast.title = "Auto Load on Rand. Updated";
+        state.toast.description = `All "simulation", "color", and "combination" presets have been ${value ? "enabled" : "disabled"} for load on auto-randomization.`;
+        state.toast.type = "info";
+        state.toast.lastTriggeredAt = Date.now();
+      }),
+    );
+  }
+
   return (
     <TabContentContainer tabsValue="presets-controls">
       <TabContentScrollArea title="Presets">
         <AccordionControlsWrapper
           accordionId="presets-controls-accordion"
           type="multiple"
-          defaultValue={[
-            "import-export",
-            "presets",
-            "presets-clock-only",
-            "presets-simulation-only",
-            "presets-color-only",
-            "presets-combination",
-            "history",
-          ]}
+          defaultValue={["import-export", "presets", "history"]}
         >
           <AccordionControlsItem
             value="import-export"
@@ -395,94 +411,81 @@ export default function PresetsControls() {
             <ControlGroup justifyContent="center">
               <SaveCurrentSettingsAsPresetPopoverButton presetType="Combination" />
             </ControlGroup>
-            {sortedPresets["Clock Only"] && (
-              <AccordionControlsItem
-                value="presets-clock-only"
-                label="Clock Only"
-              >
-                {sortedPresets["Clock Only"].map((preset) => (
-                  <SimulationPresetLoadSaveControl
-                    key={preset.name}
-                    label={preset.name}
-                    labelHoverTabContentDisplay={[
-                      preset.name,
-                      <pre className="px-2 py-1 text-[0.6rem] whitespace-pre-wrap">
-                        {JSON.stringify(preset, null, 1)}
-                      </pre>,
-                    ]}
-                    settings={preset}
-                    controlType="presets"
-                    index={getPresetIndex(preset)}
-                  />
-                ))}
-              </AccordionControlsItem>
-            )}
-            {sortedPresets["Simulation Only"] && (
-              <AccordionControlsItem
-                value="presets-simulation-only"
-                label="Simulation Only"
-              >
-                {sortedPresets["Simulation Only"].map((preset) => (
-                  <SimulationPresetLoadSaveControl
-                    key={preset.name}
-                    label={preset.name}
-                    labelHoverTabContentDisplay={[
-                      preset.name,
-                      <pre className="px-2 py-1 text-[0.6rem] whitespace-pre-wrap">
-                        {JSON.stringify(preset, null, 1)}
-                      </pre>,
-                    ]}
-                    settings={preset}
-                    controlType="presets"
-                    index={getPresetIndex(preset)}
-                  />
-                ))}
-              </AccordionControlsItem>
-            )}
-            {sortedPresets["Color Only"] && (
-              <AccordionControlsItem
-                value="presets-color-only"
-                label="Color Only"
-              >
-                {sortedPresets["Color Only"].map((preset) => (
-                  <SimulationPresetLoadSaveControl
-                    key={preset.name}
-                    label={preset.name}
-                    labelHoverTabContentDisplay={[
-                      preset.name,
-                      <pre className="px-2 py-1 text-[0.6rem] whitespace-pre-wrap">
-                        {JSON.stringify(preset, null, 1)}
-                      </pre>,
-                    ]}
-                    settings={preset}
-                    controlType="presets"
-                    index={getPresetIndex(preset)}
-                  />
-                ))}
-              </AccordionControlsItem>
-            )}
-            {sortedPresets["Combination"] && (
-              <AccordionControlsItem
-                value="presets-combination"
-                label="Combination"
-              >
-                {sortedPresets["Combination"].map((preset) => (
-                  <SimulationPresetLoadSaveControl
-                    key={preset.name}
-                    label={preset.name}
-                    labelHoverTabContentDisplay={[
-                      preset.name,
-                      <pre className="px-2 py-1 text-[0.6rem] whitespace-pre-wrap">
-                        {JSON.stringify(preset, null, 1)}
-                      </pre>,
-                    ]}
-                    settings={preset}
-                    controlType="presets"
-                    index={getPresetIndex(preset)}
-                  />
-                ))}
-              </AccordionControlsItem>
-            )}
+            <ButtonControlGroup
+              justifyContent="center"
+              buttonConfigs={[
+                {
+                  label: "Enable Auto Load on Rand - All Sim.",
+                  baseId: "enable-auto-load-on-rand-all-button",
+                  onClick: () => setAutoLoadOnRandAll(true),
+                },
+                {
+                  label: "Disable Auto Load on Rand - All Sim.",
+                  baseId: "disable-auto-load-on-rand-all-button",
+                  onClick: () => setAutoLoadOnRandAll(false),
+                },
+              ]}
+            />
+            {sortedPresets["Clock Only"]?.map((preset) => (
+              <SimulationPresetLoadSaveControl
+                key={preset.name}
+                label={preset.name}
+                labelHoverTabContentDisplay={[
+                  preset.name,
+                  <pre className="px-2 py-1 text-[0.6rem] whitespace-pre-wrap">
+                    {JSON.stringify(preset, null, 1)}
+                  </pre>,
+                ]}
+                settings={preset}
+                controlType="presets"
+                index={getPresetIndex(preset)}
+              />
+            ))}
+            {sortedPresets["Simulation Only"]?.map((preset) => (
+              <SimulationPresetLoadSaveControl
+                key={preset.name}
+                label={preset.name}
+                labelHoverTabContentDisplay={[
+                  preset.name,
+                  <pre className="px-2 py-1 text-[0.6rem] whitespace-pre-wrap">
+                    {JSON.stringify(preset, null, 1)}
+                  </pre>,
+                ]}
+                settings={preset}
+                controlType="presets"
+                index={getPresetIndex(preset)}
+              />
+            ))}
+            {sortedPresets["Color Only"]?.map((preset) => (
+              <SimulationPresetLoadSaveControl
+                key={preset.name}
+                label={preset.name}
+                labelHoverTabContentDisplay={[
+                  preset.name,
+                  <pre className="px-2 py-1 text-[0.6rem] whitespace-pre-wrap">
+                    {JSON.stringify(preset, null, 1)}
+                  </pre>,
+                ]}
+                settings={preset}
+                controlType="presets"
+                index={getPresetIndex(preset)}
+              />
+            ))}
+            {sortedPresets["Combination"]?.map((preset) => (
+              <SimulationPresetLoadSaveControl
+                key={preset.name}
+                label={preset.name}
+                labelHoverTabContentDisplay={[
+                  preset.name,
+                  <pre className="px-2 py-1 text-[0.6rem] whitespace-pre-wrap">
+                    {JSON.stringify(preset, null, 1)}
+                  </pre>,
+                ]}
+                settings={preset}
+                controlType="presets"
+                index={getPresetIndex(preset)}
+              />
+            ))}
           </AccordionControlsItem>
 
           <AccordionControlsItem

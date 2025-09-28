@@ -1,14 +1,20 @@
-import { produce } from "immer";
-import { motion } from "motion/react";
-import { Label } from "radix-ui";
 import { type ReactNode } from "react";
-import useSlimeStore from "../../stores/useSlimeStore";
-import type { SelectOption } from "../../types/types";
+import type {
+  SelectOption,
+  TailwindItemsAlignOption,
+  TailwindJustifyContentOption,
+} from "../../types/types";
+import ControlGroup from "./ControlGroup";
 import SlimeStoreSelect from "./SlimeStoreSelect";
 
 export default function SlimeStoreSelectControl({
   label,
   labelHoverTabContentDisplay,
+  justifyContent,
+  itemsAlign,
+  labelWidth,
+  labelTextAlign,
+  onPointerOver,
   baseInputId,
   placeholder,
   storePath,
@@ -19,6 +25,11 @@ export default function SlimeStoreSelectControl({
 }: {
   label?: string;
   labelHoverTabContentDisplay?: string | [string, string] | ReactNode;
+  justifyContent?: TailwindJustifyContentOption;
+  itemsAlign?: TailwindItemsAlignOption;
+  labelWidth?: string;
+  labelTextAlign?: string;
+  onPointerOver?: () => void;
   baseInputId?: string;
   placeholder?: string;
   storePath: string[];
@@ -27,36 +38,16 @@ export default function SlimeStoreSelectControl({
   listen?: boolean;
   valueType?: "string" | "number";
 }) {
-  function handlePointerOver() {
-    if (labelHoverTabContentDisplay) {
-      useSlimeStore.setState(
-        produce((state) => {
-          state.controlsState.displayAreaContentUpdatedAt = Date.now();
-          state.controlsState.displayAreaContentName = null;
-          state.controlsState.displayAreaHtmlContent =
-            labelHoverTabContentDisplay;
-          state.controlsState.hideDisplayAreaBackground = false;
-        }),
-      );
-    }
-  }
-
   return (
-    <motion.div
-      onPointerOver={handlePointerOver}
-      whileHover={{ backgroundColor: "#0004" }}
-      className="flex w-full items-center gap-1 py-2"
+    <ControlGroup
+      label={label}
+      labelHoverTabContentDisplay={labelHoverTabContentDisplay}
+      justifyContent={justifyContent}
+      itemsAlign={itemsAlign}
+      labelWidth={labelWidth}
+      labelTextAlign={labelTextAlign}
+      onPointerOver={onPointerOver}
     >
-      <div className="flex flex-col items-center p-0.5">
-        {label && (
-          <Label.Root
-            className="h-full w-(--footer-left-label-width) flex-none place-content-center p-0.5 text-right text-xs leading-none font-medium"
-            htmlFor={baseInputId}
-          >
-            {label}
-          </Label.Root>
-        )}
-      </div>
       <SlimeStoreSelect
         baseInputId={baseInputId}
         placeholder={placeholder}
@@ -66,6 +57,6 @@ export default function SlimeStoreSelectControl({
         listen={listen}
         valueType={valueType}
       />
-    </motion.div>
+    </ControlGroup>
   );
 }

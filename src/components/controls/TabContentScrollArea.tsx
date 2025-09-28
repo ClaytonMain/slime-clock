@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from "motion/react";
+import { motion } from "motion/react";
 import { ScrollArea } from "radix-ui";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { ANIMATION_CONFIGS } from "../../constants/constants";
@@ -67,33 +67,30 @@ export default function TabContentScrollArea({
         >
           {children}
         </ScrollArea.Viewport>
-        <AnimatePresence>
-          <ScrollArea.Scrollbar
-            key="scroll-area-scrollbar-radix"
-            className="z-[3] flex w-2.5 touch-none bg-zinc-950 p-0.5 select-none"
-            orientation="vertical"
-            asChild
-            forceMount
+        <ScrollArea.Scrollbar
+          key="scroll-area-scrollbar-radix"
+          className="z-[3] flex w-2.5 touch-none bg-zinc-950 p-0.5 select-none"
+          orientation="vertical"
+          asChild
+          forceMount
+        >
+          <motion.div
+            ref={scrollbarRef}
+            onViewportEnter={() => setScrollbarIsVisible(true)}
+            key="scroll-area-scrollbar-motion"
+            initial={{ opacity: 0 }}
+            animate={
+              scrollbarIsVisible
+                ? ANIMATION_CONFIGS.flickerIn
+                : ANIMATION_CONFIGS.flickerOut
+            }
           >
-            <motion.div
-              ref={scrollbarRef}
-              onViewportEnter={() => setScrollbarIsVisible(true)}
-              key="scroll-area-scrollbar-motion"
-              initial={{ opacity: 0 }}
-              animate={
-                scrollbarIsVisible
-                  ? ANIMATION_CONFIGS.flickerIn
-                  : ANIMATION_CONFIGS.flickerOut
-              }
-              exit={ANIMATION_CONFIGS.flickerOut}
-            >
-              <ScrollArea.Thumb
-                key="scroll-area-thumb"
-                className="relative flex-1 rounded-lg bg-sky-600 before:absolute before:top-1/2 before:left-1/2 before:size-full before:min-h-11 before:min-w-11 before:-translate-x-1/2 before:-translate-y-1/2"
-              />
-            </motion.div>
-          </ScrollArea.Scrollbar>
-        </AnimatePresence>
+            <ScrollArea.Thumb
+              key="scroll-area-thumb"
+              className="relative flex-1 rounded-lg bg-sky-600 before:absolute before:top-1/2 before:left-1/2 before:size-full before:min-h-11 before:min-w-11 before:-translate-x-1/2 before:-translate-y-1/2"
+            />
+          </motion.div>
+        </ScrollArea.Scrollbar>
       </ScrollArea.Root>
     </motion.div>
   );

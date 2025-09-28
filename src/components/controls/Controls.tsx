@@ -133,7 +133,7 @@ export default function Controls() {
                 }}
               >
                 {Array.from({ length: 4 }).map((_, index) => (
-                  <>
+                  <div key={index}>
                     <DivCornerPlusIcon
                       key={`controls-dialog-corner-plus-icon-${index}`}
                       index={index}
@@ -142,7 +142,7 @@ export default function Controls() {
                       key={`controls-dialog-dashed-edge-${index}`}
                       index={index}
                     />
-                  </>
+                  </div>
                 ))}
                 <Dialog.Content
                   forceMount

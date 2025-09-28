@@ -1,5 +1,5 @@
 import { motion } from "motion/react";
-import { Slider } from "radix-ui";
+import { Label, Slider } from "radix-ui";
 import * as R from "ramda";
 import { useEffect, useState } from "react";
 import useSlimeStore from "../../stores/useSlimeStore";
@@ -15,6 +15,9 @@ export default function SlimeStoreSlider({
   type = "slider",
   hideSlider = false,
   boundValue = true,
+  sliderLabel,
+  sliderLabelPosition = "bottom",
+  sliderLabelSize = "text-xs",
 }: {
   baseInputId?: string;
   min: number;
@@ -28,6 +31,9 @@ export default function SlimeStoreSlider({
   type?: "slider" | "range" | "minModeMax";
   hideSlider?: boolean; // I just didn't want to write a `SlimeStoreInput` component for this.
   boundValue?: boolean;
+  sliderLabel?: string;
+  sliderLabelPosition?: "top" | "bottom";
+  sliderLabelSize?: string;
 }) {
   const sliderId = `${baseInputId}-slider`;
   const inputId = `${baseInputId}-input`;
@@ -90,22 +96,40 @@ export default function SlimeStoreSlider({
 
   return (
     <div
-      className="flex w-full items-center gap-1"
+      className="flex w-full items-center gap-1.5"
       style={{
         flexDirection: type === "slider" ? "row" : "column",
       }}
     >
       {type === "slider" && (
-        <input
-          id={inputId}
-          type="number"
-          value={selectedValue[0]}
-          onChange={(e) => handleOnValueChange([Number(e.target.value)])}
-          min={min}
-          max={max}
-          step={step}
-          className="h-7 w-18 flex-initial border border-sky-800 bg-zinc-900 px-2 py-1 text-sm text-sky-50"
-        />
+        <div className="flex flex-col items-center">
+          {sliderLabel && sliderLabelPosition === "top" && (
+            <Label.Root
+              htmlFor={inputId}
+              className={`w-full text-center ${sliderLabelSize}`}
+            >
+              {sliderLabel}
+            </Label.Root>
+          )}
+          <input
+            id={inputId}
+            type="number"
+            value={selectedValue[0]}
+            onChange={(e) => handleOnValueChange([Number(e.target.value)])}
+            min={min}
+            max={max}
+            step={step}
+            className="h-7 w-18 flex-initial border border-sky-800 bg-zinc-900 px-2 py-1 text-sm text-sky-50"
+          />
+          {sliderLabel && sliderLabelPosition === "bottom" && (
+            <Label.Root
+              htmlFor={inputId}
+              className={`w-full text-center ${sliderLabelSize}`}
+            >
+              {sliderLabel}
+            </Label.Root>
+          )}
+        </div>
       )}
       {type === "range" && (
         <div className="order-last flex w-full items-center justify-center gap-1">

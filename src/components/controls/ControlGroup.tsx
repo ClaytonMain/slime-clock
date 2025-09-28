@@ -13,16 +13,24 @@ export default function ControlGroup({
   labelHoverTabContentDisplay,
   justifyContent = "start",
   itemsAlign = "center",
+  labelWidth = "w-(--footer-left-label-width)",
+  labelTextAlign = "text-right",
+  onPointerOver,
   children,
 }: {
-  label?: string; // If you want to label the row containing the buttons.
+  label?: string;
   labelHoverTabContentDisplay?: string | [string, string] | ReactNode;
   justifyContent?: TailwindJustifyContentOption;
   itemsAlign?: TailwindItemsAlignOption;
+  labelWidth?: string;
+  labelTextAlign?: string;
+  onPointerOver?: () => void;
   children?: ReactNode;
 }) {
   function handlePointerOver() {
-    if (labelHoverTabContentDisplay) {
+    if (onPointerOver) {
+      onPointerOver();
+    } else if (labelHoverTabContentDisplay) {
       useSlimeStore.setState(
         produce((state) => {
           state.controlsState.displayAreaContentUpdatedAt = Date.now();
@@ -39,11 +47,13 @@ export default function ControlGroup({
     <motion.div
       onPointerOver={handlePointerOver}
       whileHover={{ backgroundColor: "#0004" }}
-      className={`flex w-full gap-1 py-2`}
+      className="flex w-full gap-1 py-2 pr-3"
     >
       {label && (
-        <div className="flex flex-col items-center p-0.5">
-          <Label.Root className="h-full w-(--footer-left-label-width) flex-none place-content-center p-0.5 text-right text-xs leading-none font-medium">
+        <div className="flex flex-col items-center px-1 py-0.5">
+          <Label.Root
+            className={`h-full ${labelWidth} flex-none place-content-center p-0.5 ${labelTextAlign} text-xs leading-none font-medium`}
+          >
             {label}
           </Label.Root>
         </div>

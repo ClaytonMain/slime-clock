@@ -5,7 +5,6 @@ import {
 } from "@radix-ui/react-icons";
 import { produce } from "immer";
 import { motion } from "motion/react";
-import { Label } from "radix-ui";
 import * as R from "ramda";
 import { useEffect, useState, type ReactNode } from "react";
 import { LuArrowUpFromLine, LuClipboardCopy } from "react-icons/lu";
@@ -15,7 +14,12 @@ import {
   SINGLE_PRESET_TYPES,
 } from "../../constants/constants";
 import useSlimeStore from "../../stores/useSlimeStore";
-import type { LoadableSlimeStoreSettings } from "../../types/types";
+import type {
+  LoadableSlimeStoreSettings,
+  TailwindItemsAlignOption,
+  TailwindJustifyContentOption,
+} from "../../types/types";
+import ControlGroup from "./ControlGroup";
 import EditPresetNamePopoverButton from "./EditPresetNamePopoverButton";
 import LoadOrSaveSettingsPopoverButton from "./LoadOrSaveSettingsPopoverButton";
 import TooltipWrapper from "./TooltipWrapper";
@@ -23,12 +27,22 @@ import TooltipWrapper from "./TooltipWrapper";
 export default function SimulationPresetLoadSaveControl({
   label,
   labelHoverTabContentDisplay,
+  justifyContent,
+  itemsAlign,
+  labelWidth = "w-24",
+  labelTextAlign = "text-left",
+  onPointerOver,
   settings,
   controlType,
   index,
 }: {
   label?: string;
   labelHoverTabContentDisplay?: string | [string, string] | ReactNode;
+  justifyContent?: TailwindJustifyContentOption;
+  itemsAlign?: TailwindItemsAlignOption;
+  labelWidth?: string;
+  labelTextAlign?: string;
+  onPointerOver?: () => void;
   settings: LoadableSlimeStoreSettings;
   controlType: "history" | "presets";
   index: number;
@@ -88,20 +102,6 @@ export default function SimulationPresetLoadSaveControl({
       }),
     );
     setCanLoadOnAutoRand(newValue);
-  }
-
-  function handlePointerOver() {
-    if (labelHoverTabContentDisplay) {
-      useSlimeStore.setState(
-        produce((state) => {
-          state.controlsState.displayAreaContentUpdatedAt = Date.now();
-          state.controlsState.displayAreaContentName = null;
-          state.controlsState.displayAreaHtmlContent =
-            labelHoverTabContentDisplay;
-          state.controlsState.hideDisplayAreaBackground = false;
-        }),
-      );
-    }
   }
 
   function loadSettings() {
@@ -237,69 +237,88 @@ export default function SimulationPresetLoadSaveControl({
   }
 
   return (
-    <motion.div
-      onPointerOver={handlePointerOver}
-      whileHover={{ backgroundColor: "#0004" }}
-      className={`flex w-full gap-1 py-2`}
+    <ControlGroup
+      label={label}
+      labelHoverTabContentDisplay={labelHoverTabContentDisplay}
+      justifyContent={justifyContent}
+      itemsAlign={itemsAlign}
+      labelWidth={labelWidth}
+      labelTextAlign={labelTextAlign}
+      onPointerOver={onPointerOver}
     >
-      {label && (
-        <div className="flex items-center p-1">
-          <Label.Root className="w-24 flex-none p-0.5 text-xs leading-none font-medium">
-            {label}
-          </Label.Root>
-          {controlType === "presets" && (
-            <div className="flex w-6 flex-none flex-col items-center justify-center gap-1">
-              <div className="flex items-center justify-center gap-1">
+      <div className="flex items-center">
+        {controlType === "presets" && (
+          <TooltipWrapper tooltipText={settings.presetType}>
+            <motion.div
+              whileHover={{ backgroundColor: "#0004" }}
+              className="flex h-8 w-8 flex-none flex-col items-center justify-center gap-0.5"
+            >
+              <div className="flex items-center justify-center gap-0.5">
                 {presetIndicationIcons[0]}
               </div>
               {presetIndicationIcons.length > 1 && (
-                <div className="flex items-center justify-center gap-1">
+                <div className="flex items-center justify-center gap-0.5">
                   {presetIndicationIcons[1]}
                   {presetIndicationIcons[2] || null}
                 </div>
               )}
-            </div>
-          )}
-        </div>
-      )}
-      <div
-        className={"flex w-full flex-wrap items-center justify-start gap-1"}
-        style={{
-          paddingRight: "calc(var(--spacing) * 2)",
-          paddingLeft: label ? undefined : "calc(var(--spacing) * 2)",
-        }}
-      >
-        {settings.presetType !== "Clock Only" && controlType === "presets" && (
-          <TooltipWrapper tooltipText="Toggle Load on Auto-Randomization">
-            <motion.button
-              className="flex h-7 w-7 cursor-pointer flex-col items-center justify-center border border-sky-800 p-1"
-              onClick={() => handleCanLoadOnAutoRandChange(!canLoadOnAutoRand)}
-              style={{ backgroundColor: "#18181b" }}
-              whileHover={{ backgroundColor: "#27272a" }}
-            >
-              <motion.div
-                className="relative"
-                whileTap={{ scale: 0.95 }}
-                transition={{ duration: 0.05 }}
-              >
-                <motion.div className="absolute top-1/2 left-1/2 h-6 w-6 -translate-x-1/2 -translate-y-1/2">
-                  <PiDiceFive className="h-full w-full" />
-                </motion.div>
-                <motion.div
-                  className="absolute top-1/2 left-1/2 h-6 w-6 -translate-x-1/2 -translate-y-1/2"
-                  animate={{ opacity: canLoadOnAutoRand ? 0 : 1 }}
-                  transition={{ duration: 0.1 }}
-                >
-                  <Cross2Icon className="h-full w-full scale-[1.15] stroke-rose-600 text-rose-600" />
-                </motion.div>
-              </motion.div>
-            </motion.button>
+            </motion.div>
           </TooltipWrapper>
         )}
-        <TooltipWrapper tooltipText="Copy to Clipboard">
+      </div>
+      {settings.presetType !== "Clock Only" && controlType === "presets" && (
+        <TooltipWrapper tooltipText="Toggle Load on Auto-Randomization">
           <motion.button
             className="flex h-7 w-7 cursor-pointer flex-col items-center justify-center border border-sky-800 p-1"
-            onClick={handleCopyToClipboard}
+            onClick={() => handleCanLoadOnAutoRandChange(!canLoadOnAutoRand)}
+            style={{ backgroundColor: "#18181b" }}
+            whileHover={{ backgroundColor: "#27272a" }}
+          >
+            <motion.div
+              className="relative"
+              whileTap={{ scale: 0.95 }}
+              transition={{ duration: 0.05 }}
+            >
+              <motion.div className="absolute top-1/2 left-1/2 h-6 w-6 -translate-x-1/2 -translate-y-1/2">
+                <PiDiceFive className="h-full w-full" />
+              </motion.div>
+              <motion.div
+                className="absolute top-1/2 left-1/2 h-6 w-6 -translate-x-1/2 -translate-y-1/2"
+                animate={{ opacity: canLoadOnAutoRand ? 0 : 1 }}
+                transition={{ duration: 0.1 }}
+              >
+                <Cross2Icon className="h-full w-full scale-[1.15] stroke-rose-600 text-rose-600" />
+              </motion.div>
+            </motion.div>
+          </motion.button>
+        </TooltipWrapper>
+      )}
+      <TooltipWrapper tooltipText="Copy to Clipboard">
+        <motion.button
+          className="flex h-7 w-7 cursor-pointer flex-col items-center justify-center border border-sky-800 p-1"
+          onClick={handleCopyToClipboard}
+          style={{ backgroundColor: "#18181b" }}
+          whileHover={{ backgroundColor: "#27272a" }}
+        >
+          <motion.div
+            className="relative"
+            whileTap={{ scale: 0.95 }}
+            transition={{ duration: 0.05 }}
+          >
+            <motion.div
+              className="absolute top-1/2 left-1/2 h-6 w-6 -translate-x-1/2 -translate-y-1/2"
+              transition={{ duration: 0.2 }}
+            >
+              <LuClipboardCopy className="h-full w-full scale-[0.8]" />
+            </motion.div>
+          </motion.div>
+        </motion.button>
+      </TooltipWrapper>
+      {SINGLE_PRESET_TYPES.some((type) => type === settings.presetType) && (
+        <TooltipWrapper tooltipText="Load Preset Settings">
+          <motion.button
+            className="flex h-7 w-7 cursor-pointer flex-col items-center justify-center border border-sky-800 p-1"
+            onClick={loadSettings}
             style={{ backgroundColor: "#18181b" }}
             whileHover={{ backgroundColor: "#27272a" }}
           >
@@ -312,66 +331,43 @@ export default function SimulationPresetLoadSaveControl({
                 className="absolute top-1/2 left-1/2 h-6 w-6 -translate-x-1/2 -translate-y-1/2"
                 transition={{ duration: 0.2 }}
               >
-                <LuClipboardCopy className="h-full w-full scale-[0.8]" />
+                <LuArrowUpFromLine className="h-full w-full scale-[0.8]" />
               </motion.div>
             </motion.div>
           </motion.button>
         </TooltipWrapper>
-        {SINGLE_PRESET_TYPES.some((type) => type === settings.presetType) && (
-          <TooltipWrapper tooltipText="Load Preset Settings">
-            <motion.button
-              className="flex h-7 w-7 cursor-pointer flex-col items-center justify-center border border-sky-800 p-1"
-              onClick={loadSettings}
-              style={{ backgroundColor: "#18181b" }}
-              whileHover={{ backgroundColor: "#27272a" }}
-            >
-              <motion.div
-                className="relative"
-                whileTap={{ scale: 0.95 }}
-                transition={{ duration: 0.05 }}
-              >
-                <motion.div
-                  className="absolute top-1/2 left-1/2 h-6 w-6 -translate-x-1/2 -translate-y-1/2"
-                  transition={{ duration: 0.2 }}
-                >
-                  <LuArrowUpFromLine className="h-full w-full scale-[0.8]" />
-                </motion.div>
-              </motion.div>
-            </motion.button>
-          </TooltipWrapper>
-        )}
-        {MULTIPLE_PRESET_TYPES.some((type) => type === settings.presetType) && (
-          <LoadOrSaveSettingsPopoverButton
-            settings={settings}
-            buttonType="load"
+      )}
+      {MULTIPLE_PRESET_TYPES.some((type) => type === settings.presetType) && (
+        <LoadOrSaveSettingsPopoverButton
+          settings={settings}
+          buttonType="load"
+        />
+      )}
+      {controlType === "history" && (
+        <LoadOrSaveSettingsPopoverButton
+          settings={settings}
+          buttonType="save"
+        />
+      )}
+      {!settings.isBasePreset && controlType === "presets" && (
+        <>
+          <EditPresetNamePopoverButton
+            oldName={settings.name}
+            onSave={handleEditPresetName}
           />
-        )}
-        {controlType === "history" && (
-          <LoadOrSaveSettingsPopoverButton
-            settings={settings}
-            buttonType="save"
-          />
-        )}
-        {!settings.isBasePreset && controlType === "presets" && (
-          <>
-            <EditPresetNamePopoverButton
-              oldName={settings.name}
-              onSave={handleEditPresetName}
-            />
-            <div className="flex flex-1" />
-            <motion.button
-              className="mr-5 flex cursor-pointer border border-rose-800 px-2 py-1"
-              onClick={deletePreset}
-              style={{
-                backgroundColor: "#4d0218",
-              }}
-              whileHover={{ backgroundColor: "#8b0836" }}
-            >
-              {deletePresetText}
-            </motion.button>
-          </>
-        )}
-      </div>
-    </motion.div>
+          <div className="flex flex-1" />
+          <motion.button
+            className="flex cursor-pointer border border-rose-800 px-2 py-1"
+            onClick={deletePreset}
+            style={{
+              backgroundColor: "#4d0218",
+            }}
+            whileHover={{ backgroundColor: "#8b0836" }}
+          >
+            {deletePresetText}
+          </motion.button>
+        </>
+      )}
+    </ControlGroup>
   );
 }

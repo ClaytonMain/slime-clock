@@ -1,24 +1,38 @@
 import { Cross2Icon } from "@radix-ui/react-icons";
 import { produce } from "immer";
 import { motion } from "motion/react";
-import { Label } from "radix-ui";
 import * as R from "ramda";
 import { useEffect, useState, type ReactNode } from "react";
 import { LuArrowUpFromLine, LuClipboardCopy } from "react-icons/lu";
 import { PiDiceFive } from "react-icons/pi";
 import useSlimeStore from "../../stores/useSlimeStore";
-import type { RandomizationPreset } from "../../types/types";
+import type {
+  RandomizationPreset,
+  TailwindItemsAlignOption,
+  TailwindJustifyContentOption,
+} from "../../types/types";
+import ControlGroup from "./ControlGroup";
 import EditPresetNamePopoverButton from "./EditPresetNamePopoverButton";
 import TooltipWrapper from "./TooltipWrapper";
 
 export default function RandomizationPresetLoadSaveControl({
   label,
   labelHoverTabContentDisplay,
+  justifyContent,
+  itemsAlign,
+  labelWidth = "w-24",
+  labelTextAlign = "text-left",
+  onPointerOver,
   preset,
   index,
 }: {
   label?: string;
   labelHoverTabContentDisplay?: string | [string, string] | ReactNode;
+  justifyContent?: TailwindJustifyContentOption;
+  itemsAlign?: TailwindItemsAlignOption;
+  labelWidth?: string;
+  labelTextAlign?: string;
+  onPointerOver?: () => void;
   preset: RandomizationPreset;
   index: number;
 }) {
@@ -78,20 +92,6 @@ export default function RandomizationPresetLoadSaveControl({
       }),
     );
     navigator.clipboard.writeText(JSON.stringify(preset, null, 2));
-  }
-
-  function handlePointerOver() {
-    if (labelHoverTabContentDisplay) {
-      useSlimeStore.setState(
-        produce((state) => {
-          state.controlsState.displayAreaContentUpdatedAt = Date.now();
-          state.controlsState.displayAreaContentName = null;
-          state.controlsState.displayAreaHtmlContent =
-            labelHoverTabContentDisplay;
-          state.controlsState.hideDisplayAreaBackground = false;
-        }),
-      );
-    }
   }
 
   function loadSettings() {
@@ -189,18 +189,15 @@ export default function RandomizationPresetLoadSaveControl({
   }
 
   return (
-    <motion.div
-      onPointerOver={handlePointerOver}
-      whileHover={{ backgroundColor: "#0004" }}
-      className={`flex w-full gap-1 py-2`}
+    <ControlGroup
+      label={label}
+      labelHoverTabContentDisplay={labelHoverTabContentDisplay}
+      justifyContent={justifyContent}
+      itemsAlign={itemsAlign}
+      labelWidth={labelWidth}
+      labelTextAlign={labelTextAlign}
+      onPointerOver={onPointerOver}
     >
-      {label && (
-        <div className="flex items-center p-1">
-          <Label.Root className="w-24 flex-none p-0.5 text-xs leading-none font-medium">
-            {label}
-          </Label.Root>
-        </div>
-      )}
       <div
         className={"flex w-full flex-wrap items-center justify-start gap-1"}
         style={{
@@ -295,6 +292,6 @@ export default function RandomizationPresetLoadSaveControl({
           </>
         )}
       </div>
-    </motion.div>
+    </ControlGroup>
   );
 }

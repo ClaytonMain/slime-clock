@@ -145,6 +145,7 @@ export default function SaveCurrentSettingsAsPresetPopoverButton({
     const processedPreset: LoadableSlimeStoreSettings = {
       name: trimmedPresetName,
       presetType: saveAsPresetType,
+      enabled: true,
       clockSettings: includeSettings.clockSettings
         ? currentLoadableSettings.clockSettings
         : undefined,

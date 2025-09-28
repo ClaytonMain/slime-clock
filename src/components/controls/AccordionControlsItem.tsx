@@ -1,6 +1,6 @@
 import { ChevronDownIcon } from "@radix-ui/react-icons";
 import { produce } from "immer";
-import { AnimatePresence, motion } from "motion/react";
+import { motion } from "motion/react";
 import { Accordion } from "radix-ui";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import useSlimeStore from "../../stores/useSlimeStore";
@@ -54,7 +54,7 @@ export default function AccordionControlsItem({
       value={value}
       className="overflow-clip focus-within:relative"
     >
-      <Accordion.Header className="sticky top-0 z-[2] flex drop-shadow-lg/25">
+      <Accordion.Header className="sticky top-0 z-[2] flex drop-shadow-lg/50">
         <Accordion.Trigger ref={accordionTriggerRef} asChild>
           <motion.div
             onPointerOver={handlePointerOver}
@@ -68,7 +68,7 @@ export default function AccordionControlsItem({
           >
             {label}
             <motion.div
-              className="flex items-center justify-center"
+              className="mr-3 flex items-center justify-center"
               animate={{
                 rotate: accordionIsOpen ? 180 : 0,
                 transition: { duration: 0.6, type: "spring" },
@@ -79,29 +79,26 @@ export default function AccordionControlsItem({
           </motion.div>
         </Accordion.Trigger>
       </Accordion.Header>
-      <AnimatePresence propagate>
-        <Accordion.Content
-          key={`${value}-accordion-content-radix`}
-          asChild
-          forceMount
+      <Accordion.Content
+        key={`${value}-accordion-content-radix`}
+        asChild
+        forceMount
+      >
+        <motion.div
+          className={
+            "flex flex-col overflow-hidden border-r-[10px] border-l-[10px] border-zinc-900 bg-sky-200/20 text-sky-50 drop-shadow-lg/25" +
+            (padContent ? " before:pt-0.5 after:pb-0.5" : "")
+          }
+          key="accordion-content-motion"
+          initial={{ height: 0 }}
+          animate={{
+            height: accordionIsOpen ? "auto" : 0,
+            transition: { duration: 0.3 },
+          }}
         >
-          <motion.div
-            className={
-              "flex flex-col overflow-hidden border-l-8 border-zinc-900 bg-sky-200/20 text-sky-50 drop-shadow-lg/25" +
-              (padContent ? " before:pt-0.5 after:pb-0.5" : "")
-            }
-            key="accordion-content-motion"
-            initial={{ height: 0 }}
-            animate={{
-              height: accordionIsOpen ? "auto" : 0,
-              transition: { duration: 0.3 },
-            }}
-            exit={{ height: 0 }}
-          >
-            {children}
-          </motion.div>
-        </Accordion.Content>
-      </AnimatePresence>
+          {children}
+        </motion.div>
+      </Accordion.Content>
     </Accordion.Item>
   );
 }

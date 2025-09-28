@@ -2,14 +2,19 @@ import { produce } from "immer";
 import { motion } from "motion/react";
 import { Label } from "radix-ui";
 import * as R from "ramda";
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   COLOR_CONTROLS_CONFIGS,
   PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS,
   SIMULATION_CONTROLS_CONFIGS,
 } from "../../constants/constants";
 import useSlimeStore from "../../stores/useSlimeStore";
+import type {
+  TailwindItemsAlignOption,
+  TailwindJustifyContentOption,
+} from "../../types/types";
 import RandomizationPdfDisplayHtml from "../randomization-pdf-display/RandomizationPdfDisplayHtml";
+import ControlGroup from "./ControlGroup";
 import SlimeStoreSelect from "./SlimeStoreSelect";
 import SlimeStoreSlider from "./SlimeStoreSlider";
 import SlimeStoreSwitch from "./SlimeStoreSwitch";
@@ -26,21 +31,25 @@ type RandomizationSettingsStorePath = [
 
 export default function SlimeStoreNumericRangeRandomizationControl({
   label,
-  labelHoverTabContentDisplay,
+  justifyContent,
+  itemsAlign,
+  labelWidth,
+  labelTextAlign,
   baseId,
   randomizationSettingsStorePath,
   settingStorePath,
-  displayCurrentValue = true,
   onCheckedChange,
   onRangeChange,
   listen,
 }: {
   label?: string;
-  labelHoverTabContentDisplay?: string | [string, string] | ReactNode;
+  justifyContent?: TailwindJustifyContentOption;
+  itemsAlign?: TailwindItemsAlignOption;
+  labelWidth?: string;
+  labelTextAlign?: string;
   baseId?: string;
   randomizationSettingsStorePath: RandomizationSettingsStorePath;
   settingStorePath?: string[];
-  displayCurrentValue?: boolean;
   onCheckedChange?: (value: boolean) => void;
   onRangeChange?: (
     value: [number] | [number, number] | [number, number, number],
@@ -119,44 +128,6 @@ export default function SlimeStoreNumericRangeRandomizationControl({
   }, [settingStorePath]);
 
   function handlePointerOver() {
-    // if (labelHoverTabContentDisplay) {
-    //   useSlimeStore.setState(
-    //     produce((state) => {
-    //       state.controlsState.displayAreaContentUpdatedAt = Date.now();
-    //       state.controlsState.displayAreaContentName = null;
-    //       state.controlsState.displayAreaHtmlContent =
-    //         labelHoverTabContentDisplay;
-    //       state.controlsState.displayAreaContentType = "html";
-    //     }),
-    //   );
-    // } else if (displayCurrentValue && settingStorePath) {
-    //   const content = (
-    //     <>
-    //       <div className="px-2 py-1">
-    //         The current {settingType} settings value for{" "}
-    //         {label?.toLowerCase() || controlName} is
-    //         <CodeBlock>{currentValue}</CodeBlock>.
-    //       </div>
-    //     </>
-    //   );
-    //   useSlimeStore.setState(
-    //     produce((state) => {
-    //       state.controlsState.displayAreaContentUpdatedAt = Date.now();
-    //       state.controlsState.displayAreaContentName = null;
-    //       state.controlsState.displayAreaHtmlContent = [
-    //         label || controlName,
-    //         content,
-    //       ];
-    //       state.controlsState.displayAreaContentType = "html";
-    //     }),
-    //   );
-    // }
-    if (
-      labelHoverTabContentDisplay ||
-      (displayCurrentValue && settingStorePath)
-    ) {
-      // TODO: Address these variables.
-    }
     useSlimeStore.setState(
       produce((state) => {
         state.controlsState.displayAreaContentUpdatedAt = Date.now();
@@ -184,24 +155,19 @@ export default function SlimeStoreNumericRangeRandomizationControl({
   }
 
   return (
-    <motion.div
+    <ControlGroup
+      label={label}
+      justifyContent={justifyContent}
+      itemsAlign={itemsAlign}
+      labelWidth={labelWidth}
+      labelTextAlign={labelTextAlign}
       onPointerOver={handlePointerOver}
-      onPointerDown={handlePointerDown}
-      onPointerUp={handlePointerUp}
-      whileHover={{ backgroundColor: "#0004" }}
-      className="flex w-full items-center gap-1 py-2"
     >
-      <div className="flex flex-col items-center p-0.5">
-        {label && (
-          <Label.Root
-            className="h-full w-(--footer-left-label-width) flex-none place-content-center p-0.5 text-right text-xs leading-none font-medium select-none"
-            htmlFor={baseId}
-          >
-            {label}
-          </Label.Root>
-        )}
-      </div>
-      <div className="flex w-full items-center gap-1">
+      <motion.div
+        onPointerDown={handlePointerDown}
+        onPointerUp={handlePointerUp}
+        className="flex w-full items-center gap-1"
+      >
         <div className="flex flex-none flex-col">
           <div className="flex flex-none items-center justify-center gap-2 p-1">
             <Label.Root
@@ -322,7 +288,7 @@ export default function SlimeStoreNumericRangeRandomizationControl({
             type="minModeMax"
           />
         )}
-      </div>
-    </motion.div>
+      </motion.div>
+    </ControlGroup>
   );
 }
