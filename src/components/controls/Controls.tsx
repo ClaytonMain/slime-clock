@@ -124,7 +124,7 @@ export default function Controls() {
                   handleControlsContentOuterContainerViewportEnter
                 }
                 key="controls-dialog-content-outer-container"
-                className="fixed top-1/2 left-1/2 flex h-full w-full max-w-[1000px] -translate-1/2 flex-col rounded-xs text-sky-50 sm:h-10/12 sm:w-10/12 md:h-10/12 md:py-0 lg:w-9/12 xl:h-9/12 xl:w-7/12"
+                className="fixed top-1/2 left-1/2 flex h-10/12 w-full max-w-[1000px] -translate-1/2 flex-col rounded-xs text-sky-50 sm:h-10/12 sm:w-10/12 md:h-10/12 md:py-0 lg:w-9/12 xl:h-9/12 xl:w-7/12"
                 exit={{
                   transition: { duration: 0.3, when: "afterChildren" },
                 }}

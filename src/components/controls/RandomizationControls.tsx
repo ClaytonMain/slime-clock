@@ -201,24 +201,24 @@ export default function RandomizationControls() {
                     <li>
                       <em>Use Random Enabled Randomization Preset: </em>
                       Randomly loads one of the <em>enabled</em> randomization
-                      presets from the <em>Simulation Randomization Presets</em>
+                      presets from the <em>Simulation Randomization Presets</em>{" "}
                       section below prior to randomizing the simulation. The
-                      settings in the <em>Agent Randomization Settings</em>
-                      and <em>Trail Randomization Settings</em> sections below
-                      are overwritten by the loaded preset.
+                      settings in the <em>Agent Randomization Settings</em> and{" "}
+                      <em>Trail Randomization Settings</em> sections below are
+                      overwritten by the loaded preset.
                     </li>
                     <li>
                       <em>Use Random Enabled Simulation Preset: </em>
                       Randomly loads one of the <em>enabled</em> simulation
-                      presets from the <em>Simulation Presets</em> tab prior to
-                      randomizing the simulation.
+                      presets from the <em>Simulation Presets</em> tab instead
+                      of randomizing the simulation.
                     </li>
                     <li>
                       <em>Use Current Randomization Settings: </em>
                       Uses the current settings in the{" "}
-                      <em>Agent Randomization Settings</em>
-                      and <em>Trail Randomization Settings</em> sections below
-                      to randomize the simulation.
+                      <em>Agent Randomization Settings</em> and{" "}
+                      <em>Trail Randomization Settings</em> sections below to
+                      randomize the simulation.
                     </li>
                   </ul>
                 </TabContentDisplayAreaContentWrapper>,

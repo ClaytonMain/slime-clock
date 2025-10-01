@@ -1,15 +1,19 @@
 import { produce } from "immer";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import useSlimeStore from "./stores/useSlimeStore";
 
 export default function InteractionListener() {
-  const lastInteractionAt = useSlimeStore((state) => state.lastInteractionAt);
+  const [lastInteractionAt, setLastInteractionAt] = useState<number>(
+    Date.now(),
+  );
 
   function handleInteraction() {
+    setLastInteractionAt(Date.now());
     useSlimeStore.setState(
       produce((state) => {
-        state.lastInteractionAt = Date.now();
-        state.interactionState = "active";
+        if (state.interactionState !== "active") {
+          state.interactionState = "active";
+        }
       }),
     );
   }

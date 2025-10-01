@@ -1,6 +1,6 @@
 import { Loader } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
-import { Suspense, useEffect, useRef } from "react";
+import { Suspense, useLayoutEffect, useRef } from "react";
 
 import { produce } from "immer";
 import InteractionListener from "../../InteractionListener";
@@ -11,19 +11,10 @@ import SlimeClock from "./SlimeClock";
 import StatsComponent from "./StatsComponent";
 
 export default function SlimeClockScene() {
-  const canvasRef = useRef<HTMLCanvasElement>(null!);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const interactionState = useSlimeStore((state) => state.interactionState);
   const isOpen = useSlimeStore((state) => state.controlsState.isOpen);
-
-  useEffect(() => {
-    const unsub = useSlimeStore.subscribe(
-      (state) => state.colorSettings.backgroundColor,
-      (newColor) => {
-        canvasRef.current.style.backgroundColor = newColor;
-      },
-    );
-    return () => unsub();
-  }, []);
+  const debugConsoleLogger = useSlimeStore((state) => state.debugConsoleLogger);
 
   function handleKeydown(e: KeyboardEvent) {
     const controlsAreOpen = useSlimeStore.getState().controlsState.isOpen;
@@ -38,8 +29,22 @@ export default function SlimeClockScene() {
       );
     }
   }
+  useLayoutEffect(() => {
+    const unsub = useSlimeStore.subscribe(
+      (state) => state.colorSettings.backgroundColor,
+      (newColor) => {
+        if (canvasRef.current) {
+          debugConsoleLogger("Updating background color to", newColor);
+          canvasRef.current.style.backgroundColor = newColor;
+          document.body.style.backgroundColor = newColor;
+        }
+      },
+    );
+    return () => unsub();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     window.addEventListener("keydown", handleKeydown);
     return () => {
       window.removeEventListener("keydown", handleKeydown);
@@ -77,7 +82,6 @@ export default function SlimeClockScene() {
       >
         <Suspense fallback={null}>
           <StatsComponent />
-          {/* <SlimeClock /> */}
           <SlimeClock />
           <InteractionListener />
           <PresetsChangeListener />

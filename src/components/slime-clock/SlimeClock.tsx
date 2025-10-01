@@ -1,7 +1,14 @@
 import { PerformanceMonitor, Plane, useFBO } from "@react-three/drei";
 import { createPortal, extend, useFrame } from "@react-three/fiber";
 import { produce } from "immer";
-import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  Fragment,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import * as THREE from "three";
 import useSlimeStore from "../../stores/useSlimeStore.tsx";
 import * as UTILS from "../../utils/utils.tsx";
@@ -93,6 +100,7 @@ function SlimeClockRenderer() {
       magFilter: THREE.NearestFilter,
       format: THREE.RGBAFormat,
       stencilBuffer: false,
+      depthBuffer: false,
       type: THREE.FloatType,
     },
   );
@@ -104,6 +112,7 @@ function SlimeClockRenderer() {
       magFilter: THREE.NearestFilter,
       format: THREE.RGBAFormat,
       stencilBuffer: false,
+      depthBuffer: false,
       type: THREE.FloatType,
     },
   );
@@ -115,6 +124,7 @@ function SlimeClockRenderer() {
       magFilter: THREE.NearestFilter,
       format: THREE.RGBAFormat,
       stencilBuffer: false,
+      depthBuffer: false,
       type: THREE.FloatType,
     },
   );
@@ -126,6 +136,7 @@ function SlimeClockRenderer() {
       magFilter: THREE.NearestFilter,
       format: THREE.RGBAFormat,
       stencilBuffer: false,
+      depthBuffer: false,
       type: THREE.FloatType,
     },
   );
@@ -137,6 +148,7 @@ function SlimeClockRenderer() {
       magFilter: THREE.NearestFilter,
       format: THREE.RGBAFormat,
       stencilBuffer: false,
+      depthBuffer: false,
       type: THREE.FloatType,
     },
   );
@@ -148,6 +160,7 @@ function SlimeClockRenderer() {
       magFilter: THREE.NearestFilter,
       format: THREE.RGBAFormat,
       stencilBuffer: false,
+      depthBuffer: false,
       type: THREE.FloatType,
     },
   );
@@ -535,6 +548,19 @@ function SlimeClockRenderer() {
     pingPongRef.current = !pingPongRef.current;
   });
 
+  useEffect(() => {
+    console.log("SlimeClockRenderer mounted");
+    // return () => {
+    //   debugConsoleLogger("SlimeClockRenderer unmounted");
+    //   agentDataRenderTargetA.dispose();
+    //   agentDataRenderTargetB.dispose();
+    //   agentPositionsRenderTarget.dispose();
+    //   clockRenderTarget.dispose();
+    //   trailRenderTargetA.dispose();
+    //   trailRenderTargetB.dispose();
+    // };
+  }, []);
+
   const [performanceGauged, setPerformanceGauged] = useState(
     useSlimeStore.getState().framerateGaugedPreviously,
   );
@@ -543,6 +569,7 @@ function SlimeClockRenderer() {
   );
 
   useEffect(() => {
+    console.log("Starting framerate gauge");
     useSlimeStore.setState(
       produce((state) => {
         state.framerateGaugeStartedAt = Date.now();
@@ -867,16 +894,20 @@ function SlimeClockRenderer() {
 }
 
 export default function SlimeClock() {
-  // const debugConsoleLogger = useSlimeStore((state) => state.debugConsoleLogger);
-  const [displaySlimeClock, setDisplaySlimeClock] = useState(false);
+  const debugConsoleLogger = useSlimeStore((state) => state.debugConsoleLogger);
+  const [displaySlimeClock, setDisplaySlimeClock] = useState<boolean>(false);
 
-  useEffect(() => {
+  console.log("Rendering SlimeClock component", displaySlimeClock);
+
+  useLayoutEffect(() => {
     const unsub = useSlimeStore.subscribe(
       (state) => state.initialization.slimeClockDisplayStatus,
       (displayStatus) => {
         if (displayStatus === "ready" && !displaySlimeClock) {
+          debugConsoleLogger("Setting displaySlimeClock to true");
           setDisplaySlimeClock(true);
         } else if (displayStatus === "initializing" && displaySlimeClock) {
+          debugConsoleLogger("Setting displaySlimeClock to false");
           setDisplaySlimeClock(false);
         }
       },
@@ -888,16 +919,16 @@ export default function SlimeClock() {
   }, []);
 
   return (
-    <>
+    <Fragment>
       <InitializationHandler />
       <SettingsHistoryListener />
       {displaySlimeClock && (
-        <>
+        <Fragment>
           <SlimeClockRenderer />
           <RandomizationListener />
           <UniformListeners />
-        </>
+        </Fragment>
       )}
-    </>
+    </Fragment>
   );
 }

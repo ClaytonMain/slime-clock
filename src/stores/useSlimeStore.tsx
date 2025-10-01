@@ -70,6 +70,7 @@ interface SlimeStore {
     lastUpdatedAt: number;
     controlsDisplayStatus: "initializing" | "ready";
     slimeClockDisplayStatus: "initializing" | "ready";
+    displaySlimeClock: boolean;
     all: {
       initialized: boolean;
       requestedAt: number;
@@ -147,7 +148,6 @@ interface SlimeStore {
   simulationPresets: LoadableSlimeStoreSettings[];
   sortedSimulationPresets: SortedSimulationPresets;
   simulationPresetLoadedAt: number;
-  lastInteractionAt: number;
   interactionState: "active" | "inactive";
   toast: ToastState;
   showFPS: boolean;
@@ -168,7 +168,6 @@ const persistOmit: (keyof SlimeStore)[] = [
 
   "controlsState",
   "simulationPresetLoadedAt",
-  "lastInteractionAt",
   "interactionState",
   "toast",
   "settingsLastChangedAt",
@@ -178,7 +177,7 @@ const useSlimeStore = create<SlimeStore>()(
   subscribeWithSelector(
     persist(
       (_, get) => ({
-        debug: false,
+        debug: true,
         debugConsoleLogger: (...data: unknown[]) => {
           if (get().debug) {
             console.log(...data);
@@ -191,6 +190,7 @@ const useSlimeStore = create<SlimeStore>()(
           lastUpdatedAt: Date.now(),
           controlsDisplayStatus: "initializing",
           slimeClockDisplayStatus: "initializing",
+          displaySlimeClock: false,
           // Updating "all" requestedAt should trigger a complete re-initialization.
           all: {
             initialized: false,
@@ -452,7 +452,6 @@ const useSlimeStore = create<SlimeStore>()(
           Combination: [],
         },
         simulationPresetLoadedAt: Date.now(),
-        lastInteractionAt: Date.now(),
         interactionState: "active",
         toast: {
           title: null,
