@@ -12,6 +12,14 @@ export default defineConfig({
     }),
     glsl({
       watch: true,
+      include: [
+        "**/*.glsl",
+        "**/*.wgsl",
+        "**/*.vert",
+        "**/*.frag",
+        "**/*.vs",
+        "**/*.fs",
+      ],
     }),
     tailwindcss(),
   ],

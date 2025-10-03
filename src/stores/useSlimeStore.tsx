@@ -290,6 +290,7 @@ const useSlimeStore = create<SlimeStore>()(
         // settings object. Some of the default values are overridden inside
         // the "InitializationHandler" component.
         clockSettings: {
+          clockStyle: DEFAULT_CLOCK_SETTINGS.clockStyle,
           show: DEFAULT_CLOCK_SETTINGS.show,
           // Size is overridden in the "InitializationHandler" component if
           // "digitLayout" is set to "not set".

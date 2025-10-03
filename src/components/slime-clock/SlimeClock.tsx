@@ -16,7 +16,7 @@ import SettingsHistoryListener from "../controls/SettingsHistoryListener.tsx";
 import ThreeControlDisplay from "../three-control-display/ThreeControlDisplay.tsx";
 import AgentDataMaterial from "./AgentDataMaterial.tsx";
 import AgentPositionsMaterial from "./AgentPositionsMaterial.tsx";
-import ClockDisplay from "./ClockDisplay.tsx";
+import ClockDisplay from "./clock-display/ClockDisplay.tsx";
 import InitializationHandler from "./InitializationHandler.tsx";
 import RandomizationListener from "./RandomizationListener.tsx";
 import displayFragmentShader from "./shaders/display/display.frag";
@@ -896,8 +896,6 @@ function SlimeClockRenderer() {
 export default function SlimeClock() {
   const debugConsoleLogger = useSlimeStore((state) => state.debugConsoleLogger);
   const [displaySlimeClock, setDisplaySlimeClock] = useState<boolean>(false);
-
-  console.log("Rendering SlimeClock component", displaySlimeClock);
 
   useLayoutEffect(() => {
     const unsub = useSlimeStore.subscribe(

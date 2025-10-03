@@ -23,6 +23,7 @@ type ControlsConfigs<T> = {
 };
 
 export const DEFAULT_CLOCK_SETTINGS: ClockSettings = {
+  clockStyle: "digital",
   show: true,
   size: 50,
   digitLayout: "not set",
@@ -735,6 +736,7 @@ export const DEFAULT_PRESETS: LoadableSlimeStoreSettings[] = [
     presetType: "Clock Only",
     isBasePreset: true,
     clockSettings: {
+      clockStyle: "digital",
       show: true,
       size: 30,
       digitLayout: "horizontal",
@@ -752,6 +754,7 @@ export const DEFAULT_PRESETS: LoadableSlimeStoreSettings[] = [
     presetType: "Clock Only",
     isBasePreset: true,
     clockSettings: {
+      clockStyle: "digital",
       show: true,
       size: 50,
       digitLayout: "horizontal",
@@ -769,6 +772,7 @@ export const DEFAULT_PRESETS: LoadableSlimeStoreSettings[] = [
     presetType: "Clock Only",
     isBasePreset: true,
     clockSettings: {
+      clockStyle: "digital",
       show: true,
       size: 70,
       digitLayout: "horizontal",
@@ -786,6 +790,7 @@ export const DEFAULT_PRESETS: LoadableSlimeStoreSettings[] = [
     presetType: "Clock Only",
     isBasePreset: true,
     clockSettings: {
+      clockStyle: "digital",
       show: true,
       size: 20,
       digitLayout: "vertical",
@@ -803,6 +808,7 @@ export const DEFAULT_PRESETS: LoadableSlimeStoreSettings[] = [
     presetType: "Clock Only",
     isBasePreset: true,
     clockSettings: {
+      clockStyle: "digital",
       show: true,
       size: 35,
       digitLayout: "vertical",
@@ -820,6 +826,7 @@ export const DEFAULT_PRESETS: LoadableSlimeStoreSettings[] = [
     presetType: "Clock Only",
     isBasePreset: true,
     clockSettings: {
+      clockStyle: "digital",
       show: true,
       size: 50,
       digitLayout: "vertical",
