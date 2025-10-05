@@ -14,12 +14,10 @@ export default function TabContentDisplayAreaHtmlContent() {
 
   useEffect(() => {
     const displayAreaContent = controlsState.displayAreaHtmlContent;
-    const tabDefaultDisplayAreaHtmlContent =
-      controlsState.tabDefaultDisplayAreaHtmlContent;
     if (!displayAreaContent) {
       setHeader(null);
       setTitleFontSize("1.5rem");
-      setContent(tabDefaultDisplayAreaHtmlContent);
+      setContent(null);
       setChildrenPadding(["py-1", "pr-4", "pl-2"]);
     } else if (typeof displayAreaContent === "string") {
       setHeader(null);

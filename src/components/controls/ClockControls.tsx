@@ -18,6 +18,7 @@ import SlimeStoreSelectControl from "./SlimeStoreSelectControl";
 import SlimeStoreSliderControl from "./SlimeStoreSliderControl";
 import SlimeStoreSwitchControl from "./SlimeStoreSwitchControl";
 import TabContentContainer from "./TabContentContainer";
+import TabContentDisplayAreaContentWrapper from "./TabContentDisplayAreaContentWrapper";
 import TabContentScrollArea from "./TabContentScrollArea";
 
 type ClockDigitLayoutOption = {
@@ -92,9 +93,18 @@ export default function ClockControls() {
           <AccordionControlsItem
             value="clock-controls-presets"
             label="Presets"
-            labelHoverTabContentDisplay={["Presets"]}
+            labelHoverTabContentDisplay={[
+              "Presets",
+              "Allows you to save and load presets for the clock controls. Default presets cannot be overwritten or deleted.",
+            ]}
           >
-            <ControlGroup justifyContent="center">
+            <ControlGroup
+              labelHoverTabContentDisplay={[
+                "Save Current Clock Settings as Preset",
+                "Allows you to save the current clock settings as a preset. Clicking this button will open a dialog to enter the preset name prior to saving. All clock preset names must be unique. You can manage and apply your saved presets below. Default presets cannot be overwritten or deleted.",
+              ]}
+              justifyContent="center"
+            >
               <SaveCurrentSettingsAsPresetPopoverButton presetType="Clock Only" />
             </ControlGroup>
             {sortedSimulationPresets["Clock Only"] &&
@@ -133,9 +143,10 @@ export default function ClockControls() {
           <AccordionControlsItem
             value="clock-settings"
             label="Clock Settings"
-            labelHoverTabContentDisplay={
-              clockControlsLabelHoverTabContentDisplay
-            }
+            labelHoverTabContentDisplay={[
+              "Clock Settings",
+              "Allows you to configure the clock display settings.",
+            ]}
           >
             <SlimeStoreSliderControl
               label="Size"
@@ -146,16 +157,16 @@ export default function ClockControls() {
               storePath={["clockSettings", "size"]}
               labelHoverTabContentDisplay={[
                 "Clock Size",
-                <div className="px-2 py-1">
-                  Changes the size of the clock display. Values are a percentage
-                  of screen height, where
+                <TabContentDisplayAreaContentWrapper>
+                  Changes the size of the clock display. Values are approximate
+                  percentages of screen height, where
                   <CodeBlock>1</CodeBlock>
                   would be practically invisible,
                   <CodeBlock>50</CodeBlock>
                   would fill half the screen, and
                   <CodeBlock>100</CodeBlock>
                   would fill the entire screen height.
-                </div>,
+                </TabContentDisplayAreaContentWrapper>,
               ]}
             />
             <SlimeStoreSelectControl
@@ -166,7 +177,7 @@ export default function ClockControls() {
               options={clockFormatOptions}
               labelHoverTabContentDisplay={[
                 "Hour Format",
-                "12 hour or 24 hour format.",
+                "12 or 24 hour format.",
               ]}
             />
             <SlimeStoreSelectControl
@@ -188,7 +199,7 @@ export default function ClockControls() {
               options={clockStyleOptions}
               labelHoverTabContentDisplay={[
                 "Digit Style",
-                "Changes the digit style of the clock display.",
+                "Changes the digit style (font) of the clock display.",
               ]}
             />
             <SlimeStoreSwitchControl

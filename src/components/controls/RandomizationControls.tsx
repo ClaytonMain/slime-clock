@@ -26,7 +26,7 @@ export default function RandomizationControls() {
 
   const randomizationControlsLabelHoverTabContentDisplay = [
     "Randomization Controls",
-    "Controls related to the what can be randomized and when.",
+    "Controls related to what can be randomized and when.",
   ];
 
   useEffect(() => {
@@ -34,8 +34,6 @@ export default function RandomizationControls() {
     useSlimeStore.setState(
       produce((state) => {
         state.controlsState.displayAreaContentUpdatedAt = Date.now();
-        state.controlsState.tabDefaultDisplayAreaHtmlContent =
-          randomizationControlsLabelHoverTabContentDisplay;
         state.controlsState.displayAreaHtmlContent =
           randomizationControlsLabelHoverTabContentDisplay;
         state.controlsState.displayAreaContentName = null;
@@ -118,7 +116,7 @@ export default function RandomizationControls() {
     );
   }
 
-  function setAutoLoadOnRandAll(
+  function setLoadOnAutoRandAll(
     value: boolean,
     presetType: "simulation" | "color",
   ) {
@@ -166,7 +164,8 @@ export default function RandomizationControls() {
                   at set intervals. The <CodeBlock>enabled</CodeBlock> switch
                   toggles auto-randomization for the simulation. The{" "}
                   <CodeBlock>interval</CodeBlock> slider controls how often the
-                  randomization occurs (in minutes).
+                  randomization occurs (in minutes). Auto-randomization is
+                  disabled while the control panel is open.
                 </TabContentDisplayAreaContentWrapper>,
               ]}
             >
@@ -253,7 +252,8 @@ export default function RandomizationControls() {
                   <CodeBlock>enabled</CodeBlock> switch toggles
                   auto-randomization for the color settings. The{" "}
                   <CodeBlock>interval</CodeBlock> slider controls how often the
-                  randomization occurs (in minutes).
+                  randomization occurs (in minutes). Auto-randomization is
+                  disabled while the control panel is open.
                 </TabContentDisplayAreaContentWrapper>,
               ]}
             >
@@ -369,6 +369,7 @@ export default function RandomizationControls() {
                   <CodeBlock>enabled</CodeBlock> switch toggles auto-restarting
                   for the simulation. The <CodeBlock>interval</CodeBlock> slider
                   controls how often the restart occurs (in minutes).
+                  Auto-restart is disabled while the control panel is open.
                 </TabContentDisplayAreaContentWrapper>,
               ]}
             >
@@ -478,7 +479,7 @@ export default function RandomizationControls() {
               label="Quick Rand."
               labelHoverTabContentDisplay={[
                 "Quick Randomization",
-                'A set of buttons to quickly randomize various settings or restart the simulation. Only enabled randomizations will be applied (see the "Enabled Rands." section above).',
+                'A set of buttons to quickly randomize various settings or restart the simulation. When a "randomize" button is pressed, only enabled randomizations will be applied (see the "Enabled Rands." section above).',
               ]}
               buttonConfigs={[
                 {
@@ -544,7 +545,7 @@ export default function RandomizationControls() {
             label="Simulation Randomization Presets"
             labelHoverTabContentDisplay={[
               "Simulation Randomization Presets",
-              "Manage and apply simulation randomization settings presets.",
+              "Manage and apply simulation randomization settings presets. Default presets cannot be overwritten or deleted.",
             ]}
           >
             <ControlGroup
@@ -557,17 +558,28 @@ export default function RandomizationControls() {
               <SaveRandomizationPresetPopoverButton randomizationPresetType="simulation" />
             </ControlGroup>
             <ButtonControlGroup
+              labelHoverTabContentDisplay={[
+                "Enable/Disable Load on Auto Rand - All Simulation Presets",
+                <TabContentDisplayAreaContentWrapper>
+                  Enables or disables all simulation randomization presets for
+                  load on auto randomization. When the simulation
+                  auto-randomization mode is set to{" "}
+                  <em>Use Random Enabled Randomization Preset</em>, one of the
+                  enabled presets will be randomly loaded prior to randomizing
+                  the simulation.
+                </TabContentDisplayAreaContentWrapper>,
+              ]}
               justifyContent="center"
               buttonConfigs={[
                 {
-                  label: "Enable Auto Load on Rand - All Sim.",
-                  baseId: "enable-auto-load-on-rand-all-button",
-                  onClick: () => setAutoLoadOnRandAll(true, "simulation"),
+                  label: "Enable Load on Auto Rand - All Sim.",
+                  baseId: "enable-load-on-auto-rand-all-button",
+                  onClick: () => setLoadOnAutoRandAll(true, "simulation"),
                 },
                 {
-                  label: "Disable Auto Load on Rand - All Sim.",
-                  baseId: "disable-auto-load-on-rand-all-button",
-                  onClick: () => setAutoLoadOnRandAll(false, "simulation"),
+                  label: "Disable Load on Auto Rand - All Sim.",
+                  baseId: "disable-load-on-auto-rand-all-button",
+                  onClick: () => setLoadOnAutoRandAll(false, "simulation"),
                 },
               ]}
             />
@@ -580,9 +592,11 @@ export default function RandomizationControls() {
                   label={preset.name}
                   labelHoverTabContentDisplay={[
                     preset.name,
-                    <pre className="px-2 py-1 text-[0.6rem] whitespace-pre-wrap">
-                      {JSON.stringify(preset, null, 1)}
-                    </pre>,
+                    <TabContentDisplayAreaContentWrapper>
+                      <pre className="text-[0.6rem] whitespace-pre-wrap">
+                        {JSON.stringify(preset, null, 1)}
+                      </pre>
+                    </TabContentDisplayAreaContentWrapper>,
                   ]}
                   preset={preset}
                 />
@@ -594,7 +608,14 @@ export default function RandomizationControls() {
             label="Agent Randomization Settings"
             labelHoverTabContentDisplay={[
               "Agent Randomization Settings",
-              "Controls the randomization settings for agents.",
+              <TabContentDisplayAreaContentWrapper>
+                Allows you to control which agent settings can be randomized
+                when randomizing the simulation, and also allows you to set the
+                bounds for each setting's possible randomized values. When
+                hovering over a randomization range control, the display area
+                will show a chart representing the probability density function
+                (PDF) for the randomization values.
+              </TabContentDisplayAreaContentWrapper>,
             ]}
           >
             <SwitchControlGroup
@@ -779,11 +800,22 @@ export default function RandomizationControls() {
             label="Trail Randomization Settings"
             labelHoverTabContentDisplay={[
               "Trail Randomization Settings",
-              "Controls the randomization settings for trails.",
+              <TabContentDisplayAreaContentWrapper>
+                Allows you to control which trail settings can be randomized
+                when randomizing the simulation, and also allows you to set the
+                bounds for each setting's possible randomized values. When
+                hovering over a randomization range control, the display area
+                will show a chart representing the probability density function
+                (PDF) for the randomization values.
+              </TabContentDisplayAreaContentWrapper>,
             ]}
           >
             <SlimeStoreSwitchControl
               label="Allow Boundary Behavior Rand."
+              labelHoverTabContentDisplay={[
+                "Allow Boundary Behavior Randomization",
+                "Toggles whether boundary behavior (wrap around the screen, or bounce off the screen edges) can be randomized when randomizing the simulation.",
+              ]}
               baseId="allow-boundary-behavior-randomization-switch"
               storePath={[
                 "randomizationSettings",
@@ -836,26 +868,39 @@ export default function RandomizationControls() {
           <AccordionControlsItem
             value="color-randomization-setting-presets"
             label="Color Randomization Presets"
-            labelHoverTabContentDisplay={[
-              "Color Randomization Presets",
-              "Manage and apply presets for color randomization settings.",
-            ]}
+            labelHoverTabContentDisplay={["Color Randomization Presets"]}
           >
-            <ControlGroup justifyContent="center">
+            <ControlGroup
+              labelHoverTabContentDisplay={[
+                "Save Current Color Randomization Settings as Preset",
+                "Allows you to save the current color randomization settings as a preset. Clicking this button will open a dialog to enter the preset name prior to saving. All color randomization preset names must be unique. You can manage and apply your saved presets below. Default presets cannot be overwritten or deleted.",
+              ]}
+              justifyContent="center"
+            >
               <SaveRandomizationPresetPopoverButton randomizationPresetType="color" />
             </ControlGroup>
             <ButtonControlGroup
+              labelHoverTabContentDisplay={[
+                "Enable/Disable Load on Auto Rand - All Color Presets",
+                <TabContentDisplayAreaContentWrapper>
+                  Enables or disables all color randomization presets for load
+                  on auto randomization. When the color auto-randomization mode
+                  is set to <em>Use Random Enabled Randomization Preset</em>,
+                  one of the enabled randomization presets will be randomly
+                  selected and loaded prior to randomizing the color settings.
+                </TabContentDisplayAreaContentWrapper>,
+              ]}
               justifyContent="center"
               buttonConfigs={[
                 {
                   label: "Enable Auto Load on Rand - All Colors",
                   baseId: "enable-auto-load-on-rand-all-button",
-                  onClick: () => setAutoLoadOnRandAll(true, "color"),
+                  onClick: () => setLoadOnAutoRandAll(true, "color"),
                 },
                 {
                   label: "Disable Auto Load on Rand - All Colors",
                   baseId: "disable-auto-load-on-rand-all-button",
-                  onClick: () => setAutoLoadOnRandAll(false, "color"),
+                  onClick: () => setLoadOnAutoRandAll(false, "color"),
                 },
               ]}
             />
@@ -882,11 +927,22 @@ export default function RandomizationControls() {
             label="Color Randomization Settings"
             labelHoverTabContentDisplay={[
               "Color Randomization Settings",
-              "Controls the randomization settings for colors.",
+              <TabContentDisplayAreaContentWrapper>
+                Allows you to control which color settings can be randomized
+                when randomizing the color settings, and also allows you to set
+                the bounds for each setting's possible randomized values. When
+                hovering over a randomization range control, the display area
+                will show a chart representing the probability density function
+                (PDF) for the randomization values.
+              </TabContentDisplayAreaContentWrapper>,
             ]}
           >
             <SlimeStoreSwitchControl
               label="Enable Bg Color Rand."
+              labelHoverTabContentDisplay={[
+                "Enable Background Color Randomization",
+                "Toggles whether the background color can be randomized when randomizing the color settings.",
+              ]}
               baseId="randomization-controls-background-color-enabled-switch"
               storePath={[
                 "randomizationSettings",

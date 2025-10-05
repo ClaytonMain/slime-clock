@@ -18,10 +18,13 @@ import ControlGroup from "./ControlGroup.tsx";
 import SaveCurrentSettingsAsPresetPopoverButton from "./SaveCurrentSettingsAsPresetPopoverButton.tsx";
 import SimulationPresetLoadSaveControl from "./SimulationPresetLoadSaveControl.tsx";
 import SlimeStoreSelectControl from "./SlimeStoreSelectControl";
+import SlimeStoreSlider from "./SlimeStoreSlider.tsx";
 import SlimeStoreSliderControl from "./SlimeStoreSliderControl";
+import SlimeStoreSwitch from "./SlimeStoreSwitch.tsx";
 import SlimeStoreSwitchControl from "./SlimeStoreSwitchControl";
 import SwitchControlGroup from "./SwitchControlGroup.tsx";
 import TabContentContainer from "./TabContentContainer";
+import TabContentDisplayAreaContentWrapper from "./TabContentDisplayAreaContentWrapper.tsx";
 import TabContentScrollArea from "./TabContentScrollArea";
 
 export default function SimulationControls() {
@@ -92,7 +95,7 @@ export default function SimulationControls() {
     );
   }
 
-  function setAutoLoadOnRandAll(value: boolean) {
+  function setLoadOnAutoRandAll(value: boolean) {
     let simulationPresets = [...useSlimeStore.getState().simulationPresets];
     simulationPresets = simulationPresets.map((preset) => {
       const modifiedPreset = { ...preset };
@@ -193,20 +196,14 @@ export default function SimulationControls() {
             label="Quick Controls"
             labelHoverTabContentDisplay={[
               "Quick Controls",
-              <div className="px-2 py-1">
-                <ul className="list-inside list-disc">
-                  <li>Randomize Simulation</li>
-                  <li>Randomize Agent Settings</li>
-                  <li>Randomize Trail Settings</li>
-                </ul>
-              </div>,
+              "A few quick simulation controls.",
             ]}
           >
             <SlimeStoreSwitchControl
               label="Show FPS"
               labelHoverTabContentDisplay={[
                 "Show FPS Counter",
-                "Enables a small FPS (and other stats) counter at the top-left of the screen. Hidden after a few moments of inactivity.",
+                "Enables a small FPS counter at the top-left of the screen. Hidden after a few moments of inactivity.",
               ]}
               baseId="simulation-controls-show-fps-switch"
               storePath={["showFPS"]}
@@ -225,6 +222,15 @@ export default function SimulationControls() {
             />
             <SlimeStoreSelectControl
               label="Boundary Behavior"
+              labelHoverTabContentDisplay={[
+                "Boundary Behavior",
+                <TabContentDisplayAreaContentWrapper>
+                  Controls how agents behave when they reach the edge of the
+                  screen. <em>Wrap</em> causes agents to reappear on the
+                  opposite side of the screen. <em>Bounce</em> causes agents to
+                  turn around and move back towards the center of the screen.
+                </TabContentDisplayAreaContentWrapper>,
+              ]}
               baseInputId="boundary-behavior-select"
               storePath={["simulationSettings", "boundaryBehavior"]}
               options={[
@@ -246,7 +252,7 @@ export default function SimulationControls() {
               label="Display Texture Target Quality"
               labelHoverTabContentDisplay={[
                 "Display Texture Target Quality",
-                <div className="px-2 py-1">
+                <TabContentDisplayAreaContentWrapper>
                   Controls the target quality of the trail display texture. The
                   value is essentially the number of megapixels in the display
                   texture. Some loose conversions between these quality values
@@ -259,7 +265,7 @@ export default function SimulationControls() {
                     <li>8.3: 2160p</li>
                   </ul>
                   Unless you've got a beefy GPU, use caution with higher values!
-                </div>,
+                </TabContentDisplayAreaContentWrapper>,
               ]}
               baseInputId="trail-display-texture-target-quality-slider"
               min={SIMULATION_CONTROLS_CONFIGS.displayTextureTargetQuality!.min}
@@ -278,33 +284,73 @@ export default function SimulationControls() {
               "A few simulation-related randomization controls. More robust randomization controls can be found in the 'Randomization Controls' tab (the dice icon below).",
             ]}
           >
-            <SlimeStoreSwitchControl
-              label="Sim. Auto Rand. Enabled"
+            <ControlGroup
+              label="Sim. Auto Rand."
               labelHoverTabContentDisplay={[
-                "Simulation Auto Randomization Enabled",
-                'Allows the simulation to randomize certain parameters at set intervals. The randomization interval is set using the \'Randomization Interval\' slider. Control over which parameters are randomized can be found in the "Agent Randomization Settings" and "Trail Randomization Settings" accordions below. Auto randomization is disabled when the controls are open.',
+                "Simulation Auto Randomization",
+                <TabContentDisplayAreaContentWrapper>
+                  Allows the simulation to randomize certain enabled parameters
+                  at set intervals. The <CodeBlock>enabled</CodeBlock> switch
+                  toggles auto-randomization for the simulation. The{" "}
+                  <CodeBlock>interval</CodeBlock> slider controls how often the
+                  randomization occurs (in minutes). Auto-randomization is
+                  disabled while the control panel is open.
+                </TabContentDisplayAreaContentWrapper>,
               ]}
-              baseId="auto-randomization-enabled-switch"
-              storePath={[
-                "randomizationSettings",
-                "simulationAutoRandomizationEnabled",
-              ]}
-            />
-            <SlimeStoreSliderControl
-              label="Sim. Auto Rand. Interval"
-              labelHoverTabContentDisplay={[]}
-              baseInputId="auto-randomization-interval-slider"
-              min={1}
-              max={60}
-              step={1}
-              storePath={[
-                "randomizationSettings",
-                "simulationAutoRandomizationInterval",
-              ]}
-            />
+            >
+              <SlimeStoreSwitch
+                baseId="rand-controls-simulation-auto-randomization-enabled-switch"
+                storePath={[
+                  "randomizationSettings",
+                  "simulationAutoRandomizationEnabled",
+                ]}
+                switchLabel="Enabled"
+              />
+              <div className="flex-grow">
+                <SlimeStoreSlider
+                  baseInputId="rand-controls-simulation-auto-randomization-interval-slider"
+                  min={1}
+                  max={60}
+                  step={1}
+                  storePath={[
+                    "randomizationSettings",
+                    "simulationAutoRandomizationInterval",
+                  ]}
+                  sliderLabel="Interval"
+                />
+              </div>
+            </ControlGroup>
             <SlimeStoreSelectControl
               label="Sim. Auto Rand. Mode"
-              labelHoverTabContentDisplay={[]}
+              labelHoverTabContentDisplay={[
+                "Simulation Auto Randomization Mode",
+                <TabContentDisplayAreaContentWrapper>
+                  <ul className="list-inside list-disc">
+                    <li>
+                      <em>Use Random Enabled Randomization Preset: </em>
+                      Randomly loads one of the <em>enabled</em> randomization
+                      presets from the <em>Simulation Randomization Presets</em>{" "}
+                      section below prior to randomizing the simulation. The
+                      settings in the <em>Agent Randomization Settings</em> and{" "}
+                      <em>Trail Randomization Settings</em> sections below are
+                      overwritten by the loaded preset.
+                    </li>
+                    <li>
+                      <em>Use Random Enabled Simulation Preset: </em>
+                      Randomly loads one of the <em>enabled</em> simulation
+                      presets from the <em>Simulation Presets</em> tab instead
+                      of randomizing the simulation.
+                    </li>
+                    <li>
+                      <em>Use Current Randomization Settings: </em>
+                      Uses the current settings in the{" "}
+                      <em>Agent Randomization Settings</em> and{" "}
+                      <em>Trail Randomization Settings</em> sections below to
+                      randomize the simulation.
+                    </li>
+                  </ul>
+                </TabContentDisplayAreaContentWrapper>,
+              ]}
               baseInputId="randomization-controls-auto-randomization-mode-select"
               storePath={[
                 "randomizationSettings",
@@ -329,7 +375,7 @@ export default function SimulationControls() {
               label="Enabled Rands."
               labelHoverTabContentDisplay={[
                 "Enabled Randomizations",
-                "Toggles to enable or disable randomization for various setting groups.",
+                "Toggles to enable or disable randomization for the simulation's agent and trail settings. This toggles randomization completely - independent of the auto-randomization toggle above. Auto-randomization will only randomize settings that are enabled here.",
               ]}
               switchConfigs={[
                 {
@@ -350,21 +396,35 @@ export default function SimulationControls() {
                 },
               ]}
             />
-            <SlimeStoreSwitchControl
-              label="Auto Restart Enabled"
-              labelHoverTabContentDisplay={[]}
-              baseId="auto-restart-enabled-switch"
-              storePath={["randomizationSettings", "autoRestartEnabled"]}
-            />
-            <SlimeStoreSliderControl
-              label="Auto Restart Interval"
-              labelHoverTabContentDisplay={[]}
-              baseInputId="auto-restart-interval-slider"
-              min={1}
-              max={60}
-              step={1}
-              storePath={["randomizationSettings", "autoRestartInterval"]}
-            />
+            <ControlGroup
+              label="Auto Restart"
+              labelHoverTabContentDisplay={[
+                "Auto Restart",
+                <TabContentDisplayAreaContentWrapper>
+                  Automatically restarts the simulation at set intervals. The{" "}
+                  <CodeBlock>enabled</CodeBlock> switch toggles auto-restarting
+                  for the simulation. The <CodeBlock>interval</CodeBlock> slider
+                  controls how often the restart occurs (in minutes).
+                  Auto-restart is disabled while the control panel is open.
+                </TabContentDisplayAreaContentWrapper>,
+              ]}
+            >
+              <SlimeStoreSwitch
+                baseId="rand-controls-auto-restart-enabled-switch"
+                storePath={["randomizationSettings", "autoRestartEnabled"]}
+                switchLabel="Enabled"
+              />
+              <div className="flex-grow">
+                <SlimeStoreSlider
+                  baseInputId="rand-controls-auto-restart-interval-slider"
+                  min={1}
+                  max={60}
+                  step={1}
+                  storePath={["randomizationSettings", "autoRestartInterval"]}
+                  sliderLabel="Interval"
+                />
+              </div>
+            </ControlGroup>
             <SwitchControlGroup
               label="Enabled Start Types"
               labelHoverTabContentDisplay={[
@@ -455,7 +515,7 @@ export default function SimulationControls() {
               label="Quick Rand."
               labelHoverTabContentDisplay={[
                 "Quick Randomization",
-                "Allows you to quickly randomize the simulation settings. You can configure the randomization bounds for each setting in the 'Randomization Controls' tab (the dice icon below).",
+                'Allows you to quickly randomize the simulation settings. When a "randomize" button is pressed, only enabled randomizations will be applied (see the "Enabled Rands." section above). You can configure the randomization bounds for each setting in the "Randomization Controls" tab (the dice icon below).',
               ]}
               buttonConfigs={[
                 {
@@ -502,23 +562,42 @@ export default function SimulationControls() {
           <AccordionControlsItem
             value="simulation-controls-presets"
             label="Presets"
-            labelHoverTabContentDisplay={["Presets"]}
+            labelHoverTabContentDisplay={[
+              "Presets",
+              "Load, save, and manage your simulation presets. Default presets cannot be overwritten or deleted.",
+            ]}
           >
-            <ControlGroup justifyContent="center">
+            <ControlGroup
+              labelHoverTabContentDisplay={[
+                "Save Current Settings As Preset",
+                "Allows you to save the current simulation settings as a new preset. Clicking this button will open a dialog to enter the preset name prior to saving. All simulation preset names must be unique. You can manage and apply your saved presets below. Default presets cannot be overwritten or deleted.",
+              ]}
+              justifyContent="center"
+            >
               <SaveCurrentSettingsAsPresetPopoverButton presetType="Simulation Only" />
             </ControlGroup>
             <ButtonControlGroup
+              labelHoverTabContentDisplay={[
+                "Load on Auto Rand. - All Sim. Presets",
+                <TabContentDisplayAreaContentWrapper>
+                  Enables or disables all simulation presets for load on auto
+                  randomization. When the simulation auto-randomization mode is
+                  set to <em>Use Random Enabled Simulation Preset</em>, one of
+                  the enabled presets will be randomly loaded when the
+                  auto-randomization occurs.
+                </TabContentDisplayAreaContentWrapper>,
+              ]}
               justifyContent="center"
               buttonConfigs={[
                 {
-                  label: "Enable Auto Load on Rand - All Presets",
-                  baseId: "enable-auto-load-on-rand-all-button",
-                  onClick: () => setAutoLoadOnRandAll(true),
+                  label: "Enable Load on Auto Rand - All Presets",
+                  baseId: "enable-load-on-auto-rand-all-button",
+                  onClick: () => setLoadOnAutoRandAll(true),
                 },
                 {
-                  label: "Disable Auto Load on Rand - All Presets",
-                  baseId: "disable-auto-load-on-rand-all-button",
-                  onClick: () => setAutoLoadOnRandAll(false),
+                  label: "Disable Load on Auto Rand - All Presets",
+                  baseId: "disable-load-on-auto-rand-all-button",
+                  onClick: () => setLoadOnAutoRandAll(false),
                 },
               ]}
             />
@@ -561,34 +640,22 @@ export default function SimulationControls() {
             label="Agent Settings"
             labelHoverTabContentDisplay={[
               "Agent Settings",
-              <div className="px-2 py-1">
-                <CodeBlock>Agents</CodeBlock> move around within the simulation,
+              <TabContentDisplayAreaContentWrapper>
+                Controls to allow you to modify how the agents behave within the
+                simulation. <em>Agents</em> move around within the simulation,
                 depositing "pheromones" on the trail layer while sensing and
                 reacting to pheromone concentrations left by other agents.
-                <br />
-                <br />
-                This accordian contains the following settings controlling the
-                agents:
-                <ul className="list-inside list-disc">
-                  <li>Density</li>
-                  <li>Start Type</li>
-                  <li>Deposit Rate</li>
-                  <li>Sensor Degrees</li>
-                  <li>Rotation Rate</li>
-                  <li>Sensor Offset</li>
-                  <li>Sensor Width</li>
-                  <li>Step Size</li>
-                  <li>Crowd Avoidance</li>
-                  <li>Wander Strength</li>
-                </ul>
-              </div>,
+                Agents will (typically) move towards higher pheromone
+                concentrations, but they can also be configured to avoid
+                overcrowded areas.
+              </TabContentDisplayAreaContentWrapper>,
             ]}
           >
             <SlimeStoreSliderControl
               label="Density"
               labelHoverTabContentDisplay={[
                 "Agent Density",
-                "Controls the density of agents in the simulation. Higher values will increase the load on the GPU. Please note: a higher agent density won't always result in a better simulation since the agents need room to move around.",
+                "Controls the density of agents in the simulation. Higher values will dramatically increase the load on the GPU. Please note: a higher agent density won't always result in a better simulation since the agents need room to move around.",
               ]}
               baseInputId="agent-density-slider"
               min={0.01}
@@ -614,7 +681,7 @@ export default function SimulationControls() {
               label="Clock Deposit Rate"
               labelHoverTabContentDisplay={[
                 "Agent Clock Deposit Rate",
-                "Controls how much pheromone is deposited by each agent when taking an uncrowded step inside the clock display.",
+                "Controls how much pheromone is deposited by each agent when taking an uncrowded step inside the clock display area.",
               ]}
               baseInputId="agent-clock-deposit-rate-slider"
               min={SIMULATION_CONTROLS_CONFIGS.agentClockDepositRate!.min}
@@ -626,7 +693,7 @@ export default function SimulationControls() {
               label="Background Deposit Rate"
               labelHoverTabContentDisplay={[
                 "Agent Background Deposit Rate",
-                "Controls how much pheromone is deposited by each agent when taking an uncrowded step outside the clock display.",
+                "Controls how much pheromone is deposited by each agent when taking an uncrowded step outside the clock display area.",
               ]}
               baseInputId="agent-background-deposit-rate-slider"
               min={SIMULATION_CONTROLS_CONFIGS.agentBackgroundDepositRate!.min}
@@ -640,7 +707,7 @@ export default function SimulationControls() {
               label="Sensor Degrees"
               labelHoverTabContentDisplay={[
                 "Agent Sensor Degrees",
-                "Controls how far to the left and right each agent's sensors are positioned. TODO: Describe the effect of the min/max values.",
+                "Controls how far to the left and right (in degrees) each agent's sensors are positioned.",
               ]}
               baseInputId="agent-sensor-degrees-slider"
               min={SIMULATION_CONTROLS_CONFIGS.agentSensorDegrees!.min}
@@ -652,7 +719,7 @@ export default function SimulationControls() {
               label="Rotation Rate"
               labelHoverTabContentDisplay={[
                 "Agent Rotation Rate",
-                "Controls how quickly each agent can rotate. TODO: Describe the effect of the min/max values.",
+                "Controls how quickly each agent can rotate. Higher values allow for faster rotation.",
               ]}
               baseInputId="agent-rotation-rate-slider"
               min={SIMULATION_CONTROLS_CONFIGS.agentRotationRate!.min}
@@ -700,7 +767,7 @@ export default function SimulationControls() {
               label="Crowd Avoidance"
               labelHoverTabContentDisplay={[
                 "Agent Crowd Avoidance",
-                "Controls how much each agent tries to avoid crowds. TODO: Describe this better; it's an avoidance, but also changes how the pheromones are deposited.",
+                "Controls how much each agent tries to avoid crowds. Agents will not deposit pheromones when taking steps in crowded areas.",
               ]}
               baseInputId="agent-crowd-avoidance-slider"
               min={SIMULATION_CONTROLS_CONFIGS.agentCrowdAvoidance!.min}
@@ -727,29 +794,19 @@ export default function SimulationControls() {
             label="Trail Settings"
             labelHoverTabContentDisplay={[
               "Trail Settings",
-              <div className="px-2 py-1">
-                The <CodeBlock>trail</CodeBlock> layer is where the agents
-                deposit pheromones, which are then sensed by other agents.
-                <br />
-                <br />
-                This accordian contains the following settings controlling the
-                trails:
-                <ul className="list-inside list-disc">
-                  <li>Display Texture Aspect Ratio</li>
-                  <li>Display Texture Target Quality</li>
-                  <li>Decay Rate</li>
-                  <li>Diffuse Rate</li>
-                  <li>Text Decay Rate</li>
-                  <li>Text Diffuse Rate</li>
-                  <li>Negative Space Decay Rate</li>
-                  <li>Negative Space Diffuse Rate</li>
-                </ul>
-              </div>,
+              <TabContentDisplayAreaContentWrapper>
+                Controls to allow you to modify how the trail layer behaves
+                within the simulation. The <em>trail</em> layer is where agents
+                deposit "pheromones" as they move around the simulation.
+              </TabContentDisplayAreaContentWrapper>,
             ]}
           >
             <SlimeStoreSelectControl
               label="Display Texture Aspect Ratio"
-              labelHoverTabContentDisplay={["Display Texture Aspect Ratio"]}
+              labelHoverTabContentDisplay={[
+                "Display Texture Aspect Ratio",
+                'The aspect ratio of the trail display texture. "Window" uses the aspect ratio of your browser window. Changing the aspect ratio will restart the simulation.',
+              ]}
               baseInputId="display-texture-aspect-ratio-select"
               placeholder="Display Texture Aspect Ratio"
               storePath={["simulationSettings", "displayTextureAspectRatio"]}
@@ -786,6 +843,10 @@ export default function SimulationControls() {
             />
             <SlimeStoreSliderControl
               label="Clock Decay Rate"
+              labelHoverTabContentDisplay={[
+                "Trail Clock Decay Rate",
+                "Controls how quickly pheromones in the clock display area decay.",
+              ]}
               baseInputId="trail-clock-decay-rate-slider"
               min={SIMULATION_CONTROLS_CONFIGS.trailClockDecayRate!.min}
               max={SIMULATION_CONTROLS_CONFIGS.trailClockDecayRate!.max}
@@ -794,6 +855,10 @@ export default function SimulationControls() {
             />
             <SlimeStoreSliderControl
               label="Clock Diffuse Rate"
+              labelHoverTabContentDisplay={[
+                "Trail Clock Diffuse Rate",
+                "Controls how quickly pheromones in the clock display area diffuse. More noticeable at lower resolutions, but still an important factor at any resolution.",
+              ]}
               baseInputId="trail-clock-diffuse-rate-slider"
               min={SIMULATION_CONTROLS_CONFIGS.trailClockDiffuseRate!.min}
               max={SIMULATION_CONTROLS_CONFIGS.trailClockDiffuseRate!.max}
@@ -802,6 +867,10 @@ export default function SimulationControls() {
             />
             <SlimeStoreSliderControl
               label="Background Decay Rate"
+              labelHoverTabContentDisplay={[
+                "Trail Background Decay Rate",
+                "Controls how quickly pheromones in the background area decay.",
+              ]}
               baseInputId="trail-background-decay-rate-slider"
               min={SIMULATION_CONTROLS_CONFIGS.trailBackgroundDecayRate!.min}
               max={SIMULATION_CONTROLS_CONFIGS.trailBackgroundDecayRate!.max}
@@ -810,6 +879,10 @@ export default function SimulationControls() {
             />
             <SlimeStoreSliderControl
               label="Background Diffuse Rate"
+              labelHoverTabContentDisplay={[
+                "Trail Background Diffuse Rate",
+                "Controls how quickly pheromones in the background area diffuse. More noticeable at lower resolutions, but still an important factor at any resolution.",
+              ]}
               baseInputId="trail-background-diffuse-rate-slider"
               min={SIMULATION_CONTROLS_CONFIGS.trailBackgroundDiffuseRate!.min}
               max={SIMULATION_CONTROLS_CONFIGS.trailBackgroundDiffuseRate!.max}

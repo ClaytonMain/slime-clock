@@ -137,7 +137,7 @@ function SlimeClockRenderer() {
       format: THREE.RGBAFormat,
       stencilBuffer: false,
       depthBuffer: false,
-      type: THREE.FloatType,
+      type: THREE.UnsignedByteType,
     },
   );
   const trailRenderTargetA = useFBO(
@@ -548,19 +548,6 @@ function SlimeClockRenderer() {
     pingPongRef.current = !pingPongRef.current;
   });
 
-  useEffect(() => {
-    console.log("SlimeClockRenderer mounted");
-    // return () => {
-    //   debugConsoleLogger("SlimeClockRenderer unmounted");
-    //   agentDataRenderTargetA.dispose();
-    //   agentDataRenderTargetB.dispose();
-    //   agentPositionsRenderTarget.dispose();
-    //   clockRenderTarget.dispose();
-    //   trailRenderTargetA.dispose();
-    //   trailRenderTargetB.dispose();
-    // };
-  }, []);
-
   const [performanceGauged, setPerformanceGauged] = useState(
     useSlimeStore.getState().framerateGaugedPreviously,
   );
@@ -621,20 +608,25 @@ function SlimeClockRenderer() {
       useSlimeStore.getState().simulationSettings.displayTextureTargetQuality;
     debugConsoleLogger(
       "decreasing quality to ",
-      displayTextureTargetQuality - 0.2,
+      displayTextureTargetQuality - 0.4,
     );
     useSlimeStore.setState(
       produce((state) => {
         state.simulationSettings.displayTextureTargetQuality = Math.max(
-          0.2,
-          Math.round((displayTextureTargetQuality - 0.2) * 100) / 100,
+          0.1,
+          Math.round((displayTextureTargetQuality - 0.4) * 100) / 100,
         );
       }),
     );
   }
 
   function bounds(refreshrate: number): [lower: number, upper: number] {
-    return [Math.floor(refreshrate * 0.7), Math.floor(refreshrate * 0.99)];
+    if (refreshrate < 50) {
+      return [40, 49];
+    } else if (refreshrate < 70) {
+      return [60, 69];
+    }
+    return [Math.floor(refreshrate * 0.9), Math.floor(refreshrate * 0.99)];
   }
 
   useEffect(() => {

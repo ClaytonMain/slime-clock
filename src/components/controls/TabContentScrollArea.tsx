@@ -45,7 +45,7 @@ export default function TabContentScrollArea({
       {title && (
         <div
           style={{ fontSize: titleFontSize }}
-          className="font-display w-full flex-none bg-zinc-950/80 py-1 text-center text-sky-300 select-none"
+          className="font-display w-full flex-none bg-zinc-950/80 p-1 text-center text-sky-300 select-none"
         >
           {title}
         </div>

@@ -8,6 +8,7 @@ import {
 } from "../../constants/constants";
 import useSlimeStore from "../../stores/useSlimeStore";
 import type { LoadableSlimeStoreSettings } from "../../types/types";
+import CodeBlock from "../code-block/CodeBlock";
 import AccordionControlsItem from "./AccordionControlsItem";
 import AccordionControlsWrapper from "./AccordionControlsWrapper";
 import ButtonControlGroup from "./ButtonControlGroup";
@@ -16,9 +17,12 @@ import SaveCurrentSettingsAsPresetPopoverButton from "./SaveCurrentSettingsAsPre
 import SimulationPresetLoadSaveControl from "./SimulationPresetLoadSaveControl";
 import SlimeStoreColorPickerControl from "./SlimeStoreColorPickerControl";
 import SlimeStoreSelectControl from "./SlimeStoreSelectControl";
+import SlimeStoreSlider from "./SlimeStoreSlider";
 import SlimeStoreSliderControl from "./SlimeStoreSliderControl";
+import SlimeStoreSwitch from "./SlimeStoreSwitch";
 import SlimeStoreSwitchControl from "./SlimeStoreSwitchControl";
 import TabContentContainer from "./TabContentContainer";
+import TabContentDisplayAreaContentWrapper from "./TabContentDisplayAreaContentWrapper";
 import TabContentScrollArea from "./TabContentScrollArea";
 
 export default function ColorControls() {
@@ -156,31 +160,72 @@ export default function ColorControls() {
             label="Randomization Controls"
             labelHoverTabContentDisplay={["Randomization Controls"]}
           >
-            <SlimeStoreSwitchControl
-              label="Color Auto Rand. Enabled"
-              labelHoverTabContentDisplay={[]}
-              baseId="color-auto-randomization-enabled-switch"
-              storePath={[
-                "randomizationSettings",
-                "colorAutoRandomizationEnabled",
+            <ControlGroup
+              label="Color Auto Rand."
+              labelHoverTabContentDisplay={[
+                "Color Auto Randomization",
+                <TabContentDisplayAreaContentWrapper>
+                  Allows the color settings to randomize certain enabled
+                  parameters at set intervals. The{" "}
+                  <CodeBlock>enabled</CodeBlock> switch toggles
+                  auto-randomization for the color settings. The{" "}
+                  <CodeBlock>interval</CodeBlock> slider controls how often the
+                  randomization occurs (in minutes). Auto-randomization is
+                  disabled while the control panel is open.
+                </TabContentDisplayAreaContentWrapper>,
               ]}
-            />
-            <SlimeStoreSliderControl
-              label="Color Auto Rand. Interval"
-              labelHoverTabContentDisplay={[]}
-              baseInputId="color-auto-randomization-interval-slider"
-              min={1}
-              max={60}
-              step={1}
-              storePath={[
-                "randomizationSettings",
-                "colorAutoRandomizationInterval",
-              ]}
-            />
+            >
+              <SlimeStoreSwitch
+                baseId="rand-controls-color-auto-randomization-enabled-switch"
+                storePath={[
+                  "randomizationSettings",
+                  "colorAutoRandomizationEnabled",
+                ]}
+                switchLabel="Enabled"
+              />
+              <div className="flex-grow">
+                <SlimeStoreSlider
+                  baseInputId="rand-controls-color-auto-randomization-interval-slider"
+                  min={1}
+                  max={60}
+                  step={1}
+                  storePath={[
+                    "randomizationSettings",
+                    "colorAutoRandomizationInterval",
+                  ]}
+                  sliderLabel="Interval"
+                />
+              </div>
+            </ControlGroup>
             <SlimeStoreSelectControl
               label="Color Auto Rand. Mode"
-              labelHoverTabContentDisplay={[]}
-              baseInputId="randomization-controls-color-auto-randomization-mode-select"
+              labelHoverTabContentDisplay={[
+                "Color Auto Randomization Mode",
+                <TabContentDisplayAreaContentWrapper>
+                  <ul className="list-inside list-disc">
+                    <li>
+                      <em>Use Random Enabled Randomization Preset: </em>
+                      Randomly loads one of the <em>enabled</em> randomization
+                      presets from the <em>Simulation Randomization Presets</em>
+                      section below prior to randomizing the color settings. The
+                      settings in the <em>Color Randomization Settings</em>{" "}
+                      section are overwritten by the loaded preset.
+                    </li>
+                    <li>
+                      <em>Use Random Enabled Color Preset: </em>
+                      Randomly loads one of the <em>enabled</em> color presets
+                      from the <em>Color Presets</em> tab prior to randomizing
+                      the color settings.
+                    </li>
+                    <li>
+                      <em>Use Current Randomization Settings: </em>
+                      Uses the current randomization settings without loading
+                      any presets.
+                    </li>
+                  </ul>
+                </TabContentDisplayAreaContentWrapper>,
+              ]}
+              baseInputId="rand-controls-color-auto-randomization-mode-select"
               storePath={[
                 "randomizationSettings",
                 "colorAutoRandomizationMode",
@@ -202,16 +247,19 @@ export default function ColorControls() {
             />
             <SlimeStoreSwitchControl
               label="Allow Color Rand."
-              labelHoverTabContentDisplay={[]}
+              labelHoverTabContentDisplay={[
+                "Allow Color Randomization",
+                "Enables or disables color randomization. This toggles randomization completely - independent of the auto-randomization toggle above. Auto-randomization will not randomize color settings if this is disabled.",
+              ]}
               baseId="color-randomization-enabled-switch"
               storePath={["randomizationSettings", "allowColorRandomization"]}
             />
             <ButtonControlGroup
-              label="Quick Rand."
               labelHoverTabContentDisplay={[
-                "Quick Randomization",
-                "A set of buttons to quickly randomize various settings.",
+                "Randomize Color Settings",
+                "Randomizes the color settings using the current randomization settings on the Randomization Controls tab (the dice icon below). Will not randomize if color randomization is disabled.",
               ]}
+              justifyContent="center"
               buttonConfigs={[
                 {
                   label: "Randomize Color Settings",
@@ -228,12 +276,31 @@ export default function ColorControls() {
           <AccordionControlsItem
             value="color-controls-presets"
             label="Presets"
-            labelHoverTabContentDisplay={["Presets"]}
+            labelHoverTabContentDisplay={[
+              "Presets",
+              "Manage and save color presets. Default presets cannot be overwritten or deleted.",
+            ]}
           >
-            <ControlGroup justifyContent="center">
+            <ControlGroup
+              labelHoverTabContentDisplay={[
+                "Save Current Settings as Preset",
+                "Allows you to save the current color settings as a preset. Clicking this button will open a dialog to enter the preset name prior to saving. All color preset names must be unique. You can manage and apply your saved presets below. Default presets cannot be overwritten or deleted.",
+              ]}
+              justifyContent="center"
+            >
               <SaveCurrentSettingsAsPresetPopoverButton presetType="Color Only" />
             </ControlGroup>
             <ButtonControlGroup
+              labelHoverTabContentDisplay={[
+                "Enable/Disable Load on Auto Rand - All Color Presets",
+                <TabContentDisplayAreaContentWrapper>
+                  Enables or disables all color presets for load on auto
+                  randomization. When the color auto-randomization mode is set
+                  to <em>Use Random Enabled Color Preset</em>, one of the
+                  enabled color presets will be randomly loaded when the color
+                  settings are auto-randomized.
+                </TabContentDisplayAreaContentWrapper>,
+              ]}
               justifyContent="center"
               buttonConfigs={[
                 {
@@ -285,12 +352,29 @@ export default function ColorControls() {
           <AccordionControlsItem
             value="color-controls-color-settings"
             label="Color Settings"
+            labelHoverTabContentDisplay={[
+              "Color Settings",
+              <TabContentDisplayAreaContentWrapper>
+                Controls to modify the color settings. For information on how
+                the procedural color palette (the "Red", "Green", and "Blue"
+                sliders below) works see{" "}
+                <a
+                  href="https://iquilezles.org/articles/palettes/"
+                  className="text-sky-400 underline"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  this article
+                </a>{" "}
+                by Iñigo Quílez.
+              </TabContentDisplayAreaContentWrapper>,
+            ]}
           >
             <SlimeStoreColorPickerControl
               label="Background Color"
               labelHoverTabContentDisplay={[
                 "Background Color",
-                "Does what it says on the box.",
+                "Sows chaos and woe. Or sets the background color. One of those.",
               ]}
               baseId="background-color"
               storePath={["colorSettings", "backgroundColor"]}
@@ -298,6 +382,10 @@ export default function ColorControls() {
 
             <SlimeStoreSliderControl
               label="Red Y-Offset"
+              labelHoverTabContentDisplay={[
+                "Red Y-Offset",
+                "Controls the y-offset of the red cosine wave used to generate the procedural color palette. Move the slider to see how it affects the colors.",
+              ]}
               baseInputId="procedural-color-palette-r-y-offset"
               min={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.yOffset!.min}
               max={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.yOffset!.max}
