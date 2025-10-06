@@ -1,14 +1,7 @@
 import { PerformanceMonitor, Plane, useFBO } from "@react-three/drei";
 import { createPortal, extend, useFrame } from "@react-three/fiber";
 import { produce } from "immer";
-import {
-  Fragment,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import useSlimeStore from "../../stores/useSlimeStore.tsx";
 import * as UTILS from "../../utils/utils.tsx";
@@ -909,16 +902,16 @@ export default function SlimeClock() {
   }, []);
 
   return (
-    <Fragment>
+    <>
       <InitializationHandler />
       <SettingsHistoryListener />
       {displaySlimeClock && (
-        <Fragment>
+        <>
           <SlimeClockRenderer />
           <RandomizationListener />
           <UniformListeners />
-        </Fragment>
+        </>
       )}
-    </Fragment>
+    </>
   );
 }

@@ -21,6 +21,15 @@ import TabContentContainer from "./TabContentContainer";
 import TabContentDisplayAreaContentWrapper from "./TabContentDisplayAreaContentWrapper";
 import TabContentScrollArea from "./TabContentScrollArea";
 
+type ClockStyleOption = {
+  value: "digital" | "analog";
+  label: string;
+};
+const clockStyleOptions: ClockStyleOption[] = [
+  { value: "digital", label: "Digital" },
+  { value: "analog", label: "Analog" },
+] as const;
+
 type ClockDigitLayoutOption = {
   value: "horizontal" | "vertical";
   label: string;
@@ -34,7 +43,7 @@ type ClockDigitStyleOption = {
   value: ClockDigitStyleValue;
   label: string;
 };
-const clockStyleOptions: ClockDigitStyleOption[] = [
+const clockDigitStyleOptions: ClockDigitStyleOption[] = [
   { value: "7segment", label: "7 Segment" },
   { value: "14segment", label: "14 Segment" },
   { value: "dm80", label: "DM-80" },
@@ -148,6 +157,17 @@ export default function ClockControls() {
               "Allows you to configure the clock display settings.",
             ]}
           >
+            <SlimeStoreSelectControl
+              label="Clock Style"
+              baseInputId="clock-style-select"
+              placeholder="Clock Style"
+              storePath={["clockSettings", "clockStyle"]}
+              options={clockStyleOptions}
+              labelHoverTabContentDisplay={[
+                "Clock Style",
+                "Changes the style of the clock display.",
+              ]}
+            />
             <SlimeStoreSliderControl
               label="Size"
               baseInputId="clock-size-slider"
@@ -196,7 +216,7 @@ export default function ClockControls() {
               baseInputId="clock-digit-style-select"
               placeholder="Digit Style"
               storePath={["clockSettings", "digitStyle"]}
-              options={clockStyleOptions}
+              options={clockDigitStyleOptions}
               labelHoverTabContentDisplay={[
                 "Digit Style",
                 "Changes the digit style (font) of the clock display.",
