@@ -1,6 +1,6 @@
-import { Plane, Ring } from "@react-three/drei";
+import { Ring } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 import * as THREE from "three";
 import useSlimeStore from "../../../stores/useSlimeStore";
 
@@ -34,29 +34,55 @@ export default function AnalogClockDisplay() {
     }
   });
 
+  const material = useMemo(() => new THREE.MeshBasicMaterial(), []);
+  const geometry = useMemo(() => new THREE.PlaneGeometry(), []);
+
   return (
     <group
       position={[displayTextureWidth / 2, displayTextureHeight / 2, 0.0]}
       scale={(displayTextureHeight * clockSettings.size) / 100}
     >
-      <Ring args={[0.475, 0.5, 64, 1]}>
-        <meshBasicMaterial />
-      </Ring>
+      <Ring args={[0.475, 0.5, 64, 1]} material={material} />
       <group ref={hourGroupRef} position={[0, 0, 0]}>
-        <Plane args={[0.06, 0.36]} position={[0, 0.18, 0]}>
-          <meshBasicMaterial />
-        </Plane>
+        <mesh
+          geometry={geometry}
+          material={material}
+          scale={[0.06, 0.36, 1]}
+          position={[0, 0.18, 0]}
+        />
       </group>
       <group ref={minuteGroupRef} position={[0, 0, 0]}>
-        <Plane args={[0.04, 0.48]} position={[0, 0.24, 0]}>
-          <meshBasicMaterial />
-        </Plane>
+        <mesh
+          geometry={geometry}
+          material={material}
+          scale={[0.04, 0.48, 1]}
+          position={[0, 0.24, 0]}
+        />
       </group>
       <group ref={secondGroupRef} position={[0, 0, 0]}>
-        <Plane args={[0.02, 0.49]} position={[0, 0.245, 0]}>
-          <meshBasicMaterial />
-        </Plane>
+        <mesh
+          geometry={geometry}
+          material={material}
+          scale={[0.02, 0.49, 1]}
+          position={[0, 0.245, 0]}
+        />
       </group>
+      {Array.from({ length: 12 }).map((_, index) => {
+        const angle = (index / 12) * Math.PI * 2;
+        const factor = index % 3 === 0 ? 0 : 0.025;
+        const x = Math.sin(angle) * (0.44 + factor);
+        const y = Math.cos(angle) * (0.44 + factor);
+        return (
+          <mesh
+            key={index}
+            geometry={geometry}
+            material={material}
+            position={[x, y, 0]}
+            scale={[0.04, 0.08 * (index % 3 === 0 ? 1 : 0.7), 1]}
+            rotation-z={-angle}
+          />
+        );
+      })}
     </group>
   );
 }
