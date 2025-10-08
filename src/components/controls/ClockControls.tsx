@@ -1,6 +1,7 @@
 import { produce } from "immer";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { CLOCK_CONTROLS_CONFIGS } from "../../constants/constants";
+import { TIME_ZONE_NAMES } from "../../constants/timeZoneNames";
 import useSlimeStore from "../../stores/useSlimeStore";
 import type {
   ClockDigitStyleValue,
@@ -10,6 +11,7 @@ import type {
 import CodeBlock from "../code-block/CodeBlock";
 import AccordionControlsItem from "./AccordionControlsItem";
 import AccordionControlsWrapper from "./AccordionControlsWrapper";
+import ButtonControlGroup from "./ButtonControlGroup";
 import ControlGroup from "./ControlGroup";
 import SaveCurrentSettingsAsPresetPopoverButton from "./SaveCurrentSettingsAsPresetPopoverButton";
 import SimulationPresetLoadSaveControl from "./SimulationPresetLoadSaveControl";
@@ -20,6 +22,15 @@ import SlimeStoreSwitchControl from "./SlimeStoreSwitchControl";
 import TabContentContainer from "./TabContentContainer";
 import TabContentDisplayAreaContentWrapper from "./TabContentDisplayAreaContentWrapper";
 import TabContentScrollArea from "./TabContentScrollArea";
+
+type TimeZoneOption = {
+  value: string;
+  label: string;
+};
+const timeZoneOptions: TimeZoneOption[] = TIME_ZONE_NAMES.map((tz) => ({
+  value: tz,
+  label: tz.replace("_", " "),
+}));
 
 type ClockStyleOption = {
   value: "digital" | "analog";
@@ -91,6 +102,66 @@ export default function ClockControls() {
     );
   }
 
+  const lastAutomaticallySetTimeOffsetsAtRef = useRef(0);
+  function automaticallySetTimeOffsets() {
+    if (Date.now() - lastAutomaticallySetTimeOffsetsAtRef.current < 5000)
+      return;
+    lastAutomaticallySetTimeOffsetsAtRef.current = Date.now();
+    fetch("https://worldtimeapi.org/api/timezone/etc/utc", {
+      signal: AbortSignal.timeout(1),
+    })
+      .then((response) => response.json())
+      .then((result) => {
+        const responseUnixTime = result.unixtime * 1000;
+        const systemUnixTime = Date.now();
+        const timeOffset = responseUnixTime - systemUnixTime;
+
+        const timeOffsetMinutesOnly = Math.trunc(timeOffset / (60 * 1000));
+        const timeOffsetSecondsOnly = Math.trunc(
+          (timeOffset % (60 * 1000)) / 1000,
+        );
+        const timeOffsetMsOnly = timeOffset % 1000;
+
+        useSlimeStore.setState(
+          produce((state) => {
+            state.clockSettings.timeOffsetMinutesOnly = timeOffsetMinutesOnly;
+            state.clockSettings.timeOffsetSecondsOnly = timeOffsetSecondsOnly;
+            state.clockSettings.timeOffsetMsOnly = timeOffsetMsOnly;
+            state.clockSettings.timeOffsetTotal = timeOffset;
+            state.toast.title = "Sync. Successful";
+            state.toast.description = `Time offsets automatically set to ${timeOffsetMinutesOnly} minute(s), ${timeOffsetSecondsOnly} second(s), and ${timeOffsetMsOnly} millisecond(s).`;
+            state.toast.type = "success";
+            state.toast.lastTriggeredAt = Date.now();
+          }),
+        );
+      })
+      .catch((e) => {
+        if (e.name === "TimeoutError") {
+          useSlimeStore.setState(
+            produce((state) => {
+              state.toast.title = "Sync. Failed";
+              state.toast.description =
+                "Request timed out. Please check your internet connection and try again.";
+              state.toast.type = "error";
+              state.toast.lastTriggeredAt = Date.now();
+            }),
+          );
+          console.error("Timeout while syncing time offsets", e);
+        } else {
+          useSlimeStore.setState(
+            produce((state) => {
+              state.toast.title = "Sync. Failed";
+              state.toast.description =
+                "An error occurred while syncing time offsets. Please check your internet connection and try again.";
+              state.toast.type = "error";
+              state.toast.lastTriggeredAt = Date.now();
+            }),
+          );
+          console.error("Error while syncing time offsets", e);
+        }
+      });
+  }
+
   return (
     <TabContentContainer tabsValue="clock-controls">
       <TabContentScrollArea title="Clock">
@@ -157,6 +228,65 @@ export default function ClockControls() {
               "Allows you to configure the clock display settings.",
             ]}
           >
+            <SlimeStoreSelectControl
+              label="Time Zone"
+              baseInputId="clock-controls-clock-settings-clock-time-zone-select"
+              storePath={["clockSettings", "timeZone"]}
+              options={timeZoneOptions}
+              labelHoverTabContentDisplay={[
+                "Time Zone",
+                "Selects the time zone for the clock. Defaults to your system time zone.",
+              ]}
+            />
+            <ButtonControlGroup
+              label="Sync. Time Offsets"
+              labelHoverTabContentDisplay={[
+                "Syncronize Time Offsets",
+                "Sets the minutes, seconds, and milliseconds time offsets to compensate for any difference between your system's reported time and actual time. This is useful if your system clock is slightly off (like mine is). Requires an internet connection to work.",
+              ]}
+              buttonConfigs={[
+                {
+                  label: "Sync. Time Offsets",
+                  baseId:
+                    "clock-controls-clock-settings-sync-time-offsets-button",
+                  onClick: () => automaticallySetTimeOffsets(),
+                },
+              ]}
+            />
+            <SlimeStoreSliderControl
+              label="Time Offset (Minutes)"
+              labelHoverTabContentDisplay={[
+                "Time Offset (Minutes)",
+                'Offsets the clock by a specified number of minutes. Should really only be used if your system clock is slightly off (like mine is). Can be automatically set using the "Sync. Time Offsets" button above.',
+              ]}
+              min={-59}
+              max={59}
+              storePath={["clockSettings", "timeOffsetMinutesOnly"]}
+              baseInputId="clock-controls-clock-settings-clock-time-offset-minutes-slider"
+            />
+            <SlimeStoreSliderControl
+              label="Time Offset (Seconds)"
+              labelHoverTabContentDisplay={[
+                "Time Offset (Seconds)",
+                'Offsets the clock by a specified number of seconds. Should really only be used if your system clock is slightly off (like mine is). Can be automatically set using the "Sync. Time Offsets" button above.',
+              ]}
+              min={-59}
+              max={59}
+              storePath={["clockSettings", "timeOffsetSecondsOnly"]}
+              baseInputId="clock-controls-clock-settings-clock-time-offset-seconds-slider"
+            />
+            <SlimeStoreSliderControl
+              label="Time Offset (Milliseconds)"
+              labelHoverTabContentDisplay={[
+                "Time Offset (Milliseconds)",
+                'Offsets the clock by a specified number of milliseconds. Should really only be used if your system clock is slightly off (like mine is). Can be automatically set using the "Sync. Time Offsets" button above.',
+              ]}
+              min={-999}
+              max={999}
+              step={1}
+              storePath={["clockSettings", "timeOffsetMsOnly"]}
+              baseInputId="clock-controls-clock-settings-clock-time-offset-ms-slider"
+            />
             <SlimeStoreSelectControl
               label="Clock Style"
               baseInputId="clock-style-select"

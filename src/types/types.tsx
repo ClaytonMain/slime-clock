@@ -26,9 +26,17 @@ export interface LoadableClockSettings {
   clockShadowOpacity: number;
   clockShadowColor: string;
   digitFadeSpeed: number;
+  showDigitSeconds: boolean;
+  showDigitAmPm: boolean;
 }
-// To match the SimulationSettings and ColorSettings interface layout.
-export type ClockSettings = LoadableClockSettings;
+export interface ClockSettings extends LoadableClockSettings {
+  syncTimeOffsetsAutomatically: boolean;
+  timeZone: string;
+  timeOffsetMinutesOnly: number;
+  timeOffsetSecondsOnly: number;
+  timeOffsetMsOnly: number;
+  timeOffsetTotal: number;
+}
 
 export interface LoadableSimulationSettings {
   speed: number;
@@ -53,7 +61,6 @@ export interface LoadableSimulationSettings {
   trailBackgroundDecayRate: number;
   trailBackgroundDiffuseRate: number;
 }
-
 export interface SimulationSettings extends LoadableSimulationSettings {
   settingsSetPreviously: boolean;
 

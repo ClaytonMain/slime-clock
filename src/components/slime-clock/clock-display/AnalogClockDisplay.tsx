@@ -1,5 +1,6 @@
 import { Ring } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
+import { DateTime } from "luxon";
 import { useMemo, useRef } from "react";
 import * as THREE from "three";
 import useSlimeStore from "../../../stores/useSlimeStore";
@@ -16,18 +17,22 @@ export default function AnalogClockDisplay() {
   const minuteGroupRef = useRef<THREE.Group>(null!);
   const secondGroupRef = useRef<THREE.Group>(null!);
 
-  const hoursOffset = new Date().getTimezoneOffset() / 60;
-
   useFrame(() => {
     if (
       hourGroupRef.current &&
       minuteGroupRef.current &&
       secondGroupRef.current
     ) {
-      const date = Date.now();
-      const hours = date / 36e5 - hoursOffset;
-      const minutes = date / 6e4;
-      const seconds = date / 1e3;
+      const date = DateTime.now()
+        .setZone(clockSettings.timeZone)
+        .plus({ milliseconds: clockSettings.timeOffsetTotal });
+      const hours =
+        (date.hour % 12) +
+        date.minute / 60 +
+        date.second / 3600 +
+        date.millisecond / 3.6e6;
+      const minutes = date.minute + date.second / 60 + date.millisecond / 3.6e5;
+      const seconds = date.second + date.millisecond / 1e3;
       hourGroupRef.current.rotation.z = -(hours * (Math.PI / 6));
       minuteGroupRef.current.rotation.z = -(minutes * (Math.PI / 30));
       secondGroupRef.current.rotation.z = -(seconds * (Math.PI / 30));

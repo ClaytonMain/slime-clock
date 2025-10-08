@@ -300,6 +300,15 @@ const useSlimeStore = create<SlimeStore>()(
           clockShadowOpacity: DEFAULT_CLOCK_SETTINGS.clockShadowOpacity,
           clockShadowColor: DEFAULT_CLOCK_SETTINGS.clockShadowColor,
           digitFadeSpeed: DEFAULT_CLOCK_SETTINGS.digitFadeSpeed,
+          showDigitSeconds: DEFAULT_CLOCK_SETTINGS.showDigitSeconds,
+          showDigitAmPm: DEFAULT_CLOCK_SETTINGS.showDigitAmPm,
+          syncTimeOffsetsAutomatically:
+            DEFAULT_CLOCK_SETTINGS.syncTimeOffsetsAutomatically,
+          timeZone: DEFAULT_CLOCK_SETTINGS.timeZone,
+          timeOffsetMinutesOnly: DEFAULT_CLOCK_SETTINGS.timeOffsetMinutesOnly,
+          timeOffsetSecondsOnly: DEFAULT_CLOCK_SETTINGS.timeOffsetSecondsOnly,
+          timeOffsetMsOnly: DEFAULT_CLOCK_SETTINGS.timeOffsetMsOnly,
+          timeOffsetTotal: DEFAULT_CLOCK_SETTINGS.timeOffsetTotal,
         },
         simulationSettings: {
           // Nearly all of these values will be overridden in the

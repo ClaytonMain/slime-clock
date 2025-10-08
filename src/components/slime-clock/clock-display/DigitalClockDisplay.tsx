@@ -1,12 +1,10 @@
 import { Text } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
+import { DateTime } from "luxon";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import useSlimeStore from "../../../stores/useSlimeStore";
-import type {
-  ClockDigitStyleValue,
-  ClockHourFormatValue,
-} from "../../../types/types";
+import type { ClockDigitStyleValue, ClockSettings } from "../../../types/types";
 
 const SCALE_FACTORS: Record<ClockDigitStyleValue, number> = {
   "7segment": 1.0,
@@ -34,33 +32,26 @@ function getDigitFontUrl(style: ClockDigitStyleValue): string {
   }
 }
 
-function getFormattedDigitTime({
-  hourFormat,
-  digitLayout = "horizontal",
-  showSeconds = false,
-  showAmPm = false,
-  padHours = true,
-}: {
-  hourFormat: ClockHourFormatValue;
-  digitLayout?: "horizontal" | "vertical" | "not set";
-  showSeconds?: boolean;
-  showAmPm?: boolean;
-  padHours?: boolean;
-}): string {
-  const currentTime = new Date();
-  const nHours = currentTime.getHours() % (hourFormat === "24h" ? 24 : 12);
-  const hours = padHours ? String(nHours).padStart(2, "0") : String(nHours);
-  const minutes = String(currentTime.getMinutes()).padStart(2, "0");
-  const seconds = showSeconds
-    ? String(currentTime.getSeconds()).padStart(2, "0")
+function getFormattedDigitTime(clockSettings: ClockSettings): string {
+  const date = DateTime.now()
+    .setZone(clockSettings.timeZone)
+    .plus({ milliseconds: clockSettings.timeOffsetTotal });
+  const nHours =
+    date.hour % (clockSettings.hourFormat === "24h" ? 24 : 12) || 12;
+  const hours = clockSettings.padHours
+    ? String(nHours).padStart(2, "0")
+    : String(nHours).padStart(2, " ");
+  const minutes = String(date.minute).padStart(2, "0");
+  const seconds = clockSettings.showDigitSeconds
+    ? String(date.second).padStart(2, "0")
     : null;
   const amPm =
-    showAmPm && hourFormat === "12h"
-      ? currentTime.getHours() >= 12
+    clockSettings.showDigitAmPm && clockSettings.hourFormat === "12h"
+      ? date.hour >= 12
         ? "PM"
         : "AM"
       : "";
-  if (digitLayout === "horizontal") {
+  if (clockSettings.digitLayout === "horizontal") {
     return `${[hours, minutes, seconds].filter(Boolean).join(":")}${amPm}`;
   } else {
     return `${hours}\n${minutes}`;
@@ -70,13 +61,7 @@ function getFormattedDigitTime({
 export default function DigitalClockDisplay() {
   const clockSettings = useSlimeStore((state) => state.clockSettings);
   const [previousDisplayText, setPreviousDisplayText] = useState<string>(
-    getFormattedDigitTime({
-      hourFormat: clockSettings.hourFormat,
-      digitLayout: clockSettings.digitLayout,
-      showSeconds: false,
-      showAmPm: false,
-      padHours: clockSettings.padHours,
-    }) || "",
+    getFormattedDigitTime(clockSettings) || "",
   );
   const [displayText1, setDisplayText1] = useState<string>(previousDisplayText);
   const [displayText2, setDisplayText2] = useState<string>(previousDisplayText);
@@ -120,13 +105,7 @@ export default function DigitalClockDisplay() {
       }
     }
 
-    const formattedTime = getFormattedDigitTime({
-      hourFormat: clockSettings.hourFormat,
-      digitLayout: clockSettings.digitLayout,
-      showSeconds: false,
-      showAmPm: false,
-      padHours: clockSettings.padHours,
-    });
+    const formattedTime = getFormattedDigitTime(clockSettings);
     if (formattedTime === previousDisplayText) return;
     const date = new Date();
     const minutes = date.getMinutes();

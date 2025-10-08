@@ -1,3 +1,4 @@
+import { DateTime } from "luxon";
 import type {
   AgentStartTypeDropdownOption,
   ClockSettings,
@@ -34,6 +35,14 @@ export const DEFAULT_CLOCK_SETTINGS: ClockSettings = {
   clockShadowOpacity: 0.1,
   clockShadowColor: "#6f6f6f",
   digitFadeSpeed: 1.0,
+  showDigitSeconds: false,
+  showDigitAmPm: false,
+  syncTimeOffsetsAutomatically: false,
+  timeZone: DateTime.now().zoneName,
+  timeOffsetMinutesOnly: 0,
+  timeOffsetSecondsOnly: 0,
+  timeOffsetMsOnly: 0,
+  timeOffsetTotal: 0,
 };
 export const CLOCK_CONTROLS_CONFIGS: ControlsConfigs<ClockSettings> = {
   size: { min: 1, max: 100, step: 1 },
@@ -747,6 +756,8 @@ export const DEFAULT_PRESETS: LoadableSlimeStoreSettings[] = [
       clockShadowOpacity: 0.1,
       clockShadowColor: "#6f6f6f",
       digitFadeSpeed: 1.0,
+      showDigitSeconds: false,
+      showDigitAmPm: false,
     },
   },
   {
@@ -765,6 +776,8 @@ export const DEFAULT_PRESETS: LoadableSlimeStoreSettings[] = [
       clockShadowOpacity: 0.1,
       clockShadowColor: "#6f6f6f",
       digitFadeSpeed: 1.0,
+      showDigitSeconds: false,
+      showDigitAmPm: false,
     },
   },
   {
@@ -783,6 +796,8 @@ export const DEFAULT_PRESETS: LoadableSlimeStoreSettings[] = [
       clockShadowOpacity: 0.1,
       clockShadowColor: "#6f6f6f",
       digitFadeSpeed: 1.0,
+      showDigitSeconds: false,
+      showDigitAmPm: false,
     },
   },
   {
@@ -801,6 +816,8 @@ export const DEFAULT_PRESETS: LoadableSlimeStoreSettings[] = [
       clockShadowOpacity: 0.1,
       clockShadowColor: "#6f6f6f",
       digitFadeSpeed: 1.0,
+      showDigitSeconds: false,
+      showDigitAmPm: false,
     },
   },
   {
@@ -819,6 +836,8 @@ export const DEFAULT_PRESETS: LoadableSlimeStoreSettings[] = [
       clockShadowOpacity: 0.1,
       clockShadowColor: "#6f6f6f",
       digitFadeSpeed: 1.0,
+      showDigitSeconds: false,
+      showDigitAmPm: false,
     },
   },
   {
@@ -837,6 +856,8 @@ export const DEFAULT_PRESETS: LoadableSlimeStoreSettings[] = [
       clockShadowOpacity: 0.1,
       clockShadowColor: "#6f6f6f",
       digitFadeSpeed: 1.0,
+      showDigitSeconds: false,
+      showDigitAmPm: false,
     },
   },
   {
