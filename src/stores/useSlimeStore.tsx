@@ -1,3 +1,4 @@
+import { DateTime } from "luxon";
 import type { ReactNode } from "react";
 import * as THREE from "three";
 import { create } from "zustand";
@@ -58,6 +59,7 @@ interface ControlsState {
 interface SlimeStore {
   debug: boolean;
   debugConsoleLogger: (...data: unknown[]) => void;
+  getClockDateTime: () => DateTime;
   framerateGaugedPreviously: boolean;
   framerateGaugeStartedAt: number;
   framerateGaugeCompletedAt: number;
@@ -177,6 +179,11 @@ const useSlimeStore = create<SlimeStore>()(
           if (get().debug) {
             console.log(...data);
           }
+        },
+        getClockDateTime: () => {
+          return DateTime.now()
+            .setZone(get().clockSettings.timeZone)
+            .plus({ milliseconds: get().clockSettings.timeOffsetTotal });
         },
         framerateGaugedPreviously: false,
         framerateGaugeStartedAt: 0,

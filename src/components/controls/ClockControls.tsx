@@ -103,7 +103,7 @@ export default function ClockControls() {
   }
 
   const lastAutomaticallySetTimeOffsetsAtRef = useRef(0);
-  function automaticallySetTimeOffsets() {
+  function automaticallySetTimeOffsets(displayToastMessage: boolean = true) {
     if (Date.now() - lastAutomaticallySetTimeOffsetsAtRef.current < 5000)
       return;
     lastAutomaticallySetTimeOffsetsAtRef.current = Date.now();
@@ -128,10 +128,12 @@ export default function ClockControls() {
             state.clockSettings.timeOffsetSecondsOnly = timeOffsetSecondsOnly;
             state.clockSettings.timeOffsetMsOnly = timeOffsetMsOnly;
             state.clockSettings.timeOffsetTotal = timeOffset;
-            state.toast.title = "Sync. Successful";
-            state.toast.description = `Time offsets automatically set to ${timeOffsetMinutesOnly} minute(s), ${timeOffsetSecondsOnly} second(s), and ${timeOffsetMsOnly} millisecond(s).`;
-            state.toast.type = "success";
-            state.toast.lastTriggeredAt = Date.now();
+            if (displayToastMessage) {
+              state.toast.title = "Sync. Successful";
+              state.toast.description = `Time offsets automatically set to ${timeOffsetMinutesOnly} minute(s), ${timeOffsetSecondsOnly} second(s), and ${timeOffsetMsOnly} millisecond(s).`;
+              state.toast.type = "success";
+              state.toast.lastTriggeredAt = Date.now();
+            }
           }),
         );
       })
@@ -139,22 +141,26 @@ export default function ClockControls() {
         if (e.name === "TimeoutError") {
           useSlimeStore.setState(
             produce((state) => {
-              state.toast.title = "Sync. Failed";
-              state.toast.description =
-                "Request timed out. Please check your internet connection and try again.";
-              state.toast.type = "error";
-              state.toast.lastTriggeredAt = Date.now();
+              if (displayToastMessage) {
+                state.toast.title = "Sync. Failed";
+                state.toast.description =
+                  "Request timed out. Please check your internet connection and try again.";
+                state.toast.type = "error";
+                state.toast.lastTriggeredAt = Date.now();
+              }
             }),
           );
           console.error("Timeout while syncing time offsets", e);
         } else {
           useSlimeStore.setState(
             produce((state) => {
-              state.toast.title = "Sync. Failed";
-              state.toast.description =
-                "An error occurred while syncing time offsets. Please check your internet connection and try again.";
-              state.toast.type = "error";
-              state.toast.lastTriggeredAt = Date.now();
+              if (displayToastMessage) {
+                state.toast.title = "Sync. Failed";
+                state.toast.description =
+                  "An error occurred while syncing time offsets. Please check your internet connection and try again.";
+                state.toast.type = "error";
+                state.toast.lastTriggeredAt = Date.now();
+              }
             }),
           );
           console.error("Error while syncing time offsets", e);
@@ -162,13 +168,33 @@ export default function ClockControls() {
       });
   }
 
+  useEffect(() => {
+    const clockSettings = useSlimeStore.getState().clockSettings;
+    if (clockSettings.syncTimeOffsetsAutomatically) {
+      automaticallySetTimeOffsets(false);
+      const interval = setInterval(
+        () => {
+          automaticallySetTimeOffsets(false);
+        },
+        60 * 60 * 1000,
+      );
+      return () => clearInterval(interval);
+    }
+  }, []);
+
   return (
     <TabContentContainer tabsValue="clock-controls">
       <TabContentScrollArea title="Clock">
         <AccordionControlsWrapper
           accordionId="clock-controls-accordion"
           type="multiple"
-          defaultValue={["clock-settings", "clock-controls-presets"]}
+          defaultValue={[
+            "clock-settings",
+            "time-settings",
+            "clock-controls-presets",
+            "digital-clock-specific-settings",
+            "analog-clock-specific-settings",
+          ]}
         >
           <AccordionControlsItem
             value="clock-controls-presets"
@@ -229,65 +255,6 @@ export default function ClockControls() {
             ]}
           >
             <SlimeStoreSelectControl
-              label="Time Zone"
-              baseInputId="clock-controls-clock-settings-clock-time-zone-select"
-              storePath={["clockSettings", "timeZone"]}
-              options={timeZoneOptions}
-              labelHoverTabContentDisplay={[
-                "Time Zone",
-                "Selects the time zone for the clock. Defaults to your system time zone.",
-              ]}
-            />
-            <ButtonControlGroup
-              label="Sync. Time Offsets"
-              labelHoverTabContentDisplay={[
-                "Syncronize Time Offsets",
-                "Sets the minutes, seconds, and milliseconds time offsets to compensate for any difference between your system's reported time and actual time. This is useful if your system clock is slightly off (like mine is). Requires an internet connection to work.",
-              ]}
-              buttonConfigs={[
-                {
-                  label: "Sync. Time Offsets",
-                  baseId:
-                    "clock-controls-clock-settings-sync-time-offsets-button",
-                  onClick: () => automaticallySetTimeOffsets(),
-                },
-              ]}
-            />
-            <SlimeStoreSliderControl
-              label="Time Offset (Minutes)"
-              labelHoverTabContentDisplay={[
-                "Time Offset (Minutes)",
-                'Offsets the clock by a specified number of minutes. Should really only be used if your system clock is slightly off (like mine is). Can be automatically set using the "Sync. Time Offsets" button above.',
-              ]}
-              min={-59}
-              max={59}
-              storePath={["clockSettings", "timeOffsetMinutesOnly"]}
-              baseInputId="clock-controls-clock-settings-clock-time-offset-minutes-slider"
-            />
-            <SlimeStoreSliderControl
-              label="Time Offset (Seconds)"
-              labelHoverTabContentDisplay={[
-                "Time Offset (Seconds)",
-                'Offsets the clock by a specified number of seconds. Should really only be used if your system clock is slightly off (like mine is). Can be automatically set using the "Sync. Time Offsets" button above.',
-              ]}
-              min={-59}
-              max={59}
-              storePath={["clockSettings", "timeOffsetSecondsOnly"]}
-              baseInputId="clock-controls-clock-settings-clock-time-offset-seconds-slider"
-            />
-            <SlimeStoreSliderControl
-              label="Time Offset (Milliseconds)"
-              labelHoverTabContentDisplay={[
-                "Time Offset (Milliseconds)",
-                'Offsets the clock by a specified number of milliseconds. Should really only be used if your system clock is slightly off (like mine is). Can be automatically set using the "Sync. Time Offsets" button above.',
-              ]}
-              min={-999}
-              max={999}
-              step={1}
-              storePath={["clockSettings", "timeOffsetMsOnly"]}
-              baseInputId="clock-controls-clock-settings-clock-time-offset-ms-slider"
-            />
-            <SlimeStoreSelectControl
               label="Clock Style"
               baseInputId="clock-style-select"
               placeholder="Clock Style"
@@ -319,6 +286,45 @@ export default function ClockControls() {
                 </TabContentDisplayAreaContentWrapper>,
               ]}
             />
+            <SlimeStoreSwitchControl
+              label="Show Clock Shadow"
+              baseId="clock-show-shadow-switch"
+              storePath={["clockSettings", "showClockShadow"]}
+              labelHoverTabContentDisplay={[
+                "Show Clock Shadow",
+                "Whether to display a transparent shadow of the clock over the simulation.",
+              ]}
+            />
+            <SlimeStoreSliderControl
+              label="Clock Shadow Opacity"
+              labelHoverTabContentDisplay={[
+                "Clock Shadow Opacity",
+                "Changes the opacity of the clock shadow.",
+              ]}
+              baseInputId="clock-shadow-opacity-slider"
+              min={CLOCK_CONTROLS_CONFIGS.clockShadowOpacity!.min}
+              max={CLOCK_CONTROLS_CONFIGS.clockShadowOpacity!.max}
+              step={CLOCK_CONTROLS_CONFIGS.clockShadowOpacity!.step}
+              storePath={["clockSettings", "clockShadowOpacity"]}
+            />
+            <SlimeStoreColorPickerControl
+              label="Clock Shadow Color"
+              labelHoverTabContentDisplay={[
+                "Clock Shadow Color",
+                "Changes the color of the clock shadow.",
+              ]}
+              baseId="clock-shadow-color-picker"
+              storePath={["clockSettings", "clockShadowColor"]}
+            />
+          </AccordionControlsItem>
+          <AccordionControlsItem
+            value="digital-clock-specific-settings"
+            label="Digital Clock Settings"
+            labelHoverTabContentDisplay={[
+              "Digital Clock Settings",
+              "Settings specific to the digital clock style.",
+            ]}
+          >
             <SlimeStoreSelectControl
               label="Hour Format"
               baseInputId="clock-hour-format-select"
@@ -373,35 +379,100 @@ export default function ClockControls() {
               step={CLOCK_CONTROLS_CONFIGS.digitFadeSpeed!.step}
               storePath={["clockSettings", "digitFadeSpeed"]}
             />
-            <SlimeStoreSwitchControl
-              label="Show Clock Shadow"
-              baseId="clock-show-shadow-switch"
-              storePath={["clockSettings", "showClockShadow"]}
+          </AccordionControlsItem>
+          <AccordionControlsItem
+            value="analog-clock-specific-settings"
+            label="Analog Clock Settings"
+            labelHoverTabContentDisplay={[
+              "Analog Clock Settings",
+              "Settings specific to the analog clock style. Currently nothing (sorry about that).",
+            ]}
+          >
+            <ControlGroup
               labelHoverTabContentDisplay={[
-                "Show Clock Shadow",
-                "Whether to display a transparent shadow of the clock over the simulation.",
+                "Analog Clock Settings",
+                "Nothing to see here sorry about that.",
+              ]}
+              justifyContent="center"
+            >
+              There's nothing here yet.
+            </ControlGroup>
+          </AccordionControlsItem>
+          <AccordionControlsItem
+            value="time-settings"
+            label="Time Settings"
+            labelHoverTabContentDisplay={[
+              "Time Settings",
+              "Time zone, time adjustment, etc. settings.",
+            ]}
+          >
+            <SlimeStoreSelectControl
+              label="Time Zone"
+              baseInputId="clock-controls-clock-settings-clock-time-zone-select"
+              storePath={["clockSettings", "timeZone"]}
+              options={timeZoneOptions}
+              labelHoverTabContentDisplay={[
+                "Time Zone",
+                "Selects the time zone for the clock. Defaults to your system time zone.",
+              ]}
+            />
+            <SlimeStoreSwitchControl
+              label="Sync. Time Offsets Automatically"
+              baseId="clock-controls-clock-settings-sync-time-offsets-automatically-switch"
+              storePath={["clockSettings", "syncTimeOffsetsAutomatically"]}
+              labelHoverTabContentDisplay={[
+                "Sync. Time Offsets Automatically",
+                "If enabled, the clock will automatically attempt to sync the time offsets about once per hour and on page refresh. Requires an internet connection to work.",
+              ]}
+            />
+            <ButtonControlGroup
+              label="Sync. Time Offsets Now"
+              labelHoverTabContentDisplay={[
+                "Syncronize Time Offsets Now",
+                "Sets the minutes, seconds, and milliseconds time offsets to compensate for any difference between your system's reported time and actual time. This is useful if your system clock is slightly off (like mine is). Requires an internet connection to work.",
+              ]}
+              buttonConfigs={[
+                {
+                  label: "Sync. Time Offsets Now",
+                  baseId:
+                    "clock-controls-clock-settings-sync-time-offsets-button",
+                  onClick: () => automaticallySetTimeOffsets(),
+                },
               ]}
             />
             <SlimeStoreSliderControl
-              label="Clock Shadow Opacity"
+              label="Time Offset (Minutes)"
               labelHoverTabContentDisplay={[
-                "Clock Shadow Opacity",
-                "Changes the opacity of the clock shadow.",
+                "Time Offset (Minutes)",
+                'Offsets the clock by a specified number of minutes. Should really only be used if your system clock is slightly off (like mine is). Can be automatically set using the "Sync. Time Offsets" button above.',
               ]}
-              baseInputId="clock-shadow-opacity-slider"
-              min={CLOCK_CONTROLS_CONFIGS.clockShadowOpacity!.min}
-              max={CLOCK_CONTROLS_CONFIGS.clockShadowOpacity!.max}
-              step={CLOCK_CONTROLS_CONFIGS.clockShadowOpacity!.step}
-              storePath={["clockSettings", "clockShadowOpacity"]}
+              min={-59}
+              max={59}
+              storePath={["clockSettings", "timeOffsetMinutesOnly"]}
+              baseInputId="clock-controls-clock-settings-clock-time-offset-minutes-slider"
             />
-            <SlimeStoreColorPickerControl
-              label="Clock Shadow Color"
+            <SlimeStoreSliderControl
+              label="Time Offset (Seconds)"
               labelHoverTabContentDisplay={[
-                "Clock Shadow Color",
-                "Changes the color of the clock shadow.",
+                "Time Offset (Seconds)",
+                'Offsets the clock by a specified number of seconds. Should really only be used if your system clock is slightly off (like mine is). Can be automatically set using the "Sync. Time Offsets" button above.',
               ]}
-              baseId="clock-shadow-color-picker"
-              storePath={["clockSettings", "clockShadowColor"]}
+              min={-59}
+              max={59}
+              storePath={["clockSettings", "timeOffsetSecondsOnly"]}
+              baseInputId="clock-controls-clock-settings-clock-time-offset-seconds-slider"
+            />
+            <SlimeStoreSliderControl
+              label="Time Offset (Milliseconds)"
+              labelHoverTabContentDisplay={[
+                "Time Offset (Milliseconds)",
+                'Offsets the clock by a specified number of milliseconds. Should really only be used if your system clock is slightly off (like mine is). Can be automatically set using the "Sync. Time Offsets" button above.',
+              ]}
+              min={-999}
+              max={999}
+              step={1}
+              storePath={["clockSettings", "timeOffsetMsOnly"]}
+              baseInputId="clock-controls-clock-settings-clock-time-offset-ms-slider"
             />
           </AccordionControlsItem>
         </AccordionControlsWrapper>

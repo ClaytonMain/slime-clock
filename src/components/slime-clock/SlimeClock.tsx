@@ -1,6 +1,7 @@
 import { PerformanceMonitor, Plane, useFBO } from "@react-three/drei";
 import { createPortal, extend, useFrame } from "@react-three/fiber";
 import { produce } from "immer";
+import { DateTime } from "luxon";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import useSlimeStore from "../../stores/useSlimeStore.tsx";
@@ -21,15 +22,14 @@ extend({ AgentDataMaterial, AgentPositionsMaterial, TrailMaterial });
 
 function SlimeClockRenderer() {
   const simulationSettings = useSlimeStore((state) => state.simulationSettings);
+  const getClockDateTime = useSlimeStore((state) => state.getClockDateTime);
 
   const prevMinutesRef = useRef(0);
   const simulationLastRandomizedAtMinutesRef = useRef(
-    Math.floor(Date.now() / 60000),
+    getClockDateTime().minute,
   );
-  const colorLastRandomizedAtMinutesRef = useRef(
-    Math.floor(Date.now() / 60000),
-  );
-  const lastRestartedAtMinutesRef = useRef(Math.floor(Date.now() / 60000));
+  const colorLastRandomizedAtMinutesRef = useRef(getClockDateTime().minute);
+  const lastRestartedAtMinutesRef = useRef(getClockDateTime().minute);
 
   const showGpuTextures = true;
 
@@ -216,10 +216,13 @@ function SlimeClockRenderer() {
   const framerateGaugeCompletedAt = useSlimeStore(
     (state) => state.framerateGaugeCompletedAt,
   );
+  const clockSettings = useSlimeStore((state) => state.clockSettings);
 
   useFrame(({ gl }, delta) => {
-    const currentMinutes = Math.floor(Date.now() / 1000 / 60);
-    const controlsClosedAtMinutes = Math.floor(controlsClosedAt / 1000 / 60);
+    const currentMinutes = getClockDateTime().minute;
+    const controlsClosedAtMinutes = DateTime.fromMillis(controlsClosedAt).plus({
+      milliseconds: clockSettings.timeOffsetTotal,
+    }).minute;
     if (currentMinutes !== prevMinutesRef.current) {
       prevMinutesRef.current = currentMinutes;
     }

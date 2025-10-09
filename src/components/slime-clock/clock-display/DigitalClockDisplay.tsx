@@ -1,6 +1,6 @@
 import { Text } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
-import { DateTime } from "luxon";
+import type { DateTime } from "luxon";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import useSlimeStore from "../../../stores/useSlimeStore";
@@ -32,10 +32,11 @@ function getDigitFontUrl(style: ClockDigitStyleValue): string {
   }
 }
 
-function getFormattedDigitTime(clockSettings: ClockSettings): string {
-  const date = DateTime.now()
-    .setZone(clockSettings.timeZone)
-    .plus({ milliseconds: clockSettings.timeOffsetTotal });
+function getFormattedDigitTime(
+  clockSettings: ClockSettings,
+  getClockDateTime: () => DateTime,
+): string {
+  const date = getClockDateTime();
   const nHours =
     date.hour % (clockSettings.hourFormat === "24h" ? 24 : 12) || 12;
   const hours = clockSettings.padHours
@@ -60,8 +61,9 @@ function getFormattedDigitTime(clockSettings: ClockSettings): string {
 
 export default function DigitalClockDisplay() {
   const clockSettings = useSlimeStore((state) => state.clockSettings);
+  const getClockDateTime = useSlimeStore((state) => state.getClockDateTime);
   const [previousDisplayText, setPreviousDisplayText] = useState<string>(
-    getFormattedDigitTime(clockSettings) || "",
+    getFormattedDigitTime(clockSettings, getClockDateTime) || "",
   );
   const [displayText1, setDisplayText1] = useState<string>(previousDisplayText);
   const [displayText2, setDisplayText2] = useState<string>(previousDisplayText);
@@ -105,7 +107,10 @@ export default function DigitalClockDisplay() {
       }
     }
 
-    const formattedTime = getFormattedDigitTime(clockSettings);
+    const formattedTime = getFormattedDigitTime(
+      clockSettings,
+      getClockDateTime,
+    );
     if (formattedTime === previousDisplayText) return;
     const date = new Date();
     const minutes = date.getMinutes();

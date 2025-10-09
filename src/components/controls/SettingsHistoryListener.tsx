@@ -79,9 +79,9 @@ export default function SettingsHistoryListener() {
 
       if (hasChanges) {
         const newEntry: LoadableSlimeStoreSettings = {
-          name: new Date(
-            Date.now() - clockSettings.timeOffset * 60 * 60 * 1000,
-          ).toLocaleString(),
+          name:
+            useSlimeStore.getState().getClockDateTime()?.toISO() ||
+            new Date().toISOString(),
           presetType: "Combination",
           clockSettings: newClockSettings as LoadableClockSettings,
           simulationSettings:
