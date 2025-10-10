@@ -71,6 +71,9 @@ export default function Controls() {
     useSlimeStore.setState(
       produce((state) => {
         state.controlsState.isOpen = open;
+        if (!open) {
+          state.controlsState.controlsClosedAt = Date.now();
+        }
       }),
     );
   }

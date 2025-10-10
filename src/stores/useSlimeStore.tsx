@@ -113,6 +113,9 @@ interface SlimeStore {
     colorRandomizationCompletedAt: number;
     lastLoadedSimulationRandomizationPreset: string | null;
     lastLoadedColorRandomizationPreset: string | null;
+    simulationLastRequestedAutoRestartAt: number;
+    simulationLastRequestedAutoRandomizationAt: number;
+    colorLastRequestedAutoRandomizationAt: number;
   };
   randomizationSettings: {
     simulationAutoRandomizationEnabled: boolean;
@@ -393,6 +396,9 @@ const useSlimeStore = create<SlimeStore>()(
           colorRandomizationCompletedAt: 0,
           lastLoadedSimulationRandomizationPreset: null,
           lastLoadedColorRandomizationPreset: null,
+          simulationLastRequestedAutoRestartAt: 0,
+          simulationLastRequestedAutoRandomizationAt: 0,
+          colorLastRequestedAutoRandomizationAt: 0,
         },
         randomizationSettings: {
           simulationAutoRandomizationEnabled: true,

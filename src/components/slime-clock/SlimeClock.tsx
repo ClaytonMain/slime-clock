@@ -1,7 +1,6 @@
 import { PerformanceMonitor, Plane, useFBO } from "@react-three/drei";
 import { createPortal, extend, useFrame } from "@react-three/fiber";
 import { produce } from "immer";
-import { DateTime } from "luxon";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import useSlimeStore from "../../stores/useSlimeStore.tsx";
@@ -20,16 +19,83 @@ import UniformListeners from "./UniformListeners.tsx";
 
 extend({ AgentDataMaterial, AgentPositionsMaterial, TrailMaterial });
 
+function enoughTimeSinceInitialization(): boolean {
+  const initializationCompletedAt =
+    useSlimeStore.getState().initialization.all.completedAt;
+  if (initializationCompletedAt === 0) return false;
+  return Date.now() - initializationCompletedAt > 15000;
+}
+
+function enoughTimeSinceFramerateGauge(): boolean {
+  const framerateGaugeCompletedAt =
+    useSlimeStore.getState().framerateGaugeCompletedAt;
+  if (framerateGaugeCompletedAt === 0) return false;
+  return Date.now() - framerateGaugeCompletedAt > 10000;
+}
+
+function enoughTimeSinceControlsClosed(): boolean {
+  const controlsState = useSlimeStore.getState().controlsState;
+  if (controlsState.isOpen) return false;
+  return Date.now() - controlsState.controlsClosedAt > 5000;
+}
+
+function canRequestAutoRestartNow(currentMinutes: number): boolean {
+  const randomizationState = useSlimeStore.getState().randomizationState;
+  const randomizationSettings = useSlimeStore.getState().randomizationSettings;
+
+  return (
+    randomizationSettings.autoRestartEnabled &&
+    Date.now() - randomizationState.simulationLastRequestedAutoRestartAt >
+      10000 &&
+    currentMinutes % randomizationSettings.autoRestartInterval === 0 &&
+    enoughTimeSinceInitialization() &&
+    enoughTimeSinceFramerateGauge() &&
+    enoughTimeSinceControlsClosed()
+  );
+}
+
+function canRequestAutoRandomizeSimulationNow(currentMinutes: number): boolean {
+  const randomizationState = useSlimeStore.getState().randomizationState;
+  const randomizationSettings = useSlimeStore.getState().randomizationSettings;
+
+  return (
+    randomizationSettings.simulationAutoRandomizationEnabled &&
+    Date.now() - randomizationState.simulationLastRequestedAutoRandomizationAt >
+      10000 &&
+    currentMinutes %
+      randomizationSettings.simulationAutoRandomizationInterval ===
+      0 &&
+    enoughTimeSinceInitialization() &&
+    enoughTimeSinceFramerateGauge() &&
+    enoughTimeSinceControlsClosed()
+  );
+}
+
+function canRequestAutoRandomizeColorNow(currentMinutes: number): boolean {
+  const randomizationState = useSlimeStore.getState().randomizationState;
+  const randomizationSettings = useSlimeStore.getState().randomizationSettings;
+
+  return (
+    randomizationSettings.colorAutoRandomizationEnabled &&
+    Date.now() - randomizationState.colorLastRequestedAutoRandomizationAt >
+      10000 &&
+    currentMinutes % randomizationSettings.colorAutoRandomizationInterval ===
+      0 &&
+    enoughTimeSinceInitialization() &&
+    enoughTimeSinceFramerateGauge() &&
+    enoughTimeSinceControlsClosed()
+  );
+}
+
 function SlimeClockRenderer() {
   const simulationSettings = useSlimeStore((state) => state.simulationSettings);
   const getClockDateTime = useSlimeStore((state) => state.getClockDateTime);
 
-  const prevMinutesRef = useRef(0);
-  const simulationLastRandomizedAtMinutesRef = useRef(
-    getClockDateTime().minute,
-  );
-  const colorLastRandomizedAtMinutesRef = useRef(getClockDateTime().minute);
-  const lastRestartedAtMinutesRef = useRef(getClockDateTime().minute);
+  const prevMinutesRef = useRef(getClockDateTime().minute);
+  const minuteChangedAtRef = useRef(Date.now());
+  const shouldRequestRestartRef = useRef(false);
+  const shouldRequestRandomizeSimulationRef = useRef(false);
+  const shouldRequestRandomizeColorRef = useRef(false);
 
   const showGpuTextures = true;
 
@@ -202,65 +268,37 @@ function SlimeClockRenderer() {
   const uTimeRef = useRef(0.0);
   const uPaletteCycleTimeRef = useRef(0.0);
 
-  const controlsAreOpen = useSlimeStore((state) => state.controlsState.isOpen);
-  const controlsClosedAt = useSlimeStore(
-    (state) => state.controlsState.controlsClosedAt,
-  );
   const colorSettings = useSlimeStore((state) => state.colorSettings);
   const randomizationSettings = useSlimeStore(
     (state) => state.randomizationSettings,
   );
-  const initializationCompletedAt = useSlimeStore(
-    (state) => state.initialization.all.completedAt,
-  );
-  const framerateGaugeCompletedAt = useSlimeStore(
-    (state) => state.framerateGaugeCompletedAt,
-  );
-  const clockSettings = useSlimeStore((state) => state.clockSettings);
 
   useFrame(({ gl }, delta) => {
     const currentMinutes = getClockDateTime().minute;
-    const controlsClosedAtMinutes = DateTime.fromMillis(controlsClosedAt).plus({
-      milliseconds: clockSettings.timeOffsetTotal,
-    }).minute;
     if (currentMinutes !== prevMinutesRef.current) {
       prevMinutesRef.current = currentMinutes;
+      minuteChangedAtRef.current = Date.now();
+      shouldRequestRestartRef.current =
+        canRequestAutoRestartNow(currentMinutes);
+      shouldRequestRandomizeSimulationRef.current =
+        canRequestAutoRandomizeSimulationNow(currentMinutes);
+      shouldRequestRandomizeColorRef.current =
+        canRequestAutoRandomizeColorNow(currentMinutes);
     }
 
-    if (controlsAreOpen) {
-      lastRestartedAtMinutesRef.current = currentMinutes;
-      simulationLastRandomizedAtMinutesRef.current = currentMinutes;
-      colorLastRandomizedAtMinutesRef.current = currentMinutes;
-    } else if (
-      !controlsAreOpen &&
-      (lastRestartedAtMinutesRef.current < controlsClosedAtMinutes ||
-        simulationLastRandomizedAtMinutesRef.current <
-          controlsClosedAtMinutes ||
-        colorLastRandomizedAtMinutesRef.current < controlsClosedAtMinutes ||
-        Date.now() - initializationCompletedAt < 15000 ||
-        Date.now() - controlsClosedAt < 10000 ||
-        Date.now() - framerateGaugeCompletedAt < 15000)
-    ) {
-      simulationLastRandomizedAtMinutesRef.current = currentMinutes;
-      colorLastRandomizedAtMinutesRef.current = currentMinutes;
-      lastRestartedAtMinutesRef.current = currentMinutes;
-    }
-
-    // TODO: Clean up this mess.
-    if (
-      !controlsAreOpen &&
-      randomizationSettings.autoRestartEnabled &&
-      currentMinutes % randomizationSettings.autoRestartInterval === 0 &&
-      currentMinutes !== lastRestartedAtMinutesRef.current
-    ) {
-      lastRestartedAtMinutesRef.current = currentMinutes;
+    if (shouldRequestRestartRef.current) {
+      shouldRequestRestartRef.current = false;
+      uTimeRef.current = 0.0;
+      uPaletteCycleTimeRef.current = 0.0;
       useSlimeStore.setState(
         produce((state) => {
+          state.randomizationState.simulationLastRequestedAutoRestartAt =
+            Date.now();
           state.randomizationState.simulationRestartRequestedAt = Date.now();
-          uTimeRef.current = 0.0;
-          uPaletteCycleTimeRef.current = 0.0;
-          if (randomizationSettings.simulationAutoRandomizationEnabled) {
-            simulationLastRandomizedAtMinutesRef.current = currentMinutes;
+          if (shouldRequestRandomizeSimulationRef.current) {
+            shouldRequestRandomizeSimulationRef.current = false;
+            state.randomizationState.simulationLastRequestedAutoRandomizationAt =
+              Date.now();
             if (
               [
                 "selectEnabledRandomizationPreset",
@@ -287,8 +325,10 @@ function SlimeClockRenderer() {
               };
             }
           }
-          if (randomizationSettings.colorAutoRandomizationEnabled) {
-            colorLastRandomizedAtMinutesRef.current = currentMinutes;
+          if (shouldRequestRandomizeColorRef.current) {
+            shouldRequestRandomizeColorRef.current = false;
+            state.randomizationState.colorLastRequestedAutoRandomizationAt =
+              Date.now();
             uPaletteCycleTimeRef.current = 0.0;
             if (
               [
@@ -320,22 +360,13 @@ function SlimeClockRenderer() {
       return;
     }
 
-    if (
-      !controlsAreOpen &&
-      randomizationSettings.simulationAutoRandomizationEnabled &&
-      currentMinutes %
-        randomizationSettings.simulationAutoRandomizationInterval ===
-        0 &&
-      currentMinutes !== simulationLastRandomizedAtMinutesRef.current
-    ) {
-      debugConsoleLogger(
-        "Simulation Randomization triggered",
-        simulationLastRandomizedAtMinutesRef.current,
-        currentMinutes,
-      );
-      simulationLastRandomizedAtMinutesRef.current = currentMinutes;
+    if (shouldRequestRandomizeSimulationRef.current) {
+      shouldRequestRandomizeSimulationRef.current = false;
+      debugConsoleLogger("Simulation Auto Randomization triggered");
       useSlimeStore.setState(
         produce((state) => {
+          state.randomizationState.simulationLastRequestedAutoRandomizationAt =
+            Date.now();
           if (
             [
               "selectEnabledRandomizationPreset",
@@ -344,17 +375,11 @@ function SlimeClockRenderer() {
           ) {
             const { settings, name } =
               UTILS.getAutoRandomizationSimulationRandomizationSettingsAndName();
-            useSlimeStore.setState(
-              produce((state) => {
-                state.randomizationState.agentRandomizationRequestedAt =
-                  Date.now();
-                state.randomizationState.trailRandomizationRequestedAt =
-                  Date.now();
-                state.randomizationSettings.simulation = settings;
-                state.randomizationState.lastLoadedSimulationRandomizationPreset =
-                  name;
-              }),
-            );
+            state.randomizationState.agentRandomizationRequestedAt = Date.now();
+            state.randomizationState.trailRandomizationRequestedAt = Date.now();
+            state.randomizationSettings.simulation = settings;
+            state.randomizationState.lastLoadedSimulationRandomizationPreset =
+              name;
           } else if (
             randomizationSettings.simulationAutoRandomizationMode ===
             "selectEnabledSimulationPreset"
@@ -370,21 +395,13 @@ function SlimeClockRenderer() {
       return;
     }
 
-    if (
-      !controlsAreOpen &&
-      randomizationSettings.colorAutoRandomizationEnabled &&
-      currentMinutes % randomizationSettings.colorAutoRandomizationInterval ===
-        0 &&
-      currentMinutes !== colorLastRandomizedAtMinutesRef.current
-    ) {
-      debugConsoleLogger(
-        "Color Randomization triggered",
-        colorLastRandomizedAtMinutesRef.current,
-        currentMinutes,
-      );
-      colorLastRandomizedAtMinutesRef.current = currentMinutes;
+    if (shouldRequestRandomizeColorRef.current) {
+      debugConsoleLogger("Color Auto Randomization triggered");
+      shouldRequestRandomizeColorRef.current = false;
       useSlimeStore.setState(
         produce((state) => {
+          state.randomizationState.colorLastRequestedAutoRandomizationAt =
+            Date.now();
           if (
             [
               "selectEnabledRandomizationPreset",
@@ -393,21 +410,15 @@ function SlimeClockRenderer() {
           ) {
             const { settings, name } =
               UTILS.getAutoRandomizationColorRandomizationSettingsAndName();
-            useSlimeStore.setState(
-              produce((state) => {
-                state.randomizationState.colorRandomizationRequestedAt =
-                  Date.now();
-                state.randomizationSettings.color = settings;
-                state.randomizationState.lastLoadedColorRandomizationPreset =
-                  name;
-              }),
-            );
+            state.randomizationState.colorRandomizationRequestedAt = Date.now();
+            state.randomizationSettings.color = settings;
+            state.randomizationState.lastLoadedColorRandomizationPreset = name;
           } else if (
             randomizationSettings.colorAutoRandomizationMode ===
             "selectEnabledColorPreset"
           ) {
             const settings = UTILS.getRandomEnabledColorPresetSettings();
-            console.log("Applying color preset", settings);
+            debugConsoleLogger("Applying color preset", settings);
             state.colorSettings = {
               ...state.colorSettings,
               ...settings,

@@ -107,7 +107,7 @@ export default function ClockControls() {
     if (Date.now() - lastAutomaticallySetTimeOffsetsAtRef.current < 5000)
       return;
     lastAutomaticallySetTimeOffsetsAtRef.current = Date.now();
-    fetch("https://worldtimeapi.org/api/timezone/etc/utc", {
+    fetch("http://worldtimeapi.org/api/timezone/etc/utc", {
       signal: AbortSignal.timeout(5000),
     })
       .then((response) => response.json())
