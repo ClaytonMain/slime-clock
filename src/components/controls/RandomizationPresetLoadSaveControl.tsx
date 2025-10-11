@@ -197,6 +197,7 @@ export default function RandomizationPresetLoadSaveControl({
       labelWidth={labelWidth}
       labelTextAlign={labelTextAlign}
       onPointerOver={onPointerOver}
+      adjustContainerFlexOnSmall={false}
     >
       <div
         className={"flex w-full flex-wrap items-center justify-start gap-1"}

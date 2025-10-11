@@ -119,7 +119,7 @@ export default function SlimeStoreSlider({
             min={min}
             max={max}
             step={step}
-            className="h-7 w-18 flex-initial border border-sky-800 bg-zinc-900 px-2 py-1 text-sm text-sky-50"
+            className="h-7 w-18 flex-initial border border-sky-800 bg-zinc-900 px-1 py-1 text-sm text-sky-50"
           />
           {sliderLabel && sliderLabelPosition === "bottom" && (
             <Label.Root
@@ -147,7 +147,7 @@ export default function SlimeStoreSlider({
               min={min}
               max={max}
               step={step}
-              className="h-7 w-18 flex-initial border border-sky-800 bg-zinc-900 px-2 py-1 text-sm text-sky-50"
+              className="h-7 w-18 flex-initial border border-sky-800 bg-zinc-900 px-1 py-1 text-sm text-sky-50"
             />
             <div className="text-xs">Min</div>
           </div>
@@ -165,7 +165,7 @@ export default function SlimeStoreSlider({
               min={min}
               max={max}
               step={step}
-              className="h-7 w-18 flex-initial border border-sky-800 bg-zinc-900 px-2 py-1 text-sm text-sky-50"
+              className="h-7 w-18 flex-initial border border-sky-800 bg-zinc-900 px-1 py-1 text-sm text-sky-50"
             />
             <div className="text-xs">Max</div>
           </div>
@@ -188,7 +188,7 @@ export default function SlimeStoreSlider({
               min={min}
               max={max}
               step={step}
-              className="h-7 w-16 flex-initial border border-sky-800 bg-zinc-900 px-2 py-1 text-sm text-sky-50"
+              className="h-7 w-18 flex-initial border border-sky-800 bg-zinc-900 px-1 py-1 text-sm text-sky-50"
             />
             <div className="text-xs">Min</div>
           </div>
@@ -207,7 +207,7 @@ export default function SlimeStoreSlider({
               min={min}
               max={max}
               step={step}
-              className="h-7 w-16 flex-initial border border-sky-800 bg-zinc-900 px-2 py-1 text-sm text-sky-50"
+              className="h-7 w-18 flex-initial border border-sky-800 bg-zinc-900 px-1 py-1 text-sm text-sky-50"
             />
             <div className="text-xs">Mode</div>
           </div>
@@ -226,7 +226,7 @@ export default function SlimeStoreSlider({
               min={min}
               max={max}
               step={step}
-              className="h-7 w-16 flex-initial border border-sky-800 bg-zinc-900 px-2 py-1 text-sm text-sky-50"
+              className="h-7 w-18 flex-initial border border-sky-800 bg-zinc-900 px-1 py-1 text-sm text-sky-50"
             />
             <div className="text-xs">Max</div>
           </div>

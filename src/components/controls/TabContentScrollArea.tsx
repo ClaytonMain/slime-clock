@@ -5,7 +5,7 @@ import { ANIMATION_CONFIGS } from "../../constants/constants";
 
 export default function TabContentScrollArea({
   title,
-  titleFontSize = "1.5rem",
+  titleFontSize = "text-xl sm:text-2xl",
   children,
   childrenPadding,
   hideBackground = false,
@@ -44,8 +44,7 @@ export default function TabContentScrollArea({
     >
       {title && (
         <div
-          style={{ fontSize: titleFontSize }}
-          className="font-display w-full flex-none bg-zinc-950/80 p-1 text-center text-sky-300 select-none"
+          className={`font-display ${titleFontSize} w-full flex-none bg-zinc-950/80 p-1 text-center text-sky-300 select-none`}
         >
           {title}
         </div>

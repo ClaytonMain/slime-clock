@@ -245,6 +245,7 @@ export default function SimulationPresetLoadSaveControl({
       labelWidth={labelWidth}
       labelTextAlign={labelTextAlign}
       onPointerOver={onPointerOver}
+      adjustContainerFlexOnSmall={false}
     >
       <div className="flex items-center">
         {controlType === "presets" && (
@@ -357,7 +358,7 @@ export default function SimulationPresetLoadSaveControl({
           />
           <div className="flex flex-1" />
           <motion.button
-            className="flex cursor-pointer border border-rose-800 px-2 py-1"
+            className="flex cursor-pointer border border-rose-800 p-1 text-xs sm:px-2 sm:py-1 sm:text-sm"
             onClick={deletePreset}
             style={{
               backgroundColor: "#4d0218",

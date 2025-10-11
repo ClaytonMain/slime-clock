@@ -384,9 +384,16 @@ export default function PresetsControls() {
           <AccordionControlsItem
             value="import-export"
             label="Import / Export"
-            labelHoverTabContentDisplay={[]}
+            labelHoverTabContentDisplay={[
+              "Import / Export",
+              "Load and save presets to and from your clipboard. Highly experimental. Try to avoid setting extreme values that could crash your browser.",
+            ]}
           >
             <ButtonControlGroup
+              labelHoverTabContentDisplay={[
+                "Import / Export",
+                "Load and save presets to and from your clipboard. Highly experimental. Try to avoid setting extreme values that could crash your browser.",
+              ]}
               justifyContent="center"
               buttonConfigs={[
                 {
@@ -406,9 +413,18 @@ export default function PresetsControls() {
           <AccordionControlsItem
             value="presets"
             label="Presets"
-            labelHoverTabContentDisplay={[]}
+            labelHoverTabContentDisplay={[
+              "Presets",
+              "Load and save presets for clock, simulation, and color settings. Default presets cannot be deleted.",
+            ]}
           >
-            <ControlGroup justifyContent="center">
+            <ControlGroup
+              labelHoverTabContentDisplay={[
+                "Save Current Settings As Preset",
+                "Save your current settings as a new preset. Clicking this button will open a dialog to enter the preset name prior to saving. All preset names within a given category (simulation, color, clock, combination) must be unique. You can manage and apply your saved presets below. Default presets cannot be overwritten or deleted.",
+              ]}
+              justifyContent="center"
+            >
               <SaveCurrentSettingsAsPresetPopoverButton presetType="Combination" />
             </ControlGroup>
             <ButtonControlGroup

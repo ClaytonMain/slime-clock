@@ -1,9 +1,11 @@
 import "@radix-ui/themes/styles.css";
 import { FullScreen, useFullScreenHandle } from "react-full-screen";
+import AutomaticTimeOffsetSync from "./AutomaticTimeOffsetSync";
 import Controls from "./components/controls/Controls";
 import FramerateGaugeDisplay from "./components/slime-clock/FramerateGaugeDisplay";
 import SlimeClockScene from "./components/slime-clock/SlimeClockScene";
 import FullscreenHandleComponent from "./FullscreenHandleComponent";
+import LayoutListener from "./LayoutListener";
 import useSlimeStore from "./stores/useSlimeStore";
 import ToastProvider from "./ToastProvider";
 
@@ -23,6 +25,8 @@ function App() {
           <FramerateGaugeDisplay />
         </div>
       </FullScreen>
+      <LayoutListener />
+      <AutomaticTimeOffsetSync />
     </>
   );
 }

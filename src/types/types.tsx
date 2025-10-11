@@ -36,6 +36,7 @@ export interface ClockSettings extends LoadableClockSettings {
   timeOffsetSecondsOnly: number;
   timeOffsetMsOnly: number;
   timeOffsetTotal: number;
+  automaticTimeOffsetRequestedAt: number;
 }
 
 export interface LoadableSimulationSettings {

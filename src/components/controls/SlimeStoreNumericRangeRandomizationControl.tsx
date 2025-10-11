@@ -169,9 +169,9 @@ export default function SlimeStoreNumericRangeRandomizationControl({
         className="flex w-full items-center gap-1"
       >
         <div className="flex flex-none flex-col">
-          <div className="flex flex-none items-center justify-center gap-2 p-1">
+          <div className="flex flex-none flex-col-reverse items-center justify-center sm:flex-row">
             <Label.Root
-              className="w-11 flex-none py-0.5 text-right text-xs"
+              className="w-11 flex-none py-0.5 text-center text-xs sm:text-right"
               htmlFor={`${baseId}-enabled-switch`}
             >
               Enabled
@@ -189,9 +189,9 @@ export default function SlimeStoreNumericRangeRandomizationControl({
               />
             </div>
           </div>
-          <div className="flex flex-none items-center justify-center gap-2 p-1">
+          <div className="flex flex-none flex-col-reverse items-center justify-center sm:flex-row">
             <Label.Root
-              className="w-11 flex-none py-0.5 text-right text-xs"
+              className="w-11 flex-none py-0.5 text-center text-xs sm:text-right"
               htmlFor={`${baseId}-randomization-mode-select`}
             >
               Mode

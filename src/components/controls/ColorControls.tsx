@@ -158,7 +158,10 @@ export default function ColorControls() {
           <AccordionControlsItem
             value="randomization-controls"
             label="Randomization Controls"
-            labelHoverTabContentDisplay={["Randomization Controls"]}
+            labelHoverTabContentDisplay={[
+              "Randomization Controls",
+              "A few color-related randomization controls. More robust randomization controls can be found in the 'Randomization Controls' tab (the dice icon below).",
+            ]}
           >
             <ControlGroup
               label="Color Auto Rand."
@@ -407,6 +410,10 @@ export default function ColorControls() {
             />
             <SlimeStoreSliderControl
               label="Red Amplitude"
+              labelHoverTabContentDisplay={[
+                "Red Amplitude",
+                "Controls the amplitude of the red cosine wave used to generate the procedural color palette. Move the slider to see how it affects the colors.",
+              ]}
               baseInputId="procedural-color-palette-r-amplitude"
               min={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.amplitude!.min}
               max={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.amplitude!.max}
@@ -428,6 +435,10 @@ export default function ColorControls() {
             />
             <SlimeStoreSliderControl
               label="Red Frequency"
+              labelHoverTabContentDisplay={[
+                "Red Frequency",
+                "Controls the frequency of the red cosine wave used to generate the procedural color palette. Move the slider to see how it affects the colors.",
+              ]}
               baseInputId="procedural-color-palette-r-frequency"
               min={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.frequency!.min}
               max={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.frequency!.max}
@@ -449,6 +460,10 @@ export default function ColorControls() {
             />
             <SlimeStoreSliderControl
               label="Red Phase"
+              labelHoverTabContentDisplay={[
+                "Red Phase",
+                "Controls the phase of the red cosine wave used to generate the procedural color palette. Move the slider to see how it affects the colors.",
+              ]}
               baseInputId="procedural-color-palette-r-phase"
               min={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.phase!.min}
               max={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.phase!.max}
@@ -471,6 +486,10 @@ export default function ColorControls() {
 
             <SlimeStoreSliderControl
               label="Green Y-Offset"
+              labelHoverTabContentDisplay={[
+                "Green Y-Offset",
+                "Controls the y-offset of the green cosine wave used to generate the procedural color palette. Move the slider to see how it affects the colors.",
+              ]}
               baseInputId="procedural-color-palette-g-y-offset"
               min={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.yOffset!.min}
               max={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.yOffset!.max}
@@ -492,6 +511,10 @@ export default function ColorControls() {
             />
             <SlimeStoreSliderControl
               label="Green Amplitude"
+              labelHoverTabContentDisplay={[
+                "Green Amplitude",
+                "Controls the amplitude of the green cosine wave used to generate the procedural color palette. Move the slider to see how it affects the colors.",
+              ]}
               baseInputId="procedural-color-palette-g-amplitude"
               min={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.amplitude!.min}
               max={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.amplitude!.max}
@@ -513,6 +536,10 @@ export default function ColorControls() {
             />
             <SlimeStoreSliderControl
               label="Green Frequency"
+              labelHoverTabContentDisplay={[
+                "Green Frequency",
+                "Controls the frequency of the green cosine wave used to generate the procedural color palette. Move the slider to see how it affects the colors.",
+              ]}
               baseInputId="procedural-color-palette-g-frequency"
               min={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.frequency!.min}
               max={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.frequency!.max}
@@ -534,6 +561,10 @@ export default function ColorControls() {
             />
             <SlimeStoreSliderControl
               label="Green Phase"
+              labelHoverTabContentDisplay={[
+                "Green Phase",
+                "Controls the phase of the green cosine wave used to generate the procedural color palette. Move the slider to see how it affects the colors.",
+              ]}
               baseInputId="procedural-color-palette-g-phase"
               min={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.phase!.min}
               max={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.phase!.max}
@@ -556,6 +587,10 @@ export default function ColorControls() {
 
             <SlimeStoreSliderControl
               label="Blue Y-Offset"
+              labelHoverTabContentDisplay={[
+                "Blue Y-Offset",
+                "Controls the y-offset of the blue cosine wave used to generate the procedural color palette. Move the slider to see how it affects the colors.",
+              ]}
               baseInputId="procedural-color-palette-b-y-offset"
               min={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.yOffset!.min}
               max={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.yOffset!.max}
@@ -577,6 +612,10 @@ export default function ColorControls() {
             />
             <SlimeStoreSliderControl
               label="Blue Amplitude"
+              labelHoverTabContentDisplay={[
+                "Blue Amplitude",
+                "Controls the amplitude of the blue cosine wave used to generate the procedural color palette. Move the slider to see how it affects the colors.",
+              ]}
               baseInputId="procedural-color-palette-b-amplitude"
               min={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.amplitude!.min}
               max={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.amplitude!.max}
@@ -598,6 +637,10 @@ export default function ColorControls() {
             />
             <SlimeStoreSliderControl
               label="Blue Frequency"
+              labelHoverTabContentDisplay={[
+                "Blue Frequency",
+                "Controls the frequency of the blue cosine wave used to generate the procedural color palette. Move the slider to see how it affects the colors.",
+              ]}
               baseInputId="procedural-color-palette-b-frequency"
               min={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.frequency!.min}
               max={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.frequency!.max}
@@ -619,6 +662,10 @@ export default function ColorControls() {
             />
             <SlimeStoreSliderControl
               label="Blue Phase"
+              labelHoverTabContentDisplay={[
+                "Blue Phase",
+                "Controls the phase of the blue cosine wave used to generate the procedural color palette. Move the slider to see how it affects the colors.",
+              ]}
               baseInputId="procedural-color-palette-b-phase"
               min={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.phase!.min}
               max={PROCEDURAL_COLOR_PALETTE_CONTROLS_CONFIGS.phase!.max}
@@ -641,6 +688,31 @@ export default function ColorControls() {
 
             <SlimeStoreSelectControl
               label="Palette Cycle Type"
+              labelHoverTabContentDisplay={[
+                "Palette Cycle Type",
+                <TabContentDisplayAreaContentWrapper>
+                  Determines how the procedural color palette cycles through
+                  colors over time.
+                  <ul className="list-inside list-disc">
+                    <li>
+                      <em>Oscilating: </em>
+                      The color oscillates smoothly back and forth through the
+                      gradient you see in the display area.
+                    </li>
+                    <li>
+                      <em>Repeating: </em>
+                      The color cycles through the gradient you see in the
+                      display area in one direction, jumping back to the start
+                      when it reaches the end.
+                    </li>
+                    <li>
+                      <em>Continuous: </em>
+                      The color cycles through the gradient in one direction,
+                      continuing past the colors displayed in the display area.
+                    </li>
+                  </ul>
+                </TabContentDisplayAreaContentWrapper>,
+              ]}
               baseInputId="procedural-color-palette-cycle-type-select"
               placeholder="Palette Cycle Type"
               storePath={["colorSettings", "paletteCycleType"]}
@@ -649,6 +721,10 @@ export default function ColorControls() {
             />
             <SlimeStoreSliderControl
               label="Intensity Smoothing"
+              labelHoverTabContentDisplay={[
+                "Intensity Smoothing",
+                "Basically the graininess or smoothness of the colors. Just mess with the slider and you'll see what it does.",
+              ]}
               baseInputId="intensity-smoothing"
               min={COLOR_CONTROLS_CONFIGS.intensitySmoothing!.min}
               max={COLOR_CONTROLS_CONFIGS.intensitySmoothing!.max}
@@ -657,6 +733,10 @@ export default function ColorControls() {
             />
             <SlimeStoreSliderControl
               label="Agent Direction Smoothing"
+              labelHoverTabContentDisplay={[
+                "Agent Direction Smoothing",
+                "In theory, how smoothly the agent direction affects the color. Doesn't do much of anything noticeable, tbh.",
+              ]}
               baseInputId="agent-direction-smoothing"
               min={COLOR_CONTROLS_CONFIGS.agentDirectionSmoothing!.min}
               max={COLOR_CONTROLS_CONFIGS.agentDirectionSmoothing!.max}
@@ -665,6 +745,10 @@ export default function ColorControls() {
             />
             <SlimeStoreSliderControl
               label="Agent Direction Color Offset"
+              labelHoverTabContentDisplay={[
+                "Agent Direction Color Offset",
+                "Controls how much agent direction offsets the color cycle.",
+              ]}
               baseInputId="agent-direction-color-offset"
               min={COLOR_CONTROLS_CONFIGS.agentDirectionColorOffset!.min}
               max={COLOR_CONTROLS_CONFIGS.agentDirectionColorOffset!.max}
@@ -673,6 +757,10 @@ export default function ColorControls() {
             />
             <SlimeStoreSliderControl
               label="Clock Color Offset"
+              labelHoverTabContentDisplay={[
+                "Clock Color Offset",
+                "Controls how much the color cycle is offset by for portions of the trail overlapping the clock.",
+              ]}
               baseInputId="clock-color-offset"
               min={COLOR_CONTROLS_CONFIGS.clockColorOffset!.min}
               max={COLOR_CONTROLS_CONFIGS.clockColorOffset!.max}
@@ -681,6 +769,10 @@ export default function ColorControls() {
             />
             <SlimeStoreSliderControl
               label="X Color Offset"
+              labelHoverTabContentDisplay={[
+                "X Color Offset",
+                "Controls how much the color cycle is offset by the x-position of the pixel.",
+              ]}
               baseInputId="x-color-offset"
               min={COLOR_CONTROLS_CONFIGS.xColorOffset!.min}
               max={COLOR_CONTROLS_CONFIGS.xColorOffset!.max}
@@ -689,6 +781,10 @@ export default function ColorControls() {
             />
             <SlimeStoreSliderControl
               label="Y Color Offset"
+              labelHoverTabContentDisplay={[
+                "Y Color Offset",
+                "Controls how much the color cycle is offset by the y-position of the pixel.",
+              ]}
               baseInputId="y-color-offset"
               min={COLOR_CONTROLS_CONFIGS.yColorOffset!.min}
               max={COLOR_CONTROLS_CONFIGS.yColorOffset!.max}
@@ -697,24 +793,33 @@ export default function ColorControls() {
             />
             <SlimeStoreSliderControl
               label="Palette Cycle Speed"
+              labelHoverTabContentDisplay={[
+                "Palette Cycle Speed",
+                "The speed at which the procedural color palette cycles through colors.",
+              ]}
               baseInputId="procedural-color-palette-cycle-speed"
               min={COLOR_CONTROLS_CONFIGS.paletteCycleSpeed!.min}
               max={COLOR_CONTROLS_CONFIGS.paletteCycleSpeed!.max}
               step={COLOR_CONTROLS_CONFIGS.paletteCycleSpeed!.step}
               storePath={["colorSettings", "paletteCycleSpeed"]}
-              labelHoverTabContentDisplay={[
-                "Palette Cycle Speed",
-                "The speed at which the procedural color palette cycles through colors.",
-              ]}
             />
             <SlimeStoreSliderControl
               label="Palette Cycle Scale"
+              labelHoverTabContentDisplay={[
+                "Palette Cycle Scale",
+                <TabContentDisplayAreaContentWrapper>
+                  <strong className="text-rose-400">Warning:</strong> Causes a
+                  flashing effect when moving the slider.
+                  <br />
+                  Controls how much of the gradient is visible at once. Higher
+                  values display more of the gradient.
+                </TabContentDisplayAreaContentWrapper>,
+              ]}
               baseInputId="procedural-color-palette-cycle-scale"
               min={COLOR_CONTROLS_CONFIGS.paletteCycleScale!.min}
               max={COLOR_CONTROLS_CONFIGS.paletteCycleScale!.max}
               step={COLOR_CONTROLS_CONFIGS.paletteCycleScale!.step}
               storePath={["colorSettings", "paletteCycleScale"]}
-              labelHoverTabContentDisplay={["Palette Cycle Scale"]}
             />
           </AccordionControlsItem>
         </AccordionControlsWrapper>

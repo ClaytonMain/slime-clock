@@ -41,6 +41,7 @@ import {
 import * as UTILS from "../utils/utils";
 
 interface ControlsState {
+  portraitOrLandscape: "portrait" | "landscape";
   selectedTab: ControlsTabName;
   isOpen: boolean;
   displayAreaContentUpdatedAt: number;
@@ -319,6 +320,7 @@ const useSlimeStore = create<SlimeStore>()(
           timeOffsetSecondsOnly: DEFAULT_CLOCK_SETTINGS.timeOffsetSecondsOnly,
           timeOffsetMsOnly: DEFAULT_CLOCK_SETTINGS.timeOffsetMsOnly,
           timeOffsetTotal: DEFAULT_CLOCK_SETTINGS.timeOffsetTotal,
+          automaticTimeOffsetRequestedAt: 0,
         },
         simulationSettings: {
           // Nearly all of these values will be overridden in the
@@ -433,6 +435,8 @@ const useSlimeStore = create<SlimeStore>()(
         randomizationPresets: RANDOMIZATION_PRESETS,
 
         controlsState: {
+          portraitOrLandscape:
+            window.innerWidth > window.innerHeight ? "landscape" : "portrait",
           selectedTab: "randomization-controls",
           isOpen: false,
           displayAreaContentUpdatedAt: Date.now(),

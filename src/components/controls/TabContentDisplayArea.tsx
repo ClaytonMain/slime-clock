@@ -5,9 +5,9 @@ import useSlimeStore from "../../stores/useSlimeStore";
 import TabContentDisplayAreaHtmlContent from "./TabContentDisplayAreaHtmlContent";
 
 export default function TabContentDisplayArea() {
-  /**
-   * Positioning.
-   */
+  const portraitOrLandscape = useSlimeStore(
+    (state) => state.controlsState.portraitOrLandscape,
+  );
   const displayAreaRef = useRef<HTMLDivElement>(null);
 
   function handleViewportEnter(enter: IntersectionObserverEntry | null) {
@@ -40,7 +40,7 @@ export default function TabContentDisplayArea() {
   return (
     <motion.div
       key="tab-content-display-area"
-      className="flex h-48 w-full flex-none items-center px-3 pt-3 pb-3 lg:h-8/12 lg:w-4/12 lg:pt-0 lg:pb-0"
+      className={`flex flex-none items-center p-3 ${portraitOrLandscape === "portrait" ? "h-40 w-full px-11 sm:h-48" : "h-8/12 w-4/12"}`}
     >
       <motion.div
         ref={displayAreaRef}

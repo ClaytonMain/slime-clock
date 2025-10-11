@@ -1,4 +1,4 @@
-import { Ring } from "@react-three/drei";
+import { Circle, Ring } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { DateTime } from "luxon";
 import { useMemo, useRef } from "react";
@@ -52,26 +52,27 @@ export default function AnalogClockDisplay() {
         <mesh
           geometry={geometry}
           material={material}
-          scale={[0.06, 0.36, 1]}
-          position={[0, 0.18, 0]}
+          scale={[0.04, 0.45, 1]}
+          position={[0, 0.15, 0]}
         />
       </group>
       <group ref={minuteGroupRef} position={[0, 0, 0]}>
         <mesh
           geometry={geometry}
           material={material}
-          scale={[0.04, 0.48, 1]}
-          position={[0, 0.24, 0]}
+          scale={[0.04, 0.55, 1]}
+          position={[0, 0.2, 0]}
         />
       </group>
       <group ref={secondGroupRef} position={[0, 0, 0]}>
         <mesh
           geometry={geometry}
           material={material}
-          scale={[0.02, 0.49, 1]}
-          position={[0, 0.245, 0]}
+          scale={[0.02, 0.55, 1]}
+          position={[0, 0.2, 0]}
         />
       </group>
+      <Circle args={[0.04, 64]} material={material} />
       {Array.from({ length: 12 }).map((_, index) => {
         const angle = (index / 12) * Math.PI * 2;
         const factor = index % 3 === 0 ? 0 : 0.025;

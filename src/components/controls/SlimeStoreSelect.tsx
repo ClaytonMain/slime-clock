@@ -97,7 +97,7 @@ export default function SlimeStoreSelect({
       </Select.Trigger>
       <Select.Portal container={portalContainer}>
         <Select.Content className="overflow-hidden bg-zinc-700">
-          <Select.ScrollUpButton className="flex h-6 cursor-default items-center justify-center bg-zinc-700 text-sky-50">
+          <Select.ScrollUpButton className="flex h-6 cursor-default items-center justify-center bg-zinc-800 text-sky-50">
             <ChevronUpIcon />
           </Select.ScrollUpButton>
           <Select.Viewport className="p-1">
@@ -109,7 +109,7 @@ export default function SlimeStoreSelect({
               ))}
             </Select.Group>
           </Select.Viewport>
-          <Select.ScrollDownButton className="flex h-6 cursor-default items-center justify-center bg-zinc-900">
+          <Select.ScrollDownButton className="flex h-6 cursor-default items-center justify-center bg-zinc-800 text-sky-50">
             <ChevronDownIcon />
           </Select.ScrollDownButton>
         </Select.Content>

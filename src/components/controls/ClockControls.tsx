@@ -1,5 +1,5 @@
 import { produce } from "immer";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { CLOCK_CONTROLS_CONFIGS } from "../../constants/constants";
 import { TIME_ZONE_NAMES } from "../../constants/timeZoneNames";
 import useSlimeStore from "../../stores/useSlimeStore";
@@ -8,6 +8,7 @@ import type {
   ClockHourFormatValue,
   LoadableSlimeStoreSettings,
 } from "../../types/types";
+import * as UTILS from "../../utils/utils.tsx";
 import CodeBlock from "../code-block/CodeBlock";
 import AccordionControlsItem from "./AccordionControlsItem";
 import AccordionControlsWrapper from "./AccordionControlsWrapper";
@@ -101,86 +102,6 @@ export default function ClockControls() {
       (p) => p.name === preset.name && p.presetType === preset.presetType,
     );
   }
-
-  const lastAutomaticallySetTimeOffsetsAtRef = useRef(0);
-  function automaticallySetTimeOffsets(displayToastMessage: boolean = true) {
-    if (Date.now() - lastAutomaticallySetTimeOffsetsAtRef.current < 5000)
-      return;
-    lastAutomaticallySetTimeOffsetsAtRef.current = Date.now();
-    fetch("http://worldtimeapi.org/api/timezone/etc/utc", {
-      signal: AbortSignal.timeout(5000),
-    })
-      .then((response) => response.json())
-      .then((result) => {
-        const responseUnixTime = result.unixtime * 1000;
-        const systemUnixTime = Date.now();
-        const timeOffset = responseUnixTime - systemUnixTime;
-
-        const timeOffsetMinutesOnly = Math.trunc(timeOffset / (60 * 1000));
-        const timeOffsetSecondsOnly = Math.trunc(
-          (timeOffset % (60 * 1000)) / 1000,
-        );
-        const timeOffsetMsOnly = timeOffset % 1000;
-
-        useSlimeStore.setState(
-          produce((state) => {
-            state.clockSettings.timeOffsetMinutesOnly = timeOffsetMinutesOnly;
-            state.clockSettings.timeOffsetSecondsOnly = timeOffsetSecondsOnly;
-            state.clockSettings.timeOffsetMsOnly = timeOffsetMsOnly;
-            state.clockSettings.timeOffsetTotal = timeOffset;
-            if (displayToastMessage) {
-              state.toast.title = "Sync. Successful";
-              state.toast.description = `Time offsets automatically set to ${timeOffsetMinutesOnly} minute(s), ${timeOffsetSecondsOnly} second(s), and ${timeOffsetMsOnly} millisecond(s).`;
-              state.toast.type = "success";
-              state.toast.lastTriggeredAt = Date.now();
-            }
-          }),
-        );
-      })
-      .catch((e) => {
-        if (e.name === "TimeoutError") {
-          useSlimeStore.setState(
-            produce((state) => {
-              if (displayToastMessage) {
-                state.toast.title = "Sync. Failed";
-                state.toast.description =
-                  "Request timed out. Please check your internet connection and try again.";
-                state.toast.type = "error";
-                state.toast.lastTriggeredAt = Date.now();
-              }
-            }),
-          );
-          console.error("Timeout while syncing time offsets", e);
-        } else {
-          useSlimeStore.setState(
-            produce((state) => {
-              if (displayToastMessage) {
-                state.toast.title = "Sync. Failed";
-                state.toast.description =
-                  "An error occurred while syncing time offsets. Please check your internet connection and try again.";
-                state.toast.type = "error";
-                state.toast.lastTriggeredAt = Date.now();
-              }
-            }),
-          );
-          console.error("Error while syncing time offsets", e);
-        }
-      });
-  }
-
-  useEffect(() => {
-    const clockSettings = useSlimeStore.getState().clockSettings;
-    if (clockSettings.syncTimeOffsetsAutomatically) {
-      automaticallySetTimeOffsets(false);
-      const interval = setInterval(
-        () => {
-          automaticallySetTimeOffsets(false);
-        },
-        60 * 60 * 1000,
-      );
-      return () => clearInterval(interval);
-    }
-  }, []);
 
   return (
     <TabContentContainer tabsValue="clock-controls">
@@ -436,7 +357,7 @@ export default function ClockControls() {
                   label: "Sync. Time Offsets Now",
                   baseId:
                     "clock-controls-clock-settings-sync-time-offsets-button",
-                  onClick: () => automaticallySetTimeOffsets(),
+                  onClick: () => UTILS.requestAutomaticTimeOffsetSet(),
                 },
               ]}
             />

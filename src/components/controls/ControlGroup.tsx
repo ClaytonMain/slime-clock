@@ -13,10 +13,11 @@ export default function ControlGroup({
   labelHoverTabContentDisplay,
   justifyContent = "start",
   itemsAlign = "center",
-  labelWidth = "w-(--footer-left-label-width)",
-  labelTextAlign = "text-right",
+  labelWidth = "w-full sm:w-(--footer-left-label-width)",
+  labelTextAlign = "text-left sm:text-right",
   onPointerOver,
   children,
+  adjustContainerFlexOnSmall = true,
 }: {
   label?: string;
   labelHoverTabContentDisplay?: string | [string, string] | ReactNode;
@@ -26,6 +27,7 @@ export default function ControlGroup({
   labelTextAlign?: string;
   onPointerOver?: () => void;
   children?: ReactNode;
+  adjustContainerFlexOnSmall?: boolean;
 }) {
   function handlePointerOver() {
     if (onPointerOver) {
@@ -47,19 +49,19 @@ export default function ControlGroup({
     <motion.div
       onPointerOver={handlePointerOver}
       whileHover={{ backgroundColor: "#0004" }}
-      className="flex w-full gap-1 py-2 pr-3"
+      className={`flex w-full gap-1 py-2 pr-3 ${adjustContainerFlexOnSmall ? "flex-col sm:flex-row" : ""}`}
     >
       {label && (
-        <div className="flex flex-col items-center px-1 py-0.5">
+        <div className={`flex flex-none flex-col ${labelWidth} px-1 py-0.5`}>
           <Label.Root
-            className={`h-full ${labelWidth} flex-none place-content-center p-0.5 ${labelTextAlign} text-xs leading-none font-medium`}
+            className={`h-full place-content-center p-0.5 ${labelTextAlign} text-xs leading-none font-medium`}
           >
             {label}
           </Label.Root>
         </div>
       )}
       <div
-        className={`flex w-full flex-wrap items-${itemsAlign} justify-${justifyContent} gap-1`}
+        className={`flex w-full flex-wrap px-0.5 sm:p-0 items-${itemsAlign} justify-${justifyContent} gap-1`}
         style={{
           paddingRight: "calc(var(--spacing) * 2)",
           paddingLeft: label ? undefined : "calc(var(--spacing) * 2)",

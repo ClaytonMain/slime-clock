@@ -1,3 +1,4 @@
+import { produce } from "immer";
 // @ts-expect-error no types for jstat
 import { beta } from "jstat";
 import * as THREE from "three";
@@ -474,4 +475,89 @@ export function getRandomEnabledColorPresetSettings(): Partial<LoadableColorSett
     return preset.colorSettings as LoadableColorSettings;
   }
   return {};
+}
+
+export function requestAutomaticTimeOffsetSet(
+  displayToastMessage: boolean = true,
+) {
+  const automaticTimeOffsetRequestedAt =
+    useSlimeStore.getState().clockSettings.automaticTimeOffsetRequestedAt;
+  if (Date.now() - automaticTimeOffsetRequestedAt < 5000) {
+    if (displayToastMessage) {
+      useSlimeStore.setState(
+        produce((state) => {
+          state.toast.title = "Hold Your Horses!";
+          state.toast.description =
+            "Let's not spam the time API, yeah? Wait about five seconds, then try again.";
+          state.toast.type = "info";
+          state.toast.lastTriggeredAt = Date.now();
+        }),
+      );
+    }
+    return;
+  }
+  useSlimeStore.setState(
+    produce((state) => {
+      state.clockSettings.automaticTimeOffsetRequestedAt = Date.now();
+    }),
+  );
+  fetch("http://worldtimeapi.org/api/timezone/etc/utc", {
+    signal: AbortSignal.timeout(5000),
+  })
+    .then((response) => response.json())
+    .then((result) => {
+      const responseUnixTime = result.unixtime * 1000;
+      const systemUnixTime = Date.now();
+      const timeOffset = responseUnixTime - systemUnixTime;
+
+      const timeOffsetMinutesOnly = Math.trunc(timeOffset / (60 * 1000));
+      const timeOffsetSecondsOnly = Math.trunc(
+        (timeOffset % (60 * 1000)) / 1000,
+      );
+      const timeOffsetMsOnly = timeOffset % 1000;
+
+      useSlimeStore.setState(
+        produce((state) => {
+          state.clockSettings.timeOffsetMinutesOnly = timeOffsetMinutesOnly;
+          state.clockSettings.timeOffsetSecondsOnly = timeOffsetSecondsOnly;
+          state.clockSettings.timeOffsetMsOnly = timeOffsetMsOnly;
+          state.clockSettings.timeOffsetTotal = timeOffset;
+          if (displayToastMessage) {
+            state.toast.title = "Sync. Successful";
+            state.toast.description = `Time offsets automatically set to ${timeOffsetMinutesOnly} minute(s), ${timeOffsetSecondsOnly} second(s), and ${timeOffsetMsOnly} millisecond(s).`;
+            state.toast.type = "success";
+            state.toast.lastTriggeredAt = Date.now();
+          }
+        }),
+      );
+    })
+    .catch((e) => {
+      if (e.name === "TimeoutError") {
+        useSlimeStore.setState(
+          produce((state) => {
+            if (displayToastMessage) {
+              state.toast.title = "Sync. Failed";
+              state.toast.description =
+                "Request timed out. Please check your internet connection and try again.";
+              state.toast.type = "error";
+              state.toast.lastTriggeredAt = Date.now();
+            }
+          }),
+        );
+        console.error("Timeout while syncing time offsets", e);
+      } else {
+        useSlimeStore.setState(
+          produce((state) => {
+            if (displayToastMessage) {
+              state.toast.title = "Sync. Failed";
+              state.toast.description =
+                "An error occurred while syncing time offsets. Please check your internet connection and try again.";
+              state.toast.type = "error";
+              state.toast.lastTriggeredAt = Date.now();
+            }
+          }),
+        );
+        console.error("Error while syncing time offsets", e);
+      }
+    });
 }

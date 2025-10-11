@@ -241,8 +241,15 @@ export default function SimulationControls() {
             />
             <SlimeStoreSelectControl
               label="Display Texture Aspect Ratio"
-              labelHoverTabContentDisplay={["Display Texture Aspect Ratio"]}
-              baseInputId="display-texture-aspect-ratio-select"
+              labelHoverTabContentDisplay={[
+                "Display Texture Aspect Ratio",
+                <TabContentDisplayAreaContentWrapper>
+                  Controls the aspect ratio of the display texture.{" "}
+                  <em>Window</em> uses your browser's current aspect ratio.{" "}
+                  Changing the aspect ratio will restart the simulation.
+                </TabContentDisplayAreaContentWrapper>,
+              ]}
+              baseInputId="simulation-controls-quick-controls-display-texture-aspect-ratio-select"
               placeholder="Display Texture Aspect Ratio"
               storePath={["simulationSettings", "displayTextureAspectRatio"]}
               options={DISPLAY_TEXTURE_ASPECT_RATIO_OPTIONS}
@@ -253,6 +260,10 @@ export default function SimulationControls() {
               labelHoverTabContentDisplay={[
                 "Display Texture Target Quality",
                 <TabContentDisplayAreaContentWrapper>
+                  <strong className="text-rose-500">
+                    USE CAUTION! HIGHER VALUES MAY CRASH YOUR BROWSER
+                  </strong>
+                  <br />
                   Controls the target quality of the trail display texture. The
                   value is essentially the number of megapixels in the display
                   texture. Some loose conversions between these quality values
@@ -264,7 +275,6 @@ export default function SimulationControls() {
                     <li>3.7: 1440p</li>
                     <li>8.3: 2160p</li>
                   </ul>
-                  Unless you've got a beefy GPU, use caution with higher values!
                 </TabContentDisplayAreaContentWrapper>,
               ]}
               baseInputId="trail-display-texture-target-quality-slider"
@@ -805,9 +815,13 @@ export default function SimulationControls() {
               label="Display Texture Aspect Ratio"
               labelHoverTabContentDisplay={[
                 "Display Texture Aspect Ratio",
-                'The aspect ratio of the trail display texture. "Window" uses the aspect ratio of your browser window. Changing the aspect ratio will restart the simulation.',
+                <TabContentDisplayAreaContentWrapper>
+                  Controls the aspect ratio of the display texture.{" "}
+                  <em>Window</em> uses your browser's current aspect ratio.{" "}
+                  Changing the aspect ratio will restart the simulation.
+                </TabContentDisplayAreaContentWrapper>,
               ]}
-              baseInputId="display-texture-aspect-ratio-select"
+              baseInputId="simulation-controls-trail-settings-display-texture-aspect-ratio-select"
               placeholder="Display Texture Aspect Ratio"
               storePath={["simulationSettings", "displayTextureAspectRatio"]}
               options={DISPLAY_TEXTURE_ASPECT_RATIO_OPTIONS}
@@ -817,7 +831,11 @@ export default function SimulationControls() {
               label="Display Texture Target Quality"
               labelHoverTabContentDisplay={[
                 "Display Texture Target Quality",
-                <div className="px-2 py-1">
+                <TabContentDisplayAreaContentWrapper>
+                  <strong className="text-rose-500">
+                    USE CAUTION! HIGHER VALUES MAY CRASH YOUR BROWSER
+                  </strong>
+                  <br />
                   Controls the target quality of the trail display texture. The
                   value is essentially the number of megapixels in the display
                   texture. Some loose conversions between these quality values
@@ -829,8 +847,7 @@ export default function SimulationControls() {
                     <li>3.7: 1440p</li>
                     <li>8.3: 2160p</li>
                   </ul>
-                  Unless you've got a beefy GPU, use caution with higher values!
-                </div>,
+                </TabContentDisplayAreaContentWrapper>,
               ]}
               baseInputId="trail-display-texture-target-quality-slider"
               min={SIMULATION_CONTROLS_CONFIGS.displayTextureTargetQuality!.min}
