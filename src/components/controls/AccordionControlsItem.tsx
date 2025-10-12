@@ -1,0 +1,104 @@
+import { ChevronDownIcon } from "@radix-ui/react-icons";
+import { produce } from "immer";
+import { motion } from "motion/react";
+import { Accordion } from "radix-ui";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import useSlimeStore from "../../stores/useSlimeStore";
+
+export default function AccordionControlsItem({
+  value,
+  label,
+  labelHoverTabContentDisplay,
+  children,
+  padContent = true,
+}: {
+  value: string;
+  label: string;
+  labelHoverTabContentDisplay?: string | [string, string] | ReactNode;
+  children: ReactNode;
+  padContent?: boolean;
+}) {
+  const accordionTriggerRef = useRef<HTMLButtonElement>(null);
+  const [accordionIsOpen, setAccordionIsOpen] = useState<boolean>(false);
+
+  useEffect(() => {
+    const timerId = setInterval(() => {
+      if (!accordionTriggerRef.current) {
+        setAccordionIsOpen(false);
+      } else {
+        if (accordionTriggerRef.current.dataset.state === "open") {
+          setAccordionIsOpen(true);
+        } else {
+          setAccordionIsOpen(false);
+        }
+      }
+    }, 100);
+    return () => clearInterval(timerId);
+  }, []);
+
+  function handlePointerOver() {
+    if (labelHoverTabContentDisplay) {
+      useSlimeStore.setState(
+        produce((state) => {
+          state.controlsState.displayAreaContentName = null;
+          state.controlsState.displayAreaHtmlContent =
+            labelHoverTabContentDisplay;
+          state.controlsState.hideDisplayAreaBackground = false;
+        }),
+      );
+    }
+  }
+
+  return (
+    <Accordion.Item
+      value={value}
+      className="overflow-clip focus-within:relative"
+    >
+      <Accordion.Header className="sticky top-0 z-[2] flex drop-shadow-lg/50">
+        <Accordion.Trigger ref={accordionTriggerRef} asChild>
+          <motion.div
+            onPointerOver={handlePointerOver}
+            style={{
+              backgroundColor: "var(--color-zinc-900)",
+            }}
+            whileHover={{
+              backgroundColor: "var(--color-zinc-800)",
+            }}
+            className="group flex h-11 flex-1 cursor-pointer items-center justify-between px-5 text-sm leading-none outline-none select-none"
+          >
+            {label}
+            <motion.div
+              className="mr-3 flex items-center justify-center"
+              animate={{
+                rotate: accordionIsOpen ? 180 : 0,
+                transition: { duration: 0.6, type: "spring" },
+              }}
+            >
+              <ChevronDownIcon className="text-sky-50" aria-hidden="true" />
+            </motion.div>
+          </motion.div>
+        </Accordion.Trigger>
+      </Accordion.Header>
+      <Accordion.Content
+        key={`${value}-accordion-content-radix`}
+        asChild
+        forceMount
+      >
+        <motion.div
+          className={
+            "flex flex-col overflow-hidden border-r-[10px] border-l-[10px] border-zinc-900 bg-sky-200/20 text-sky-50 drop-shadow-lg/25" +
+            (padContent ? " before:pt-0.5 after:pb-0.5" : "")
+          }
+          key="accordion-content-motion"
+          initial={{ height: 0 }}
+          animate={{
+            height: accordionIsOpen ? "auto" : 0,
+            transition: { duration: 0.3 },
+          }}
+        >
+          {children}
+        </motion.div>
+      </Accordion.Content>
+    </Accordion.Item>
+  );
+}

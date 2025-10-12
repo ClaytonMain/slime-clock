@@ -1,0 +1,11 @@
+DM-80 A Dot Matrix Printer font
+
+Copyright Thor Christopher Arisland
+
+Created September 2020
+
+DM-80 is a monospaced font that emulates a 9-pin dot matrix printer.
+
+This font is free for personal use.
+
+For commercial use, visit my website at www.tcarisland.no

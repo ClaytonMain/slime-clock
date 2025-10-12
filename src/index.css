@@ -1,68 +1,49 @@
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+@import "tailwindcss";
+/* @import "flowbite/src/themes/default"; */
+/* @plugin "flowbite/plugin"; */
+/* @source "../node_modules/flowbite"; */
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+/* Use "sky" for the primary UI elements. */
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@font-face {
+  font-family: "ChakraPetch";
+  src:
+    local("ChakraPetch"),
+    url("./fonts/ChakraPetch-Regular.ttf") format("truetype");
+  font-weight: normal;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
+@theme {
+  --font-display: "ChakraPetch", sans-serif;
+
+  --footer-left-label-width: 5rem;
+
+  --color-animatable-transparent: #0000;
+
+  --color-zinc-950-90: #09090be6;
+  --color-zinc-950-80: #09090bcc;
+  --color-zinc-950-70: #09090bb3;
+  --color-zinc-950-60: #09090b99;
+
+  --color-sky-950-90: #082f49e6;
+  --color-sky-950-80: #082f49cc;
+  --color-sky-950-70: #082f49b3;
+  --color-sky-950-60: #082f49a9;
+
+  --color-sky-500-90: #0ea5e9e6;
+  --color-sky-500-80: #0ea5e9cc;
+  --color-sky-500-70: #0ea5e9b3;
+  --color-sky-500-60: #0ea5e9a9;
 }
 
-body {
+html,
+body,
+#root {
+  top: 0;
+  left: 0;
   margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+  padding: 0;
+  width: 100vw;
+  height: 100vh;
+  font-family: "ChakraPetch", sans-serif;
 }

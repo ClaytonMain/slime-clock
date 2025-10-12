@@ -1,0 +1,933 @@
+import { PerformanceMonitor, Plane, useFBO } from "@react-three/drei";
+import { createPortal, extend, useFrame } from "@react-three/fiber";
+import { produce } from "immer";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import * as THREE from "three";
+import useSlimeStore from "../../stores/useSlimeStore.tsx";
+import * as UTILS from "../../utils/utils.tsx";
+import SettingsHistoryListener from "../controls/SettingsHistoryListener.tsx";
+import ThreeControlDisplay from "../three-control-display/ThreeControlDisplay.tsx";
+import AgentDataMaterial from "./AgentDataMaterial.tsx";
+import AgentPositionsMaterial from "./AgentPositionsMaterial.tsx";
+import ClockDisplay from "./clock-display/ClockDisplay.tsx";
+import InitializationHandler from "./InitializationHandler.tsx";
+import RandomizationListener from "./RandomizationListener.tsx";
+import displayFragmentShader from "./shaders/display/display.frag";
+import displayVertexShader from "./shaders/display/display.vert";
+import TrailMaterial from "./TrailMaterial.tsx";
+import UniformListeners from "./UniformListeners.tsx";
+
+extend({ AgentDataMaterial, AgentPositionsMaterial, TrailMaterial });
+
+function enoughTimeSinceInitialization(): boolean {
+  const initializationCompletedAt =
+    useSlimeStore.getState().initialization.all.completedAt;
+  if (initializationCompletedAt === 0) return false;
+  return Date.now() - initializationCompletedAt > 15000;
+}
+
+function enoughTimeSinceFramerateGauge(): boolean {
+  const framerateGaugeCompletedAt =
+    useSlimeStore.getState().framerateGaugeCompletedAt;
+  if (framerateGaugeCompletedAt === 0) return false;
+  return Date.now() - framerateGaugeCompletedAt > 10000;
+}
+
+function enoughTimeSinceControlsClosed(): boolean {
+  const controlsState = useSlimeStore.getState().controlsState;
+  if (controlsState.isOpen) return false;
+  return Date.now() - controlsState.controlsClosedAt > 5000;
+}
+
+function canRequestAutoRestartNow(currentMinutes: number): boolean {
+  const randomizationState = useSlimeStore.getState().randomizationState;
+  const randomizationSettings = useSlimeStore.getState().randomizationSettings;
+
+  return (
+    randomizationSettings.autoRestartEnabled &&
+    Date.now() - randomizationState.simulationLastRequestedAutoRestartAt >
+      10000 &&
+    currentMinutes % randomizationSettings.autoRestartInterval === 0 &&
+    enoughTimeSinceInitialization() &&
+    enoughTimeSinceFramerateGauge() &&
+    enoughTimeSinceControlsClosed()
+  );
+}
+
+function canRequestAutoRandomizeSimulationNow(currentMinutes: number): boolean {
+  const randomizationState = useSlimeStore.getState().randomizationState;
+  const randomizationSettings = useSlimeStore.getState().randomizationSettings;
+
+  return (
+    randomizationSettings.simulationAutoRandomizationEnabled &&
+    Date.now() - randomizationState.simulationLastRequestedAutoRandomizationAt >
+      10000 &&
+    currentMinutes %
+      randomizationSettings.simulationAutoRandomizationInterval ===
+      0 &&
+    enoughTimeSinceInitialization() &&
+    enoughTimeSinceFramerateGauge() &&
+    enoughTimeSinceControlsClosed()
+  );
+}
+
+function canRequestAutoRandomizeColorNow(currentMinutes: number): boolean {
+  const randomizationState = useSlimeStore.getState().randomizationState;
+  const randomizationSettings = useSlimeStore.getState().randomizationSettings;
+
+  return (
+    randomizationSettings.colorAutoRandomizationEnabled &&
+    Date.now() - randomizationState.colorLastRequestedAutoRandomizationAt >
+      10000 &&
+    currentMinutes % randomizationSettings.colorAutoRandomizationInterval ===
+      0 &&
+    enoughTimeSinceInitialization() &&
+    enoughTimeSinceFramerateGauge() &&
+    enoughTimeSinceControlsClosed()
+  );
+}
+
+function SlimeClockRenderer() {
+  const simulationSettings = useSlimeStore((state) => state.simulationSettings);
+  const getClockDateTime = useSlimeStore((state) => state.getClockDateTime);
+
+  const prevMinutesRef = useRef(getClockDateTime().minute);
+  const minuteChangedAtRef = useRef(Date.now());
+  const shouldRequestRestartRef = useRef(false);
+  const shouldRequestRandomizeSimulationRef = useRef(false);
+  const shouldRequestRandomizeColorRef = useRef(false);
+
+  const showGpuTextures = true;
+
+  const agentDataMaterialRefA = useRef<AgentDataMaterial>(null!);
+  const agentDataMaterialRefB = useRef<AgentDataMaterial>(null!);
+  const agentPositionsMaterialRef = useRef<AgentPositionsMaterial>(null!);
+  const trailMaterialRefA = useRef<TrailMaterial>(null!);
+  const trailMaterialRefB = useRef<TrailMaterial>(null!);
+
+  const agentDataDisplayPlaneRef = useRef<THREE.Mesh>(null!);
+  const agentPositionsDisplayPlaneRef = useRef<THREE.Mesh>(null!);
+  const clockDisplayPlaneRef = useRef<THREE.Mesh>(null!);
+  const trailDisplayPlaneRef = useRef<THREE.Mesh>(null!);
+
+  const slimeMoldDisplayShaderRef = useRef<THREE.ShaderMaterial>(null!);
+
+  const agentDataSceneA = useMemo(() => new THREE.Scene(), []);
+  const agentDataSceneB = useMemo(() => new THREE.Scene(), []);
+  const agentPositionsScene = useMemo(() => new THREE.Scene(), []);
+  const clockScene = useMemo(() => new THREE.Scene(), []);
+  const trailSceneA = useMemo(() => new THREE.Scene(), []);
+  const trailSceneB = useMemo(() => new THREE.Scene(), []);
+
+  const cameraA = useMemo(
+    () => new THREE.OrthographicCamera(-1, 1, 1, -1, 1 / Math.pow(2, 53), 1),
+    [],
+  );
+  const cameraB = useMemo(
+    () =>
+      new THREE.OrthographicCamera(
+        0,
+        simulationSettings.displayTextureWidth,
+        simulationSettings.displayTextureHeight,
+        0,
+        1 / Math.pow(2, 53),
+        1,
+      ),
+    [
+      simulationSettings.displayTextureWidth,
+      simulationSettings.displayTextureHeight,
+    ],
+  );
+
+  const renderPlanePositions = useMemo(
+    () =>
+      new Float32Array([
+        -1, -1, 0, 1, -1, 0, 1, 1, 0, -1, -1, 0, 1, 1, 0, -1, 1, 0,
+      ]),
+    [],
+  );
+  const renderPlaneUvs = useMemo(
+    () => new Float32Array([0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1]),
+    [],
+  );
+
+  const agentDataRenderTargetA = useFBO(
+    simulationSettings.gpuTextureWidth,
+    simulationSettings.gpuTextureHeight,
+    {
+      minFilter: THREE.NearestFilter,
+      magFilter: THREE.NearestFilter,
+      format: THREE.RGBAFormat,
+      stencilBuffer: false,
+      depthBuffer: false,
+      type: THREE.FloatType,
+    },
+  );
+  const agentDataRenderTargetB = useFBO(
+    simulationSettings.gpuTextureWidth,
+    simulationSettings.gpuTextureHeight,
+    {
+      minFilter: THREE.NearestFilter,
+      magFilter: THREE.NearestFilter,
+      format: THREE.RGBAFormat,
+      stencilBuffer: false,
+      depthBuffer: false,
+      type: THREE.FloatType,
+    },
+  );
+  const agentPositionsRenderTarget = useFBO(
+    simulationSettings.displayTextureWidth,
+    simulationSettings.displayTextureHeight,
+    {
+      minFilter: THREE.NearestFilter,
+      magFilter: THREE.NearestFilter,
+      format: THREE.RGBAFormat,
+      stencilBuffer: false,
+      depthBuffer: false,
+      type: THREE.FloatType,
+    },
+  );
+  const clockRenderTarget = useFBO(
+    simulationSettings.displayTextureWidth,
+    simulationSettings.displayTextureHeight,
+    {
+      minFilter: THREE.NearestFilter,
+      magFilter: THREE.NearestFilter,
+      format: THREE.RGBAFormat,
+      stencilBuffer: false,
+      depthBuffer: false,
+      type: THREE.UnsignedByteType,
+    },
+  );
+  const trailRenderTargetA = useFBO(
+    simulationSettings.displayTextureWidth,
+    simulationSettings.displayTextureHeight,
+    {
+      minFilter: THREE.NearestFilter,
+      magFilter: THREE.NearestFilter,
+      format: THREE.RGBAFormat,
+      stencilBuffer: false,
+      depthBuffer: false,
+      type: THREE.FloatType,
+    },
+  );
+  const trailRenderTargetB = useFBO(
+    simulationSettings.displayTextureWidth,
+    simulationSettings.displayTextureHeight,
+    {
+      minFilter: THREE.NearestFilter,
+      magFilter: THREE.NearestFilter,
+      format: THREE.RGBAFormat,
+      stencilBuffer: false,
+      depthBuffer: false,
+      type: THREE.FloatType,
+    },
+  );
+
+  const agentPositionsAttribute = useMemo(() => {
+    const agentDensity = simulationSettings.agentDensity;
+    const displayTextureWidth = simulationSettings.displayTextureWidth;
+    const displayTextureHeight = simulationSettings.displayTextureHeight;
+    const length = Math.floor(
+      displayTextureWidth * displayTextureHeight * agentDensity,
+    );
+    const attributes = new Float32Array(length * 3);
+    for (let i = 0; i < length; i++) {
+      const i3 = i * 3;
+      attributes[i3 + 0] =
+        (i % simulationSettings.displayTextureWidth) /
+        simulationSettings.displayTextureHeight;
+      attributes[i3 + 1] =
+        Math.floor(i / simulationSettings.displayTextureWidth) /
+        simulationSettings.displayTextureHeight;
+      attributes[i3 + 2] = 0;
+    }
+    return attributes;
+  }, [
+    simulationSettings.displayTextureWidth,
+    simulationSettings.displayTextureHeight,
+    simulationSettings.agentDensity,
+  ]);
+
+  const agentDataUniforms = useSlimeStore((state) => state.uniforms.agentData);
+  const agentPositionsUniforms = useSlimeStore(
+    (state) => state.uniforms.agentPositions,
+  );
+  const trailUniforms = useSlimeStore((state) => state.uniforms.trail);
+  const slimeMoldDisplayPlaneUniforms = useSlimeStore(
+    (state) => state.uniforms.slimeMoldDisplayPlane,
+  );
+  const texturePlaneUniforms = useSlimeStore(
+    (state) => state.uniforms.texturePlane,
+  );
+
+  const debugConsoleLogger = useSlimeStore((state) => state.debugConsoleLogger);
+
+  const pingPongRef = useRef(true);
+  const uDeltaRef = useRef(0.0);
+  const uTimeRef = useRef(0.0);
+  const uPaletteCycleTimeRef = useRef(0.0);
+
+  const colorSettings = useSlimeStore((state) => state.colorSettings);
+  const randomizationSettings = useSlimeStore(
+    (state) => state.randomizationSettings,
+  );
+
+  useFrame(({ gl }, delta) => {
+    const currentMinutes = getClockDateTime().minute;
+    if (currentMinutes !== prevMinutesRef.current) {
+      prevMinutesRef.current = currentMinutes;
+      minuteChangedAtRef.current = Date.now();
+      shouldRequestRestartRef.current =
+        canRequestAutoRestartNow(currentMinutes);
+      shouldRequestRandomizeSimulationRef.current =
+        canRequestAutoRandomizeSimulationNow(currentMinutes);
+      shouldRequestRandomizeColorRef.current =
+        canRequestAutoRandomizeColorNow(currentMinutes);
+    }
+
+    if (shouldRequestRestartRef.current) {
+      shouldRequestRestartRef.current = false;
+      uTimeRef.current = 0.0;
+      uPaletteCycleTimeRef.current = 0.0;
+      useSlimeStore.setState(
+        produce((state) => {
+          state.randomizationState.simulationLastRequestedAutoRestartAt =
+            Date.now();
+          state.randomizationState.simulationRestartRequestedAt = Date.now();
+          if (shouldRequestRandomizeSimulationRef.current) {
+            shouldRequestRandomizeSimulationRef.current = false;
+            state.randomizationState.simulationLastRequestedAutoRandomizationAt =
+              Date.now();
+            if (
+              [
+                "selectEnabledRandomizationPreset",
+                "useCurrentRandomizationSettings", // The UTILS function will return the current randomization values if needed.
+              ].includes(randomizationSettings.simulationAutoRandomizationMode)
+            ) {
+              const { settings, name } =
+                UTILS.getAutoRandomizationSimulationRandomizationSettingsAndName();
+              state.randomizationState.agentRandomizationRequestedAt =
+                Date.now();
+              state.randomizationState.trailRandomizationRequestedAt =
+                Date.now();
+              state.randomizationSettings.simulation = settings;
+              state.randomizationState.lastLoadedSimulationRandomizationPreset =
+                name;
+            } else if (
+              randomizationSettings.simulationAutoRandomizationMode ===
+              "selectEnabledSimulationPreset"
+            ) {
+              const settings = UTILS.getRandomEnabledSimulationPresetSettings();
+              state.simulationSettings = {
+                ...state.simulationSettings,
+                ...settings,
+              };
+            }
+          }
+          if (shouldRequestRandomizeColorRef.current) {
+            shouldRequestRandomizeColorRef.current = false;
+            state.randomizationState.colorLastRequestedAutoRandomizationAt =
+              Date.now();
+            uPaletteCycleTimeRef.current = 0.0;
+            if (
+              [
+                "selectEnabledRandomizationPreset",
+                "useCurrentRandomizationSettings", // The UTILS function will return the current randomization values if needed.
+              ].includes(randomizationSettings.colorAutoRandomizationMode)
+            ) {
+              const { settings, name } =
+                UTILS.getAutoRandomizationColorRandomizationSettingsAndName();
+              state.randomizationSettings.color = settings;
+              state.randomizationState.lastLoadedColorRandomizationPreset =
+                name;
+              state.randomizationState.colorRandomizationRequestedAt =
+                Date.now();
+            } else if (
+              randomizationSettings.colorAutoRandomizationMode ===
+              "selectEnabledColorPreset"
+            ) {
+              const settings = UTILS.getRandomEnabledColorPresetSettings();
+              state.colorSettings = {
+                ...state.colorSettings,
+                ...settings,
+                slimeColorChangedAt: Date.now(),
+              };
+            }
+          }
+        }),
+      );
+      return;
+    }
+
+    if (shouldRequestRandomizeSimulationRef.current) {
+      shouldRequestRandomizeSimulationRef.current = false;
+      debugConsoleLogger("Simulation Auto Randomization triggered");
+      useSlimeStore.setState(
+        produce((state) => {
+          state.randomizationState.simulationLastRequestedAutoRandomizationAt =
+            Date.now();
+          if (
+            [
+              "selectEnabledRandomizationPreset",
+              "useCurrentRandomizationSettings", // The UTILS function will return the current randomization values if needed.
+            ].includes(randomizationSettings.simulationAutoRandomizationMode)
+          ) {
+            const { settings, name } =
+              UTILS.getAutoRandomizationSimulationRandomizationSettingsAndName();
+            state.randomizationState.agentRandomizationRequestedAt = Date.now();
+            state.randomizationState.trailRandomizationRequestedAt = Date.now();
+            state.randomizationSettings.simulation = settings;
+            state.randomizationState.lastLoadedSimulationRandomizationPreset =
+              name;
+          } else if (
+            randomizationSettings.simulationAutoRandomizationMode ===
+            "selectEnabledSimulationPreset"
+          ) {
+            const settings = UTILS.getRandomEnabledSimulationPresetSettings();
+            state.simulationSettings = {
+              ...state.simulationSettings,
+              ...settings,
+            };
+          }
+        }),
+      );
+      return;
+    }
+
+    if (shouldRequestRandomizeColorRef.current) {
+      debugConsoleLogger("Color Auto Randomization triggered");
+      shouldRequestRandomizeColorRef.current = false;
+      useSlimeStore.setState(
+        produce((state) => {
+          state.randomizationState.colorLastRequestedAutoRandomizationAt =
+            Date.now();
+          if (
+            [
+              "selectEnabledRandomizationPreset",
+              "useCurrentRandomizationSettings", // The UTILS function will return the current randomization values if needed.
+            ].includes(randomizationSettings.colorAutoRandomizationMode)
+          ) {
+            const { settings, name } =
+              UTILS.getAutoRandomizationColorRandomizationSettingsAndName();
+            state.randomizationState.colorRandomizationRequestedAt = Date.now();
+            state.randomizationSettings.color = settings;
+            state.randomizationState.lastLoadedColorRandomizationPreset = name;
+          } else if (
+            randomizationSettings.colorAutoRandomizationMode ===
+            "selectEnabledColorPreset"
+          ) {
+            const settings = UTILS.getRandomEnabledColorPresetSettings();
+            debugConsoleLogger("Applying color preset", settings);
+            state.colorSettings = {
+              ...state.colorSettings,
+              ...settings,
+              slimeColorChangedAt: Date.now(),
+            };
+          }
+        }),
+      );
+    }
+
+    const cappedDelta = Math.min(delta, 0.05);
+    uDeltaRef.current = Math.min(cappedDelta * simulationSettings.speed, 0.05);
+    uTimeRef.current += uDeltaRef.current;
+    uPaletteCycleTimeRef.current +=
+      cappedDelta * colorSettings.paletteCycleSpeed;
+
+    // Render the clock.
+    gl.setRenderTarget(clockRenderTarget);
+    gl.clear();
+    gl.render(clockScene, cameraB);
+
+    /**
+     * Agent data.
+     */
+    if (pingPongRef.current) {
+      // Update agent data A uniforms.
+      agentDataMaterialRefA.current.uniforms.uDelta.value = uDeltaRef.current;
+      agentDataMaterialRefA.current.uniforms.uTime.value = uTimeRef.current;
+      agentDataMaterialRefA.current.uniforms.uClockTexture.value =
+        clockRenderTarget.texture;
+
+      // Render agent data A.
+      gl.setRenderTarget(agentDataRenderTargetA);
+      gl.clear();
+      gl.render(agentDataSceneA, cameraA);
+
+      // Send agent data A texture to relevant materials.
+      agentDataMaterialRefB.current.uniforms.uAgentDataTexture.value =
+        agentDataRenderTargetA.texture;
+      agentPositionsMaterialRef.current.uniforms.uAgentDataTexture.value =
+        agentDataRenderTargetA.texture;
+    } else {
+      // Update agent data B time uniforms.
+      agentDataMaterialRefB.current.uniforms.uDelta.value = uDeltaRef.current;
+      agentDataMaterialRefB.current.uniforms.uTime.value = uTimeRef.current;
+      agentDataMaterialRefB.current.uniforms.uClockTexture.value =
+        clockRenderTarget.texture;
+
+      // Render agent data B.
+      gl.setRenderTarget(agentDataRenderTargetB);
+      gl.clear();
+      gl.render(agentDataSceneB, cameraA);
+
+      // Send agent data B texture to relevant materials.
+      agentDataMaterialRefA.current.uniforms.uAgentDataTexture.value =
+        agentDataRenderTargetB.texture;
+      agentPositionsMaterialRef.current.uniforms.uAgentDataTexture.value =
+        agentDataRenderTargetB.texture;
+    }
+
+    // Render the agent particle positions.
+    gl.setRenderTarget(agentPositionsRenderTarget);
+    gl.clear();
+    gl.render(agentPositionsScene, cameraB);
+
+    if (pingPongRef.current) {
+      // Update relevant trail A uniforms.
+      trailMaterialRefA.current.uniforms.uDelta.value = uDeltaRef.current;
+      trailMaterialRefA.current.uniforms.uTime.value = uTimeRef.current;
+      trailMaterialRefA.current.uniforms.uAgentPositionsTexture.value =
+        agentPositionsRenderTarget.texture;
+      trailMaterialRefA.current.uniforms.uClockTexture.value =
+        clockRenderTarget.texture;
+
+      // Render trail A.
+      gl.setRenderTarget(trailRenderTargetA);
+      gl.clear();
+      gl.render(trailSceneA, cameraA);
+
+      // Send trail A texture to relevant materials.
+      trailMaterialRefB.current.uniforms.uTrailTexture.value =
+        trailRenderTargetA.texture;
+      agentDataMaterialRefB.current.uniforms.uTrailTexture.value =
+        trailRenderTargetA.texture;
+      slimeMoldDisplayPlaneUniforms.uTrailTexture.value =
+        trailRenderTargetA.texture;
+    } else {
+      // Update relevant trail B uniforms.
+      trailMaterialRefB.current.uniforms.uDelta.value = uDeltaRef.current;
+      trailMaterialRefB.current.uniforms.uTime.value = uTimeRef.current;
+      trailMaterialRefB.current.uniforms.uAgentPositionsTexture.value =
+        agentPositionsRenderTarget.texture;
+      trailMaterialRefB.current.uniforms.uClockTexture.value =
+        clockRenderTarget.texture;
+
+      // Render trail B.
+      gl.setRenderTarget(trailRenderTargetB);
+      gl.clear();
+      gl.render(trailSceneB, cameraA);
+
+      // Send trail B texture to relevant materials.
+      trailMaterialRefA.current.uniforms.uTrailTexture.value =
+        trailRenderTargetB.texture;
+      agentDataMaterialRefA.current.uniforms.uTrailTexture.value =
+        trailRenderTargetB.texture;
+      slimeMoldDisplayPlaneUniforms.uTrailTexture.value =
+        trailRenderTargetB.texture;
+    }
+
+    // Set render target to return to the default framebuffer (I think?).
+    gl.setRenderTarget(null);
+
+    // Update the display plane uniforms.
+    slimeMoldDisplayPlaneUniforms.uClockTexture.value =
+      clockRenderTarget.texture;
+    slimeMoldDisplayPlaneUniforms.uDelta.value = uDeltaRef.current;
+    slimeMoldDisplayPlaneUniforms.uTime.value = uTimeRef.current;
+    slimeMoldDisplayPlaneUniforms.uPaletteCycleTime.value =
+      uPaletteCycleTimeRef.current;
+
+    // Update the gpu texture display uniforms.
+    // @ts-expect-error `map` does exist.
+    agentDataDisplayPlaneRef.current.material.map =
+      agentDataRenderTargetA.texture;
+    // @ts-expect-error `map` does exist.
+    agentPositionsDisplayPlaneRef.current.material.map =
+      agentPositionsRenderTarget.texture;
+    // @ts-expect-error `map` does exist.
+    trailDisplayPlaneRef.current.material.map = trailRenderTargetA.texture;
+    // @ts-expect-error `map` does exist.
+    clockDisplayPlaneRef.current.material.map = clockRenderTarget.texture;
+
+    // Ping the pong or pong the ping.
+    pingPongRef.current = !pingPongRef.current;
+  });
+
+  const [performanceGauged, setPerformanceGauged] = useState(
+    useSlimeStore.getState().framerateGaugedPreviously,
+  );
+  const framerateGaugedPreviously = useSlimeStore(
+    (state) => state.framerateGaugedPreviously,
+  );
+
+  useEffect(() => {
+    debugConsoleLogger("Framerate gauge started");
+    useSlimeStore.setState(
+      produce((state) => {
+        state.framerateGaugeStartedAt = Date.now();
+      }),
+    );
+    const timeout = setTimeout(() => {
+      if (!performanceGauged) {
+        setPerformanceGauged(true);
+        useSlimeStore.setState(
+          produce((state) => {
+            state.randomizationState.simulationRestartRequestedAt = Date.now();
+            state.framerateGaugedPreviously = true;
+            state.framerateGaugeCompletedAt = Date.now();
+          }),
+        );
+      } else if (useSlimeStore.getState().framerateGaugeCompletedAt === 0) {
+        useSlimeStore.setState(
+          produce((state) => {
+            state.framerateGaugeCompletedAt = Date.now();
+          }),
+        );
+      }
+    }, 10000);
+    return () => clearTimeout(timeout);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  function onIncline() {
+    if (performanceGauged) return;
+    const debugConsoleLogger = useSlimeStore.getState().debugConsoleLogger;
+    const displayTextureTargetQuality =
+      useSlimeStore.getState().simulationSettings.displayTextureTargetQuality;
+    debugConsoleLogger(
+      "increasing quality to ",
+      displayTextureTargetQuality + 0.3,
+    );
+    useSlimeStore.setState(
+      produce((state) => {
+        state.simulationSettings.displayTextureTargetQuality =
+          Math.round((displayTextureTargetQuality + 0.3) * 100) / 100;
+      }),
+    );
+  }
+
+  function onDecline() {
+    if (performanceGauged) return;
+    const debugConsoleLogger = useSlimeStore.getState().debugConsoleLogger;
+    const displayTextureTargetQuality =
+      useSlimeStore.getState().simulationSettings.displayTextureTargetQuality;
+    debugConsoleLogger(
+      "decreasing quality to ",
+      displayTextureTargetQuality - 0.4,
+    );
+    useSlimeStore.setState(
+      produce((state) => {
+        state.simulationSettings.displayTextureTargetQuality = Math.max(
+          0.1,
+          Math.round((displayTextureTargetQuality - 0.4) * 100) / 100,
+        );
+      }),
+    );
+  }
+
+  function bounds(refreshrate: number): [lower: number, upper: number] {
+    if (refreshrate < 30) {
+      return [28, 29];
+    } else if (refreshrate < 50) {
+      return [45, 49];
+    } else if (refreshrate < 70) {
+      return [65, 69];
+    }
+    return [Math.floor(refreshrate * 0.9), Math.floor(refreshrate * 0.99)];
+  }
+
+  useEffect(() => {
+    if (!performanceGauged && framerateGaugedPreviously) {
+      setPerformanceGauged(true);
+    }
+  }, [performanceGauged, framerateGaugedPreviously]);
+
+  return (
+    <>
+      <PerformanceMonitor
+        bounds={bounds}
+        onIncline={onIncline}
+        onDecline={onDecline}
+      />
+      {createPortal(
+        <mesh>
+          <agentDataMaterial
+            ref={agentDataMaterialRefA}
+            args={[agentDataUniforms]}
+          />
+          <bufferGeometry>
+            <bufferAttribute
+              args={[renderPlanePositions, 3]}
+              attach="attributes-position"
+              array={renderPlanePositions}
+              count={renderPlanePositions.length / 3}
+              itemSize={3}
+            />
+            <bufferAttribute
+              args={[renderPlaneUvs, 2]}
+              attach="attributes-uv"
+              array={renderPlaneUvs}
+              count={renderPlaneUvs.length / 2}
+              itemSize={2}
+            />
+          </bufferGeometry>
+        </mesh>,
+        agentDataSceneA,
+      )}
+      {createPortal(
+        <mesh>
+          <agentDataMaterial
+            ref={agentDataMaterialRefB}
+            args={[agentDataUniforms]}
+          />
+          <bufferGeometry>
+            <bufferAttribute
+              args={[renderPlanePositions, 3]}
+              attach="attributes-position"
+              array={renderPlanePositions}
+              count={renderPlanePositions.length / 3}
+              itemSize={3}
+            />
+            <bufferAttribute
+              args={[renderPlaneUvs, 2]}
+              attach="attributes-uv"
+              array={renderPlaneUvs}
+              count={renderPlaneUvs.length / 2}
+              itemSize={2}
+            />
+          </bufferGeometry>
+        </mesh>,
+        agentDataSceneB,
+      )}
+      {createPortal(
+        <points>
+          <agentPositionsMaterial
+            ref={agentPositionsMaterialRef}
+            args={[agentPositionsUniforms]}
+          />
+          <bufferGeometry>
+            <bufferAttribute
+              args={[agentPositionsAttribute, 3]}
+              attach="attributes-position"
+              array={agentPositionsAttribute}
+              count={agentPositionsAttribute.length / 3}
+              itemSize={3}
+            />
+          </bufferGeometry>
+        </points>,
+        agentPositionsScene,
+      )}
+      {createPortal(<ClockDisplay />, clockScene)}
+      {createPortal(
+        <mesh>
+          <trailMaterial ref={trailMaterialRefA} args={[trailUniforms]} />
+          <bufferGeometry>
+            <bufferAttribute
+              args={[renderPlanePositions, 3]}
+              attach="attributes-position"
+              array={renderPlanePositions}
+              count={renderPlanePositions.length / 3}
+              itemSize={3}
+            />
+            <bufferAttribute
+              args={[renderPlaneUvs, 2]}
+              attach="attributes-uv"
+              array={renderPlaneUvs}
+              count={renderPlaneUvs.length / 2}
+              itemSize={2}
+            />
+          </bufferGeometry>
+        </mesh>,
+        trailSceneA,
+      )}
+      {createPortal(
+        <mesh>
+          <trailMaterial ref={trailMaterialRefB} args={[trailUniforms]} />
+          <bufferGeometry>
+            <bufferAttribute
+              args={[renderPlanePositions, 3]}
+              attach="attributes-position"
+              array={renderPlanePositions}
+              count={renderPlanePositions.length / 3}
+              itemSize={3}
+            />
+            <bufferAttribute
+              args={[renderPlaneUvs, 2]}
+              attach="attributes-uv"
+              array={renderPlaneUvs}
+              count={renderPlaneUvs.length / 2}
+              itemSize={2}
+            />
+          </bufferGeometry>
+        </mesh>,
+        trailSceneB,
+      )}
+      <Plane visible={performanceGauged}>
+        <shaderMaterial
+          ref={slimeMoldDisplayShaderRef}
+          uniforms={slimeMoldDisplayPlaneUniforms}
+          vertexShader={displayVertexShader}
+          fragmentShader={displayFragmentShader}
+          blending={THREE.NormalBlending}
+        />
+      </Plane>
+      <Plane ref={agentDataDisplayPlaneRef} visible={showGpuTextures}>
+        <meshBasicMaterial
+          attach="material"
+          map={agentDataRenderTargetA.texture}
+          depthTest={false}
+          depthWrite={false}
+          onBeforeCompile={(shader) => {
+            shader.uniforms.uWindowResolution =
+              texturePlaneUniforms.uWindowResolution;
+            shader.uniforms.uShowTexture = texturePlaneUniforms.uShowTexture;
+            shader.vertexShader = shader.vertexShader.replace(
+              "#include <common>",
+              /* glsl */ `
+              #include <common>
+              uniform vec2 uWindowResolution;
+              uniform float uShowTexture;
+              `,
+            );
+            shader.vertexShader = shader.vertexShader.replace(
+              "#include <project_vertex>",
+              /* glsl */ `
+              #include <project_vertex>
+              gl_Position = vec4(position, 1.0) * vec4(0.4 * (uWindowResolution.y / uWindowResolution.x), 0.4, 1.0, 1.0) + vec4(1.0 - (0.4 * (uWindowResolution.y / uWindowResolution.x)) * 0.5, 0.8, 0.0, 0.0);
+              gl_Position += vec4(vec3((1.0 - uShowTexture) * 9999.0), 0.0);
+              `,
+            );
+          }}
+        />
+      </Plane>
+      <Plane ref={agentPositionsDisplayPlaneRef} visible={showGpuTextures}>
+        <meshBasicMaterial
+          attach="material"
+          map={agentPositionsRenderTarget.texture}
+          depthTest={false}
+          depthWrite={false}
+          onBeforeCompile={(shader) => {
+            shader.uniforms.uWindowResolution =
+              texturePlaneUniforms.uWindowResolution;
+            shader.uniforms.uShowTexture = texturePlaneUniforms.uShowTexture;
+            shader.vertexShader = shader.vertexShader.replace(
+              "#include <common>",
+              /* glsl */ `
+              #include <common>
+              uniform vec2 uWindowResolution;
+              uniform float uShowTexture;
+              `,
+            );
+            shader.vertexShader = shader.vertexShader.replace(
+              "#include <project_vertex>",
+              /* glsl */ `
+              #include <project_vertex>
+              gl_Position = vec4(position, 1.0) * vec4(0.4 * (uWindowResolution.y / uWindowResolution.x), 0.4, 1.0, 1.0) + vec4(1.0 - (0.4 * (uWindowResolution.y / uWindowResolution.x)) * 0.5, 0.4, 0.0, 0.0);
+              gl_Position += vec4(vec3((1.0 - uShowTexture) * 9999.0), 0.0);
+              `,
+            );
+          }}
+        />
+      </Plane>
+      <Plane ref={trailDisplayPlaneRef} visible={showGpuTextures}>
+        <meshBasicMaterial
+          attach="material"
+          map={trailRenderTargetA.texture}
+          depthTest={false}
+          depthWrite={false}
+          onBeforeCompile={(shader) => {
+            shader.uniforms.uWindowResolution =
+              texturePlaneUniforms.uWindowResolution;
+            shader.uniforms.uShowTexture = texturePlaneUniforms.uShowTexture;
+            shader.vertexShader = shader.vertexShader.replace(
+              "#include <common>",
+              /* glsl */ `
+              #include <common>
+              uniform vec2 uWindowResolution;
+              uniform float uShowTexture;
+              `,
+            );
+            shader.vertexShader = shader.vertexShader.replace(
+              "#include <project_vertex>",
+              /* glsl */ `
+              #include <project_vertex>
+              gl_Position = vec4(position, 1.0) * vec4(0.4 * (uWindowResolution.y / uWindowResolution.x), 0.4, 1.0, 1.0) + vec4(1.0 - (0.4 * (uWindowResolution.y / uWindowResolution.x)) * 0.5, 0.0, 0.0, 0.0);
+              gl_Position += vec4(vec3((1.0 - uShowTexture) * 9999.0), 0.0);
+              `,
+            );
+          }}
+        />
+      </Plane>
+      <Plane ref={clockDisplayPlaneRef} visible={showGpuTextures}>
+        <meshBasicMaterial
+          attach="material"
+          map={clockRenderTarget.texture}
+          depthTest={false}
+          depthWrite={false}
+          onBeforeCompile={(shader) => {
+            shader.uniforms.uWindowResolution =
+              texturePlaneUniforms.uWindowResolution;
+            shader.uniforms.uShowTexture = texturePlaneUniforms.uShowTexture;
+            shader.vertexShader = shader.vertexShader.replace(
+              "#include <common>",
+              /* glsl */ `
+              #include <common>
+              uniform vec2 uWindowResolution;
+              uniform float uShowTexture;
+              `,
+            );
+            shader.vertexShader = shader.vertexShader.replace(
+              "#include <project_vertex>",
+              /* glsl */ `
+              #include <project_vertex>
+              gl_Position = vec4(position, 1.0) * vec4(0.4 * (uWindowResolution.y / uWindowResolution.x), 0.4, 1.0, 1.0) + vec4(1.0 - (0.4 * (uWindowResolution.y / uWindowResolution.x)) * 0.5, -0.4, 0.0, 0.0);
+              gl_Position += vec4(vec3((1.0 - uShowTexture) * 9999.0), 0.0);
+              `,
+            );
+          }}
+        />
+      </Plane>
+      <ThreeControlDisplay />
+    </>
+  );
+}
+
+export default function SlimeClock() {
+  const debugConsoleLogger = useSlimeStore((state) => state.debugConsoleLogger);
+  const [displaySlimeClock, setDisplaySlimeClock] = useState<boolean>(false);
+
+  useLayoutEffect(() => {
+    const unsub = useSlimeStore.subscribe(
+      (state) => state.initialization.slimeClockDisplayStatus,
+      (displayStatus) => {
+        if (displayStatus === "ready" && !displaySlimeClock) {
+          debugConsoleLogger("Setting displaySlimeClock to true");
+          setDisplaySlimeClock(true);
+        } else if (displayStatus === "initializing" && displaySlimeClock) {
+          debugConsoleLogger("Setting displaySlimeClock to false");
+          setDisplaySlimeClock(false);
+        }
+      },
+    );
+    return () => {
+      unsub();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return (
+    <>
+      <InitializationHandler />
+      <SettingsHistoryListener />
+      {displaySlimeClock && (
+        <>
+          <SlimeClockRenderer />
+          <RandomizationListener />
+          <UniformListeners />
+        </>
+      )}
+    </>
+  );
+}
