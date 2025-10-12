@@ -178,7 +178,7 @@ const useSlimeStore = create<SlimeStore>()(
   subscribeWithSelector(
     persist(
       (_, get) => ({
-        debug: true,
+        debug: false,
         debugConsoleLogger: (...data: unknown[]) => {
           if (get().debug) {
             console.log(...data);
@@ -300,7 +300,8 @@ const useSlimeStore = create<SlimeStore>()(
           show: DEFAULT_CLOCK_SETTINGS.show,
           // Size is overridden in the "InitializationHandler" component if
           // "digitLayout" is set to "not set".
-          size: DEFAULT_CLOCK_SETTINGS.size,
+          digitalClockSize: DEFAULT_CLOCK_SETTINGS.digitalClockSize,
+          analogClockSize: DEFAULT_CLOCK_SETTINGS.analogClockSize,
           // Default digitLayout is "not set", which will trigger the
           // "InitializationHandler" to set it to a valid value.
           digitLayout: DEFAULT_CLOCK_SETTINGS.digitLayout,
@@ -320,7 +321,8 @@ const useSlimeStore = create<SlimeStore>()(
           timeOffsetSecondsOnly: DEFAULT_CLOCK_SETTINGS.timeOffsetSecondsOnly,
           timeOffsetMsOnly: DEFAULT_CLOCK_SETTINGS.timeOffsetMsOnly,
           timeOffsetTotal: DEFAULT_CLOCK_SETTINGS.timeOffsetTotal,
-          automaticTimeOffsetRequestedAt: 0,
+          automaticTimeOffsetRequestedAt:
+            DEFAULT_CLOCK_SETTINGS.automaticTimeOffsetRequestedAt,
         },
         simulationSettings: {
           // Nearly all of these values will be overridden in the

@@ -63,7 +63,6 @@ export function getDisplayTextureResolution(
   return resolution;
 }
 
-// TODO: Improve this function so that it always returns a valid color.
 export function generateRandomColor() {
   return "#" + Math.floor(Math.random() * 16777215).toString(16);
 }
@@ -511,6 +510,20 @@ export function requestAutomaticTimeOffsetSet(
       const timeOffset = responseUnixTime - systemUnixTime;
 
       const timeOffsetMinutesOnly = Math.trunc(timeOffset / (60 * 1000));
+      if (Math.abs(timeOffsetMinutesOnly) > 59) {
+        if (displayToastMessage) {
+          useSlimeStore.setState(
+            produce((state) => {
+              state.toast.title = "Sync. Failed";
+              state.toast.description =
+                "Time offset exceeds 59 minutes. Please try again later.";
+              state.toast.type = "error";
+              state.toast.lastTriggeredAt = Date.now();
+            }),
+          );
+        }
+        return;
+      }
       const timeOffsetSecondsOnly = Math.trunc(
         (timeOffset % (60 * 1000)) / 1000,
       );

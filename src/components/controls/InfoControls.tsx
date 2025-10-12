@@ -38,7 +38,7 @@ export default function InfoControls() {
           <AccordionControlsItem
             value="links"
             label="Links"
-            labelHoverTabContentDisplay={["Links"]}
+            labelHoverTabContentDisplay={["Links", "It's just links."]}
           >
             <ControlGroup justifyContent="center">
               <motion.a
@@ -72,58 +72,89 @@ export default function InfoControls() {
           <AccordionControlsItem
             value="credits"
             label="Credits"
-            labelHoverTabContentDisplay={["Credits"]}
+            labelHoverTabContentDisplay={[
+              "Credits",
+              "Acknowledgements & such.",
+            ]}
           >
-            <div className="flex flex-col gap-2 px-2 py-1 text-[1.0rem] text-sky-50">
-              <div>
-                {"Inspired by Sebastian Lague's "}
-                {
-                  <a
-                    href="https://www.youtube.com/watch?v=X-iSQQgOd1A"
-                    className="cursor-pointer text-sky-400 italic underline"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Coding Adventure: Ant and Slime Simulations
-                  </a>
-                }
-                {" video."}
-              </div>
-              <div>
-                {"Couldn't have done this without:"}
-                <ul className="list-inside list-disc">
-                  <li>
+            <ControlGroup>
+              <div className="flex flex-col gap-2 text-[1.0rem] text-sky-50">
+                <div>
+                  {"Inspired (heavily) by Sebastian Lague's "}
+                  {
                     <a
-                      href="https://iquilezles.org/"
+                      href="https://www.youtube.com/watch?v=X-iSQQgOd1A"
                       className="cursor-pointer text-sky-400 italic underline"
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      Iñigo Quílez's
+                      Coding Adventure: Ant and Slime Simulations
                     </a>
-                    {" extensive shader references."}
-                  </li>
-                  <li>
-                    <a
-                      href="https://threejs-journey.com/"
-                      className="cursor-pointer text-sky-400 italic underline"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      Bruno Simon's
-                    </a>
-                    {" incredible Three.js Journey course."}
-                  </li>
-                </ul>
+                  }
+                  {" video."}
+                </div>
+                <div>
+                  {"Couldn't have done this without:"}
+                  <ul className="list-inside list-disc">
+                    <li>
+                      <a
+                        href="https://iquilezles.org/"
+                        className="cursor-pointer text-sky-400 italic underline"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Iñigo Quílez's
+                      </a>
+                      {" extensive shader references."}
+                    </li>
+                    <li>
+                      <a
+                        href="https://threejs-journey.com/"
+                        className="cursor-pointer text-sky-400 italic underline"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Bruno Simon's
+                      </a>
+                      {" incredible Three.js Journey course."}
+                    </li>
+                  </ul>
+                </div>
               </div>
-            </div>
+            </ControlGroup>
           </AccordionControlsItem>
           <AccordionControlsItem
             value="information"
             label="Information"
-            labelHoverTabContentDisplay={["Information"]}
+            labelHoverTabContentDisplay={["Information", "What is this?"]}
           >
-            <div className="text-md flex flex-col px-2 py-1 text-sky-50"></div>
+            <ControlGroup>
+              <div className="text-md flex flex-col gap-2 text-sky-50">
+                <p>
+                  For real, go watch that <em>Coding Adventure</em> video. A lot
+                  of the same terminology (agents, trails, etc.) is used here.
+                  Plus, it's a good video.
+                </p>
+                <br />
+                <p>
+                  Anywho, I was working on adapting that slime mold simulation
+                  to work in a browser, and thought "Hey, this would make for a
+                  neat clock". And so, here we are. There are a lot more
+                  features I'd like to add, plus the code really needs to be
+                  cleaned up, but I've been working on this for way longer than
+                  I had originally intended, and I've got{" "}
+                  <em>so many other projects</em> I'd like to work on, so this
+                  is where I'm stopping for now.
+                </p>
+                <br />
+                <br />
+                <p>
+                  Check out the source code (the GitHub link above) if you're
+                  interested. Feel free to open issues or submit pull requests
+                  if you have suggestions or improvements.
+                </p>
+              </div>
+            </ControlGroup>
           </AccordionControlsItem>
         </AccordionControlsWrapper>
       </TabContentScrollArea>

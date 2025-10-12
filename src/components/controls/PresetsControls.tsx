@@ -23,6 +23,7 @@ import ControlGroup from "./ControlGroup.tsx";
 import SaveCurrentSettingsAsPresetPopoverButton from "./SaveCurrentSettingsAsPresetPopoverButton.tsx";
 import SimulationPresetLoadSaveControl from "./SimulationPresetLoadSaveControl.tsx";
 import TabContentContainer from "./TabContentContainer";
+import TabContentDisplayAreaContentWrapper from "./TabContentDisplayAreaContentWrapper.tsx";
 import TabContentScrollArea from "./TabContentScrollArea";
 
 export default function PresetsControls() {
@@ -96,7 +97,6 @@ export default function PresetsControls() {
           return;
         }
         if ("clockSettings" in parsedData) {
-          // TODO: Add control validation logic.
           const newClockSettings: Partial<LoadableClockSettings> = {};
           LOADABLE_CLOCK_SETTINGS_KEYS.forEach((key) => {
             if (key in parsedData.clockSettings) {
@@ -131,7 +131,6 @@ export default function PresetsControls() {
           }
         }
         if ("simulationSettings" in parsedData) {
-          // TODO: Add control validation logic.
           const newSimulationSettings: Partial<LoadableSimulationSettings> = {};
           LOADABLE_SIMULATION_SETTINGS_KEYS.forEach((key) => {
             if (key in parsedData.simulationSettings) {
@@ -168,7 +167,6 @@ export default function PresetsControls() {
           }
         }
         if ("colorSettings" in parsedData) {
-          // TODO: Add control validation logic.
           const newColorSettings: Partial<LoadableColorSettings> = {};
           LOADABLE_COLOR_SETTINGS_KEYS.forEach((key) => {
             if (key in parsedData.colorSettings) {
@@ -365,7 +363,7 @@ export default function PresetsControls() {
     useSlimeStore.setState(
       produce((state) => {
         state.simulationPresets = simulationPresets;
-        state.toast.title = "Auto Load on Rand. Updated";
+        state.toast.title = "Load on Auto Rand. Updated";
         state.toast.description = `All "simulation", "color", and "combination" presets have been ${value ? "enabled" : "disabled"} for load on auto-randomization.`;
         state.toast.type = "info";
         state.toast.lastTriggeredAt = Date.now();
@@ -428,16 +426,29 @@ export default function PresetsControls() {
               <SaveCurrentSettingsAsPresetPopoverButton presetType="Combination" />
             </ControlGroup>
             <ButtonControlGroup
+              labelHoverTabContentDisplay={[
+                "Load on Auto Rand. - All Presets",
+                <TabContentDisplayAreaContentWrapper>
+                  Enables or disables all simulation, color, and combination
+                  presets for load on auto randomization. When the simulation or
+                  color auto-randomization mode is set to{" "}
+                  <em>Use Random Enabled Simulation/Color Preset</em>, the
+                  relevant enabled presets will be randomly loaded when the
+                  auto-randomization occurs.
+                </TabContentDisplayAreaContentWrapper>,
+              ]}
               justifyContent="center"
               buttonConfigs={[
                 {
-                  label: "Enable Auto Load on Rand - All Sim.",
-                  baseId: "enable-auto-load-on-rand-all-button",
+                  label: "Enable Load on Auto Rand - All",
+                  baseId:
+                    "presets-controls-presets-enable-load-on-auto-rand-all-button",
                   onClick: () => setAutoLoadOnRandAll(true),
                 },
                 {
-                  label: "Disable Auto Load on Rand - All Sim.",
-                  baseId: "disable-auto-load-on-rand-all-button",
+                  label: "Disable Load on Auto Rand - All",
+                  baseId:
+                    "presets-controls-presets-disable-load-on-auto-rand-all-button",
                   onClick: () => setAutoLoadOnRandAll(false),
                 },
               ]}
@@ -507,7 +518,10 @@ export default function PresetsControls() {
           <AccordionControlsItem
             value="history"
             label="History"
-            labelHoverTabContentDisplay={[]}
+            labelHoverTabContentDisplay={[
+              "History",
+              "Recent changes to settings are saved to history. You can load, save, or copy to your clipboard any of these recent settings. History persists between sessions.",
+            ]}
           >
             {history.map((entry) => (
               <SimulationPresetLoadSaveControl

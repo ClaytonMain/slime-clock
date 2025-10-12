@@ -563,7 +563,7 @@ function SlimeClockRenderer() {
   );
 
   useEffect(() => {
-    console.log("Starting framerate gauge");
+    debugConsoleLogger("Framerate gauge started");
     useSlimeStore.setState(
       produce((state) => {
         state.framerateGaugeStartedAt = Date.now();
@@ -628,10 +628,12 @@ function SlimeClockRenderer() {
   }
 
   function bounds(refreshrate: number): [lower: number, upper: number] {
-    if (refreshrate < 50) {
-      return [40, 49];
+    if (refreshrate < 30) {
+      return [28, 29];
+    } else if (refreshrate < 50) {
+      return [45, 49];
     } else if (refreshrate < 70) {
-      return [60, 69];
+      return [65, 69];
     }
     return [Math.floor(refreshrate * 0.9), Math.floor(refreshrate * 0.99)];
   }

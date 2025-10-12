@@ -10,7 +10,10 @@ export default function AutomaticTimeOffsetSync() {
   useEffect(() => {
     const automaticTimeOffsetRequestedAt =
       useSlimeStore.getState().clockSettings.automaticTimeOffsetRequestedAt;
-    if (Date.now() - automaticTimeOffsetRequestedAt > 60 * 1000) {
+    if (
+      syncTimeOffsetsAutomatically &&
+      Date.now() - automaticTimeOffsetRequestedAt > 60 * 1000
+    ) {
       UTILS.requestAutomaticTimeOffsetSet(false);
     }
     const intervalId = setInterval(

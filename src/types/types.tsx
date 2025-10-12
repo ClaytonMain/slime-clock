@@ -17,7 +17,8 @@ export type SelectOption<T> = {
 export interface LoadableClockSettings {
   clockStyle: "digital" | "analog";
   show: boolean;
-  size: number;
+  digitalClockSize: number;
+  analogClockSize: number;
   digitLayout: "vertical" | "horizontal" | "not set";
   hourFormat: ClockHourFormatValue;
   digitStyle: ClockDigitStyleValue;

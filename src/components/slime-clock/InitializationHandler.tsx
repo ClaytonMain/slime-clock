@@ -200,11 +200,12 @@ function initializeClockSettings() {
     );
     const windowAspectRatio = window.innerWidth / window.innerHeight;
     const digitLayout = windowAspectRatio > 1 ? "horizontal" : "vertical";
-    const size = digitLayout === "horizontal" ? 50 : 30;
+    const digitalClockSize = digitLayout === "horizontal" ? 50 : 25;
     useSlimeStore.setState(
       produce((state) => {
         state.clockSettings.digitLayout = digitLayout;
-        state.clockSettings.size = size;
+        state.clockSettings.digitalClockSize = digitalClockSize;
+        state.clockSettings.analogClockSize = 50;
       }),
     );
   }
@@ -379,12 +380,6 @@ export default function InitializationHandler() {
           state.initialization.controlsDisplayStatus = "ready";
         }
 
-        // If `all.initialized` is `false` or `slimeClockDisplayStatus` is
-        // `initializing`, but everything else is initialized, then we need
-        // to update those statuses. This should be the only place where
-        // `all.initialized` can be set to `true`, and the only place where
-        // `slimeClockDisplayStatus` can be set to `ready`.
-        // TODO: Double-check that this is the case.
         if (
           (!initializationStates.all.initialized ||
             initializationStates.slimeClockDisplayStatus === "initializing") &&

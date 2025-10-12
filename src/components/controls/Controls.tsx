@@ -130,12 +130,9 @@ export default function Controls() {
                   handleControlsContentOuterContainerViewportEnter
                 }
                 key="controls-dialog-content-outer-container"
-                className={`fixed top-1/2 left-1/2 flex h-10/12 max-h-[1500px] w-full max-w-[1000px] -translate-1/2 flex-col rounded-xs text-sky-50`}
+                className={`fixed top-1/2 left-1/2 flex h-10/12 max-h-[1500px] w-full max-w-[1000px] -translate-1/2 flex-col rounded-xs text-sky-50 md:w-10/12`}
                 exit={{
                   transition: { duration: 0.3, when: "afterChildren" },
-                }}
-                onAnimationEnd={(definition) => {
-                  console.log("Animation ended:", definition);
                 }}
               >
                 {Array.from({ length: 4 }).map((_, index) => (

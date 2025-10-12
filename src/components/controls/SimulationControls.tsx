@@ -28,6 +28,7 @@ import TabContentDisplayAreaContentWrapper from "./TabContentDisplayAreaContentW
 import TabContentScrollArea from "./TabContentScrollArea";
 
 export default function SimulationControls() {
+  const debugConsoleLogger = useSlimeStore((state) => state.debugConsoleLogger);
   const sortedSimulationPresets = useSlimeStore(
     (state) => state.sortedSimulationPresets,
   );
@@ -53,7 +54,7 @@ export default function SimulationControls() {
 
   // Slider function
   function handleAgentDensityChange(value: number[]) {
-    console.log("handleAgentDensityChange", value);
+    debugConsoleLogger("handleAgentDensityChange", value);
     const displayTextureWidth =
       useSlimeStore.getState().simulationSettings.displayTextureWidth;
     const displayTextureHeight =

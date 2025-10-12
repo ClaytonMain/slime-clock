@@ -17,6 +17,7 @@ export default function SettingsHistoryListener() {
   const simulationSettings = useSlimeStore((state) => state.simulationSettings);
   const clockSettings = useSlimeStore((state) => state.clockSettings);
   const colorSettings = useSlimeStore((state) => state.colorSettings);
+  const debugConsoleLogger = useSlimeStore((state) => state.debugConsoleLogger);
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -88,7 +89,7 @@ export default function SettingsHistoryListener() {
             newSimulationSettings as LoadableSimulationSettings,
           colorSettings: newColorSettings as LoadableColorSettings,
         };
-        console.log("Settings history changes detected:", newEntry);
+        debugConsoleLogger("Settings history changes detected:", newEntry);
 
         const history = [newEntry, ...useSlimeStore.getState().history];
         if (history.length > 100) {
@@ -100,11 +101,12 @@ export default function SettingsHistoryListener() {
           }),
         );
       } else {
-        console.log("No changes detected in settings history.");
+        debugConsoleLogger("No changes detected in settings history.");
       }
     }, 1000);
 
     return () => clearTimeout(timeoutId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [simulationSettings, clockSettings, colorSettings]);
 
   return null;

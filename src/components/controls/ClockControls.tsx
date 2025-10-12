@@ -113,8 +113,8 @@ export default function ClockControls() {
             "clock-settings",
             "time-settings",
             "clock-controls-presets",
-            "digital-clock-specific-settings",
-            "analog-clock-specific-settings",
+            "digital-clock-settings",
+            "analog-clock-settings",
           ]}
         >
           <AccordionControlsItem
@@ -186,27 +186,6 @@ export default function ClockControls() {
                 "Changes the style of the clock display.",
               ]}
             />
-            <SlimeStoreSliderControl
-              label="Size"
-              baseInputId="clock-size-slider"
-              min={CLOCK_CONTROLS_CONFIGS.size!.min}
-              max={CLOCK_CONTROLS_CONFIGS.size!.max}
-              step={CLOCK_CONTROLS_CONFIGS.size!.step}
-              storePath={["clockSettings", "size"]}
-              labelHoverTabContentDisplay={[
-                "Clock Size",
-                <TabContentDisplayAreaContentWrapper>
-                  Changes the size of the clock display. Values are approximate
-                  percentages of screen height, where
-                  <CodeBlock>1</CodeBlock>
-                  would be practically invisible,
-                  <CodeBlock>50</CodeBlock>
-                  would fill half the screen, and
-                  <CodeBlock>100</CodeBlock>
-                  would fill the entire screen height.
-                </TabContentDisplayAreaContentWrapper>,
-              ]}
-            />
             <SlimeStoreSwitchControl
               label="Show Clock Shadow"
               baseId="clock-show-shadow-switch"
@@ -239,13 +218,34 @@ export default function ClockControls() {
             />
           </AccordionControlsItem>
           <AccordionControlsItem
-            value="digital-clock-specific-settings"
+            value="digital-clock-settings"
             label="Digital Clock Settings"
             labelHoverTabContentDisplay={[
               "Digital Clock Settings",
               "Settings specific to the digital clock style.",
             ]}
           >
+            <SlimeStoreSliderControl
+              label="Digital Clock Size"
+              baseInputId="clock-controls-digital-clock-settings-digital-clock-size-slider"
+              min={CLOCK_CONTROLS_CONFIGS.digitalClockSize!.min}
+              max={CLOCK_CONTROLS_CONFIGS.digitalClockSize!.max}
+              step={CLOCK_CONTROLS_CONFIGS.digitalClockSize!.step}
+              storePath={["clockSettings", "digitalClockSize"]}
+              labelHoverTabContentDisplay={[
+                "Digital Clock Size",
+                <TabContentDisplayAreaContentWrapper>
+                  Changes the size of the digital clock display. Values are
+                  approximate percentages of screen height, where
+                  <CodeBlock>1</CodeBlock>
+                  would be practically invisible,
+                  <CodeBlock>50</CodeBlock>
+                  would fill half the screen, and
+                  <CodeBlock>100</CodeBlock>
+                  would fill the entire screen height.
+                </TabContentDisplayAreaContentWrapper>,
+              ]}
+            />
             <SlimeStoreSelectControl
               label="Hour Format"
               baseInputId="clock-hour-format-select"
@@ -302,22 +302,34 @@ export default function ClockControls() {
             />
           </AccordionControlsItem>
           <AccordionControlsItem
-            value="analog-clock-specific-settings"
+            value="analog-clock-settings"
             label="Analog Clock Settings"
             labelHoverTabContentDisplay={[
               "Analog Clock Settings",
-              "Settings specific to the analog clock style. Currently nothing (sorry about that).",
+              "Settings specific to the analog clock style. Currently just the clock size, but more settings to come (soon-ish, probably).",
             ]}
           >
-            <ControlGroup
+            <SlimeStoreSliderControl
+              label="Analog Clock Size"
+              baseInputId="clock-controls-analog-clock-settings-analog-clock-size-slider"
+              min={CLOCK_CONTROLS_CONFIGS.analogClockSize!.min}
+              max={CLOCK_CONTROLS_CONFIGS.analogClockSize!.max}
+              step={CLOCK_CONTROLS_CONFIGS.analogClockSize!.step}
+              storePath={["clockSettings", "analogClockSize"]}
               labelHoverTabContentDisplay={[
-                "Analog Clock Settings",
-                "Nothing to see here sorry about that.",
+                "Analog Clock Size",
+                <TabContentDisplayAreaContentWrapper>
+                  Changes the size of the analog clock display. Values are
+                  approximate percentages of screen height, where
+                  <CodeBlock>1</CodeBlock>
+                  would be practically invisible,
+                  <CodeBlock>50</CodeBlock>
+                  would fill half the screen, and
+                  <CodeBlock>100</CodeBlock>
+                  would fill the entire screen height.
+                </TabContentDisplayAreaContentWrapper>,
               ]}
-              justifyContent="center"
-            >
-              There's nothing here yet.
-            </ControlGroup>
+            />
           </AccordionControlsItem>
           <AccordionControlsItem
             value="time-settings"
