@@ -1156,7 +1156,7 @@ export const DEFAULT_PRESETS: LoadableSlimeStoreSettings[] = [
       intensitySmoothing: 0.59,
       agentDirectionSmoothing: 0.68,
       agentDirectionColorOffset: 0.42,
-      clockColorOffset: 0.64,
+      clockColorOffset: 0.25,
       xColorOffset: 0.65,
       yColorOffset: 0.8,
       paletteCycleSpeed: 0.15,

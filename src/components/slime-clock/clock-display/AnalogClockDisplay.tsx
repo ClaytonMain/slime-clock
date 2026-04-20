@@ -44,8 +44,15 @@ export default function AnalogClockDisplay() {
 
   return (
     <group
-      position={[displayTextureWidth / 2, displayTextureHeight / 2, 0.0]}
-      scale={(displayTextureHeight * clockSettings.analogClockSize) / 100}
+      position={[
+        Math.floor(displayTextureWidth / 4) / 2,
+        Math.floor(displayTextureHeight / 4) / 2,
+        0.0,
+      ]}
+      scale={
+        (Math.floor(displayTextureHeight / 4) * clockSettings.analogClockSize) /
+        100
+      }
     >
       <Ring args={[0.475, 0.5, 64, 1]} material={material} />
       <group ref={hourGroupRef} position={[0, 0, 0]}>

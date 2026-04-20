@@ -138,6 +138,21 @@ function SlimeClockRenderer() {
       simulationSettings.displayTextureHeight,
     ],
   );
+  const cameraC = useMemo(
+    () =>
+      new THREE.OrthographicCamera(
+        0,
+        Math.floor(simulationSettings.displayTextureWidth / 4),
+        Math.floor(simulationSettings.displayTextureHeight / 4),
+        0,
+        1 / Math.pow(2, 53),
+        1,
+      ),
+    [
+      simulationSettings.displayTextureWidth,
+      simulationSettings.displayTextureHeight,
+    ],
+  );
 
   const renderPlanePositions = useMemo(
     () =>
@@ -188,8 +203,8 @@ function SlimeClockRenderer() {
     },
   );
   const clockRenderTarget = useFBO(
-    simulationSettings.displayTextureWidth,
-    simulationSettings.displayTextureHeight,
+    simulationSettings.displayTextureWidth / 4,
+    simulationSettings.displayTextureHeight / 4,
     {
       minFilter: THREE.NearestFilter,
       magFilter: THREE.NearestFilter,
@@ -438,7 +453,7 @@ function SlimeClockRenderer() {
     // Render the clock.
     gl.setRenderTarget(clockRenderTarget);
     gl.clear();
-    gl.render(clockScene, cameraB);
+    gl.render(clockScene, cameraC);
 
     /**
      * Agent data.

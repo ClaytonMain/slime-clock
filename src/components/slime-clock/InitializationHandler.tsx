@@ -200,12 +200,12 @@ function initializeClockSettings() {
     );
     const windowAspectRatio = window.innerWidth / window.innerHeight;
     const digitLayout = windowAspectRatio > 1 ? "horizontal" : "vertical";
-    const digitalClockSize = digitLayout === "horizontal" ? 50 : 25;
+    const digitalClockSize = digitLayout === "horizontal" ? 45 : 25;
     useSlimeStore.setState(
       produce((state) => {
         state.clockSettings.digitLayout = digitLayout;
         state.clockSettings.digitalClockSize = digitalClockSize;
-        state.clockSettings.analogClockSize = 50;
+        state.clockSettings.analogClockSize = 60;
       }),
     );
   }
