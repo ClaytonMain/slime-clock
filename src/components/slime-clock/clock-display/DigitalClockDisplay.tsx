@@ -128,9 +128,15 @@ export default function DigitalClockDisplay() {
   return (
     <>
       <Text
-        position={[displayTextureWidth / 2, displayTextureHeight / 2, 0.0]}
+        position={[
+          Math.floor(displayTextureWidth / 4) / 2,
+          Math.floor(displayTextureHeight / 4) / 2,
+          0.0,
+        ]}
         scale={
-          ((displayTextureHeight * clockSettings.digitalClockSize) / 100) *
+          ((Math.floor(displayTextureHeight / 4) *
+            clockSettings.digitalClockSize) /
+            100) *
           SCALE_FACTORS[clockSettings.digitStyle]
         }
         font={fontUrl}
@@ -139,9 +145,15 @@ export default function DigitalClockDisplay() {
         {displayText1}
       </Text>
       <Text
-        position={[displayTextureWidth / 2, displayTextureHeight / 2, -0.1]}
+        position={[
+          Math.floor(displayTextureWidth / 4) / 2,
+          Math.floor(displayTextureHeight / 4) / 2,
+          -0.1,
+        ]}
         scale={
-          ((displayTextureHeight * clockSettings.digitalClockSize) / 100) *
+          ((Math.floor(displayTextureHeight / 4) *
+            clockSettings.digitalClockSize) /
+            100) *
           SCALE_FACTORS[clockSettings.digitStyle]
         }
         font={fontUrl}
